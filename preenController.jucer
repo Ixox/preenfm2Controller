@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="Hcr9eL" name="preenfm2 midi controller" projectType="guiapp"
+              version="0.1" bundleIdentifier="ixox.preenController" includeBinaryInAppConfig="1"
+              jucerVersion="3.1.0" companyName="Ixox" companyWebsite="http://www.preenfm.net"
+              companyEmail="preenfm1@gmail.com">
+  <MAINGROUP id="W4RAAQ" name="preenfm2 midi controller">
+    <GROUP id="{81FC36C7-541C-E7BD-A0F8-C9170D43F3BF}" name="Source">
+      <GROUP id="{0F4ABD13-87AD-0CAA-7E8E-EC57997172CC}" name="Utils">
+        <FILE id="W21lzs" name="AlgoPNG.cpp" compile="1" resource="0" file="Source/png/AlgoPNG.cpp"/>
+        <FILE id="yZB4Di" name="AlgoPNG.h" compile="0" resource="0" file="Source/png/AlgoPNG.h"/>
+        <FILE id="ncxlkv" name="MidifiedComponent.h" compile="0" resource="0"
+              file="Source/MidifiedComponent.h"/>
+        <FILE id="Y2TbUM" name="exoFont.h" compile="0" resource="0" file="Source/OTF/exoFont.h"/>
+        <FILE id="RRHFg0" name="exoFont.cpp" compile="1" resource="0" file="Source/OTF/exoFont.cpp"/>
+        <FILE id="GckNE4" name="PreenNrpn.h" compile="0" resource="0" file="Source/PreenNrpn.h"/>
+      </GROUP>
+      <FILE id="OFWhQV" name="Enveloppe.cpp" compile="1" resource="0" file="Source/Enveloppe.cpp"/>
+      <FILE id="YXuchk" name="Enveloppe.h" compile="0" resource="0" file="Source/Enveloppe.h"/>
+      <FILE id="vNkBw9" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <FILE id="jvxXVm" name="MainTabs.cpp" compile="1" resource="0" file="Source/MainTabs.cpp"/>
+      <FILE id="EXsT5L" name="MainTabs.h" compile="0" resource="0" file="Source/MainTabs.h"/>
+      <FILE id="H2z1wI" name="PanelEngine.cpp" compile="1" resource="0" file="Source/PanelEngine.cpp"/>
+      <FILE id="ZlbYgT" name="PanelEngine.h" compile="0" resource="0" file="Source/PanelEngine.h"/>
+      <FILE id="e2oi6W" name="PanelModulation.cpp" compile="1" resource="0"
+            file="Source/PanelModulation.cpp"/>
+      <FILE id="R5J4PQ" name="PanelModulation.h" compile="0" resource="0"
+            file="Source/PanelModulation.h"/>
+      <FILE id="mm90S7" name="PreenLookAndFeel.cpp" compile="1" resource="0"
+            file="Source/PreenLookAndFeel.cpp"/>
+      <FILE id="TQIj0W" name="PreenLookAndFeel.h" compile="0" resource="0"
+            file="Source/PreenLookAndFeel.h"/>
+      <FILE id="mfz2hL" name="StepSequencer.cpp" compile="1" resource="0"
+            file="Source/StepSequencer.cpp"/>
+      <FILE id="rNH7PW" name="StepSequencer.h" compile="0" resource="0" file="Source/StepSequencer.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <LINUX_MAKE targetFolder="Builds/Linux">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
+                       targetName="preenController"/>
+        <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="2"
+                       targetName="preenController"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE/modules"/>
+      </MODULEPATHS>
+    </LINUX_MAKE>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_audio_devices" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_audio_formats" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_core" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_data_structures" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_events" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_graphics" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_gui_basics" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="1"/>
+  </MODULES>
+  <JUCEOPTIONS/>
+</JUCERPROJECT>
