@@ -37,9 +37,9 @@ void StepSequencer::paint (Graphics& g)
 	float width = (float)getWidth() / numberOfValues;
 	for (int k = 0; k < numberOfValues; k++) {
 	    float height = (float)getHeight() * values[k] / maxValue ;
-	    float red = 55.0f + height * 150.0f / getHeight() ;
+	    float red = 205.0f - height * 150.0f / getHeight() ;
 	    float blue = 255.0f;
-        float green = 127.0f + height * 128.0f / getHeight();
+        float green = 255.0f - height * 178.0f / getHeight();
         g.setColour ( Colour(red, green, blue));
 		g.fillRect((float)k * width, (float)getHeight() - height, width, height);
 	}
