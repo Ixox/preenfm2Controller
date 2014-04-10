@@ -20,10 +20,30 @@ EnveloppeAbstract::EnveloppeAbstract()
     this->scaleY = 1;
     this->draggingPointIndex = -1;
     this->overPointIndex = -1;
+    this->xMax = 4.0;
 }
 
 EnveloppeAbstract::~EnveloppeAbstract()
 {
+}
+
+void EnveloppeAbstract::updatePointPositions() {
+    float allX = 0;
+    for (int p=0; p < pointList.size(); p++) {
+        allX += pointList[p].get()->getX();
+    }
+
+    allX = allX < this->xMax ? this->xMax : allX;
+    scaleX = (getWidth() - MARGIN_LEFT - MARGIN_RIGHT) / allX;
+    // y is always 0 to 1
+    scaleY = getHeight() - MARGIN_TOP - MARGIN_BOTTOM;
+    float offsetX = MARGIN_LEFT;
+    for (int k = 0; k < pointList.size(); k++ ) {
+        float xPositionOnScreen = offsetX + pointList[k].get()->getX() * scaleX;
+        float yPositionOnScreen = getHeight() - pointList[k].get()->getY() * scaleY - MARGIN_BOTTOM;
+        pointList[k].get()->setPositionOnScreen(xPositionOnScreen, yPositionOnScreen);
+        offsetX = xPositionOnScreen;
+    }
 }
 
 void EnveloppeAbstract::paint (Graphics& g)
@@ -78,8 +98,8 @@ void EnveloppeAbstract::paint (Graphics& g)
 void EnveloppeAbstract::mouseMove(const MouseEvent &event)  {
 
     for (int p = 0 ; p< pointList.size(); p++) {
-        if (abs(event.x - pointList[p+1].get()->getX()) < 5
-                && abs(event.y - pointList[p+1].get()->getY()) < 5) {
+        if (abs(event.x - pointList[p].get()->getPositionOnScreenX()) < 5
+                && abs(event.y - pointList[p].get()->getPositionOnScreenY()) < 5) {
             if (overPointIndex != p) {
                 overPointIndex = p;
                 setMouseCursor(MouseCursor::PointingHandCursor);
@@ -98,13 +118,13 @@ void EnveloppeAbstract::mouseMove(const MouseEvent &event)  {
 }
 
 void EnveloppeAbstract::mouseDown (const MouseEvent &event)  {
-    for (int p =1 ; p<5; p++) {
-        if (abs(event.x - pointList[p+1].get()->getX()) < 5
-                && abs(event.y - pointList[p+1].get()->getY()) < 5) {
-            draggingPointIndex = p - 1  ;
+    for (int p = 0 ; p< pointList.size(); p++) {
+        if (abs(event.x - pointList[p].get()->getPositionOnScreenX()) < 5
+                && abs(event.y - pointList[p].get()->getPositionOnScreenY()) < 5) {
+            draggingPointIndex = p  ;
             startDragX = event.x;
             startDragY = event.y;
-            setMouseCursor(MouseCursor::NoCursor);
+//            setMouseCursor(MouseCursor::NoCursor);
             repaint();
             return;
         }
@@ -113,12 +133,8 @@ void EnveloppeAbstract::mouseDown (const MouseEvent &event)  {
 
 void EnveloppeAbstract::mouseUp (const MouseEvent &event)  {
     if (draggingPointIndex != -1) {
-        float positionX = 0;
-        for (int p=0; p<=draggingPointIndex; p++) {
-            positionX += pointList[p * 2].get()->getX() * scaleX;
-        }
-        Desktop::setMousePosition(Point<int>(getScreenX() + positionX,
-                getScreenY() + getHeight() - pointList[draggingPointIndex * 2 + 1].get()->getX() * scaleY));
+        Desktop::setMousePosition(Point<int>(getScreenX() + pointList[draggingPointIndex].get()->getPositionOnScreenX(),
+                getScreenY() + pointList[draggingPointIndex].get()->getPositionOnScreenY()));
         draggingPointIndex = -1;
     }
     setMouseCursor(MouseCursor::NormalCursor);
@@ -130,26 +146,24 @@ void EnveloppeAbstract::mouseDrag (const MouseEvent &event)  {
         return;
     }
     float slowMoveRatio = (event.mods.isCtrlDown() || event.mods.isRightButtonDown() ? .05f : 1.0f);
-    float oldVX = pointList[draggingPointIndex * 2].get()->getX();
-    pointList[draggingPointIndex * 2].get()->setY(pointList[draggingPointIndex * 2].get()->getX() + (float)(event.x - startDragX) / scaleX * slowMoveRatio);
-//    if (pointList[draggingPointIndex * 2].get()->getX() < pointList[draggingPointIndex * 2].get()->get) {
-//        pointList[draggingPointIndex * 2].get()->getX() = 0.0f;
-//    }
-//    if (pointList[draggingPointIndex * 2].get()->getX() > 16.0f) {
-//        pointList[draggingPointIndex * 2].get()->getX() = 16.0f;
-//    }
-    float oldVY = pointList[draggingPointIndex * 2 + 1].get()->getX();
-    pointList[draggingPointIndex * 2 + 1].get()->setX(pointList[draggingPointIndex * 2 + 1].get()->getX() - (float)(event.y - startDragY) / scaleY * slowMoveRatio);
-//    if (pointList[draggingPointIndex * 2 + 1].get()->getX() < 0.0f) {
-//        pointList[draggingPointIndex * 2 + 1].get()->getX() = 0.0f;
-//    }
-//    if (pointList[draggingPointIndex * 2 + 1].get()->getX() > 1.0f) {
-//        pointList[draggingPointIndex * 2 + 1].get()->getX() = 1.0f;
-//    }
-    if (oldVX != pointList[draggingPointIndex * 2].get()->getX() || oldVY != pointList[draggingPointIndex * 2 + 1].get()->getX()) {
+    float oldVX = pointList[draggingPointIndex].get()->getX();
+    pointList[draggingPointIndex].get()->setX(pointList[draggingPointIndex].get()->getX() + (float)(event.x - startDragX) / scaleX * slowMoveRatio);
+    float oldVY = pointList[draggingPointIndex].get()->getY();
+    pointList[draggingPointIndex].get()->setY(pointList[draggingPointIndex].get()->getY() - (float)(event.y - startDragY) / scaleY * slowMoveRatio);
+    if (oldVX != pointList[draggingPointIndex].get()->getX() || oldVY != pointList[draggingPointIndex ].get()->getY()) {
         // listeners.call(&Listener::enveloppeValueChanged, nrpnBase + draggingPointIndex * 2, pointList[draggingPointIndex * 2].get()->getX());
         startDragX = event.x;
         startDragY = event.y;
+
+// does not work
+//        updatePointPositions();
+//        startDragX = pointList[draggingPointIndex].get()->getPositionOnScreenX();
+//        startDragY = pointList[draggingPointIndex].get()->getPositionOnScreenY();
+//        // mouseDrag will be called during setMousePosition() so we must unplug the dragging
+//        int draggingPointIndexSav = draggingPointIndex;
+//        draggingPointIndex = -1;
+//        Desktop::setMousePosition(Point<int>(getScreenX() + startDragX, getScreenY() + startDragY));
+//        draggingPointIndex = draggingPointIndexSav;
     }
     repaint();
 }
@@ -161,23 +175,7 @@ void EnveloppeAbstract::resized()
 
 }
 
+void EnveloppeAbstract::addListener (EnveloppeAbstract::Listener* const listener)       { listeners.add (listener); }
+void EnveloppeAbstract::removeListener (EnveloppeAbstract::Listener* const listener)    { listeners.remove (listener); }
 
-void EnveloppeAbstract::updatePointPositions() {
-    float allX = 0;
-    for (int p=0; p < pointList.size(); p++) {
-        allX += pointList[p].get()->getX();
-    }
-
-    allX = allX < this->xMax ? this->xMax : allX;
-    scaleX = (getWidth() - MARGIN_LEFT - MARGIN_RIGHT) / allX;
-    // y is always 0 to 1
-    scaleY = getHeight() - MARGIN_TOP - MARGIN_BOTTOM;
-    float offsetX = MARGIN_LEFT;
-    for (int k = 0; k < pointList.size(); k++ ) {
-        float xPositionOnScreen = offsetX + pointList[k].get()->getX() * scaleX;
-        float yPositionOnScreen = getHeight() - pointList[k].get()->getY() * scaleY - MARGIN_BOTTOM;
-        pointList[k].get()->setPositionOnScreen(xPositionOnScreen, yPositionOnScreen);
-        offsetX = xPositionOnScreen;
-    }
-}
 

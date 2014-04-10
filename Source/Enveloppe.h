@@ -23,14 +23,8 @@ public:
     ~Enveloppe();
 
     void paint (Graphics&);
-    void resized();
     void handleIncomingNrpn(int param, int value);
 
-
-
-
-    void addListener (Listener* listener);
-    void removeListener (Listener* listener);
 
 private:
 

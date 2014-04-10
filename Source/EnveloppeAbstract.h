@@ -79,10 +79,15 @@ public:
         virtual ~Listener() {}
         virtual void enveloppeValueChanged (int nrpnParam, float value) = 0;
     };
+
+    void addListener (EnveloppeAbstract::Listener* const listener);
+    void removeListener (EnveloppeAbstract::Listener* const listener);
+
 protected:
     LinkedListPointer<EnveloppePoint> pointList;
     ListenerList <EnveloppeAbstract::Listener> listeners;
-    int draggingPointIndex, overPointIndex;
+    volatile int draggingPointIndex;
+    int overPointIndex;
 
 private:
 

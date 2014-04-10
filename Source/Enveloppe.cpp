@@ -18,10 +18,20 @@ Enveloppe::Enveloppe(int nrpnBase)
 
 	this->nrpnBase = nrpnBase;
 	EnveloppePoint* point0 = new EnveloppePoint(0,0,0,0);
-    EnveloppePoint* point1 = new EnveloppePoint(0,16.0,0, 1.0);
-    EnveloppePoint* point2 = new EnveloppePoint(0,16.0,0, 1.0);
+	point0->setX(0);
+	point0->setY(0);
+    EnveloppePoint* point1 = new EnveloppePoint(0,16.0,0.0, 1.0);
+    point1->setX(0.2);
+    point1->setY(1.0);
+    EnveloppePoint* point2 = new EnveloppePoint(0,16.0,0,1.0);
+    point2->setX(0.2);
+    point2->setY(0.6);
     EnveloppePoint* point3 = new EnveloppePoint(0,16.0,0, 1.0);
+    point3->setX(0.4);
+    point3->setY(0.8);
     EnveloppePoint* point4 = new EnveloppePoint(0,16.0,0, 1.0);
+    point4->setX(1.0);
+    point4->setY(0);
 	pointList.append(point0);
     pointList.append(point1);
     pointList.append(point2);
@@ -59,13 +69,6 @@ void Enveloppe::paint (Graphics& g)
 }
 
 
-void Enveloppe::resized()
-{
-	// This method is where you should set the bounds of any child
-	// components that your component contains..
-
-}
-
 void Enveloppe::handleIncomingNrpn(int param, int value) {
 	if (param >= nrpnBase && param <= nrpnBase + 8) {
 //		values[param - nrpnBase] = value / 100.0f;
@@ -73,6 +76,5 @@ void Enveloppe::handleIncomingNrpn(int param, int value) {
 	}
 }
 
-void Enveloppe::addListener (Enveloppe::Listener* const listener)       { listeners.add (listener); }
-void Enveloppe::removeListener (Enveloppe::Listener* const listener)    { listeners.remove (listener); }
+
 
