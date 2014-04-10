@@ -90,6 +90,9 @@ void Enveloppe::paint (Graphics& g)
 		if (draggingPoint == p -1) {
 			g.setColour (Colours::red);
 			g.fillEllipse((int)pointPositionX[p] - CIRCLE_RAY, (int)pointPositionY[p] - CIRCLE_RAY , CIRCLE_RAY*2, CIRCLE_RAY*2);
+//            g.setColour (Colours::black);
+            g.drawVerticalLine((int)pointPositionX[p], MARGIN_TOP, getHeight() - MARGIN_BOTTOM);
+            g.drawHorizontalLine((int)pointPositionY[p], MARGIN_LEFT, getWidth() - MARGIN_RIGHT);
 		} else {
 			if (overPoint == p-1) {
 				g.setColour (Colours::red);
@@ -147,10 +150,10 @@ void Enveloppe::mouseDown (const MouseEvent &event)  {
 		if (abs(event.x - pointPositionX[p]) < 5
 				&& abs(event.y - pointPositionY[p]) < 5) {
 			draggingPoint = p - 1  ;
-			startDragValueX = values[draggingPoint * 2];
-			startDragValueY = values[draggingPoint * 2 + 1];
+			startDragX = event.x;
+			startDragY = event.y;
 			cptDebug = 0;
-			setMouseCursor(MouseCursor::PointingHandCursor);
+			setMouseCursor(MouseCursor::NoCursor);
 			repaint();
 			return;
 		}
@@ -158,8 +161,16 @@ void Enveloppe::mouseDown (const MouseEvent &event)  {
 }
 
 void Enveloppe::mouseUp (const MouseEvent &event)  {
-	draggingPoint = -1;
-	setMouseCursor(MouseCursor::NormalCursor);
+    if (draggingPoint != -1) {
+        float positionX = 0;
+        for (int p=0; p<=draggingPoint; p++) {
+            positionX += values[p * 2] * scaleX;
+        }
+        Desktop::setMousePosition(Point<int>(getScreenX() + positionX,
+                getScreenY() + getHeight() - values[draggingPoint * 2 + 1] * scaleY));
+        draggingPoint = -1;
+    }
+    setMouseCursor(MouseCursor::NormalCursor);
 	repaint();
 }
 
@@ -168,29 +179,27 @@ void Enveloppe::mouseDrag (const MouseEvent &event)  {
 		return;
 	}
 	cptDebug ++;
-	float oldV = values[draggingPoint * 2];
-	values[draggingPoint * 2] = startDragValueX + (float)event.getDistanceFromDragStartX() / scaleX;
+	float oldVX = values[draggingPoint * 2];
+	values[draggingPoint * 2] = values[draggingPoint * 2] + (float)(event.x - startDragX) / scaleX;
 	if (values[draggingPoint * 2] < 0.0f) {
 		values[draggingPoint * 2] = 0.0f;
 	}
 	if (values[draggingPoint * 2] > 16.0f) {
 		values[draggingPoint * 2] = 16.0f;
 	}
-	if (oldV != values[draggingPoint * 2]) {
-	    listeners.call(&Listener::enveloppeValueChanged, nrpnBase + draggingPoint * 2, values[draggingPoint * 2]);
-	}
-	oldV = values[draggingPoint * 2 + 1];
-	values[draggingPoint * 2 + 1] = startDragValueY - (float)event.getDistanceFromDragStartY() / scaleY;
+	float oldVY = values[draggingPoint * 2 + 1];
+	values[draggingPoint * 2 + 1] = values[draggingPoint * 2 + 1] - (float)(event.y - startDragY) / scaleY;
 	if (values[draggingPoint * 2 + 1] < 0.0f) {
 		values[draggingPoint * 2 + 1] = 0.0f;
 	}
 	if (values[draggingPoint * 2 + 1] > 1.0f) {
 		values[draggingPoint * 2 + 1] = 1.0f;
 	}
-	if (oldV != values[draggingPoint * 2 + 1]) {
-	    listeners.call(&Listener::enveloppeValueChanged, nrpnBase + draggingPoint * 2 + 1, values[draggingPoint * 2 + 1]);
-	}
-
+    if (oldVX != values[draggingPoint * 2] || oldVY != values[draggingPoint * 2 + 1]) {
+        listeners.call(&Listener::enveloppeValueChanged, nrpnBase + draggingPoint * 2, values[draggingPoint * 2]);
+        startDragX = event.x;
+        startDragY = event.y;
+    }
 	repaint();
 }
 

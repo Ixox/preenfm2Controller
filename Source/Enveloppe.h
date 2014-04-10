@@ -47,7 +47,7 @@ private:
     float pointPositionX[5];
     float pointPositionY[5];
     float scaleX, scaleY;
-    float startDragValueX, startDragValueY;
+    float startDragX, startDragY;
     int draggingPoint;
     int overPoint;
     int cptDebug;
