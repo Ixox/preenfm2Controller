@@ -51,6 +51,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/EnveloppeAbstract_5463e98d.o \
   $(OBJDIR)/AlgoPNG_b6b63f51.o \
   $(OBJDIR)/exoFont_75a7577e.o \
   $(OBJDIR)/Enveloppe_756f7c4b.o \
@@ -86,6 +87,11 @@ clean:
 strip:
 	@echo Stripping preenfm2 midi controller
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
+
+$(OBJDIR)/EnveloppeAbstract_5463e98d.o: ../../Source/EnveloppeAbstract.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling EnveloppeAbstract.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/AlgoPNG_b6b63f51.o: ../../Source/png/AlgoPNG.cpp
 	-@mkdir -p $(OBJDIR)
