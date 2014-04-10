@@ -6,6 +6,10 @@
               companyEmail="preenfm1@gmail.com">
   <MAINGROUP id="W4RAAQ" name="preenfm2 midi controller">
     <GROUP id="{81FC36C7-541C-E7BD-A0F8-C9170D43F3BF}" name="Source">
+      <FILE id="qVGCmK" name="EnveloppeAbstract.cpp" compile="1" resource="0"
+            file="Source/EnveloppeAbstract.cpp"/>
+      <FILE id="L3nCHz" name="EnveloppeAbstract.h" compile="0" resource="0"
+            file="Source/EnveloppeAbstract.h"/>
       <GROUP id="{0F4ABD13-87AD-0CAA-7E8E-EC57997172CC}" name="Utils">
         <FILE id="W21lzs" name="AlgoPNG.cpp" compile="1" resource="0" file="Source/png/AlgoPNG.cpp"/>
         <FILE id="yZB4Di" name="AlgoPNG.h" compile="0" resource="0" file="Source/png/AlgoPNG.h"/>
