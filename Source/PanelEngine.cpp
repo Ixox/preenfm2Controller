@@ -391,8 +391,7 @@ void PanelEngine::handleIncomingNrpn(int param, int value) {
 	switch (param) {
 	case PREENFM2_NRPN_ALGO:
 		algoChooser->setValue((float)value + 1, dontSendNotification);
-		algoDrawableImage->setImage(algoImages[value]);
-		resizeAlgoDrawableImage();
+		newAlgo(value + 1);
 		break;
 	case PREENFM2_NRPN_VELOCITY:
 		velocity->setValue((float)value , dontSendNotification);
@@ -499,6 +498,32 @@ void PanelEngine::resizeAlgoDrawableImage() {
 	algoDrawableImage->setTransformToFit(rect, RectanglePlacement::centred | RectanglePlacement::onlyReduceInSize);
 }
 
+void PanelEngine::newAlgo(int algoNumber) {
+	int numberOfMixer = algoInformation[algoNumber].mix;
+	for (int m=0; m<6; m++) {
+		volumeKnob[m]->setEnabled(m < numberOfMixer);
+		panKnob[m]->setEnabled(m < numberOfMixer);
+	}
+	int numberOfIM = algoInformation[algoNumber].im;
+	for (int im = 0; im < 5; im++) {
+		IMKnob[im]->setEnabled(im < numberOfIM);
+		IMVelocityKnob[im]->setEnabled(im < numberOfIM);
+	}
+	int numberOfOp = algoInformation[algoNumber].osc;
+	for (int o=0; o<6; o++) {
+		if (o < numberOfOp) {
+			enveloppeButton[o]->setEnabled(true);
+		} else {
+			enveloppeButton[o]->setEnabled(false);
+			if (enveloppeButton[o]->getToggleState()) {
+			    enveloppeButton[0]->setToggleState(true, sendNotification);
+			}
+		}
+	}
+	algoDrawableImage->setImage(algoImages[algoNumber]);
+	resizeAlgoDrawableImage();
+}
+
 void PanelEngine::sliderValueChanged (Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
@@ -508,29 +533,7 @@ void PanelEngine::sliderValueChanged (Slider* sliderThatWasMoved)
 		midifiedSlider->sendNrpn(midiOutput, midifiedSlider->getValue());
 	}
 	if (sliderThatWasMoved == algoChooser) {
-		int numberOfMixer = algoInformation[(int)sliderThatWasMoved->getValue() - 1].mix;
-		for (int m=0; m<6; m++) {
-			volumeKnob[m]->setEnabled(m < numberOfMixer);
-			panKnob[m]->setEnabled(m < numberOfMixer);
-		}
-		int numberOfIM = algoInformation[(int)sliderThatWasMoved->getValue() - 1].im;
-		for (int im = 0; im < 5; im++) {
-			IMKnob[im]->setEnabled(im < numberOfIM);
-			IMVelocityKnob[im]->setEnabled(im < numberOfIM);
-		}
-		int numberOfOp = algoInformation[(int)sliderThatWasMoved->getValue() - 1].osc;
-		for (int o=0; o<6; o++) {
-			if (o < numberOfOp) {
-				enveloppeButton[o]->setEnabled(true);
-			} else {
-				enveloppeButton[o]->setEnabled(false);
-				if (enveloppeButton[o]->getToggleState()) {
-				    enveloppeButton[0]->setToggleState(true, sendNotification);
-				}
-			}
-		}
-		algoDrawableImage->setImage(algoImages[(int)sliderThatWasMoved->getValue() - 1]);
-		resizeAlgoDrawableImage();
+		newAlgo((int)sliderThatWasMoved->getValue() - 1);
 	}
 	if (sliderThatWasMoved == voices) {
 		if (voices->getValue() == 1) {

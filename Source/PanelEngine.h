@@ -58,6 +58,7 @@ public:
     void buttonClicked (Button* buttonThatWasClicked);
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
+    void newAlgo(int algoNumber);
     void resizeAlgoDrawableImage();
     //[/UserMethods]
 
