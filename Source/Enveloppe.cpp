@@ -70,11 +70,30 @@ void Enveloppe::paint (Graphics& g)
 
 
 void Enveloppe::handleIncomingNrpn(int param, int value) {
-	if (param >= nrpnBase && param <= nrpnBase + 8) {
-//		values[param - nrpnBase] = value / 100.0f;
+	int index = (param - nrpnBase) / 2;
+	switch (param - nrpnBase) {
+	case 0:
+	case 2:
+	case 4:
+	case 6:
+		// point 0 is not modifiable
+		pointList[index+1].get()->setX((float)value / 100.0f);
 		repaint();
+		break;
+	case 1:
+	case 3:
+	case 5:
+	case 7:
+		pointList[index+1].get()->setY((float)value / 100.0f);
+		repaint();
+		break;
 	}
 }
 
+void Enveloppe::newXValue(int draggingPointIndex, float newX) {
+	sendNrpn(nrpnBase + (draggingPointIndex - 1) * 2, newX * 100.0f);
+}
 
-
+void Enveloppe::newYValue(int draggingPointIndex, float newY) {
+	sendNrpn(nrpnBase + (draggingPointIndex - 1) * 2 + 1, newY * 100.0f);
+}

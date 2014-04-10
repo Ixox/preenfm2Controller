@@ -129,6 +129,11 @@ PanelModulation::PanelModulation ()
         matrixDestination[r]->addListener(this);
     }
 
+    addAndMakeVisible(enveloppeFree1 = new EnveloppeFree1 (PREENFM2_NRPN_FREE_ENV1_ATTK));
+    enveloppeFree1->setName (TRANS("Free Env 1"));
+
+    addAndMakeVisible(enveloppeFree2 = new EnveloppeFree2 (PREENFM2_NRPN_FREE_ENV2_SILENCE));
+    enveloppeFree2->setName (TRANS("Free Env 2"));
     //[/UserPreSize]
 
     setSize (900, 700);
@@ -168,11 +173,11 @@ void PanelModulation::paint (Graphics& g)
 
 void PanelModulation::resized()
 {
-    matrixGroup->setBounds (proportionOfWidth (0.6017f), proportionOfHeight (0.0074f), proportionOfWidth (0.3954f), proportionOfHeight (0.9870f));
-    lfoGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.0074f), proportionOfWidth (0.5903f), proportionOfHeight (0.2301f));
-    env1Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.2449f), proportionOfWidth (0.5903f), proportionOfHeight (0.1846f));
-    env2Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.4304f), proportionOfWidth (0.5903f), proportionOfHeight (0.1855f));
-    stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6234f), proportionOfWidth (0.5903f), proportionOfHeight (0.3711f));
+    matrixGroup->setBounds (proportionOfWidth (0.6016f), proportionOfHeight (0.0075f), proportionOfWidth (0.3953f), proportionOfHeight (0.9867f));
+    lfoGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.0075f), proportionOfWidth (0.5901f), proportionOfHeight (0.2300f));
+    env1Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.2450f), proportionOfWidth (0.5901f), proportionOfHeight (0.1850f));
+    env2Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.4308f), proportionOfWidth (0.5901f), proportionOfHeight (0.1858f));
+    stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6233f), proportionOfWidth (0.5901f), proportionOfHeight (0.3708f));
     //[UserResized] Add your own custom resize handling here..
     for (int k=0; k<NUMBER_OF_STEP_SEQ; k++) {
         stepSeqButton[k]->setBounds(proportionOfWidth (0.02f) + 80*k, proportionOfHeight (0.65f) , 80, 20);
@@ -184,7 +189,8 @@ void PanelModulation::resized()
     	matrixMultipler[r]  ->setBounds(proportionOfWidth (0.76f)  , proportionOfHeight (.035f + .08f * r), 80, 50);
     	matrixDestination[r]->setBounds(proportionOfWidth (0.86f)  , proportionOfHeight (.06f + .08f * r), 110, 20);
     }
-
+	enveloppeFree1->setBounds(proportionOfWidth (0.02f), proportionOfHeight (0.27f), proportionOfWidth (0.55f), proportionOfHeight (0.14f));
+	enveloppeFree2->setBounds(proportionOfWidth (0.02f), proportionOfHeight (0.46f), proportionOfWidth (0.55f), proportionOfHeight (0.14f));
 
     //[/UserResized]
 }
@@ -241,6 +247,18 @@ void PanelModulation::handleIncomingNrpn(int param, int value) {
 		index = (param - PREENFM2_NRPN_MTX1_DESTINATION) / 4;
 		matrixDestination[index]->setSelectedId(value + 1, dontSendNotification);
 		break;
+	case PREENFM2_NRPN_FREE_ENV1_ATTK:
+	case PREENFM2_NRPN_FREE_ENV1_DECAY:
+	case PREENFM2_NRPN_FREE_ENV1_RELEASE:
+	case PREENFM2_NRPN_FREE_ENV1_SUSTAIN:
+		enveloppeFree1->handleIncomingNrpn(param, value);
+		break;
+	case PREENFM2_NRPN_FREE_ENV2_SILENCE:
+	case PREENFM2_NRPN_FREE_ENV2_ATTK:
+	case PREENFM2_NRPN_FREE_ENV2_DECAY:
+	case PREENFM2_NRPN_FREE_ENV2_LOOP:
+		enveloppeFree2->handleIncomingNrpn(param, value);
+		break;
 	}
 }
 
@@ -277,6 +295,13 @@ void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
 		midifiedComboBox->sendNrpn(midiOutput, midifiedComboBox->getSelectedId());
 	}
 }
+
+void PanelModulation::setMidiOutput(MidiOutput* midiOutput) {
+	this->midiOutput = midiOutput;
+	enveloppeFree1->setMidiOutput(midiOutput);
+	enveloppeFree2->setMidiOutput(midiOutput);
+}
+
 
 //[/MiscUserCode]
 

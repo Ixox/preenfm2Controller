@@ -144,7 +144,6 @@ PanelEngine::PanelEngine ()
     for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
         enveloppe[k] = new Enveloppe (PREENFM2_NRPN_ENV1_ATTK + 8*k);
         enveloppe[k]->setName (TRANS("enveloppe " + String(k+1)));
-        enveloppe[k]->addListener (this);
 
         enveloppeButton[k] = new TextButton ("enveloppe button");
         enveloppeButton[k]->setButtonText (TRANS("OP" + String(k+1)));
@@ -392,6 +391,8 @@ void PanelEngine::handleIncomingNrpn(int param, int value) {
 	switch (param) {
 	case PREENFM2_NRPN_ALGO:
 		algoChooser->setValue((float)value + 1, dontSendNotification);
+		algoDrawableImage->setImage(algoImages[value]);
+		resizeAlgoDrawableImage();
 		break;
 	case PREENFM2_NRPN_VELOCITY:
 		velocity->setValue((float)value , dontSendNotification);
@@ -474,7 +475,7 @@ void PanelEngine::handleIncomingNrpn(int param, int value) {
 		opFrequencyFineTune[index]->setValue(value * .01f - 1.0f, dontSendNotification);
 		break;
 	}
-	if (param >= PREENFM2_NRPN_ENV1_ATTK && param <= PREENFM2_NRPN_ENV6_SUSTAIN_LEVEL) {
+	if (param >= PREENFM2_NRPN_ENV1_ATTK && param <= PREENFM2_NRPN_ENV6_RELEASE_LEVEL) {
 		int envIndex = (param - PREENFM2_NRPN_ENV1_ATTK) / 8;
 		enveloppe[envIndex]->handleIncomingNrpn(param, value);
 	}
@@ -591,15 +592,15 @@ void PanelEngine::buttonClicked (Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
-void PanelEngine::enveloppeValueChanged (int nrpnParam, float value) {
-	if (midiOutput != nullptr) {
-		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 99, (nrpnParam >> 7)));
-		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 98, (nrpnParam & 0xFF)));
-		int iv = value * 100;
-		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 6, (iv >> 7)));
-		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 38, (iv & 0xFF)));
-	}
+
+
+void PanelEngine::setMidiOutput(MidiOutput* midiOutput) {
+	this->midiOutput = midiOutput;
+    for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
+    	enveloppe[k]->setMidiOutput(midiOutput);
+    }
 }
+
 //[/MiscUserCode]
 
 
@@ -613,7 +614,7 @@ void PanelEngine::enveloppeValueChanged (int nrpnParam, float value) {
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="PanelEngine" componentName=""
-                 parentClasses="public Component, public Enveloppe::Listener, public Slider::Listener, public Button::Listener, public ComboBox::Listener"
+                 parentClasses="public Component, public Slider::Listener, public Button::Listener, public ComboBox::Listener"
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="900"
                  initialHeight="700">

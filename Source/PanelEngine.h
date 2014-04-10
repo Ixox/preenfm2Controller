@@ -41,7 +41,6 @@
                                                                     //[/Comments]
 */
 class PanelEngine  : public Component,
-                     public Enveloppe::Listener,
                      public Slider::Listener,
                      public Button::Listener,
                      public ComboBox::Listener
@@ -53,12 +52,9 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void setMidiOutput(MidiOutput* midiOutput) {
-    	this->midiOutput = midiOutput;
-    }
+    void setMidiOutput(MidiOutput* midiOutput);
     void handleIncomingNrpn(int param, int value);
     void sendNrpn(MidiOutput* midiOutput, int param, int value);
-    void enveloppeValueChanged (int nrpnParam, float value);
     void buttonClicked (Button* buttonThatWasClicked);
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);

@@ -1,38 +1,43 @@
 /*
   ==============================================================================
 
-    Enveloppe.h
-    Created: 6 Apr 2014 2:32:14pm
+    EnveloppeFree1.h
+    Created: 10 Apr 2014 6:10:05pm
     Author:  xhosxe
 
   ==============================================================================
 */
 
-#ifndef ENVELOPPE_H_INCLUDED
-#define ENVELOPPE_H_INCLUDED
+#ifndef ENVELOPPEFREE1_H_INCLUDED
+#define ENVELOPPEFREE1_H_INCLUDED
+
+
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "EnveloppeAbstract.h"
 //==============================================================================
 /*
 */
-class Enveloppe    : public  EnveloppeAbstract
+class EnveloppeFree1    : public  EnveloppeAbstract
 {
 public:
-    Enveloppe(int nrpnBase);
-    ~Enveloppe();
+    EnveloppeFree1(int nrpnBase);
+    ~EnveloppeFree1();
 
     void paint (Graphics&);
     void handleIncomingNrpn(int param, int value);
+    // override
     // Must be implemented to deal with point value modification
     void newXValue(int draggingPointIndex, float newX);
     void newYValue(int draggingPointIndex, float newY);
 
+
 private:
 
     int nrpnBase;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Enveloppe)
+    EnveloppePoint* decayPoint;
+    EnveloppePoint* sustainPoint;
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EnveloppeFree1)
 
 
 
@@ -40,5 +45,4 @@ private:
 
 };
 
-
-#endif  // ENVELOPPE_H_INCLUDED
+#endif  // ENVELOPPEFREE1_H_INCLUDED

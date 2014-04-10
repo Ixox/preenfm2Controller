@@ -86,6 +86,14 @@ MainTabs::MainTabs ()
     midiInputLabel2->setColour (TextEditor::textColourId, Colours::black);
     midiInputLabel2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
+    addAndMakeVisible (pullButton = new TextButton ("pull button"));
+    pullButton->setButtonText (TRANS("Pull"));
+    pullButton->addListener (this);
+
+    addAndMakeVisible (pushButton = new TextButton ("push button"));
+    pushButton->setButtonText (TRANS("push"));
+    pushButton->addListener (this);
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -112,6 +120,10 @@ MainTabs::~MainTabs()
 		delete(midiInput);
 		midiInput = nullptr;
 	}
+	if (midiOutput != nullptr) {
+		delete(midiOutput);
+		midiOutput = nullptr;
+	}
     //[/Destructor_pre]
 
     tabbedComponent = nullptr;
@@ -121,6 +133,8 @@ MainTabs::~MainTabs()
     midiInLabel = nullptr;
     midiOutLabel = nullptr;
     midiInputLabel2 = nullptr;
+    pullButton = nullptr;
+    pushButton = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -141,13 +155,15 @@ void MainTabs::paint (Graphics& g)
 
 void MainTabs::resized()
 {
-    tabbedComponent->setBounds (10, 24, getWidth() - 20, getHeight() - 34);
-    midiInCombo->setBounds (464, 8, 150, 24);
-    midiInputLabel->setBounds (464, 32, 72, 16);
-    midiOutCombo->setBounds (728, 8, 150, 24);
-    midiInLabel->setBounds (392, 8, 80, 24);
-    midiOutLabel->setBounds (640, 8, 80, 24);
-    midiInputLabel2->setBounds (560, 32, 72, 16);
+    tabbedComponent->setBounds (10, 48, getWidth() - 20, getHeight() - 58);
+    midiInCombo->setBounds (getWidth() - 428, 16, 150, 24);
+    midiInputLabel->setBounds (968, 48, getWidth() - 1324, 16);
+    midiOutCombo->setBounds (getWidth() - 164, 16, 150, 24);
+    midiInLabel->setBounds (getWidth() - 516, 16, 80, 24);
+    midiOutLabel->setBounds (getWidth() - 252, 16, 80, 24);
+    midiInputLabel2->setBounds (1048, 48, getWidth() - 1324, 16);
+    pullButton->setBounds (getWidth() - 724, 16, 87, 24);
+    pushButton->setBounds (getWidth() - 628, 16, 87, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -184,6 +200,32 @@ void MainTabs::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
     //[UsercomboBoxChanged_Post]
     //[/UsercomboBoxChanged_Post]
+}
+
+void MainTabs::buttonClicked (Button* buttonThatWasClicked)
+{
+    //[UserbuttonClicked_Pre]
+    //[/UserbuttonClicked_Pre]
+
+    if (buttonThatWasClicked == pullButton)
+    {
+        //[UserButtonCode_pullButton] -- add your button handler code here..
+    	if (midiOutput != nullptr) {
+			midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 99, 127));
+			midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 98, 127));
+			midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 6, 0));
+			midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 38, 0));
+    	}
+        //[/UserButtonCode_pullButton]
+    }
+    else if (buttonThatWasClicked == pushButton)
+    {
+        //[UserButtonCode_pushButton] -- add your button handler code here..
+        //[/UserButtonCode_pushButton]
+    }
+
+    //[UserbuttonClicked_Post]
+    //[/UserbuttonClicked_Post]
 }
 
 
@@ -235,7 +277,7 @@ BEGIN_JUCER_METADATA
                  overlayOpacity="0.330" fixedSize="0" initialWidth="700" initialHeight="600">
   <BACKGROUND backgroundColour="fff0f8ff"/>
   <TABBEDCOMPONENT name="new tabbed component" id="f175981f6c34a740" memberName="tabbedComponent"
-                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="10 24 20M 34M"
+                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="10 48 20M 58M"
                    orientation="top" tabBarDepth="30" initialTab="1">
     <TAB name="ENGINE" colour="ffa8c8e4" useJucerComp="0" contentClassName="PanelEngine"
          constructorParams="" jucerComponentFile=""/>
@@ -245,31 +287,37 @@ BEGIN_JUCER_METADATA
          constructorParams="" jucerComponentFile=""/>
   </TABBEDCOMPONENT>
   <COMBOBOX name="midi input combo" id="8e92a0bc65751bf0" memberName="midiInCombo"
-            virtualName="" explicitFocusOrder="0" pos="464 8 150 24" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="428R 16 150 24" editable="0"
             layout="33" items="" textWhenNonSelected="-- select --" textWhenNoItems="-- no choice --"/>
   <LABEL name="midi input label" id="f77b232960a175fb" memberName="midiInputLabel"
-         virtualName="" explicitFocusOrder="0" pos="464 32 72 16" textCol="ff0000ff"
+         virtualName="" explicitFocusOrder="0" pos="968 48 1324M 16" textCol="ff0000ff"
          edTextCol="ff000000" edBkgCol="0" labelText="0" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="midi output combo" id="9d89a1cd0c9574f3" memberName="midiOutCombo"
-            virtualName="" explicitFocusOrder="0" pos="728 8 150 24" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="164R 16 150 24" editable="0"
             layout="33" items="" textWhenNonSelected="-- select --" textWhenNoItems="-- no choice --"/>
   <LABEL name="midi in label" id="686cd0868f5c506b" memberName="midiInLabel"
-         virtualName="" explicitFocusOrder="0" pos="392 8 80 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="516R 16 80 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Midi input" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          bold="0" italic="0" justification="33"/>
   <LABEL name="midi out label" id="487ff4211688a9c3" memberName="midiOutLabel"
-         virtualName="" explicitFocusOrder="0" pos="640 8 80 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="252R 16 80 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Midi output" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <LABEL name="midi input label" id="f5bde9938974ba9f" memberName="midiInputLabel2"
-         virtualName="" explicitFocusOrder="0" pos="560 32 72 16" textCol="ff0000ff"
-         edTextCol="ff000000" edBkgCol="0" labelText="0" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         virtualName="" explicitFocusOrder="0" pos="1048 48 1324M 16"
+         textCol="ff0000ff" edTextCol="ff000000" edBkgCol="0" labelText="0"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="15" bold="0" italic="0" justification="33"/>
+  <TEXTBUTTON name="pull button" id="9da85c0691256028" memberName="pullButton"
+              virtualName="" explicitFocusOrder="0" pos="724R 16 87 24" buttonText="Pull"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="push button" id="cd85e35be3968a4b" memberName="pushButton"
+              virtualName="" explicitFocusOrder="0" pos="628R 16 87 24" buttonText="push"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

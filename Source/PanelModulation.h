@@ -23,6 +23,8 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
 #include "StepSequencer.h"
+#include "EnveloppeFree1.h"
+#include "EnveloppeFree2.h"
 
 #define NUMBER_OF_STEP_SEQ 2
 #define NUMBER_OF_MATRIX_ROW 12
@@ -50,13 +52,12 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void setMidiOutput(MidiOutput* midiOutput) {
-    	this->midiOutput = midiOutput;
-    }
+    void setMidiOutput(MidiOutput* midiOutput);
     void buttonClicked (Button* buttonThatWasClicked);
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void handleIncomingNrpn(int param, int value);
+
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -74,6 +75,8 @@ private:
     ScopedPointer<Slider> matrixMultipler[NUMBER_OF_MATRIX_ROW];
     ScopedPointer<ComboBox> matrixDestination[NUMBER_OF_MATRIX_ROW];
 
+    ScopedPointer<EnveloppeFree1> enveloppeFree1;
+    ScopedPointer<EnveloppeFree2> enveloppeFree2;
     MidiOutput *midiOutput;
     //[/UserVariables]
 

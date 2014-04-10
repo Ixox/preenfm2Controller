@@ -33,7 +33,7 @@ public:
 	    // Create an instance of our main content component, and add it to our window..
 		setContentOwned (new MainTabs(), true);
 		// Centre the window on the screen
-		centreWithSize (900, 700);
+		centreWithSize (900, 750);
 		// And show it!
 		setVisible (true);
 }

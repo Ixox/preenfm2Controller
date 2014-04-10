@@ -1,38 +1,42 @@
 /*
   ==============================================================================
 
-    Enveloppe.h
-    Created: 6 Apr 2014 2:32:14pm
+    EnveloppeFree2.h
+    Created: 10 Apr 2014 7:05:10pm
     Author:  xhosxe
 
   ==============================================================================
 */
 
-#ifndef ENVELOPPE_H_INCLUDED
-#define ENVELOPPE_H_INCLUDED
+#ifndef ENVELOPPEFREE2_H_INCLUDED
+#define ENVELOPPEFREE2_H_INCLUDED
+
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "EnveloppeAbstract.h"
 //==============================================================================
 /*
 */
-class Enveloppe    : public  EnveloppeAbstract
+class EnveloppeFree2    : public  EnveloppeAbstract, public ComboBox::Listener
 {
 public:
-    Enveloppe(int nrpnBase);
-    ~Enveloppe();
-
+    EnveloppeFree2(int nrpnBase);
+    ~EnveloppeFree2();
+    void resized();
     void paint (Graphics&);
     void handleIncomingNrpn(int param, int value);
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     // Must be implemented to deal with point value modification
     void newXValue(int draggingPointIndex, float newX);
-    void newYValue(int draggingPointIndex, float newY);
 
 private:
+    ScopedPointer<ComboBox> loopCombo;
+    ScopedPointer<Label> loopComboLabel;
 
     int nrpnBase;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Enveloppe)
+    EnveloppePoint* decayPoint;
+    EnveloppePoint* sustainPoint;
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EnveloppeFree2)
 
 
 
@@ -41,4 +45,4 @@ private:
 };
 
 
-#endif  // ENVELOPPE_H_INCLUDED
+#endif  // ENVELOPPEFREE2_H_INCLUDED

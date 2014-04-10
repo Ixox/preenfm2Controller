@@ -21,6 +21,7 @@ EnveloppeAbstract::EnveloppeAbstract()
     this->draggingPointIndex = -1;
     this->overPointIndex = -1;
     this->xMax = 4.0;
+    this->midiOutput = nullptr;
 }
 
 EnveloppeAbstract::~EnveloppeAbstract()
@@ -78,11 +79,21 @@ void EnveloppeAbstract::paint (Graphics& g)
                     (int)pointList[p].get()->getPositionOnScreenY() - CIRCLE_RAY ,
                     CIRCLE_RAY*2, CIRCLE_RAY*2);
 //            g.setColour (Colours::black);
-            g.drawVerticalLine((int)pointList[p].get()->getPositionOnScreenX(), MARGIN_TOP, getHeight() - MARGIN_BOTTOM);
-            g.drawHorizontalLine((int)pointList[p].get()->getPositionOnScreenY(), MARGIN_LEFT, getWidth() - MARGIN_RIGHT);
+            if (!pointList[p].get()->isYConstrained()) {
+            	g.drawVerticalLine((int)pointList[p].get()->getPositionOnScreenX(), MARGIN_TOP, getHeight() - MARGIN_BOTTOM);
+            }
+            if (!pointList[p].get()->isXConstrained()) {
+            	g.drawHorizontalLine((int)pointList[p].get()->getPositionOnScreenY(), MARGIN_LEFT, getWidth() - MARGIN_RIGHT);
+            }
         } else {
             if (overPointIndex == p) {
                 g.setColour (Colours::red);
+                if (!pointList[p].get()->isYConstrained()) {
+                	g.drawVerticalLine((int)pointList[p].get()->getPositionOnScreenX(), MARGIN_TOP, getHeight() - MARGIN_BOTTOM);
+                }
+                if (!pointList[p].get()->isXConstrained()) {
+                	g.drawHorizontalLine((int)pointList[p].get()->getPositionOnScreenY(), MARGIN_LEFT, getWidth() - MARGIN_RIGHT);
+                }
             } else {
                 g.setColour (Colours::blue);
             }
@@ -150,20 +161,13 @@ void EnveloppeAbstract::mouseDrag (const MouseEvent &event)  {
     pointList[draggingPointIndex].get()->setX(pointList[draggingPointIndex].get()->getX() + (float)(event.x - startDragX) / scaleX * slowMoveRatio);
     float oldVY = pointList[draggingPointIndex].get()->getY();
     pointList[draggingPointIndex].get()->setY(pointList[draggingPointIndex].get()->getY() - (float)(event.y - startDragY) / scaleY * slowMoveRatio);
-    if (oldVX != pointList[draggingPointIndex].get()->getX() || oldVY != pointList[draggingPointIndex ].get()->getY()) {
-        // listeners.call(&Listener::enveloppeValueChanged, nrpnBase + draggingPointIndex * 2, pointList[draggingPointIndex * 2].get()->getX());
+    if (oldVX != pointList[draggingPointIndex].get()->getX()) {
+    	newXValue(draggingPointIndex, pointList[draggingPointIndex].get()->getX());
         startDragX = event.x;
+    }
+    if (oldVY != pointList[draggingPointIndex ].get()->getY()) {
+    	newYValue(draggingPointIndex, pointList[draggingPointIndex].get()->getY());
         startDragY = event.y;
-
-// does not work
-//        updatePointPositions();
-//        startDragX = pointList[draggingPointIndex].get()->getPositionOnScreenX();
-//        startDragY = pointList[draggingPointIndex].get()->getPositionOnScreenY();
-//        // mouseDrag will be called during setMousePosition() so we must unplug the dragging
-//        int draggingPointIndexSav = draggingPointIndex;
-//        draggingPointIndex = -1;
-//        Desktop::setMousePosition(Point<int>(getScreenX() + startDragX, getScreenY() + startDragY));
-//        draggingPointIndex = draggingPointIndexSav;
     }
     repaint();
 }
@@ -172,10 +176,14 @@ void EnveloppeAbstract::resized()
 {
     // This method is where you should set the bounds of any child
     // components that your component contains..
-
 }
 
-void EnveloppeAbstract::addListener (EnveloppeAbstract::Listener* const listener)       { listeners.add (listener); }
-void EnveloppeAbstract::removeListener (EnveloppeAbstract::Listener* const listener)    { listeners.remove (listener); }
 
-
+void EnveloppeAbstract::sendNrpn (int nrpnParam, int nrpnValue) {
+	if (midiOutput != nullptr) {
+		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 99, (nrpnParam >> 7)));
+		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 98, (nrpnParam & 0xFF)));
+		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 6, (nrpnValue >> 7)));
+		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 38, (nrpnValue & 0xFF)));
+	}
+}

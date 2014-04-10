@@ -46,7 +46,8 @@ class PanelModulation;
 */
 class MainTabs  : public Component,
                   public MidiInputCallback,
-                  public ComboBoxListener
+                  public ComboBoxListener,
+                  public ButtonListener
 {
 public:
     //==============================================================================
@@ -61,13 +62,14 @@ public:
     void paint (Graphics& g);
     void resized();
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
+    void buttonClicked (Button* buttonThatWasClicked);
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    MidiInput* midiInput;
     MidiOutput* midiOutput;
+    MidiInput* midiInput;
     int midiInfo;
     struct Nrpn currentNrpn;
     PanelEngine* panelEngine;
@@ -82,6 +84,8 @@ private:
     ScopedPointer<Label> midiInLabel;
     ScopedPointer<Label> midiOutLabel;
     ScopedPointer<Label> midiInputLabel2;
+    ScopedPointer<TextButton> pullButton;
+    ScopedPointer<TextButton> pushButton;
 
 
     //==============================================================================

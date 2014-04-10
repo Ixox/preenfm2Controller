@@ -11,6 +11,13 @@
 #ifndef ENVELOPPEABTRACT_H_INCLUDED
 #define ENVELOPPEABTRACT_H_INCLUDED
 
+#include "../JuceLibraryCode/modules/juce_audio_devices/midi_io/juce_MidiOutput.h"
+#include "../JuceLibraryCode/modules/juce_core/containers/juce_LinkedListPointer.h"
+#include "../JuceLibraryCode/modules/juce_graphics/contexts/juce_GraphicsContext.h"
+#include "../JuceLibraryCode/modules/juce_gui_basics/components/juce_Component.h"
+
+namespace juce { class MouseEvent; }
+
 #define CIRCLE_RAY 4
 #define MARGIN_TOP CIRCLE_RAY
 #define MARGIN_BOTTOM CIRCLE_RAY
@@ -38,6 +45,11 @@ public:
     }
     void setX(float x) { this->x =  x > xMax ? xMax : (x < xMin ? xMin : x); }
     void setY(float y) { this->y =  y > yMax ? yMax : (y < yMin ? yMin : y); }
+
+    void setXFixedValue(float value) { this->x = value; this-> xMax = value; this-> xMin = value;}
+    void setYFixedValue(float value) { this->y = value; this-> yMax = value; this-> yMin = value;}
+    bool isXConstrained() { return this->xMax == this-> xMin; };
+    bool isYConstrained() { return this->yMax == this-> yMin; };
     float getX() { return this->x; }
     float getY() { return this->y; }
     float getPositionOnScreenX() { return this->positionInComponentX; }
@@ -65,7 +77,7 @@ public:
     ~EnveloppeAbstract();
 
     void paint (Graphics&);
-    void resized();
+    virtual void resized();
     void updatePointPositions();
     void setXMax(float x) { xMax = x; }
     void mouseMove(const MouseEvent &event) ;
@@ -73,21 +85,18 @@ public:
     void mouseDown(const MouseEvent &event);
     void mouseUp(const MouseEvent &event);
 
-    class JUCE_API  Listener
-    {
-    public:
-        virtual ~Listener() {}
-        virtual void enveloppeValueChanged (int nrpnParam, float value) = 0;
-    };
+    void setMidiOutput(MidiOutput *midiOutput) { this->midiOutput = midiOutput; }
+    void sendNrpn (int nrpnParam, int nrpnValue);
 
-    void addListener (EnveloppeAbstract::Listener* const listener);
-    void removeListener (EnveloppeAbstract::Listener* const listener);
+    // Can be implemented to deal with point value modification
+    virtual void newXValue(int draggingPointIndex, float newX) {};
+    virtual void newYValue(int draggingPointIndex, float newY) {};
 
 protected:
     LinkedListPointer<EnveloppePoint> pointList;
-    ListenerList <EnveloppeAbstract::Listener> listeners;
     volatile int draggingPointIndex;
     int overPointIndex;
+    MidiOutput* midiOutput;
 
 private:
 
