@@ -74,8 +74,9 @@ PanelModulation::PanelModulation ()
 
 
     //[UserPreSize]
+    int nrpnStepSeq[] = { PREENFM2_NRPN_STEPSEQ1_STEP1, PREENFM2_NRPN_STEPSEQ2_STEP1};
     for (int k=0; k<NUMBER_OF_STEP_SEQ; k++) {
-        stepSequencer[k] = new StepSequencer (16, 16);
+        stepSequencer[k] = new StepSequencer (16, 16, nrpnStepSeq[k]);
         stepSequencer[k]->setBounds(16, 368, 500, 120);
         stepSequencer[k]->setName (TRANS("step sequencer" + String(k+1)));
         if (k == 0) {
@@ -134,12 +135,13 @@ PanelModulation::PanelModulation ()
 
     addAndMakeVisible(enveloppeFree2 = new EnveloppeFree2 (PREENFM2_NRPN_FREE_ENV2_SILENCE));
     enveloppeFree2->setName (TRANS("Free Env 2"));
-    //[/UserPreSize]
+   //[/UserPreSize]
 
     setSize (900, 700);
 
 
     //[Constructor] You can add your own custom stuff here..
+	midiOutput = nullptr;
     //[/Constructor]
 }
 
@@ -259,6 +261,42 @@ void PanelModulation::handleIncomingNrpn(int param, int value) {
 	case PREENFM2_NRPN_FREE_ENV2_LOOP:
 		enveloppeFree2->handleIncomingNrpn(param, value);
 		break;
+	case PREENFM2_NRPN_STEPSEQ1_STEP1:
+	case PREENFM2_NRPN_STEPSEQ1_STEP2:
+	case PREENFM2_NRPN_STEPSEQ1_STEP3:
+	case PREENFM2_NRPN_STEPSEQ1_STEP4:
+	case PREENFM2_NRPN_STEPSEQ1_STEP5:
+	case PREENFM2_NRPN_STEPSEQ1_STEP6:
+	case PREENFM2_NRPN_STEPSEQ1_STEP7:
+	case PREENFM2_NRPN_STEPSEQ1_STEP8:
+	case PREENFM2_NRPN_STEPSEQ1_STEP9:
+	case PREENFM2_NRPN_STEPSEQ1_STEP10:
+	case PREENFM2_NRPN_STEPSEQ1_STEP11:
+	case PREENFM2_NRPN_STEPSEQ1_STEP12:
+	case PREENFM2_NRPN_STEPSEQ1_STEP13:
+	case PREENFM2_NRPN_STEPSEQ1_STEP14:
+	case PREENFM2_NRPN_STEPSEQ1_STEP15:
+	case PREENFM2_NRPN_STEPSEQ1_STEP16:
+		stepSequencer[0]->handleIncomingNrpn(param, value);
+		break;
+	case PREENFM2_NRPN_STEPSEQ2_STEP1:
+	case PREENFM2_NRPN_STEPSEQ2_STEP2:
+	case PREENFM2_NRPN_STEPSEQ2_STEP3:
+	case PREENFM2_NRPN_STEPSEQ2_STEP4:
+	case PREENFM2_NRPN_STEPSEQ2_STEP5:
+	case PREENFM2_NRPN_STEPSEQ2_STEP6:
+	case PREENFM2_NRPN_STEPSEQ2_STEP7:
+	case PREENFM2_NRPN_STEPSEQ2_STEP8:
+	case PREENFM2_NRPN_STEPSEQ2_STEP9:
+	case PREENFM2_NRPN_STEPSEQ2_STEP10:
+	case PREENFM2_NRPN_STEPSEQ2_STEP11:
+	case PREENFM2_NRPN_STEPSEQ2_STEP12:
+	case PREENFM2_NRPN_STEPSEQ2_STEP13:
+	case PREENFM2_NRPN_STEPSEQ2_STEP14:
+	case PREENFM2_NRPN_STEPSEQ2_STEP15:
+	case PREENFM2_NRPN_STEPSEQ2_STEP16:
+		stepSequencer[1]->handleIncomingNrpn(param, value);
+		break;
 	}
 }
 
@@ -280,6 +318,7 @@ void PanelModulation::buttonClicked (Button* buttonThatWasClicked) {
     }
 }
 void PanelModulation::sliderValueChanged (Slider* sliderThatWasMoved) {
+	if (midiOutput == nullptr) return;
     //[UsersliderValueChanged_Pre]
 	MidifiedSlider* midifiedSlider = dynamic_cast<MidifiedSlider*>(sliderThatWasMoved);
 	if(midifiedSlider != 0) {
@@ -289,6 +328,7 @@ void PanelModulation::sliderValueChanged (Slider* sliderThatWasMoved) {
 }
 
 void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
+	if (midiOutput == nullptr) return;
 	MidifiedComboBox* midifiedComboBox = dynamic_cast<MidifiedComboBox*>(comboBoxThatHasChanged);
 	if(midifiedComboBox != 0) {
 	   // old was safely casted to NewType
@@ -300,6 +340,9 @@ void PanelModulation::setMidiOutput(MidiOutput* midiOutput) {
 	this->midiOutput = midiOutput;
 	enveloppeFree1->setMidiOutput(midiOutput);
 	enveloppeFree2->setMidiOutput(midiOutput);
+	for (int s=0; s<NUMBER_OF_STEP_SEQ; s++) {
+		stepSequencer[s]->setMidiOutput(midiOutput);
+	}
 }
 
 

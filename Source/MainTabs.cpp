@@ -157,11 +157,11 @@ void MainTabs::resized()
 {
     tabbedComponent->setBounds (10, 48, getWidth() - 20, getHeight() - 58);
     midiInCombo->setBounds (getWidth() - 428, 16, 150, 24);
-    midiInputLabel->setBounds (968, 48, getWidth() - 1324, 16);
     midiOutCombo->setBounds (getWidth() - 164, 16, 150, 24);
     midiInLabel->setBounds (getWidth() - 516, 16, 80, 24);
     midiOutLabel->setBounds (getWidth() - 252, 16, 80, 24);
-    midiInputLabel2->setBounds (1048, 48, getWidth() - 1324, 16);
+    midiInputLabel->setBounds (428, 48, 50, 16);
+    midiInputLabel2->setBounds (478, 48, 50, 16);
     pullButton->setBounds (getWidth() - 724, 16, 87, 24);
     pushButton->setBounds (getWidth() - 628, 16, 87, 24);
     //[UserResized] Add your own custom resize handling here..

@@ -12,7 +12,7 @@
 #include "StepSequencer.h"
 
 //==============================================================================
-StepSequencer::StepSequencer(int numberOfValues, int maxValue)
+StepSequencer::StepSequencer(int numberOfValues, int maxValue, int nrpnBase)
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
@@ -23,6 +23,7 @@ StepSequencer::StepSequencer(int numberOfValues, int maxValue)
 	for (int k=0; k < numberOfValues; k++) {
 		this->values[k] = (float) maxValue / numberOfValues * k;
 	}
+	this->nrpnBase = nrpnBase;
 }
 
 StepSequencer::~StepSequencer()
@@ -36,7 +37,7 @@ void StepSequencer::paint (Graphics& g)
 {
 	float width = (float)getWidth() / numberOfValues;
 	for (int k = 0; k < numberOfValues; k++) {
-	    float height = (float)getHeight() * values[k] / maxValue ;
+	    float height = (float)getHeight() * values[k] / (maxValue - 1) ;
 	    float red = 205.0f - height * 150.0f / getHeight() ;
 	    float blue = 255.0f;
         float green = 255.0f - height * 178.0f / getHeight();
@@ -65,40 +66,30 @@ int  StepSequencer::limitY(int y) {
 }
 
 
-bool StepSequencer::updateValues(const MouseEvent& event) {
+void StepSequencer::updateValues(const MouseEvent& event) {
 	if (event.mods.isRightButtonDown()) {
 		int x = limitX(event.x * numberOfValues / getWidth());
-		if (values[x] != 0) {
-			values[x] = 0;
-			return true;
-		}
+		setValues(x, 0);
 	} else {
 		int x = limitX(event.x * numberOfValues / getWidth());
 		int y = limitY((float) maxValue * (getHeight() - event.y) / getHeight() + .5);
-		if (values[x] != y) {
-			values[x] = y;
-			return true;
-		}
+		setValues(x, y);
 	}
-	return false;
+	return ;
 }
 
 void StepSequencer::mouseDown (const MouseEvent &event)  {
 	if (event.getNumberOfClicks() != 1) {
 		return;
 	}
-	if (updateValues(event)) {
-		repaint();
-	}
+	updateValues(event);
 }
 
 void StepSequencer::mouseUp (const MouseEvent &event)  {
 }
 
 void StepSequencer::mouseDrag (const MouseEvent &event)  {
-	if (updateValues(event)) {
-		repaint();
-	}
+	updateValues(event);
 }
 
 void StepSequencer::mouseDoubleClick (const MouseEvent& event) {
@@ -106,10 +97,7 @@ void StepSequencer::mouseDoubleClick (const MouseEvent& event) {
 		return;
 	}
 	int x = limitX(event.x * numberOfValues / getWidth());
-	if (values[x] != maxValue) {
-		values[x] = maxValue;
-		repaint();
-	}
+	setValues(x, maxValue);
 }
 
 void StepSequencer::mouseWheelMove (const MouseEvent& event, const MouseWheelDetails& wheel) {
@@ -120,10 +108,7 @@ void StepSequencer::mouseWheelMove (const MouseEvent& event, const MouseWheelDet
 	int x = event.x * numberOfValues / getWidth();
 	int y = values[x] + (wheel.deltaY > 0 ? 1 : -1) * (wheel.isReversed ? -1 : 1);
 	y = y < 0 ? 0 : (y > maxValue ? maxValue : y);
-	if (values[x] != y) {
-		values[x] = y;
-		repaint();
-	}
+	setValues(x, y);
 }
 
 
@@ -133,3 +118,29 @@ void StepSequencer::resized()
     // components that your component contains..
 
 }
+
+void StepSequencer::sendNrpn (int nrpnParam, int nrpnValue) {
+	if (midiOutput != nullptr) {
+		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 99, (nrpnParam >> 7)));
+		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 98, (nrpnParam & 0xFF)));
+		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 6, (nrpnValue >> 7)));
+		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 38, (nrpnValue & 0xFF)));
+	}
+}
+
+void StepSequencer::setValues(int x, int y) {
+	if (values[x] != y && y >= 0 && y < maxValue) {
+		sendNrpn(nrpnBase + x, y);
+		values[x] = y;
+		repaint();
+	}
+}
+
+void StepSequencer::handleIncomingNrpn(int param, int value) {
+	int x = param - nrpnBase;
+	if (values[x] != value && value >= 0 && value < maxValue) {
+		values[x] = value;
+		repaint();
+	}
+}
+

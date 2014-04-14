@@ -42,6 +42,10 @@ void preenfmLookAndFeel::drawLinearSliderBackground (Graphics& g, int x, int y, 
 		float /*maxSliderPos*/,
 		const Slider::SliderStyle /*style*/, Slider& slider)
 {
+	if (!slider.isEnabled()) {
+		return;
+	}
+
 	const float sliderRadius = 2.0f; // (float) (getSliderThumbRadius (slider) - 2);
 
 	const Colour trackColour (slider.findColour (Slider::trackColourId));
@@ -73,11 +77,7 @@ void preenfmLookAndFeel::drawLinearSliderBackground (Graphics& g, int x, int y, 
 
 	//	    g.fillPath (indent);
 
-	if (slider.isEnabled()) {
-		g.setColour (Colours::darkgrey);
-	} else {
-		g.setColour (Colour (0x80808080));
-	}
+	g.setColour (Colours::darkgrey);
 	g.strokePath (indent, PathStrokeType (0.5f));
 }
 
@@ -86,6 +86,11 @@ void preenfmLookAndFeel::drawLinearSliderThumb (Graphics& g, int x, int y, int w
 		float sliderPos, float minSliderPos, float maxSliderPos,
 		const Slider::SliderStyle style, Slider& slider) override
 				{
+
+	if (!slider.isEnabled()) {
+		return;
+	}
+
 	const float sliderRadius = (float) (getSliderThumbRadius (slider) - 2);
 
 	Colour knobColour (createBaseColourPFM2 (slider.findColour (Slider::thumbColourId),
@@ -135,6 +140,10 @@ void preenfmLookAndFeel::drawLinearSliderThumb (Graphics& g, int x, int y, int w
 void preenfmLookAndFeel::drawButtonBackground (Graphics& g, Button& button, const Colour& backgroundColour,
 		bool isMouseOverButton, bool isButtonDown)
 {
+	if (!button.isEnabled()) {
+		return;
+	}
+
 	Colour baseColour (backgroundColour.withMultipliedSaturation (button.hasKeyboardFocus (true) ? 1.3f : 0.9f)
 			.withMultipliedAlpha (button.isEnabled() ? 0.9f : 0.5f));
 
@@ -175,6 +184,10 @@ void preenfmLookAndFeel::drawButtonBackground (Graphics& g, Button& button, cons
 void preenfmLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width, int height, float sliderPos,
 		const float rotaryStartAngle, const float rotaryEndAngle, Slider& slider)
 {
+	if (!slider.isEnabled()) {
+		return;
+	}
+
 	const float radius = jmin (width / 2, height / 2) - 2.0f;
 	const float centreX = x + width * 0.5f;
 	const float centreY = y + height * 0.5f;

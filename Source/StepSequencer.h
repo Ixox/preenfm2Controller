@@ -19,7 +19,7 @@
 class StepSequencer    : public Component
 {
 public:
-    StepSequencer(int numberOfValues, int maxValue);
+    StepSequencer(int numberOfValues, int maxValue, int nrpnBase);
     ~StepSequencer();
     void mouseDrag (const MouseEvent &event);
     void mouseDown(const MouseEvent &event);
@@ -28,7 +28,11 @@ public:
     void mouseWheelMove (const MouseEvent& event, const MouseWheelDetails& wheel);
     int  limitX(int x);
     int  limitY(int y);
-    bool updateValues(const MouseEvent& event);
+    void updateValues(const MouseEvent& event);
+    void setMidiOutput(MidiOutput *midiOutput) { this->midiOutput = midiOutput; }
+    void sendNrpn (int nrpnParam, int nrpnValue);
+    void setValues(int x, int y);
+    void handleIncomingNrpn(int param, int value);
 
     void paint (Graphics&);
     void resized();
@@ -40,6 +44,8 @@ private:
     int maxValue;
 	int* values;
 	bool dragging;
+	int nrpnBase;
+    MidiOutput* midiOutput;
 
 	// DEBUG
 	float debugValue;

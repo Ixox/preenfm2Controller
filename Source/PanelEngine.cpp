@@ -189,7 +189,7 @@ PanelEngine::PanelEngine ()
         opFrequencyFineTune[k] = new MidifiedSlider(TRANS("op Frequency FT " + String(k+1)), PREENFM2_NRPN_OPERATOR1_FREQUENCY_FINE_TUNE + 4*k, -1);
         opFrequencyFineTune[k]->setRange (-1.0f, 1.0f, .01f);
         opFrequencyFineTune[k]->setSliderStyle (Slider::RotaryVerticalDrag);
-        opFrequencyFineTune[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 60, 16);
+        opFrequencyFineTune[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 16);
         opFrequencyFineTune[k]->setDoubleClickReturnValue(true, 0.0f);
         opFrequencyFineTune[k]->addListener (this);
 
@@ -223,6 +223,7 @@ PanelEngine::PanelEngine ()
 
     addAndMakeVisible(algoChooser = new MidifiedSlider(TRANS("Algo"), PREENFM2_NRPN_ALGO, 1, 1));
     algoChooser->setRange (1, NUMBER_OF_ALGO, 1);
+    algoChooser->setTextBoxIsEditable(true);
     algoChooser->setSliderStyle (Slider::IncDecButtons);
     algoChooser->setTextBoxStyle (Slider::TextBoxAbove, false, 30, 16);
     algoChooser->setDoubleClickReturnValue(true, 1.0f);
@@ -501,13 +502,15 @@ void PanelEngine::resizeAlgoDrawableImage() {
 void PanelEngine::newAlgo(int algoNumber) {
 	int numberOfMixer = algoInformation[algoNumber].mix;
 	for (int m=0; m<6; m++) {
-		volumeKnob[m]->setEnabled(m < numberOfMixer);
-		panKnob[m]->setEnabled(m < numberOfMixer);
+		volumeKnob[m]->setVisible(m < numberOfMixer);
+		panKnob[m]->setVisible(m < numberOfMixer);
+		mixLabel[m]->setEnabled(m < numberOfMixer);
 	}
 	int numberOfIM = algoInformation[algoNumber].im;
 	for (int im = 0; im < 5; im++) {
-		IMKnob[im]->setEnabled(im < numberOfIM);
-		IMVelocityKnob[im]->setEnabled(im < numberOfIM);
+		IMKnob[im]->setVisible(im < numberOfIM);
+		IMVelocityKnob[im]->setVisible(im < numberOfIM);
+		IMNumber[im]->setEnabled(im < numberOfIM);
 	}
 	int numberOfOp = algoInformation[algoNumber].osc;
 	for (int o=0; o<6; o++) {

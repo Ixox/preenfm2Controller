@@ -79,10 +79,10 @@ private:
     //==============================================================================
     ScopedPointer<TabbedComponent> tabbedComponent;
     ScopedPointer<ComboBox> midiInCombo;
-    ScopedPointer<Label> midiInputLabel;
     ScopedPointer<ComboBox> midiOutCombo;
     ScopedPointer<Label> midiInLabel;
     ScopedPointer<Label> midiOutLabel;
+    ScopedPointer<Label> midiInputLabel;
     ScopedPointer<Label> midiInputLabel2;
     ScopedPointer<TextButton> pullButton;
     ScopedPointer<TextButton> pushButton;
