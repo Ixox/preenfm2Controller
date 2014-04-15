@@ -42,10 +42,6 @@ void preenfmLookAndFeel::drawLinearSliderBackground (Graphics& g, int x, int y, 
 		float /*maxSliderPos*/,
 		const Slider::SliderStyle /*style*/, Slider& slider)
 {
-	if (!slider.isEnabled()) {
-		return;
-	}
-
 	const float sliderRadius = 2.0f; // (float) (getSliderThumbRadius (slider) - 2);
 
 	const Colour trackColour (slider.findColour (Slider::trackColourId));
@@ -76,8 +72,11 @@ void preenfmLookAndFeel::drawLinearSliderBackground (Graphics& g, int x, int y, 
 	}
 
 	//	    g.fillPath (indent);
-
-	g.setColour (Colours::darkgrey);
+	if (slider.isEnabled()) {
+        g.setColour (Colours::darkgrey);
+	} else {
+        g.setColour (Colour (0x80808080));
+	}
 	g.strokePath (indent, PathStrokeType (0.5f));
 }
 
@@ -184,9 +183,6 @@ void preenfmLookAndFeel::drawButtonBackground (Graphics& g, Button& button, cons
 void preenfmLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width, int height, float sliderPos,
 		const float rotaryStartAngle, const float rotaryEndAngle, Slider& slider)
 {
-	if (!slider.isEnabled()) {
-		return;
-	}
 
 	const float radius = jmin (width / 2, height / 2) - 2.0f;
 	const float centreX = x + width * 0.5f;
@@ -199,40 +195,28 @@ void preenfmLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width,
 
 	if (radius > 12.0f)
 	{
-		if (slider.isEnabled())
+        const float thickness = 0.75f;
+		if (slider.isEnabled()) {
 			g.setColour (slider.findColour (Slider::rotarySliderFillColourId).withAlpha (isMouseOver ? 1.0f : 0.7f));
-		else
-			g.setColour (Colour (0x80808080));
+            Path filledArc;
+            filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, angle, thickness);
+            g.fillPath (filledArc);
+            float innerRadius = 1;
+            if (isMouseOver ) {
+                innerRadius = 2;
+            }
+            Path p;
+            p.addTriangle (-innerRadius, 0.0f,
+                    0.0f, -radius * thickness * 1.1f,
+                    innerRadius, 0.0f);
 
+            //              p.addEllipse (-innerRadius, -innerRadius, innerRadius * 2.0f, innerRadius * 2.0f);
 
-		const float thickness = 0.75f;
-
-		{
-			Path filledArc;
-			filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, angle, thickness);
-			g.fillPath (filledArc);
+            g.fillPath (p, AffineTransform::rotation (angle).translated (centreX, centreY));
+            g.setColour (slider.findColour (Slider::rotarySliderOutlineColourId));
+		} else {
+            g.setColour (Colour (0x80808080));
 		}
-
-		if (thickness > 0)
-		{
-			float innerRadius = 1;
-			if (isMouseOver ) {
-				innerRadius = 2;
-			}
-			Path p;
-			p.addTriangle (-innerRadius, 0.0f,
-					0.0f, -radius * thickness * 1.1f,
-					innerRadius, 0.0f);
-
-			//	            p.addEllipse (-innerRadius, -innerRadius, innerRadius * 2.0f, innerRadius * 2.0f);
-
-			g.fillPath (p, AffineTransform::rotation (angle).translated (centreX, centreY));
-		}
-
-		if (slider.isEnabled())
-			g.setColour (slider.findColour (Slider::rotarySliderOutlineColourId));
-		else
-			g.setColour (Colour (0x80808080));
 
 		Path outlineArc;
 		outlineArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, rotaryEndAngle, thickness);

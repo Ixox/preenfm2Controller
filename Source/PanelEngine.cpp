@@ -502,14 +502,14 @@ void PanelEngine::resizeAlgoDrawableImage() {
 void PanelEngine::newAlgo(int algoNumber) {
 	int numberOfMixer = algoInformation[algoNumber].mix;
 	for (int m=0; m<6; m++) {
-		volumeKnob[m]->setVisible(m < numberOfMixer);
-		panKnob[m]->setVisible(m < numberOfMixer);
+		volumeKnob[m]->setEnabled(m < numberOfMixer);
+		panKnob[m]->setEnabled(m < numberOfMixer);
 		mixLabel[m]->setEnabled(m < numberOfMixer);
 	}
 	int numberOfIM = algoInformation[algoNumber].im;
 	for (int im = 0; im < 5; im++) {
-		IMKnob[im]->setVisible(im < numberOfIM);
-		IMVelocityKnob[im]->setVisible(im < numberOfIM);
+		IMKnob[im]->setEnabled(im < numberOfIM);
+		IMVelocityKnob[im]->setEnabled(im < numberOfIM);
 		IMNumber[im]->setEnabled(im < numberOfIM);
 	}
 	int numberOfOp = algoInformation[algoNumber].osc;

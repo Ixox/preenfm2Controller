@@ -27,6 +27,8 @@
 #include "EnveloppeFree2.h"
 
 #define NUMBER_OF_STEP_SEQ 2
+#define NUMBER_OF_LFO 3
+
 #define NUMBER_OF_MATRIX_ROW 12
 //[/Headers]
 
@@ -70,6 +72,21 @@ private:
     ScopedPointer<StepSequencer> stepSequencer[NUMBER_OF_STEP_SEQ];
     ScopedPointer<TextButton> stepSeqButton [NUMBER_OF_STEP_SEQ];
 
+    // LFO
+    ScopedPointer<TextButton> lfoButton [NUMBER_OF_LFO];
+    ScopedPointer<ComboBox> lfoShape[NUMBER_OF_LFO];
+    ScopedPointer<ComboBox> lfoExtMidiSync[NUMBER_OF_LFO];
+    ScopedPointer<Slider> lfoFrequency[NUMBER_OF_LFO];
+    ScopedPointer<Slider> lfoBias[NUMBER_OF_LFO];
+    ScopedPointer<ComboBox> lfoKsynOnOff[NUMBER_OF_LFO];
+    ScopedPointer<Slider> lfoKSync[NUMBER_OF_LFO];
+    ScopedPointer<Label> lfoFrequencyLabel;
+    ScopedPointer<Label> lfoBiasLabel;
+    ScopedPointer<Label> lfoKSynLabel;
+
+
+
+    // MATRIX
     ScopedPointer<Label> matrixRowLabel [NUMBER_OF_MATRIX_ROW];
     ScopedPointer<ComboBox> matrixSource[NUMBER_OF_MATRIX_ROW];
     ScopedPointer<Slider> matrixMultipler[NUMBER_OF_MATRIX_ROW];

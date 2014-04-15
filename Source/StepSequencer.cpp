@@ -24,6 +24,7 @@ StepSequencer::StepSequencer(int numberOfValues, int maxValue, int nrpnBase)
 		this->values[k] = (float) maxValue / numberOfValues * k;
 	}
 	this->nrpnBase = nrpnBase;
+	this->midiOutput = nullptr;
 }
 
 StepSequencer::~StepSequencer()
