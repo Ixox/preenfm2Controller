@@ -115,7 +115,7 @@ PanelModulation::PanelModulation ()
         lfoBias[k]->setValue(0.0f, dontSendNotification);
         lfoBias[k]->addListener (this);
 
-        addAndMakeVisible(lfoKSync[k] = new MidifiedSlider(TRANS("LFO KSyn " + String(k+1)), PREENFM2_NRPN_LFO1_KSYN+ 4 * k, 0.0f));
+        addAndMakeVisible(lfoKSync[k] = new MidifiedSlider(TRANS("LFO KSyn " + String(k+1)), PREENFM2_NRPN_LFO1_KSYN+ 4 * k, -0.01f));
         lfoKSync[k]->setRange (0.0f, 16.0f, .01f);
         lfoKSync[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         lfoKSync[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
@@ -123,27 +123,28 @@ PanelModulation::PanelModulation ()
         lfoKSync[k]->setValue(0.0f, dontSendNotification);
         lfoKSync[k]->addListener (this);
 
-        addAndMakeVisible(lfoExtMidiSync[k] = new MidifiedComboBox(TRANS("LFO Ext Sync "+ String(k)), PREENFM2_NRPN_LFO1_FREQUENCY+ 4 * k, -240, 1));
+        addAndMakeVisible(lfoExtMidiSync[k] = new MidifiedComboBox(TRANS("LFO Ext Sync "+ String(k)), PREENFM2_NRPN_LFO1_FREQUENCY+ 4 * k, -239, 10));
         lfoExtMidiSync[k]->setEditableText (false);
         lfoExtMidiSync[k]->setJustificationType (Justification::left);
-        lfoExtMidiSync[k]->addItem("Intern", 1);
+        lfoExtMidiSync[k]->addItem("Internal", 1);
         lfoExtMidiSync[k]->addItem("MC/16", 2);
         lfoExtMidiSync[k]->addItem("MC/8", 3);
         lfoExtMidiSync[k]->addItem("MC/4", 4);
-        lfoExtMidiSync[k]->addItem("MC", 5);
-        lfoExtMidiSync[k]->addItem("MC*2", 6);
-        lfoExtMidiSync[k]->addItem("MC*3", 7);
-        lfoExtMidiSync[k]->addItem("MC*4", 8);
-        lfoExtMidiSync[k]->addItem("MC*8", 9);
+        lfoExtMidiSync[k]->addItem("MC/2", 5);
+        lfoExtMidiSync[k]->addItem("MC", 6);
+        lfoExtMidiSync[k]->addItem("MC*2", 7);
+        lfoExtMidiSync[k]->addItem("MC*3", 8);
+        lfoExtMidiSync[k]->addItem("MC*4", 9);
+        lfoExtMidiSync[k]->addItem("MC*8", 10);
         lfoExtMidiSync[k]->setSelectedId(1);
         lfoExtMidiSync[k]->addListener (this);
 
-        addAndMakeVisible(lfoKsynOnOff[k] = new MidifiedComboBox(TRANS("LFO KSync "+ String(k)), PREENFM2_NRPN_LFO1_FREQUENCY+ 4 * k, -240, 1));
+        addAndMakeVisible(lfoKsynOnOff[k] = new MidifiedComboBox(TRANS("Combo KSync "+ String(k)), PREENFM2_NRPN_LFO1_KSYN+ 4 * k, 1.01f, 1));
         lfoKsynOnOff[k]->setEditableText (false);
         lfoKsynOnOff[k]->setJustificationType (Justification::left);
-        lfoKsynOnOff[k]->addItem("On", 1);
-        lfoKsynOnOff[k]->addItem("Off", 2);
-        lfoKsynOnOff[k]->setSelectedId(1);
+        lfoKsynOnOff[k]->addItem("Off", 1);
+        lfoKsynOnOff[k]->addItem("On", 2);
+        lfoKsynOnOff[k]->setSelectedId(2);
         lfoKsynOnOff[k]->addListener (this);
 
     }
@@ -164,11 +165,7 @@ PanelModulation::PanelModulation ()
         stepSequencer[k] = new StepSequencer (16, 16, nrpnStepSeq[k]);
         stepSequencer[k]->setBounds(16, 368, 500, 120);
         stepSequencer[k]->setName (TRANS("step sequencer" + String(k+1)));
-        if (k == 0) {
-            addAndMakeVisible(stepSequencer[k]);
-        } else {
-            addChildComponent(stepSequencer[k]);
-        }
+        addAndMakeVisible(stepSequencer[k]);
 
         stepSeqButton[k] = new TextButton ("step sequencer button");
         stepSeqButton[k]->setBounds(16 + 80*k,336, 80, 20);
@@ -260,6 +257,12 @@ void PanelModulation::paint (Graphics& g)
 
 void PanelModulation::resized()
 {
+    matrixGroup->setBounds (proportionOfWidth (0.6016f), proportionOfHeight (0.0075f), proportionOfWidth (0.3953f), proportionOfHeight (0.9867f));
+    lfoGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.0075f), proportionOfWidth (0.5901f), proportionOfHeight (0.2300f));
+    env1Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.2450f), proportionOfWidth (0.5901f), proportionOfHeight (0.1850f));
+    env2Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.4308f), proportionOfWidth (0.5901f), proportionOfHeight (0.1858f));
+    stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6233f), proportionOfWidth (0.5901f), proportionOfHeight (0.3708f));
+
     //[UserResized] Add your own custom resize handling here..
     lfoFrequencyLabel->setBounds(proportionOfWidth (0.22f),  proportionOfHeight (0.04f) , 80, 20);
     lfoBiasLabel->setBounds(proportionOfWidth (0.35f),  proportionOfHeight (0.04f) , 80, 20);
@@ -273,15 +276,11 @@ void PanelModulation::resized()
         lfoKsynOnOff[k]   ->setBounds(proportionOfWidth (0.48f) + 15,   proportionOfHeight (0.08f) , 50, 20);
         lfoKSync[k]       ->setBounds(proportionOfWidth (0.48f),        proportionOfHeight (0.12f) , 80, 60);
     }
-    matrixGroup->setBounds (proportionOfWidth (0.6016f), proportionOfHeight (0.0075f), proportionOfWidth (0.3953f), proportionOfHeight (0.9867f));
-    lfoGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.0075f), proportionOfWidth (0.5901f), proportionOfHeight (0.2300f));
-    env1Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.2450f), proportionOfWidth (0.5901f), proportionOfHeight (0.1850f));
-    env2Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.4308f), proportionOfWidth (0.5901f), proportionOfHeight (0.1858f));
-    stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6233f), proportionOfWidth (0.5901f), proportionOfHeight (0.3708f));
     for (int k=0; k<NUMBER_OF_STEP_SEQ; k++) {
         stepSeqButton[k]->setBounds(proportionOfWidth (0.02f) + 80*k, proportionOfHeight (0.65f) , 80, 20);
-        stepSequencer[k]->setBounds(proportionOfWidth (0.02f), proportionOfHeight (0.70f), proportionOfWidth (0.55f), proportionOfHeight (0.28f));
+        stepSequencer[k]->setBounds(proportionOfWidth (0.02f), proportionOfHeight (0.75f), proportionOfWidth (0.55f), proportionOfHeight (0.23f));
     }
+
     for (int r =0; r<NUMBER_OF_MATRIX_ROW; r++) {
         matrixRowLabel[r]   ->setBounds(proportionOfWidth (0.61f)  , proportionOfHeight (.06f + .08f * r), 40, 20);
         matrixSource[r]     ->setBounds(proportionOfWidth (0.64f)  , proportionOfHeight (.06f + .08f * r), 90, 20);
@@ -394,10 +393,24 @@ void PanelModulation::handleIncomingNrpn(int param, int value) {
     case PREENFM2_NRPN_STEPSEQ2_STEP16:
         stepSequencer[1]->handleIncomingNrpn(param, value);
         break;
+    case PREENFM2_NRPN_LFO1_SHAPE:
+    case PREENFM2_NRPN_LFO2_SHAPE:
+    case PREENFM2_NRPN_LFO3_SHAPE:
+        lfoShape[(param - PREENFM2_NRPN_LFO1_SHAPE) / 4]->setSelectedId(value + 1, dontSendNotification);
+        break;
     case PREENFM2_NRPN_LFO1_FREQUENCY:
     case PREENFM2_NRPN_LFO2_FREQUENCY:
     case PREENFM2_NRPN_LFO3_FREQUENCY:
-        lfoFrequency[(param - PREENFM2_NRPN_LFO1_FREQUENCY) / 4]->setValue(value / 100.0f);
+        if (value <= 2400) {
+            if (lfoExtMidiSync[(param - PREENFM2_NRPN_LFO1_FREQUENCY) / 4]->getSelectedId() != 1) {
+                lfoExtMidiSync[(param - PREENFM2_NRPN_LFO1_FREQUENCY) / 4]->setSelectedId(1, dontSendNotification);
+                lfoFrequency[(param - PREENFM2_NRPN_LFO1_FREQUENCY) / 4]->setEnabled(true);
+            }
+            lfoFrequency[(param - PREENFM2_NRPN_LFO1_FREQUENCY) / 4]->setValue(value / 100.0f, dontSendNotification);
+        } else {
+            lfoExtMidiSync[(param - PREENFM2_NRPN_LFO1_FREQUENCY) / 4]->setSelectedId((value - 2400) / 10 + 1, dontSendNotification);
+            lfoFrequency[(param - PREENFM2_NRPN_LFO1_FREQUENCY) / 4]->setEnabled(false);
+        }
         break;
     case PREENFM2_NRPN_LFO1_BIAS:
     case PREENFM2_NRPN_LFO2_BIAS:
@@ -407,7 +420,16 @@ void PanelModulation::handleIncomingNrpn(int param, int value) {
     case PREENFM2_NRPN_LFO1_KSYN:
     case PREENFM2_NRPN_LFO2_KSYN:
     case PREENFM2_NRPN_LFO3_KSYN:
-        lfoKSync[(param - PREENFM2_NRPN_LFO1_KSYN) / 4]->setValue(value / 100.0f);
+        if (value == 0) {
+            lfoKsynOnOff[(param - PREENFM2_NRPN_LFO1_KSYN) / 4]->setSelectedId(1, dontSendNotification);
+            lfoKSync[(param - PREENFM2_NRPN_LFO1_KSYN) / 4]->setEnabled(false);
+        } else {
+            if (lfoKsynOnOff[(param - PREENFM2_NRPN_LFO1_KSYN) / 4]->getSelectedId() == 1) {
+                lfoKsynOnOff[(param - PREENFM2_NRPN_LFO1_KSYN) / 4]->setSelectedId(2, dontSendNotification);
+                lfoKSync[(param - PREENFM2_NRPN_LFO1_KSYN) / 4]->setEnabled(true);
+            }
+            lfoKSync[(param - PREENFM2_NRPN_LFO1_KSYN) / 4]->setValue(value / 100.0f - 0.01f, dontSendNotification);
+        }
         break;
     }
 }
@@ -473,20 +495,39 @@ void PanelModulation::sliderValueChanged (Slider* sliderThatWasMoved) {
 }
 
 void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
+    int lfoExteralMidiComboChanged = -1;
+    int lfoKSyncOnOffChanged = -1;
     for (int k = 0 ; k< NUMBER_OF_LFO; k++) {
         if (comboBoxThatHasChanged == lfoExtMidiSync[k]) {
             lfoFrequency[k]->setEnabled(comboBoxThatHasChanged->getSelectedId() == 1);
+            lfoExteralMidiComboChanged = k;
+
         }
         if (comboBoxThatHasChanged == lfoKsynOnOff[k]) {
-            lfoKSync[k]->setEnabled(lfoKsynOnOff[k]->getSelectedId() == 1);
+            lfoKSync[k]->setEnabled(lfoKsynOnOff[k]->getSelectedId() == 2);
+            lfoKSyncOnOffChanged = k;
         }
     }
 
     if (midiOutput == nullptr) return;
     MidifiedComboBox* midifiedComboBox = dynamic_cast<MidifiedComboBox*>(comboBoxThatHasChanged);
-    if(midifiedComboBox != 0) {
-        // old was safely casted to NewType
-        midifiedComboBox->sendNrpn(midiOutput, midifiedComboBox->getSelectedId());
+    if (midifiedComboBox != 0) {
+        // If new combo is internal frequency, we must send the nrpn of the slider value
+        if (lfoExteralMidiComboChanged >= 0 && comboBoxThatHasChanged->getSelectedId() == 1) {
+            Slider *lfoSlider = lfoFrequency[lfoExteralMidiComboChanged];
+            MidifiedSlider* midifiedSlider = dynamic_cast<MidifiedSlider*>(lfoSlider);
+            if (midifiedSlider) {
+                midifiedSlider->sendNrpn(midiOutput, midifiedSlider->getValue());
+            }
+        } else if (lfoKSyncOnOffChanged >= 0 && comboBoxThatHasChanged->getSelectedId() == 2) {
+            Slider *ksynSlider = lfoKSync[lfoKSyncOnOffChanged];
+            MidifiedSlider* midifiedSlider = dynamic_cast<MidifiedSlider*>(ksynSlider);
+            if (midifiedSlider) {
+                midifiedSlider->sendNrpn(midiOutput, midifiedSlider->getValue());
+            }
+        } else {
+            midifiedComboBox->sendNrpn(midiOutput, midifiedComboBox->getSelectedId());
+        }
     }
 }
 

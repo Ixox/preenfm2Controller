@@ -31,11 +31,11 @@ public:
 	int getNrpnParamMSB() { return nrpnParam >> 7; }
 	int getNrpnParamLSB() { return nrpnParam & 0xff; }
 	int getNrpnValueMSB(double value) {
-		int iv = (value - minValue + .005f) * valueMultiplier;
+		int iv = (value - minValue ) * valueMultiplier + .005f;
 		return iv >> 7;
 	}
 	int getNrpnValueLSB(double value) {
-		int iv = (value - minValue + .005f) * valueMultiplier;
+		int iv = (value - minValue ) * valueMultiplier + .005f;
 		return iv & 0xff;
 	}
 
@@ -52,6 +52,9 @@ public:
 
     void mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel) override
     {
+        if (!isEnabled() || !isVisible()) {
+            return;
+        }
     	if (wheel.deltaY != 0) {
 			float y = getValue() + (wheel.deltaY > 0 ? getInterval() : -1 * getInterval() ) * (wheel.isReversed ? -1.0f : 1.0f);
 

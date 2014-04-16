@@ -69,8 +69,7 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    ScopedPointer<StepSequencer> stepSequencer[NUMBER_OF_STEP_SEQ];
-    ScopedPointer<TextButton> stepSeqButton [NUMBER_OF_STEP_SEQ];
+
 
     // LFO
     ScopedPointer<TextButton> lfoButton [NUMBER_OF_LFO];
@@ -92,8 +91,20 @@ private:
     ScopedPointer<Slider> matrixMultipler[NUMBER_OF_MATRIX_ROW];
     ScopedPointer<ComboBox> matrixDestination[NUMBER_OF_MATRIX_ROW];
 
+    // ENVELOPPES
     ScopedPointer<EnveloppeFree1> enveloppeFree1;
     ScopedPointer<EnveloppeFree2> enveloppeFree2;
+
+    // STEP SEQUENCER
+    ScopedPointer<TextButton> stepSeqButton [NUMBER_OF_STEP_SEQ];
+    ScopedPointer<StepSequencer> stepSequencer[NUMBER_OF_STEP_SEQ];
+
+    ScopedPointer<Slider> stepSeqBPMLabel;
+    ScopedPointer<Slider> stepSeqBPM[NUMBER_OF_STEP_SEQ];
+    ScopedPointer<Slider> stepSeqGateLabel;
+    ScopedPointer<Slider> stepSeqGate[NUMBER_OF_STEP_SEQ];
+
+
     MidiOutput *midiOutput;
     //[/UserVariables]
 
