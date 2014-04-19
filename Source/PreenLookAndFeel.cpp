@@ -32,7 +32,7 @@ preenfmLookAndFeel::preenfmLookAndFeel() : LookAndFeel_V3() {
 	exoFont = Typeface::createSystemTypefaceFor(exoFont::exoregular_otf, exoFont::exoregular_otfSize);
 }
 
-Typeface::Ptr preenfmLookAndFeel::getTypefaceForFont(const Font &) override {
+Typeface::Ptr preenfmLookAndFeel::getTypefaceForFont(const Font &) {
 	return exoFont;
 }
 
@@ -83,8 +83,7 @@ void preenfmLookAndFeel::drawLinearSliderBackground (Graphics& g, int x, int y, 
 
 void preenfmLookAndFeel::drawLinearSliderThumb (Graphics& g, int x, int y, int width, int height,
 		float sliderPos, float minSliderPos, float maxSliderPos,
-		const Slider::SliderStyle style, Slider& slider) override
-				{
+		const Slider::SliderStyle style, Slider& slider) 				{
 
 	if (!slider.isEnabled()) {
 		return;
