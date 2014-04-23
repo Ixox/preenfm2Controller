@@ -33,9 +33,9 @@ MainTabs::MainTabs ()
 {
     addAndMakeVisible (tabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtTop));
     tabbedComponent->setTabBarDepth (30);
-    tabbedComponent->addTab (TRANS("ENGINE"), Colour (0xffa8c8e4), new PanelEngine(), true);
-    tabbedComponent->addTab (TRANS("MODULATIORS"), Colour (0xffcff0e5), new PanelModulation(), true);
-    tabbedComponent->addTab (TRANS("ARPEGIATOR"), Colour (0xffe4d2d2), 0, false);
+    tabbedComponent->addTab (TRANS("Engine"), Colour (0xfff0f0ff), new PanelEngine(), true);
+    tabbedComponent->addTab (TRANS("Moldulation"), Colours::honeydew, new PanelModulation(), true);
+    tabbedComponent->addTab (TRANS("Arp & Filter"), Colour (0xfffff0f0), 0, false);
     tabbedComponent->setCurrentTabIndex (1);
 
     addAndMakeVisible (midiInCombo = new ComboBox ("midi input combo"));
@@ -155,13 +155,13 @@ void MainTabs::paint (Graphics& g)
 
 void MainTabs::resized()
 {
-    tabbedComponent->setBounds (10, 48, getWidth() - 20, getHeight() - 58);
+    tabbedComponent->setBounds (24, 48, getWidth() - 20, getHeight() - 58);
     midiInCombo->setBounds (getWidth() - 428, 16, 150, 24);
+    midiInputLabel->setBounds (968, 48, getWidth() - 842, 16);
     midiOutCombo->setBounds (getWidth() - 164, 16, 150, 24);
     midiInLabel->setBounds (getWidth() - 516, 16, 80, 24);
     midiOutLabel->setBounds (getWidth() - 252, 16, 80, 24);
-    midiInputLabel->setBounds (428, 48, 50, 16);
-    midiInputLabel2->setBounds (478, 48, 50, 16);
+    midiInputLabel2->setBounds (1048, 48, getWidth() - 842, 16);
     pullButton->setBounds (getWidth() - 724, 16, 87, 24);
     pushButton->setBounds (getWidth() - 628, 16, 87, 24);
     //[UserResized] Add your own custom resize handling here..
@@ -277,20 +277,20 @@ BEGIN_JUCER_METADATA
                  overlayOpacity="0.330" fixedSize="0" initialWidth="700" initialHeight="600">
   <BACKGROUND backgroundColour="fff0f8ff"/>
   <TABBEDCOMPONENT name="new tabbed component" id="f175981f6c34a740" memberName="tabbedComponent"
-                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="10 48 20M 58M"
+                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="24 48 20M 58M"
                    orientation="top" tabBarDepth="30" initialTab="1">
-    <TAB name="ENGINE" colour="ffa8c8e4" useJucerComp="0" contentClassName="PanelEngine"
+    <TAB name="Engine" colour="fff0f0ff" useJucerComp="0" contentClassName="PanelEngine"
          constructorParams="" jucerComponentFile=""/>
-    <TAB name="MODULATIORS" colour="ffcff0e5" useJucerComp="0" contentClassName="PanelModulation"
+    <TAB name="Moldulation" colour="fff0fff0" useJucerComp="0" contentClassName="PanelModulation"
          constructorParams="" jucerComponentFile=""/>
-    <TAB name="ARPEGIATOR" colour="ffe4d2d2" useJucerComp="0" contentClassName=""
+    <TAB name="Arp &amp; Filter" colour="fffff0f0" useJucerComp="0" contentClassName=""
          constructorParams="" jucerComponentFile=""/>
   </TABBEDCOMPONENT>
   <COMBOBOX name="midi input combo" id="8e92a0bc65751bf0" memberName="midiInCombo"
             virtualName="" explicitFocusOrder="0" pos="428R 16 150 24" editable="0"
             layout="33" items="" textWhenNonSelected="-- select --" textWhenNoItems="-- no choice --"/>
   <LABEL name="midi input label" id="f77b232960a175fb" memberName="midiInputLabel"
-         virtualName="" explicitFocusOrder="0" pos="968 48 1324M 16" textCol="ff0000ff"
+         virtualName="" explicitFocusOrder="0" pos="968 48 842M 16" textCol="ff0000ff"
          edTextCol="ff000000" edBkgCol="0" labelText="0" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
@@ -308,10 +308,10 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <LABEL name="midi input label" id="f5bde9938974ba9f" memberName="midiInputLabel2"
-         virtualName="" explicitFocusOrder="0" pos="1048 48 1324M 16"
-         textCol="ff0000ff" edTextCol="ff000000" edBkgCol="0" labelText="0"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="15" bold="0" italic="0" justification="33"/>
+         virtualName="" explicitFocusOrder="0" pos="1048 48 842M 16" textCol="ff0000ff"
+         edTextCol="ff000000" edBkgCol="0" labelText="0" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="pull button" id="9da85c0691256028" memberName="pullButton"
               virtualName="" explicitFocusOrder="0" pos="724R 16 87 24" buttonText="Pull"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>

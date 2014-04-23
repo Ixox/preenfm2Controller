@@ -198,9 +198,17 @@ void preenfmLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width,
         const float thickness = 0.75f;
 		if (slider.isEnabled()) {
 			g.setColour (slider.findColour (Slider::rotarySliderFillColourId).withAlpha (isMouseOver ? 1.0f : 0.7f));
+
             Path filledArc;
-            filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, angle, thickness);
-            g.fillPath (filledArc);
+		    if (slider.getMinimum() >= 0) {
+	            filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, angle, thickness);
+	            g.fillPath (filledArc);
+		    } else {
+
+                filledArc.addPieSegment (rx, ry, rw, rw, 0, (sliderPos - 0.5) * (rotaryEndAngle - rotaryStartAngle), thickness);
+                g.fillPath (filledArc);
+		    }
+
             float innerRadius = 1;
             if (isMouseOver ) {
                 innerRadius = 2;

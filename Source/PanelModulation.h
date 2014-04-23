@@ -99,9 +99,10 @@ private:
     ScopedPointer<TextButton> stepSeqButton [NUMBER_OF_STEP_SEQ];
     ScopedPointer<StepSequencer> stepSequencer[NUMBER_OF_STEP_SEQ];
 
-    ScopedPointer<Slider> stepSeqBPMLabel;
+    ScopedPointer<Label> stepSeqBPMLabel;
+    ScopedPointer<ComboBox> stepSeqExtMidiSync[NUMBER_OF_STEP_SEQ];
     ScopedPointer<Slider> stepSeqBPM[NUMBER_OF_STEP_SEQ];
-    ScopedPointer<Slider> stepSeqGateLabel;
+    ScopedPointer<Label> stepSeqGateLabel;
     ScopedPointer<Slider> stepSeqGate[NUMBER_OF_STEP_SEQ];
 
 

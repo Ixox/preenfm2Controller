@@ -15,7 +15,7 @@
   Copyright 2004-13 by Raw Material Software Ltd.
 
   ==============================================================================
- */
+*/
 
 //[Headers] You can add your own extra header files here...
 #include "PreenNrpn.h"
@@ -47,30 +47,28 @@ const char* matrixDestNames [] = {
 //==============================================================================
 PanelModulation::PanelModulation ()
 {
-
-
     addAndMakeVisible (matrixGroup = new GroupComponent ("matrix group",
-            TRANS("Matrix")));
+                                                         TRANS("Matrix")));
     matrixGroup->setColour (GroupComponent::outlineColourId, Colour (0x604f4f4f));
     matrixGroup->setColour (GroupComponent::textColourId, Colour (0xff4f4f4f));
 
     addAndMakeVisible (lfoGroup = new GroupComponent ("lfo group",
-            TRANS("LFO")));
+                                                      TRANS("LFO")));
     lfoGroup->setColour (GroupComponent::outlineColourId, Colour (0x604f4f4f));
     lfoGroup->setColour (GroupComponent::textColourId, Colour (0xff4f4f4f));
 
     addAndMakeVisible (env1Group = new GroupComponent ("env 1 group",
-            TRANS("Free Enveloppe 1")));
+                                                       TRANS("Free Enveloppe 1")));
     env1Group->setColour (GroupComponent::outlineColourId, Colour (0x60808080));
     env1Group->setColour (GroupComponent::textColourId, Colour (0xff4f4f4f));
 
     addAndMakeVisible (env2Group = new GroupComponent ("env 2 group",
-            TRANS("Free Enveloppe 2")));
+                                                       TRANS("Free Enveloppe 2")));
     env2Group->setColour (GroupComponent::outlineColourId, Colour (0x60808080));
     env2Group->setColour (GroupComponent::textColourId, Colour (0xff4f4f4f));
 
     addAndMakeVisible (stepSeqGroup = new GroupComponent ("step sequencer group",
-            TRANS("Step Sequencers")));
+                                                          TRANS("Step Sequencers")));
     stepSeqGroup->setColour (GroupComponent::outlineColourId, Colour (0x60808080));
     stepSeqGroup->setColour (GroupComponent::textColourId, Colour (0xff4f4f4f));
 
@@ -91,6 +89,7 @@ PanelModulation::PanelModulation ()
         addAndMakeVisible(lfoShape[k] = new MidifiedComboBox(TRANS("LFO Shape "+ String(k)), PREENFM2_NRPN_LFO1_SHAPE + 4 * k, 1, 1));
         lfoShape[k]->setEditableText (false);
         lfoShape[k]->setJustificationType (Justification::left);
+        lfoShape[k]->setColour (ComboBox::buttonColourId, Colours::blue);
         lfoShape[k]->addItem("Sin", 1);
         lfoShape[k]->addItem("Ramp", 2);
         lfoShape[k]->addItem("Saw", 3);
@@ -98,6 +97,23 @@ PanelModulation::PanelModulation ()
         lfoShape[k]->addItem("Random", 5);
         lfoShape[k]->setSelectedId(1);
         lfoShape[k]->addListener (this);
+
+        addAndMakeVisible(lfoExtMidiSync[k] = new MidifiedComboBox(TRANS("LFO Ext Sync "+ String(k)), PREENFM2_NRPN_LFO1_FREQUENCY+ 4 * k, -239, 10));
+        lfoExtMidiSync[k]->setEditableText (false);
+        lfoExtMidiSync[k]->setJustificationType (Justification::left);
+        lfoExtMidiSync[k]->setColour (ComboBox::buttonColourId, Colours::blue);
+        lfoExtMidiSync[k]->addItem("Internal", 1);
+        lfoExtMidiSync[k]->addItem("MC/16", 2);
+        lfoExtMidiSync[k]->addItem("MC/8", 3);
+        lfoExtMidiSync[k]->addItem("MC/4", 4);
+        lfoExtMidiSync[k]->addItem("MC/2", 5);
+        lfoExtMidiSync[k]->addItem("MC", 6);
+        lfoExtMidiSync[k]->addItem("MC*2", 7);
+        lfoExtMidiSync[k]->addItem("MC*3", 8);
+        lfoExtMidiSync[k]->addItem("MC*4", 9);
+        lfoExtMidiSync[k]->addItem("MC*8", 10);
+        lfoExtMidiSync[k]->setSelectedId(1);
+        lfoExtMidiSync[k]->addListener (this);
 
         addAndMakeVisible(lfoFrequency[k] = new MidifiedSlider(TRANS("LFO frequency" + String(k+1)), PREENFM2_NRPN_LFO1_FREQUENCY + 4 * k, 0.0f));
         lfoFrequency[k]->setRange (0, 24.0f, .01f);
@@ -123,25 +139,10 @@ PanelModulation::PanelModulation ()
         lfoKSync[k]->setValue(0.0f, dontSendNotification);
         lfoKSync[k]->addListener (this);
 
-        addAndMakeVisible(lfoExtMidiSync[k] = new MidifiedComboBox(TRANS("LFO Ext Sync "+ String(k)), PREENFM2_NRPN_LFO1_FREQUENCY+ 4 * k, -239, 10));
-        lfoExtMidiSync[k]->setEditableText (false);
-        lfoExtMidiSync[k]->setJustificationType (Justification::left);
-        lfoExtMidiSync[k]->addItem("Internal", 1);
-        lfoExtMidiSync[k]->addItem("MC/16", 2);
-        lfoExtMidiSync[k]->addItem("MC/8", 3);
-        lfoExtMidiSync[k]->addItem("MC/4", 4);
-        lfoExtMidiSync[k]->addItem("MC/2", 5);
-        lfoExtMidiSync[k]->addItem("MC", 6);
-        lfoExtMidiSync[k]->addItem("MC*2", 7);
-        lfoExtMidiSync[k]->addItem("MC*3", 8);
-        lfoExtMidiSync[k]->addItem("MC*4", 9);
-        lfoExtMidiSync[k]->addItem("MC*8", 10);
-        lfoExtMidiSync[k]->setSelectedId(1);
-        lfoExtMidiSync[k]->addListener (this);
-
         addAndMakeVisible(lfoKsynOnOff[k] = new MidifiedComboBox(TRANS("Combo KSync "+ String(k)), PREENFM2_NRPN_LFO1_KSYN+ 4 * k, 1.01f, 1));
         lfoKsynOnOff[k]->setEditableText (false);
         lfoKsynOnOff[k]->setJustificationType (Justification::left);
+        lfoKsynOnOff[k]->setColour (ComboBox::buttonColourId, Colours::blue);
         lfoKsynOnOff[k]->addItem("Off", 1);
         lfoKsynOnOff[k]->addItem("On", 2);
         lfoKsynOnOff[k]->setSelectedId(2);
@@ -162,6 +163,35 @@ PanelModulation::PanelModulation ()
 
     int nrpnStepSeq[] = { PREENFM2_NRPN_STEPSEQ1_STEP1, PREENFM2_NRPN_STEPSEQ2_STEP1};
     for (int k=0; k<NUMBER_OF_STEP_SEQ; k++) {
+        addAndMakeVisible(stepSeqExtMidiSync[k] = new MidifiedComboBox(TRANS("BPM Ext Sync "+ String(k)), PREENFM2_NRPN_STEPSEQ1_BPM + 4 * k, -239, 1));
+        stepSeqExtMidiSync[k]->setEditableText (false);
+        stepSeqExtMidiSync[k]->setColour (ComboBox::buttonColourId, Colours::blue);
+        stepSeqExtMidiSync[k]->setJustificationType (Justification::left);
+        stepSeqExtMidiSync[k]->addItem("Internal", 1);
+        stepSeqExtMidiSync[k]->addItem("MC/4", 2);
+        stepSeqExtMidiSync[k]->addItem("MC/2", 3);
+        stepSeqExtMidiSync[k]->addItem("MC", 4);
+        stepSeqExtMidiSync[k]->addItem("MC*2", 5);
+        stepSeqExtMidiSync[k]->addItem("MC*4", 6);
+        stepSeqExtMidiSync[k]->setSelectedId(1);
+        stepSeqExtMidiSync[k]->addListener (this);
+
+        addAndMakeVisible(stepSeqBPM[k] = new MidifiedSlider(TRANS("stepSeq BPM" + String(k+1)), PREENFM2_NRPN_STEPSEQ1_BPM + 4 * k, 0.0f, 1.0f));
+        stepSeqBPM[k]->setRange (10, 240.0f, 1.0f);
+        stepSeqBPM[k]->setSliderStyle (Slider::RotaryVerticalDrag);
+        stepSeqBPM[k]->setTextBoxStyle (Slider::TextBoxLeft, false, 35, 16);
+        stepSeqBPM[k]->setDoubleClickReturnValue(true, 3.0f);
+        stepSeqBPM[k]->setValue(3.0f, dontSendNotification);
+        stepSeqBPM[k]->addListener (this);
+
+        addAndMakeVisible(stepSeqGate[k] = new MidifiedSlider(TRANS("stepSeq Gate " + String(k+1)), PREENFM2_NRPN_STEPSEQ1_GATE + 4 * k, 0.0f, 100.0f));
+        stepSeqGate[k]->setRange (0.0f, 1.0f, 0.01f);
+        stepSeqGate[k]->setSliderStyle (Slider::LinearHorizontal);
+        stepSeqGate[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
+        stepSeqGate[k]->setDoubleClickReturnValue(true, 0.5f);
+        stepSeqGate[k]->setValue(0.5f, dontSendNotification);
+        stepSeqGate[k]->addListener (this);
+
         stepSequencer[k] = new StepSequencer (16, 16, nrpnStepSeq[k]);
         stepSequencer[k]->setBounds(16, 368, 500, 120);
         stepSequencer[k]->setName (TRANS("step sequencer" + String(k+1)));
@@ -180,6 +210,11 @@ PanelModulation::PanelModulation ()
     }
     stepSeqButton[0]->setToggleState(true, sendNotification);
 
+    addAndMakeVisible(stepSeqBPMLabel = new Label("step seq label", "BPM"));
+    stepSeqBPMLabel->setJustificationType(Justification::centred);
+
+    addAndMakeVisible(stepSeqGateLabel = new Label("step seq get label", "Gate"));
+    stepSeqBPMLabel->setJustificationType(Justification::centred);
 
 
     for (int r = 0; r < NUMBER_OF_MATRIX_ROW; r++) {
@@ -196,6 +231,7 @@ PanelModulation::PanelModulation ()
         addAndMakeVisible(matrixSource[r] = new MidifiedComboBox(TRANS("matrix source "+ String(r)), PREENFM2_NRPN_MTX1_SOURCE + 4 * r, 1, 1));
         matrixSource[r]->setEditableText (false);
         matrixSource[r]->setJustificationType (Justification::centred);
+        matrixSource[r]->setColour (ComboBox::buttonColourId, Colours::blue);
         for (int i = 0; matrixSourceNames[i] != nullptr; i++) {
             matrixSource[r]->addItem(matrixSourceNames[i], i+1);
         }
@@ -205,6 +241,7 @@ PanelModulation::PanelModulation ()
         addAndMakeVisible(matrixDestination[r] = new MidifiedComboBox(TRANS("matrix destination"+ String(r)), PREENFM2_NRPN_MTX1_DESTINATION + 4 * r, 1, 1));
         matrixDestination[r]->setEditableText (false);
         matrixDestination[r]->setJustificationType (Justification::centred);
+        matrixDestination[r]->setColour (ComboBox::buttonColourId, Colours::blue);
         for (int i = 0; matrixDestNames[i] != nullptr; i++) {
             matrixDestination[r]->addItem(matrixDestNames[i], i+1);
         }
@@ -249,20 +286,17 @@ void PanelModulation::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.fillAll (Colour (0xffcff0e5));
-
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
 }
 
 void PanelModulation::resized()
 {
-    matrixGroup->setBounds (proportionOfWidth (0.6016f), proportionOfHeight (0.0075f), proportionOfWidth (0.3953f), proportionOfHeight (0.9867f));
-    lfoGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.0075f), proportionOfWidth (0.5901f), proportionOfHeight (0.2300f));
-    env1Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.2450f), proportionOfWidth (0.5901f), proportionOfHeight (0.1850f));
-    env2Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.4308f), proportionOfWidth (0.5901f), proportionOfHeight (0.1858f));
-    stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6233f), proportionOfWidth (0.5901f), proportionOfHeight (0.3708f));
-
+    matrixGroup->setBounds (proportionOfWidth (0.6017f), proportionOfHeight (0.0074f), proportionOfWidth (0.3954f), proportionOfHeight (0.9870f));
+    lfoGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.0074f), proportionOfWidth (0.5903f), proportionOfHeight (0.2301f));
+    env1Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.2449f), proportionOfWidth (0.5903f), proportionOfHeight (0.1846f));
+    env2Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.4304f), proportionOfWidth (0.5903f), proportionOfHeight (0.1855f));
+    stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6234f), proportionOfWidth (0.5903f), proportionOfHeight (0.3711f));
     //[UserResized] Add your own custom resize handling here..
     lfoFrequencyLabel->setBounds(proportionOfWidth (0.22f),  proportionOfHeight (0.04f) , 80, 20);
     lfoBiasLabel->setBounds(proportionOfWidth (0.35f),  proportionOfHeight (0.04f) , 80, 20);
@@ -270,15 +304,21 @@ void PanelModulation::resized()
     for (int k=0; k<NUMBER_OF_LFO; k++) {
         lfoButton[k]      ->setBounds(proportionOfWidth (0.02f) + 50*k, proportionOfHeight (0.035f) , 50, 20);
         lfoShape[k]       ->setBounds(proportionOfWidth (0.05f),        proportionOfHeight (0.12f) , 80, 20);
-        lfoExtMidiSync[k] ->setBounds(proportionOfWidth (0.22f),        proportionOfHeight (0.08f) , 80, 20);
+        lfoExtMidiSync[k] ->setBounds(proportionOfWidth (0.22f) + 10,        proportionOfHeight (0.08f) , 60, 20);
         lfoFrequency[k]   ->setBounds(proportionOfWidth (0.22f),        proportionOfHeight (0.12f) , 80, 60);
         lfoBias[k]        ->setBounds(proportionOfWidth (0.35f),        proportionOfHeight (0.06f) , 80, proportionOfHeight (0.16f));
         lfoKsynOnOff[k]   ->setBounds(proportionOfWidth (0.48f) + 15,   proportionOfHeight (0.08f) , 50, 20);
         lfoKSync[k]       ->setBounds(proportionOfWidth (0.48f),        proportionOfHeight (0.12f) , 80, 60);
     }
+
+    stepSeqBPMLabel->setBounds(proportionOfWidth (0.25f),  proportionOfHeight (0.66) , 40, 20);
+    stepSeqGateLabel->setBounds(proportionOfWidth (0.46f),  proportionOfHeight (0.66) , 60, 20);
     for (int k=0; k<NUMBER_OF_STEP_SEQ; k++) {
         stepSeqButton[k]->setBounds(proportionOfWidth (0.02f) + 80*k, proportionOfHeight (0.65f) , 80, 20);
-        stepSequencer[k]->setBounds(proportionOfWidth (0.02f), proportionOfHeight (0.75f), proportionOfWidth (0.55f), proportionOfHeight (0.23f));
+        stepSequencer[k]->setBounds(proportionOfWidth (0.02f), proportionOfHeight (0.78f), proportionOfWidth (0.55f), proportionOfHeight (0.20f));
+        stepSeqExtMidiSync[k] ->setBounds(proportionOfWidth (0.29f) + 10,        proportionOfHeight (0.66f) , 60, 20);
+        stepSeqBPM[k]   ->setBounds(proportionOfWidth (0.27f),        proportionOfHeight (0.69f) , 80, 60);
+        stepSeqGate[k]   ->setBounds(proportionOfWidth (0.46f) + 20 - proportionOfWidth(0.08),        proportionOfHeight (0.70f) , proportionOfWidth(0.16), 40);
     }
 
     for (int r =0; r<NUMBER_OF_MATRIX_ROW; r++) {
@@ -357,42 +397,6 @@ void PanelModulation::handleIncomingNrpn(int param, int value) {
     case PREENFM2_NRPN_FREE_ENV2_LOOP:
         enveloppeFree2->handleIncomingNrpn(param, value);
         break;
-    case PREENFM2_NRPN_STEPSEQ1_STEP1:
-    case PREENFM2_NRPN_STEPSEQ1_STEP2:
-    case PREENFM2_NRPN_STEPSEQ1_STEP3:
-    case PREENFM2_NRPN_STEPSEQ1_STEP4:
-    case PREENFM2_NRPN_STEPSEQ1_STEP5:
-    case PREENFM2_NRPN_STEPSEQ1_STEP6:
-    case PREENFM2_NRPN_STEPSEQ1_STEP7:
-    case PREENFM2_NRPN_STEPSEQ1_STEP8:
-    case PREENFM2_NRPN_STEPSEQ1_STEP9:
-    case PREENFM2_NRPN_STEPSEQ1_STEP10:
-    case PREENFM2_NRPN_STEPSEQ1_STEP11:
-    case PREENFM2_NRPN_STEPSEQ1_STEP12:
-    case PREENFM2_NRPN_STEPSEQ1_STEP13:
-    case PREENFM2_NRPN_STEPSEQ1_STEP14:
-    case PREENFM2_NRPN_STEPSEQ1_STEP15:
-    case PREENFM2_NRPN_STEPSEQ1_STEP16:
-        stepSequencer[0]->handleIncomingNrpn(param, value);
-        break;
-    case PREENFM2_NRPN_STEPSEQ2_STEP1:
-    case PREENFM2_NRPN_STEPSEQ2_STEP2:
-    case PREENFM2_NRPN_STEPSEQ2_STEP3:
-    case PREENFM2_NRPN_STEPSEQ2_STEP4:
-    case PREENFM2_NRPN_STEPSEQ2_STEP5:
-    case PREENFM2_NRPN_STEPSEQ2_STEP6:
-    case PREENFM2_NRPN_STEPSEQ2_STEP7:
-    case PREENFM2_NRPN_STEPSEQ2_STEP8:
-    case PREENFM2_NRPN_STEPSEQ2_STEP9:
-    case PREENFM2_NRPN_STEPSEQ2_STEP10:
-    case PREENFM2_NRPN_STEPSEQ2_STEP11:
-    case PREENFM2_NRPN_STEPSEQ2_STEP12:
-    case PREENFM2_NRPN_STEPSEQ2_STEP13:
-    case PREENFM2_NRPN_STEPSEQ2_STEP14:
-    case PREENFM2_NRPN_STEPSEQ2_STEP15:
-    case PREENFM2_NRPN_STEPSEQ2_STEP16:
-        stepSequencer[1]->handleIncomingNrpn(param, value);
-        break;
     case PREENFM2_NRPN_LFO1_SHAPE:
     case PREENFM2_NRPN_LFO2_SHAPE:
     case PREENFM2_NRPN_LFO3_SHAPE:
@@ -430,6 +434,59 @@ void PanelModulation::handleIncomingNrpn(int param, int value) {
             }
             lfoKSync[(param - PREENFM2_NRPN_LFO1_KSYN) / 4]->setValue(value / 100.0f - 0.01f, dontSendNotification);
         }
+        break;
+    case PREENFM2_NRPN_STEPSEQ1_BPM:
+    case PREENFM2_NRPN_STEPSEQ2_BPM:
+        if (value <= 240) {
+            if (stepSeqExtMidiSync[(param - PREENFM2_NRPN_STEPSEQ1_BPM) / 4]->getSelectedId() != 1) {
+                stepSeqExtMidiSync[(param - PREENFM2_NRPN_STEPSEQ1_BPM) / 4]->setSelectedId(1, dontSendNotification);
+                stepSeqBPM[(param - PREENFM2_NRPN_STEPSEQ1_BPM) / 4]->setEnabled(true);
+            }
+            stepSeqBPM[(param - PREENFM2_NRPN_STEPSEQ1_BPM) / 4]->setValue(value , dontSendNotification);
+        } else if (value <= 245) {
+            stepSeqExtMidiSync[(param - PREENFM2_NRPN_STEPSEQ1_BPM) / 4]->setSelectedId((value - 239) , dontSendNotification);
+            stepSeqBPM[(param - PREENFM2_NRPN_STEPSEQ1_BPM) / 4]->setEnabled(false);
+        }
+        break;
+    case PREENFM2_NRPN_STEPSEQ1_GATE:
+    case PREENFM2_NRPN_STEPSEQ2_GATE:
+        stepSeqGate[(param - PREENFM2_NRPN_STEPSEQ1_GATE) / 4]->setValue(value / 100.0f);
+        break;
+    case PREENFM2_NRPN_STEPSEQ1_STEP1:
+    case PREENFM2_NRPN_STEPSEQ1_STEP2:
+    case PREENFM2_NRPN_STEPSEQ1_STEP3:
+    case PREENFM2_NRPN_STEPSEQ1_STEP4:
+    case PREENFM2_NRPN_STEPSEQ1_STEP5:
+    case PREENFM2_NRPN_STEPSEQ1_STEP6:
+    case PREENFM2_NRPN_STEPSEQ1_STEP7:
+    case PREENFM2_NRPN_STEPSEQ1_STEP8:
+    case PREENFM2_NRPN_STEPSEQ1_STEP9:
+    case PREENFM2_NRPN_STEPSEQ1_STEP10:
+    case PREENFM2_NRPN_STEPSEQ1_STEP11:
+    case PREENFM2_NRPN_STEPSEQ1_STEP12:
+    case PREENFM2_NRPN_STEPSEQ1_STEP13:
+    case PREENFM2_NRPN_STEPSEQ1_STEP14:
+    case PREENFM2_NRPN_STEPSEQ1_STEP15:
+    case PREENFM2_NRPN_STEPSEQ1_STEP16:
+        stepSequencer[0]->handleIncomingNrpn(param, value);
+        break;
+    case PREENFM2_NRPN_STEPSEQ2_STEP1:
+    case PREENFM2_NRPN_STEPSEQ2_STEP2:
+    case PREENFM2_NRPN_STEPSEQ2_STEP3:
+    case PREENFM2_NRPN_STEPSEQ2_STEP4:
+    case PREENFM2_NRPN_STEPSEQ2_STEP5:
+    case PREENFM2_NRPN_STEPSEQ2_STEP6:
+    case PREENFM2_NRPN_STEPSEQ2_STEP7:
+    case PREENFM2_NRPN_STEPSEQ2_STEP8:
+    case PREENFM2_NRPN_STEPSEQ2_STEP9:
+    case PREENFM2_NRPN_STEPSEQ2_STEP10:
+    case PREENFM2_NRPN_STEPSEQ2_STEP11:
+    case PREENFM2_NRPN_STEPSEQ2_STEP12:
+    case PREENFM2_NRPN_STEPSEQ2_STEP13:
+    case PREENFM2_NRPN_STEPSEQ2_STEP14:
+    case PREENFM2_NRPN_STEPSEQ2_STEP15:
+    case PREENFM2_NRPN_STEPSEQ2_STEP16:
+        stepSequencer[1]->handleIncomingNrpn(param, value);
         break;
     }
 }
@@ -472,8 +529,14 @@ void PanelModulation::buttonClicked (Button* buttonThatWasClicked) {
         for (int k = 0 ; k< NUMBER_OF_STEP_SEQ; k++) {
             if (buttonThatWasClicked == stepSeqButton[k]) {
                 stepSequencer[k]->setVisible(true);
+                stepSeqBPM[k]->setVisible(true);
+                stepSeqExtMidiSync[k]->setVisible(true);
+                stepSeqGate[k]->setVisible(true);
             } else {
                 stepSequencer[k]->setVisible(false);
+                stepSeqBPM[k]->setVisible(false);
+                stepSeqExtMidiSync[k]->setVisible(false);
+                stepSeqGate[k]->setVisible(false);
             }
         }
         return;
@@ -497,6 +560,8 @@ void PanelModulation::sliderValueChanged (Slider* sliderThatWasMoved) {
 void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
     int lfoExteralMidiComboChanged = -1;
     int lfoKSyncOnOffChanged = -1;
+    int stepSeqMidiComboChanged = -1;
+
     for (int k = 0 ; k< NUMBER_OF_LFO; k++) {
         if (comboBoxThatHasChanged == lfoExtMidiSync[k]) {
             lfoFrequency[k]->setEnabled(comboBoxThatHasChanged->getSelectedId() == 1);
@@ -506,6 +571,12 @@ void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
         if (comboBoxThatHasChanged == lfoKsynOnOff[k]) {
             lfoKSync[k]->setEnabled(lfoKsynOnOff[k]->getSelectedId() == 2);
             lfoKSyncOnOffChanged = k;
+        }
+    }
+    for (int k = 0 ; k< NUMBER_OF_STEP_SEQ; k++) {
+        if (comboBoxThatHasChanged == stepSeqExtMidiSync[k]) {
+            stepSeqBPM[k]->setEnabled(comboBoxThatHasChanged->getSelectedId() == 1);
+            stepSeqMidiComboChanged = k;
         }
     }
 
@@ -522,6 +593,12 @@ void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
         } else if (lfoKSyncOnOffChanged >= 0 && comboBoxThatHasChanged->getSelectedId() == 2) {
             Slider *ksynSlider = lfoKSync[lfoKSyncOnOffChanged];
             MidifiedSlider* midifiedSlider = dynamic_cast<MidifiedSlider*>(ksynSlider);
+            if (midifiedSlider) {
+                midifiedSlider->sendNrpn(midiOutput, midifiedSlider->getValue());
+            }
+        } else if (stepSeqMidiComboChanged >= 0 && comboBoxThatHasChanged->getSelectedId() == 1) {
+            Slider *bpmSlider = stepSeqBPM[stepSeqMidiComboChanged];
+            MidifiedSlider* midifiedSlider = dynamic_cast<MidifiedSlider*>(bpmSlider);
             if (midifiedSlider) {
                 midifiedSlider->sendNrpn(midiOutput, midifiedSlider->getValue());
             }
@@ -558,26 +635,26 @@ BEGIN_JUCER_METADATA
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="900"
                  initialHeight="700">
-  <BACKGROUND backgroundColour="ffcff0e5"/>
+  <BACKGROUND backgroundColour="cff0e5"/>
   <GROUPCOMPONENT name="matrix group" id="f5fd2d041b369fc" memberName="matrixGroup"
-                  virtualName="" explicitFocusOrder="0" pos="60.172% 0.742% 39.542% 98.701%"
+                  virtualName="" explicitFocusOrder="0" pos="60.214% 0.776% 39.549% 98.758%"
                   outlinecol="604f4f4f" textcol="ff4f4f4f" title="Matrix"/>
   <GROUPCOMPONENT name="lfo group" id="25551a3d7e81232d" memberName="lfoGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0% 0.742% 59.026% 23.006%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 0.776% 59.026% 22.981%"
                   outlinecol="604f4f4f" textcol="ff4f4f4f" title="LFO"/>
   <GROUPCOMPONENT name="env 1 group" id="dc02178fe3e4a3e1" memberName="env1Group"
-                  virtualName="" explicitFocusOrder="0" pos="0% 24.49% 59.026% 18.46%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 24.534% 59.026% 18.478%"
                   outlinecol="60808080" textcol="ff4f4f4f" title="Free Enveloppe 1"/>
   <GROUPCOMPONENT name="env 2 group" id="c35474bb62378ab6" memberName="env2Group"
-                  virtualName="" explicitFocusOrder="0" pos="0% 43.043% 59.026% 18.553%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 43.012% 59.026% 18.478%"
                   outlinecol="60808080" textcol="ff4f4f4f" title="Free Enveloppe 2"/>
   <GROUPCOMPONENT name="step sequencer group" id="edf809d50c7eeefc" memberName="stepSeqGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0% 62.338% 59.026% 37.106%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 62.267% 59.026% 37.112%"
                   outlinecol="60808080" textcol="ff4f4f4f" title="Step Sequencers"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
- */
+*/
 #endif
 
 

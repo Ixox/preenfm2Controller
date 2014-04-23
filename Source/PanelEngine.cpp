@@ -160,6 +160,7 @@ PanelEngine::PanelEngine ()
         opShape[k] = new MidifiedComboBox(TRANS("Op shape"+ String(k)), PREENFM2_NRPN_OPERATOR1_SHAPE + 4 * k, 1, 1);
         opShape[k]->setEditableText (false);
         opShape[k]->setJustificationType (Justification::centred);
+        opShape[k]->setColour (ComboBox::buttonColourId, Colours::blue);
         opShape[k]->addItem("Sin", 1);
         opShape[k]->addItem("Saw", 2);
         opShape[k]->addItem("Square", 3);
@@ -174,6 +175,7 @@ PanelEngine::PanelEngine ()
         opFrequencyType[k] = new MidifiedComboBox(TRANS("Op frequency type "+ String(k)), PREENFM2_NRPN_OPERATOR1_FREQUENCY_TYPE + 4 * k, 1, 1);
         opFrequencyType[k]->setEditableText (false);
         opFrequencyType[k]->setJustificationType (Justification::centred);
+        opFrequencyType[k]->setColour (ComboBox::buttonColourId, Colours::blue);
         opFrequencyType[k]->addItem("Keyboard", 1);
         opFrequencyType[k]->addItem("Fixed", 2);
         opFrequencyType[k]->setSelectedId(1);
@@ -322,8 +324,6 @@ void PanelEngine::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
-
-    g.fillAll (Colour (0xffa8c8e4));
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -624,15 +624,15 @@ BEGIN_JUCER_METADATA
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="900"
                  initialHeight="700">
-  <BACKGROUND backgroundColour="ffa8c8e4"/>
+  <BACKGROUND backgroundColour="a8c8e4"/>
   <GROUPCOMPONENT name="operator group" id="3a99a017e94aaaf5" memberName="operatorGroup"
-                  virtualName="" explicitFocusOrder="0" pos="1.003% 50.093% 97.994% 48.052%"
+                  virtualName="" explicitFocusOrder="0" pos="0.95% 50.155% 97.981% 47.981%"
                   outlinecol="60808080" textcol="ff4f4f4f" title="Operators" textpos="33"/>
   <GROUPCOMPONENT name="mixer group" id="a41fc3891a2af464" memberName="mixerGroup"
-                  virtualName="" explicitFocusOrder="0" pos="1.146% 31.169% 59.599% 18.553%"
+                  virtualName="" explicitFocusOrder="0" pos="1.188% 31.211% 59.62% 18.478%"
                   outlinecol="60808080" textcol="ff4f4f4f" title="Mixer" textpos="33"/>
   <GROUPCOMPONENT name="IM group" id="249d6ec6feb3696f" memberName="imGroup" virtualName=""
-                  explicitFocusOrder="0" pos="61.318% 0% 37.249% 49.722%" outlinecol="60808080"
+                  explicitFocusOrder="0" pos="61.283% 0% 37.292% 49.689%" outlinecol="60808080"
                   textcol="ff4f4f4f" title="Modulation indexes" textpos="33"/>
 </JUCER_COMPONENT>
 
