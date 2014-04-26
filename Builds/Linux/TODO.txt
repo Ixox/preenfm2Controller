@@ -1,0 +1,6 @@
+- instrument selector 1,2,3,4 : preen send back the midi channel to use - and flush all NRPN to update app
+- Plugin : 
+- Visual studio 4
+- When modify algo in App preenFM should send back number of voice...
+- Have the preenfm send the information whether the the arpeggiator is saved in Preset... If not write a warning in the arp page.
+- Preset title !!!!
