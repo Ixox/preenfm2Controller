@@ -292,11 +292,11 @@ void PanelModulation::paint (Graphics& g)
 
 void PanelModulation::resized()
 {
-    matrixGroup->setBounds (proportionOfWidth (0.6017f), proportionOfHeight (0.0074f), proportionOfWidth (0.3954f), proportionOfHeight (0.9870f));
-    lfoGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.0074f), proportionOfWidth (0.5903f), proportionOfHeight (0.2301f));
-    env1Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.2449f), proportionOfWidth (0.5903f), proportionOfHeight (0.1846f));
-    env2Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.4304f), proportionOfWidth (0.5903f), proportionOfHeight (0.1855f));
-    stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6234f), proportionOfWidth (0.5903f), proportionOfHeight (0.3711f));
+    matrixGroup->setBounds (proportionOfWidth (0.6021f), proportionOfHeight (0.0078f), proportionOfWidth (0.3955f), proportionOfHeight (0.9876f));
+    lfoGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.0078f), proportionOfWidth (0.5903f), proportionOfHeight (0.2298f));
+    env1Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.2453f), proportionOfWidth (0.5903f), proportionOfHeight (0.1848f));
+    env2Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.4301f), proportionOfWidth (0.5903f), proportionOfHeight (0.1848f));
+    stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6227f), proportionOfWidth (0.5903f), proportionOfHeight (0.3711f));
     //[UserResized] Add your own custom resize handling here..
     lfoFrequencyLabel->setBounds(proportionOfWidth (0.22f),  proportionOfHeight (0.04f) , 80, 20);
     lfoBiasLabel->setBounds(proportionOfWidth (0.35f),  proportionOfHeight (0.04f) , 80, 20);

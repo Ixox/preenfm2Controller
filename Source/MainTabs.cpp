@@ -20,6 +20,7 @@
 //[Headers] You can add your own extra header files here...
 #include "PanelEngine.h"
 #include "PanelModulation.h"
+#include "PanelArpAndFilter.h"
 //[/Headers]
 
 #include "MainTabs.h"
@@ -33,9 +34,10 @@ MainTabs::MainTabs ()
 {
     addAndMakeVisible (tabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtTop));
     tabbedComponent->setTabBarDepth (30);
-    tabbedComponent->addTab (TRANS("Engine"), Colour (0xfff0f0ff), new PanelEngine(), true);
-    tabbedComponent->addTab (TRANS("Moldulation"), Colours::honeydew, new PanelModulation(), true);
-    tabbedComponent->addTab (TRANS("Arp & Filter"), Colour (0xfffff0f0), 0, false);
+    tabbedComponent->addTab (TRANS("Engine"), Colour (0xffdef8ff), new PanelEngine(), true);
+    tabbedComponent->addTab (TRANS("Moldulation"), Colour (0xffdeffe4), new PanelModulation(), true);
+    tabbedComponent->addTab (TRANS("Arp & Filter"), Colour (0xfffffade), new PanelArpAndFilter(), true);
+    tabbedComponent->addTab (TRANS("Settings"), Colour (0xfff6ffc7), 0, false);
     tabbedComponent->setCurrentTabIndex (1);
 
     addAndMakeVisible (midiInCombo = new ComboBox ("midi input combo"));
@@ -104,6 +106,7 @@ MainTabs::MainTabs ()
     //[Constructor] You can add your own custom stuff here..
 	panelEngine = ((PanelEngine*)tabbedComponent->getTabContentComponent(0));
 	panelModulation = ((PanelModulation*)tabbedComponent->getTabContentComponent(1));
+	panelArpAndFilter = ((PanelArpAndFilter*)tabbedComponent->getTabContentComponent(2));
 
     midiInCombo->addItemList(MidiInput::getDevices(), 1);
     midiOutCombo->addItemList(MidiOutput::getDevices(), 1);
@@ -157,11 +160,11 @@ void MainTabs::resized()
 {
     tabbedComponent->setBounds (24, 48, getWidth() - 20, getHeight() - 58);
     midiInCombo->setBounds (getWidth() - 428, 16, 150, 24);
-    midiInputLabel->setBounds (968, 48, getWidth() - 842, 16);
+    midiInputLabel->setBounds (736, 48, 72, 16);
     midiOutCombo->setBounds (getWidth() - 164, 16, 150, 24);
     midiInLabel->setBounds (getWidth() - 516, 16, 80, 24);
     midiOutLabel->setBounds (getWidth() - 252, 16, 80, 24);
-    midiInputLabel2->setBounds (1048, 48, getWidth() - 842, 16);
+    midiInputLabel2->setBounds (840, 48, 72, 16);
     pullButton->setBounds (getWidth() - 724, 16, 87, 24);
     pushButton->setBounds (getWidth() - 628, 16, 87, 24);
     //[UserResized] Add your own custom resize handling here..
@@ -195,6 +198,7 @@ void MainTabs::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     	midiOutput = MidiOutput::openDevice(midiOutCombo->getSelectedItemIndex());
     	panelEngine->setMidiOutput(midiOutput);
     	panelModulation->setMidiOutput(midiOutput);
+        panelArpAndFilter->setMidiOutput(midiOutput);
         //[/UserComboBoxCode_midiOutCombo]
     }
 
@@ -254,6 +258,7 @@ void 	MainTabs::handleIncomingMidiMessage (MidiInput *source, const MidiMessage 
 			midiInputLabel2->setText(String(value), sendNotification);
 			panelEngine->handleIncomingNrpn(param, value);
 			panelModulation->handleIncomingNrpn(param, value);
+			panelArpAndFilter->handleIncomingNrpn(param, value);
 			break;
 		}
 		}
@@ -279,18 +284,20 @@ BEGIN_JUCER_METADATA
   <TABBEDCOMPONENT name="new tabbed component" id="f175981f6c34a740" memberName="tabbedComponent"
                    virtualName="TabbedComponent" explicitFocusOrder="0" pos="24 48 20M 58M"
                    orientation="top" tabBarDepth="30" initialTab="1">
-    <TAB name="Engine" colour="fff0f0ff" useJucerComp="0" contentClassName="PanelEngine"
+    <TAB name="Engine" colour="ffdef8ff" useJucerComp="0" contentClassName="PanelEngine"
          constructorParams="" jucerComponentFile=""/>
-    <TAB name="Moldulation" colour="fff0fff0" useJucerComp="0" contentClassName="PanelModulation"
+    <TAB name="Moldulation" colour="ffdeffe4" useJucerComp="0" contentClassName="PanelModulation"
          constructorParams="" jucerComponentFile=""/>
-    <TAB name="Arp &amp; Filter" colour="fffff0f0" useJucerComp="0" contentClassName=""
+    <TAB name="Arp &amp; Filter" colour="fffffade" useJucerComp="0" contentClassName="PanelArpAndFilter"
+         constructorParams="" jucerComponentFile=""/>
+    <TAB name="Settings" colour="fff6ffc7" useJucerComp="0" contentClassName=""
          constructorParams="" jucerComponentFile=""/>
   </TABBEDCOMPONENT>
   <COMBOBOX name="midi input combo" id="8e92a0bc65751bf0" memberName="midiInCombo"
             virtualName="" explicitFocusOrder="0" pos="428R 16 150 24" editable="0"
             layout="33" items="" textWhenNonSelected="-- select --" textWhenNoItems="-- no choice --"/>
   <LABEL name="midi input label" id="f77b232960a175fb" memberName="midiInputLabel"
-         virtualName="" explicitFocusOrder="0" pos="968 48 842M 16" textCol="ff0000ff"
+         virtualName="" explicitFocusOrder="0" pos="736 48 72 16" textCol="ff0000ff"
          edTextCol="ff000000" edBkgCol="0" labelText="0" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
@@ -308,7 +315,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <LABEL name="midi input label" id="f5bde9938974ba9f" memberName="midiInputLabel2"
-         virtualName="" explicitFocusOrder="0" pos="1048 48 842M 16" textCol="ff0000ff"
+         virtualName="" explicitFocusOrder="0" pos="840 48 72 16" textCol="ff0000ff"
          edTextCol="ff000000" edBkgCol="0" labelText="0" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>

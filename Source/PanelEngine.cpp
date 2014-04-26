@@ -331,9 +331,9 @@ void PanelEngine::paint (Graphics& g)
 
 void PanelEngine::resized()
 {
-    operatorGroup->setBounds (proportionOfWidth (0.0100f), proportionOfHeight (0.5009f), proportionOfWidth (0.9799f), proportionOfHeight (0.4805f));
-    mixerGroup->setBounds (proportionOfWidth (0.0115f), proportionOfHeight (0.3117f), proportionOfWidth (0.5960f), proportionOfHeight (0.1855f));
-    imGroup->setBounds (proportionOfWidth (0.6132f), proportionOfHeight (0.0000f), proportionOfWidth (0.3725f), proportionOfHeight (0.4972f));
+    operatorGroup->setBounds (proportionOfWidth (0.0095f), proportionOfHeight (0.5016f), proportionOfWidth (0.9798f), proportionOfHeight (0.4798f));
+    mixerGroup->setBounds (proportionOfWidth (0.0119f), proportionOfHeight (0.3121f), proportionOfWidth (0.5962f), proportionOfHeight (0.1848f));
+    imGroup->setBounds (proportionOfWidth (0.6128f), proportionOfHeight (0.0000f), proportionOfWidth (0.3729f), proportionOfHeight (0.4969f));
     //[UserResized] Add your own custom resize handling here..
 
     // OPERATORS !

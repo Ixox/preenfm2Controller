@@ -32,6 +32,7 @@ struct Nrpn {
 
 class PanelEngine;
 class PanelModulation;
+class PanelArpAndFilter;
 //[/Headers]
 
 
@@ -74,6 +75,7 @@ private:
     struct Nrpn currentNrpn;
     PanelEngine* panelEngine;
     PanelModulation* panelModulation;
+    PanelArpAndFilter* panelArpAndFilter;
     //[/UserVariables]
 
     //==============================================================================

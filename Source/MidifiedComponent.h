@@ -19,7 +19,13 @@ public:
 
 	};
 
-	void sendNrpn(MidiOutput* midiOutput, double value) {
+	void setMidificatorParam(int nrpmP, float minV, float valueM) {
+	    minValue = minV;
+	    valueMultiplier = valueM;
+	    nrpnParam = nrpmP;
+	}
+
+	virtual void sendNrpn(MidiOutput* midiOutput, double value) {
 		if (midiOutput != nullptr) {
 			midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 99, getNrpnParamMSB()));
 			midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 98, getNrpnParamLSB()));
@@ -30,16 +36,16 @@ public:
 
 	int getNrpnParamMSB() { return nrpnParam >> 7; }
 	int getNrpnParamLSB() { return nrpnParam & 0xff; }
-	int getNrpnValueMSB(double value) {
+	virtual int getNrpnValueMSB(double value) {
 		int iv = (value - minValue ) * valueMultiplier + .005f;
 		return iv >> 7;
 	}
-	int getNrpnValueLSB(double value) {
+	virtual int getNrpnValueLSB(double value) {
 		int iv = (value - minValue ) * valueMultiplier + .005f;
-		return iv & 0xff;
+		return iv & 0x7f;
 	}
 
-private:
+protected:
 	float minValue;
 	float valueMultiplier;
 	int nrpnParam;
@@ -47,7 +53,8 @@ private:
 
 class MidifiedSlider : public Slider, public Midificator {
 public:
-	MidifiedSlider (const String& componentName, int nrpnParam, float minValue, float valueMultipler = 100.0f) : Slider(componentName), Midificator(nrpnParam, minValue, valueMultipler) {
+
+	MidifiedSlider (const String& componentName, int nrpnParam = -1, float minValue = 0.0f, float valueMultipler = 100.0f) : Slider(componentName), Midificator(nrpnParam, minValue, valueMultipler) {
 	}
 
     void mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel) override
@@ -70,8 +77,25 @@ public:
 
 class MidifiedComboBox: public ComboBox, public Midificator {
 public:
-	MidifiedComboBox (const String& componentName, int nrpnParam, float minValue, float valueMultipler = 100.0f) : ComboBox(componentName), Midificator(nrpnParam, minValue, valueMultipler) {
+	MidifiedComboBox (const String& componentName, int nrpnParam = -1, float minValue = 0.0f, float valueMultipler = 100.0f) : ComboBox(componentName), Midificator(nrpnParam, minValue, valueMultipler) {
 	}
+};
+
+
+class MidifiedToggleButton: public ToggleButton, public Midificator {
+public:
+    // sendNrpn is overloaded, we don't use valueMultiplier here
+    MidifiedToggleButton(const String& componentName, int nrpnParam = -1, int nrpnValue = -1) : ToggleButton(componentName), Midificator(nrpnParam, nrpnValue, 0) {
+    }
+
+    void sendNrpn(MidiOutput* midiOutput) {
+        if (midiOutput != nullptr) {
+            midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 99, getNrpnParamMSB()));
+            midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 98, getNrpnParamLSB()));
+            midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 6, ((int)minValue) >> 7));
+            midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 38, ((int)minValue) & 0x7f));
+        }
+    }
 };
 
 #endif  // MIDIFIEDCOMPONENT_H_INCLUDED

@@ -51,14 +51,15 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
-  $(OBJDIR)/EnveloppeFree2_57a2ab05.o \
-  $(OBJDIR)/EnveloppeFree1_57949384.o \
-  $(OBJDIR)/EnveloppeAbstract_5463e98d.o \
   $(OBJDIR)/AlgoPNG_b6b63f51.o \
   $(OBJDIR)/exoFont_75a7577e.o \
   $(OBJDIR)/Enveloppe_756f7c4b.o \
+  $(OBJDIR)/EnveloppeAbstract_5463e98d.o \
+  $(OBJDIR)/EnveloppeFree1_57949384.o \
+  $(OBJDIR)/EnveloppeFree2_57a2ab05.o \
   $(OBJDIR)/Main_90ebc5c2.o \
   $(OBJDIR)/MainTabs_f02c1fe0.o \
+  $(OBJDIR)/PanelArpAndFilter_4c63c15.o \
   $(OBJDIR)/PanelEngine_24e0d4c7.o \
   $(OBJDIR)/PanelModulation_b5f84b01.o \
   $(OBJDIR)/PreenLookAndFeel_f471e3db.o \
@@ -90,21 +91,6 @@ strip:
 	@echo Stripping preenfm2 midi controller
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
 
-$(OBJDIR)/EnveloppeFree2_57a2ab05.o: ../../Source/EnveloppeFree2.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling EnveloppeFree2.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/EnveloppeFree1_57949384.o: ../../Source/EnveloppeFree1.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling EnveloppeFree1.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/EnveloppeAbstract_5463e98d.o: ../../Source/EnveloppeAbstract.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling EnveloppeAbstract.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
 $(OBJDIR)/AlgoPNG_b6b63f51.o: ../../Source/png/AlgoPNG.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling AlgoPNG.cpp"
@@ -120,6 +106,21 @@ $(OBJDIR)/Enveloppe_756f7c4b.o: ../../Source/Enveloppe.cpp
 	@echo "Compiling Enveloppe.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/EnveloppeAbstract_5463e98d.o: ../../Source/EnveloppeAbstract.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling EnveloppeAbstract.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/EnveloppeFree1_57949384.o: ../../Source/EnveloppeFree1.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling EnveloppeFree1.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/EnveloppeFree2_57a2ab05.o: ../../Source/EnveloppeFree2.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling EnveloppeFree2.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling Main.cpp"
@@ -128,6 +129,11 @@ $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
 $(OBJDIR)/MainTabs_f02c1fe0.o: ../../Source/MainTabs.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling MainTabs.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/PanelArpAndFilter_4c63c15.o: ../../Source/PanelArpAndFilter.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling PanelArpAndFilter.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/PanelEngine_24e0d4c7.o: ../../Source/PanelEngine.cpp
