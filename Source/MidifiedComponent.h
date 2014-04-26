@@ -69,7 +69,7 @@ public:
     	}
     }
 
-    int getNumDecimalPlacesToDisplay() const noexcept   override {
+    int getNumDecimalPlacesToDisplay() const noexcept    {
     	return 2;
     }
 
