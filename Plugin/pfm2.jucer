@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="nWJaEw" name="pfm2" projectType="audioplug" version="1.0.0"
+              bundleIdentifier="com.yourcompany.pfm2" includeBinaryInAppConfig="1"
+              buildVST="1" buildVST3="0" buildAU="1" buildRTAS="0" buildAAX="0"
+              pluginName="pfm2" pluginDesc="pfm2" pluginManufacturer="yourcompany"
+              pluginManufacturerCode="Manu" pluginCode="Plug" pluginChannelConfigs="{1, 1}, {2, 2}"
+              pluginIsSynth="0" pluginWantsMidiIn="1" pluginProducesMidiOut="1"
+              pluginSilenceInIsSilenceOut="1" pluginEditorRequiresKeys="0"
+              pluginAUExportPrefix="pfm2AU" pluginRTASCategory="" aaxIdentifier="com.yourcompany.pfm2"
+              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="3.1.0">
+  <MAINGROUP id="vhKV8J" name="pfm2">
+    <GROUP id="{C1BB27D8-689D-95C2-2F2A-98449E82469F}" name="Source">
+      <GROUP id="{D21960AE-8A6A-BDCD-A021-DFB534ACD558}" name="UI">
+        <FILE id="pBTQKO" name="MainTabs.cpp" compile="1" resource="0" file="Source/UI/MainTabs.cpp"/>
+        <FILE id="BnPJyl" name="MainTabs.h" compile="0" resource="0" file="Source/UI/MainTabs.h"/>
+        <FILE id="xzfHz1" name="Enveloppe.cpp" compile="1" resource="0" file="Source/UI/Enveloppe.cpp"/>
+        <FILE id="NwmVUQ" name="Enveloppe.h" compile="0" resource="0" file="Source/UI/Enveloppe.h"/>
+        <FILE id="MPC5Pz" name="EnveloppeAbstract.cpp" compile="1" resource="0"
+              file="Source/UI/EnveloppeAbstract.cpp"/>
+        <FILE id="XWxdl1" name="EnveloppeAbstract.h" compile="0" resource="0"
+              file="Source/UI/EnveloppeAbstract.h"/>
+        <FILE id="OzYofO" name="EnveloppeFree1.cpp" compile="1" resource="0"
+              file="Source/UI/EnveloppeFree1.cpp"/>
+        <FILE id="omP4iG" name="EnveloppeFree1.h" compile="0" resource="0"
+              file="Source/UI/EnveloppeFree1.h"/>
+        <FILE id="v6qfZ0" name="EnveloppeFree2.cpp" compile="1" resource="0"
+              file="Source/UI/EnveloppeFree2.cpp"/>
+        <FILE id="TwvblF" name="EnveloppeFree2.h" compile="0" resource="0"
+              file="Source/UI/EnveloppeFree2.h"/>
+        <FILE id="o5FAol" name="MidifiedComponent.h" compile="0" resource="0"
+              file="Source/UI/MidifiedComponent.h"/>
+        <FILE id="NvVVGZ" name="PanelArpAndFilter.cpp" compile="1" resource="0"
+              file="Source/UI/PanelArpAndFilter.cpp"/>
+        <FILE id="uRxccQ" name="PanelArpAndFilter.h" compile="0" resource="0"
+              file="Source/UI/PanelArpAndFilter.h"/>
+        <FILE id="C0cmvF" name="PanelEngine.cpp" compile="1" resource="0" file="Source/UI/PanelEngine.cpp"/>
+        <FILE id="HrYjlB" name="PanelEngine.h" compile="0" resource="0" file="Source/UI/PanelEngine.h"/>
+        <FILE id="ZLGEWt" name="PanelModulation.cpp" compile="1" resource="0"
+              file="Source/UI/PanelModulation.cpp"/>
+        <FILE id="Y0fvfP" name="PanelModulation.h" compile="0" resource="0"
+              file="Source/UI/PanelModulation.h"/>
+        <FILE id="NP2Pch" name="PreenLookAndFeel.cpp" compile="1" resource="0"
+              file="Source/UI/PreenLookAndFeel.cpp"/>
+        <FILE id="gPi3hq" name="PreenLookAndFeel.h" compile="0" resource="0"
+              file="Source/UI/PreenLookAndFeel.h"/>
+        <FILE id="UXBz9o" name="PreenNrpn.h" compile="0" resource="0" file="Source/UI/PreenNrpn.h"/>
+        <FILE id="JiNmLS" name="StepSequencer.cpp" compile="1" resource="0"
+              file="Source/UI/StepSequencer.cpp"/>
+        <FILE id="MWRqJG" name="StepSequencer.h" compile="0" resource="0" file="Source/UI/StepSequencer.h"/>
+      </GROUP>
+      <FILE id="KrpJW7" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="hqvDuC" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="k3O45T" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="BmYEuQ" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" extraCompilerFlags="">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
+                       targetName="pfm2"/>
+        <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="2"
+                       targetName="pfm2"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_video" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../JUCE/modules"/>
+      </MODULEPATHS>
+    </LINUX_MAKE>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_audio_devices" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_audio_formats" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_audio_processors" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_core" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_cryptography" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_data_structures" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_events" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_graphics" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_gui_basics" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_opengl" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_video" showAllCode="1" useLocalCopy="1"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
+</JUCERPROJECT>

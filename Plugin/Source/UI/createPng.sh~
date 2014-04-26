@@ -1,0 +1,5 @@
+#!/bin/bash
+
+BinaryBuilder png/ ./ AlgoPNG
+mv -f AlgoPNG* png/
+
