@@ -23,6 +23,8 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
 #include "MidifiedComponent.h"
+#include "PanelOfParameters.h"
+
 //[/Headers]
 
 
@@ -36,6 +38,7 @@
                                                                     //[/Comments]
 */
 class PanelArpAndFilter  : public Component,
+                           public PanelOfParameters,
                            public ButtonListener,
                            public SliderListener,
                            public ComboBoxListener
@@ -51,6 +54,8 @@ public:
     void handleIncomingNrpn(int param, int value);
     void arpIsNow(bool arpOn, bool enableBPM);
     void setMidiBuffer(MidiBuffer& eventsToAdd) { this->eventsToAdd = &eventsToAdd; }
+    void buildParameters();
+    void onParameterUpdated(const teragon::Parameter *parameter);
     //[/UserMethods]
 
     void paint (Graphics& g);

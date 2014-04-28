@@ -12,12 +12,13 @@
 #define PLUGINPROCESSOR_H_INCLUDED
 
 #include "JuceHeader.h"
+#include "PluginParameters/include/PluginParameters.h"
 
 class Pfm2AudioProcessorEditor;
 //==============================================================================
 /**
 */
-class Pfm2AudioProcessor  : public AudioProcessor
+class Pfm2AudioProcessor  : public AudioProcessor, public teragon::ParameterObserver
 {
 public:
     //==============================================================================
@@ -65,6 +66,12 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData);
     void setStateInformation (const void* data, int sizeInBytes);
+
+    //
+    teragon::ConcurrentParameterSet parameterSet;
+    // Parameter observer
+    bool isRealtimePriority() const;
+    void onParameterUpdated(const teragon::Parameter *parameter);
 
 private:
     Pfm2AudioProcessorEditor* pfm2Editor;

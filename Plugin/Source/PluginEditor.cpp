@@ -12,12 +12,14 @@
 #include "PluginEditor.h"
 
 #include "UI/MainTabs.h"
+#include "PluginParameters/include/PluginParameters.h"
 
 //==============================================================================
 Pfm2AudioProcessorEditor::Pfm2AudioProcessorEditor (Pfm2AudioProcessor* ownerFilter)
     : AudioProcessorEditor (ownerFilter)
 {
-    addAndMakeVisible (mainTabs = new MainTabs() );
+    addAndMakeVisible (mainTabs = new MainTabs());
+    mainTabs->buildParameters(ownerFilter->parameterSet);
     // This is where our plugin's editor size is set.
     setSize (900, 710);
 }

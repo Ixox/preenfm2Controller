@@ -32,6 +32,7 @@ struct Nrpn {
 class PanelEngine;
 class PanelModulation;
 class PanelArpAndFilter;
+
 //[/Headers]
 
 
@@ -55,6 +56,7 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     void handleIncomingMidiBuffer(MidiBuffer &buffer, int numberOfSamples);
+    void buildParameters(teragon::ConcurrentParameterSet& parameterSet);
     //[/UserMethods]
 
     void paint (Graphics& g);

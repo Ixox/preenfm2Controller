@@ -18,6 +18,8 @@
 */
 
 //[Headers] You can add your own extra header files here...
+#include "JuceHeader.h"
+#include "../PluginParameters/include/PluginParameters.h"
 #include "PreenNrpn.h"
 #include "MidifiedComponent.h"
 
@@ -616,6 +618,13 @@ void PanelModulation::setMidiBuffer(MidiBuffer& eventsToAdd) {
         stepSequencer[s]->setMidiBuffer(&eventsToAdd);
     }
 }
+
+void PanelModulation::buildParameters() {
+}
+
+void PanelModulation::onParameterUpdated(const teragon::Parameter *parameter) {
+}
+
 //[/MiscUserCode]
 
 
@@ -629,25 +638,25 @@ void PanelModulation::setMidiBuffer(MidiBuffer& eventsToAdd) {
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="PanelModulation" componentName=""
-                 parentClasses="public Component, public Slider::Listener, public Button::Listener, public ComboBox::Listener"
+                 parentClasses="public Component, public Slider::Listener, public Button::Listener, public ComboBox::Listener, public PanelOfParameters"
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="900"
                  initialHeight="700">
   <BACKGROUND backgroundColour="cff0e5"/>
   <GROUPCOMPONENT name="matrix group" id="f5fd2d041b369fc" memberName="matrixGroup"
-                  virtualName="" explicitFocusOrder="0" pos="60.214% 0.776% 39.549% 98.758%"
+                  virtualName="" explicitFocusOrder="0" pos="60.249% 0.781% 39.531% 98.698%"
                   outlinecol="604f4f4f" textcol="ff4f4f4f" title="Matrix"/>
   <GROUPCOMPONENT name="lfo group" id="25551a3d7e81232d" memberName="lfoGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0% 0.776% 59.026% 22.981%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 0.781% 59.004% 22.917%"
                   outlinecol="604f4f4f" textcol="ff4f4f4f" title="LFO"/>
   <GROUPCOMPONENT name="env 1 group" id="dc02178fe3e4a3e1" memberName="env1Group"
-                  virtualName="" explicitFocusOrder="0" pos="0% 24.534% 59.026% 18.478%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 24.479% 59.004% 18.49%"
                   outlinecol="60808080" textcol="ff4f4f4f" title="Free Enveloppe 1"/>
   <GROUPCOMPONENT name="env 2 group" id="c35474bb62378ab6" memberName="env2Group"
-                  virtualName="" explicitFocusOrder="0" pos="0% 43.012% 59.026% 18.478%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 42.969% 59.004% 18.49%"
                   outlinecol="60808080" textcol="ff4f4f4f" title="Free Enveloppe 2"/>
   <GROUPCOMPONENT name="step sequencer group" id="edf809d50c7eeefc" memberName="stepSeqGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0% 62.267% 59.026% 37.112%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 62.24% 59.004% 37.109%"
                   outlinecol="60808080" textcol="ff4f4f4f" title="Step Sequencers"/>
 </JUCER_COMPONENT>
 

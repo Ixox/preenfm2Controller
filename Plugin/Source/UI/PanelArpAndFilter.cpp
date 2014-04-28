@@ -18,6 +18,8 @@
 */
 
 //[Headers] You can add your own extra header files here...
+#include "JuceHeader.h"
+#include "../PluginParameters/include/PluginParameters.h"
 #include "PreenNrpn.h"
 //[/Headers]
 
@@ -623,6 +625,13 @@ void PanelArpAndFilter::arpIsNow(bool arpOn, bool enableBPM) {
     arpLatchCombo->setEnabled(arpOn);
 }
 
+
+void PanelArpAndFilter::buildParameters() {
+}
+
+void PanelArpAndFilter::onParameterUpdated(const teragon::Parameter *parameter) {
+}
+
 //[/MiscUserCode]
 
 
@@ -636,9 +645,9 @@ void PanelArpAndFilter::arpIsNow(bool arpOn, bool enableBPM) {
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="PanelArpAndFilter" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers=""
-                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="0" initialWidth="900" initialHeight="700">
+                 parentClasses="public Component, public PanelOfParameters" constructorParams=""
+                 variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
+                 overlayOpacity="0.330" fixedSize="0" initialWidth="900" initialHeight="700">
   <BACKGROUND backgroundColour="fffffade"/>
   <GROUPCOMPONENT name="Arp group" id="13e5d1a66afb37f8" memberName="arpGroupComponent"
                   virtualName="" explicitFocusOrder="0" pos="5.701% 2.484% 87.411% 48.447%"

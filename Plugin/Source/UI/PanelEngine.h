@@ -23,11 +23,13 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
 #include "Enveloppe.h"
+#include "PanelOfParameters.h"
 
 #define NUMBER_OF_OPERATORS 6
 #define NUMBER_OF_IM 5
 #define NUMBER_OF_MIX 6
 #define NUMBER_OF_ALGO 28
+
 //[/Headers]
 
 
@@ -43,7 +45,8 @@
 class PanelEngine  : public Component,
                      public Slider::Listener,
                      public Button::Listener,
-                     public ComboBox::Listener
+                     public ComboBox::Listener,
+                     public PanelOfParameters
 {
 public:
     //==============================================================================
@@ -57,10 +60,15 @@ public:
     void sendNrpn(MidiOutput* midiOutput, int param, int value);
     void buttonClicked (Button* buttonThatWasClicked);
     void sliderValueChanged (Slider* sliderThatWasMoved);
+    void sliderValueChanged (Slider* sliderThatWasMoved, bool fromPluginUI);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPluginUI);
     void newAlgo(int algoNumber);
     void resizeAlgoDrawableImage();
     void setMidiBuffer(MidiBuffer& eventsToAdd);
+    // Panel of parameters
+    void buildParameters();
+    void onParameterUpdated(const teragon::Parameter *parameter);
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -104,6 +112,8 @@ private:
     ScopedPointer<Slider> opFrequencyFineTune[NUMBER_OF_OPERATORS];
 
     MidiBuffer* eventsToAdd;
+
+
     //[/UserVariables]
 
     //==============================================================================
