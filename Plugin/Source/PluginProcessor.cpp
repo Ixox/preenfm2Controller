@@ -141,6 +141,9 @@ void Pfm2AudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
     if (pfm2Editor != nullptr) {
         pfm2Editor->handleIncomingMidiBuffer(midiMessages, buffer.getNumSamples());
     }
+	// Clear sound
+    for (int i = 0; i < getNumOutputChannels(); ++i)
+        buffer.clear (i, 0, buffer.getNumSamples());
 }
 
 //==============================================================================
