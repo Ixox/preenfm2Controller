@@ -15,8 +15,8 @@
 
 class Midificator {
 public:
-	Midificator(int nrpmP, float minV, float valueM) : minValue(minV), nrpnParam(nrpmP), valueMultiplier(valueM) {
-
+	Midificator(int nrpmP, float minV, float valueM) {
+	    setMidificatorParam(nrpmP, minV, valueM);
 	};
 
 	void setMidificatorParam(int nrpmP, float minV, float valueM) {

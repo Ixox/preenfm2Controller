@@ -25,6 +25,8 @@
 #include "StepSequencer.h"
 #include "EnveloppeFree1.h"
 #include "EnveloppeFree2.h"
+#include "PanelOfParameters.h"
+
 
 #define NUMBER_OF_STEP_SEQ 2
 #define NUMBER_OF_LFO 3
@@ -45,7 +47,8 @@
 class PanelModulation  : public Component,
                          public Slider::Listener,
                          public Button::Listener,
-                         public ComboBox::Listener
+                         public ComboBox::Listener,
+                         public PanelOfParameters
 {
 public:
     //==============================================================================
@@ -60,6 +63,8 @@ public:
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void handleIncomingNrpn(int param, int value);
     void setMidiBuffer(MidiBuffer& eventsToAdd);
+    void buildParameters();
+    void onParameterUpdated(const teragon::Parameter *parameter);
     //[/UserMethods]
 
     void paint (Graphics& g);

@@ -6,6 +6,9 @@
   <MAINGROUP id="c6LJM5" name="pfm2Editor">
     <GROUP id="{4109EA71-F7BE-3C72-D039-241F993FAEB9}" name="Source">
       <GROUP id="{1D684675-DA20-07E6-EFC5-ECF1687EF7D5}" name="Plugin">
+        <FILE id="pysef4" name="PanelOfParameters.h" compile="0" resource="0"
+              file="../Plugin/Source/UI/PanelOfParameters.h"/>
+        <FILE id="LKBfHU" name="tinythread.cpp" compile="1" resource="0" file="../Plugin/Source/PluginParameters/include/tinythread/source/tinythread.cpp"/>
         <FILE id="SGs1a4" name="exoFont.cpp" compile="1" resource="0" file="../Plugin/Source/UI/OTF/exoFont.cpp"/>
         <FILE id="GyvX8T" name="exoFont.h" compile="0" resource="0" file="../Plugin/Source/UI/OTF/exoFont.h"/>
         <FILE id="psmrC7" name="AlgoPNG.cpp" compile="1" resource="0" file="../Plugin/Source/UI/png/AlgoPNG.cpp"/>
@@ -63,7 +66,7 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <LINUX_MAKE targetFolder="Builds/Linux" extraCompilerFlags="-I ~/SDKs">
+    <LINUX_MAKE targetFolder="Builds/Linux" extraCompilerFlags="-I ~/SDKs -std=gnu++11&#10;">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
                        targetName="pfm2Editor"/>

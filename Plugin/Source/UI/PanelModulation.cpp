@@ -18,6 +18,8 @@
 */
 
 //[Headers] You can add your own extra header files here...
+#include "JuceHeader.h"
+#include "../PluginParameters/include/PluginParameters.h"
 #include "PreenNrpn.h"
 #include "MidifiedComponent.h"
 
@@ -616,6 +618,13 @@ void PanelModulation::setMidiBuffer(MidiBuffer& eventsToAdd) {
         stepSequencer[s]->setMidiBuffer(&eventsToAdd);
     }
 }
+
+void PanelModulation::buildParameters() {
+}
+
+void PanelModulation::onParameterUpdated(const teragon::Parameter *parameter) {
+}
+
 //[/MiscUserCode]
 
 
@@ -629,7 +638,7 @@ void PanelModulation::setMidiBuffer(MidiBuffer& eventsToAdd) {
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="PanelModulation" componentName=""
-                 parentClasses="public Component, public Slider::Listener, public Button::Listener, public ComboBox::Listener"
+                 parentClasses="public Component, public Slider::Listener, public Button::Listener, public ComboBox::Listener, public PanelOfParameters"
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="900"
                  initialHeight="700">

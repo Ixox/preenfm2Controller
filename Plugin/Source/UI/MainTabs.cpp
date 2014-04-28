@@ -18,6 +18,8 @@
 */
 
 //[Headers] You can add your own extra header files here...
+#include "JuceHeader.h"
+#include "../PluginParameters/include/PluginParameters.h"
 #include "PanelEngine.h"
 #include "PanelModulation.h"
 #include "PanelArpAndFilter.h"
@@ -38,7 +40,7 @@ MainTabs::MainTabs ()
     tabbedComponent->addTab (TRANS("Moldulation"), Colour (0xffdeffe4), new PanelModulation(), true);
     tabbedComponent->addTab (TRANS("Arp & Filter"), Colour (0xfffffade), new PanelArpAndFilter(), true);
     tabbedComponent->addTab (TRANS("Settings"), Colour (0xfff6ffc7), 0, false);
-    tabbedComponent->setCurrentTabIndex (1);
+    tabbedComponent->setCurrentTabIndex (0);
 
     addAndMakeVisible (midiInputLabel = new Label ("midi input label",
                                                    TRANS("0")));
@@ -74,7 +76,6 @@ MainTabs::MainTabs ()
 
 
     //[Constructor] You can add your own custom stuff here..
-
 	panelEngine = ((PanelEngine*)tabbedComponent->getTabContentComponent(0));
 	panelModulation = ((PanelModulation*)tabbedComponent->getTabContentComponent(1));
 	panelArpAndFilter = ((PanelArpAndFilter*)tabbedComponent->getTabContentComponent(2));
@@ -91,6 +92,8 @@ MainTabs::~MainTabs()
     //[/Destructor_pre]
 
     tabbedComponent = nullptr;
+    midiInputLabel = nullptr;
+    midiInputLabel2 = nullptr;
     pullButton = nullptr;
     pushButton = nullptr;
 
@@ -210,7 +213,18 @@ void MainTabs:: handleIncomingMidiBuffer(MidiBuffer &buffer, int numberOfSamples
     }
 
     eventsToAdd.clear();
+}
 
+
+void MainTabs::buildParameters(teragon::ConcurrentParameterSet& parameterSet) {
+    panelEngine->setParameterSet(parameterSet);
+    panelEngine->buildParameters();
+
+    panelModulation->setParameterSet(parameterSet);
+    panelModulation->buildParameters();
+
+    panelArpAndFilter->setParameterSet(parameterSet);
+    panelArpAndFilter->buildParameters();
 }
 
 
@@ -233,7 +247,7 @@ BEGIN_JUCER_METADATA
   <BACKGROUND backgroundColour="fff0f8ff"/>
   <TABBEDCOMPONENT name="new tabbed component" id="f175981f6c34a740" memberName="tabbedComponent"
                    virtualName="TabbedComponent" explicitFocusOrder="0" pos="0.95% 2.484% 97.862% 96.894%"
-                   orientation="top" tabBarDepth="30" initialTab="1">
+                   orientation="top" tabBarDepth="30" initialTab="0">
     <TAB name="Engine" colour="ffdef8ff" useJucerComp="0" contentClassName="PanelEngine"
          constructorParams="" jucerComponentFile=""/>
     <TAB name="Moldulation" colour="ffdeffe4" useJucerComp="0" contentClassName="PanelModulation"
