@@ -11,8 +11,19 @@
 #ifndef PLUGINPROCESSOR_H_INCLUDED
 #define PLUGINPROCESSOR_H_INCLUDED
 
+#include <map>
 #include "JuceHeader.h"
 #include "PluginParameters/include/PluginParameters.h"
+#include "PreenNrpn.h"
+
+struct Nrpn {
+	char paramMSB;
+	char paramLSB;
+	char valueMSB;
+	char valueLSB;
+};
+
+
 
 class Pfm2AudioProcessorEditor;
 //==============================================================================
@@ -67,16 +78,27 @@ public:
     void getStateInformation (MemoryBlock& destData);
     void setStateInformation (const void* data, int sizeInBytes);
 
-    //
-    teragon::ConcurrentParameterSet parameterSet;
+	void handleIncomingMidiBuffer(MidiBuffer &buffer, int numberOfSamples);
+	void handleIncomingNrpn(int param, int value);
     // Parameter observer
     bool isRealtimePriority() const;
     void onParameterUpdated(const teragon::Parameter *parameter);
+    // accessed from editor so must be public
+    teragon::ConcurrentParameterSet parameterSet;
+	MidiMessageCollector midiMessageCollector;
+	struct Nrpn currentNrpn;
 
 private:
-    Pfm2AudioProcessorEditor* pfm2Editor;
-    //==============================================================================
+	 std::map<int , teragon::Parameter* > nrpmParameterMap;
+	 int nrpmIndex[2048];
+     Pfm2AudioProcessorEditor* pfm2Editor;
+	 bool uiNeedUpdate;
+
+
+
+	 //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Pfm2AudioProcessor)
 };
+
 
 #endif  // PLUGINPROCESSOR_H_INCLUDED

@@ -22,6 +22,8 @@ Pfm2AudioProcessorEditor::Pfm2AudioProcessorEditor (Pfm2AudioProcessor* ownerFil
     mainTabs->buildParameters(ownerFilter->parameterSet);
     // This is where our plugin's editor size is set.
     setSize (900, 710);
+	startTimer(200);
+	uiOutOfSync = false;
 }
 
 Pfm2AudioProcessorEditor::~Pfm2AudioProcessorEditor()
@@ -34,8 +36,15 @@ void Pfm2AudioProcessorEditor::paint (Graphics& g)
 {
 }
 
-
-void Pfm2AudioProcessorEditor::handleIncomingMidiBuffer(MidiBuffer &buffer, int numberOfSamples)
-{
-    mainTabs->handleIncomingMidiBuffer(buffer, numberOfSamples);
+void Pfm2AudioProcessorEditor::mustUpdateUI() {
+	uiOutOfSync = true;
 }
+
+void Pfm2AudioProcessorEditor::timerCallback () {
+	if (uiOutOfSync) {
+		mainTabs->updateUI();
+		uiOutOfSync = false;
+	}
+}
+
+

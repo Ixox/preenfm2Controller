@@ -1,61 +1,143 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="nWJaEw" name="pfm2" projectType="audioplug" version="1.0.0"
-              bundleIdentifier="com.yourcompany.pfm2" includeBinaryInAppConfig="1"
-              buildVST="1" buildVST3="0" buildAU="1" buildRTAS="0" buildAAX="0"
-              pluginName="pfm2" pluginDesc="pfm2" pluginManufacturer="yourcompany"
-              pluginManufacturerCode="Manu" pluginCode="Plug" pluginChannelConfigs="{1, 1}, {2, 2}"
-              pluginIsSynth="0" pluginWantsMidiIn="1" pluginProducesMidiOut="1"
+<JUCERPROJECT id="nWJaEw" name="pfm2Plugin" projectType="audioplug" version="0.1"
+              bundleIdentifier="com.ixox.pfm2" includeBinaryInAppConfig="1"
+              buildVST="1" buildVST3="0" buildAU="0" buildRTAS="0" buildAAX="0"
+              pluginName="pfm2" pluginDesc="PreenFM2 patch editor" pluginManufacturer="Ixox"
+              pluginManufacturerCode="IXOX" pluginCode="Plug" pluginChannelConfigs="{1, 1}, {2, 2}"
+              pluginIsSynth="1" pluginWantsMidiIn="1" pluginProducesMidiOut="1"
               pluginSilenceInIsSilenceOut="1" pluginEditorRequiresKeys="0"
               pluginAUExportPrefix="pfm2AU" pluginRTASCategory="" aaxIdentifier="com.yourcompany.pfm2"
-              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="3.1.0">
-  <MAINGROUP id="vhKV8J" name="pfm2">
+              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="3.1.0"
+              companyName="Xavier Hosxe" companyWebsite="http://www.preenfm.net"
+              companyEmail="prenfm1@gmail.com">
+  <MAINGROUP id="vhKV8J" name="pfm2Plugin">
     <GROUP id="{C1BB27D8-689D-95C2-2F2A-98449E82469F}" name="Source">
-      <GROUP id="{D21960AE-8A6A-BDCD-A021-DFB534ACD558}" name="UI">
-        <FILE id="pBTQKO" name="MainTabs.cpp" compile="1" resource="0" file="Source/UI/MainTabs.cpp"/>
-        <FILE id="BnPJyl" name="MainTabs.h" compile="0" resource="0" file="Source/UI/MainTabs.h"/>
-        <FILE id="xzfHz1" name="Enveloppe.cpp" compile="1" resource="0" file="Source/UI/Enveloppe.cpp"/>
-        <FILE id="NwmVUQ" name="Enveloppe.h" compile="0" resource="0" file="Source/UI/Enveloppe.h"/>
-        <FILE id="MPC5Pz" name="EnveloppeAbstract.cpp" compile="1" resource="0"
-              file="Source/UI/EnveloppeAbstract.cpp"/>
-        <FILE id="XWxdl1" name="EnveloppeAbstract.h" compile="0" resource="0"
-              file="Source/UI/EnveloppeAbstract.h"/>
-        <FILE id="OzYofO" name="EnveloppeFree1.cpp" compile="1" resource="0"
-              file="Source/UI/EnveloppeFree1.cpp"/>
-        <FILE id="omP4iG" name="EnveloppeFree1.h" compile="0" resource="0"
-              file="Source/UI/EnveloppeFree1.h"/>
-        <FILE id="v6qfZ0" name="EnveloppeFree2.cpp" compile="1" resource="0"
-              file="Source/UI/EnveloppeFree2.cpp"/>
-        <FILE id="TwvblF" name="EnveloppeFree2.h" compile="0" resource="0"
-              file="Source/UI/EnveloppeFree2.h"/>
-        <FILE id="o5FAol" name="MidifiedComponent.h" compile="0" resource="0"
-              file="Source/UI/MidifiedComponent.h"/>
-        <FILE id="NvVVGZ" name="PanelArpAndFilter.cpp" compile="1" resource="0"
-              file="Source/UI/PanelArpAndFilter.cpp"/>
-        <FILE id="uRxccQ" name="PanelArpAndFilter.h" compile="0" resource="0"
-              file="Source/UI/PanelArpAndFilter.h"/>
-        <FILE id="C0cmvF" name="PanelEngine.cpp" compile="1" resource="0" file="Source/UI/PanelEngine.cpp"/>
-        <FILE id="HrYjlB" name="PanelEngine.h" compile="0" resource="0" file="Source/UI/PanelEngine.h"/>
-        <FILE id="ZLGEWt" name="PanelModulation.cpp" compile="1" resource="0"
-              file="Source/UI/PanelModulation.cpp"/>
-        <FILE id="Y0fvfP" name="PanelModulation.h" compile="0" resource="0"
-              file="Source/UI/PanelModulation.h"/>
-        <FILE id="NP2Pch" name="PreenLookAndFeel.cpp" compile="1" resource="0"
-              file="Source/UI/PreenLookAndFeel.cpp"/>
-        <FILE id="gPi3hq" name="PreenLookAndFeel.h" compile="0" resource="0"
-              file="Source/UI/PreenLookAndFeel.h"/>
-        <FILE id="UXBz9o" name="PreenNrpn.h" compile="0" resource="0" file="Source/UI/PreenNrpn.h"/>
-        <FILE id="JiNmLS" name="StepSequencer.cpp" compile="1" resource="0"
-              file="Source/UI/StepSequencer.cpp"/>
-        <FILE id="MWRqJG" name="StepSequencer.h" compile="0" resource="0" file="Source/UI/StepSequencer.h"/>
+      <GROUP id="{C9E1AC1F-C51D-DEE8-BF60-DF0D14E6487C}" name="PluginParameters">
+        <FILE id="yqAlg0" name="CMakeLists.txt" compile="0" resource="1" file="Source/PluginParameters/CMakeLists.txt"/>
+        <GROUP id="{68403646-F18C-BED4-7EFE-DE388355B5FC}" name="include">
+          <FILE id="pqm6ah" name="BlobParameter.h" compile="0" resource="0" file="Source/PluginParameters/include/BlobParameter.h"/>
+          <FILE id="JKLg4v" name="BooleanParameter.h" compile="0" resource="0"
+                file="Source/PluginParameters/include/BooleanParameter.h"/>
+          <FILE id="UcFeQ8" name="ConcurrentParameterSet.h" compile="0" resource="0"
+                file="Source/PluginParameters/include/ConcurrentParameterSet.h"/>
+          <FILE id="z3Fbcy" name="DataParameter.h" compile="0" resource="0" file="Source/PluginParameters/include/DataParameter.h"/>
+          <FILE id="F4fO4W" name="DecibelParameter.h" compile="0" resource="0"
+                file="Source/PluginParameters/include/DecibelParameter.h"/>
+          <FILE id="s58k18" name="Event.h" compile="0" resource="0" file="Source/PluginParameters/include/Event.h"/>
+          <FILE id="nDmtZ5" name="EventDispatcher.h" compile="0" resource="0"
+                file="Source/PluginParameters/include/EventDispatcher.h"/>
+          <FILE id="qSL9Ga" name="FloatParameter.h" compile="0" resource="0"
+                file="Source/PluginParameters/include/FloatParameter.h"/>
+          <FILE id="oI0xSY" name="FrequencyParameter.h" compile="0" resource="0"
+                file="Source/PluginParameters/include/FrequencyParameter.h"/>
+          <FILE id="qvHUq5" name="IntegerParameter.h" compile="0" resource="0"
+                file="Source/PluginParameters/include/IntegerParameter.h"/>
+          <FILE id="S3Qx04" name="Parameter.h" compile="0" resource="0" file="Source/PluginParameters/include/Parameter.h"/>
+          <FILE id="d6a26m" name="ParameterSet.h" compile="0" resource="0" file="Source/PluginParameters/include/ParameterSet.h"/>
+          <FILE id="P8owT9" name="PluginParameters.h" compile="0" resource="0"
+                file="Source/PluginParameters/include/PluginParameters.h"/>
+          <GROUP id="{3221FCF7-88F5-D6E4-D574-C803730D74B3}" name="readerwriterqueue">
+            <FILE id="i8u37A" name="atomicops.h" compile="0" resource="0" file="Source/PluginParameters/include/readerwriterqueue/atomicops.h"/>
+            <FILE id="GimH4E" name="LICENSE.md" compile="0" resource="1" file="Source/PluginParameters/include/readerwriterqueue/LICENSE.md"/>
+            <FILE id="S6c4EO" name="readerwriterqueue.h" compile="0" resource="0"
+                  file="Source/PluginParameters/include/readerwriterqueue/readerwriterqueue.h"/>
+            <FILE id="Nj7MtA" name="README.md" compile="0" resource="1" file="Source/PluginParameters/include/readerwriterqueue/README.md"/>
+          </GROUP>
+          <FILE id="mHOGL2" name="StringParameter.h" compile="0" resource="0"
+                file="Source/PluginParameters/include/StringParameter.h"/>
+          <GROUP id="{45583901-8859-B505-5CE1-FCCB83448B2B}" name="tinythread">
+            <GROUP id="{1C23CCD1-089A-D63C-BC7F-58DF56A331F9}" name="doc">
+              <FILE id="zejIBe" name="Doxyfile" compile="0" resource="1" file="Source/PluginParameters/include/tinythread/doc/Doxyfile"/>
+            </GROUP>
+            <FILE id="XHyTbI" name="mkbuild.sh" compile="0" resource="1" file="Source/PluginParameters/include/tinythread/mkbuild.sh"/>
+            <FILE id="o8ilK2" name="README.txt" compile="0" resource="1" file="Source/PluginParameters/include/tinythread/README.txt"/>
+            <GROUP id="{A10C7AB4-F7E5-9D15-3358-25C3ADB9E5D8}" name="source">
+              <FILE id="PU6ZSP" name="fast_mutex.h" compile="0" resource="0" file="Source/PluginParameters/include/tinythread/source/fast_mutex.h"/>
+              <FILE id="QzWMZV" name="tinythread.cpp" compile="1" resource="0" file="Source/PluginParameters/include/tinythread/source/tinythread.cpp"/>
+              <FILE id="O2FyiP" name="tinythread.h" compile="0" resource="0" file="Source/PluginParameters/include/tinythread/source/tinythread.h"/>
+            </GROUP>
+            <GROUP id="{3AE9D781-40E2-4BD4-8C83-74DF75323559}" name="test">
+              <FILE id="m4sChU" name="fractal.cpp" compile="1" resource="0" file="Source/PluginParameters/include/tinythread/test/fractal.cpp"/>
+              <FILE id="LbBw1p" name="hello.cpp" compile="1" resource="0" file="Source/PluginParameters/include/tinythread/test/hello.cpp"/>
+              <FILE id="aUWawW" name="Makefile" compile="0" resource="1" file="Source/PluginParameters/include/tinythread/test/Makefile"/>
+              <FILE id="D0QEfT" name="Makefile.msvc" compile="0" resource="1" file="Source/PluginParameters/include/tinythread/test/Makefile.msvc"/>
+              <FILE id="f17dxu" name="test.cpp" compile="1" resource="0" file="Source/PluginParameters/include/tinythread/test/test.cpp"/>
+            </GROUP>
+          </GROUP>
+          <FILE id="ks0N0S" name="VoidParameter.h" compile="0" resource="0" file="Source/PluginParameters/include/VoidParameter.h"/>
+        </GROUP>
+        <FILE id="tGnXJZ" name="LICENSE.txt" compile="0" resource="1" file="Source/PluginParameters/LICENSE.txt"/>
+        <FILE id="aBYGtd" name="README.md" compile="0" resource="1" file="Source/PluginParameters/README.md"/>
+        <GROUP id="{C955D387-E6E0-9E93-5058-2A81B9888B62}" name="test">
+          <FILE id="GeEPno" name="CMakeLists.txt" compile="0" resource="1" file="Source/PluginParameters/test/CMakeLists.txt"/>
+          <FILE id="M36XW5" name="MultithreadedTest.cpp" compile="1" resource="0"
+                file="Source/PluginParameters/test/MultithreadedTest.cpp"/>
+          <FILE id="DYcRZB" name="PluginParametersTest.cpp" compile="1" resource="0"
+                file="Source/PluginParameters/test/PluginParametersTest.cpp"/>
+          <FILE id="puV7yF" name="TestRunner.h" compile="0" resource="0" file="Source/PluginParameters/test/TestRunner.h"/>
+        </GROUP>
       </GROUP>
+      <GROUP id="{98E9ADF3-34F5-56D9-9C70-85258E9238C7}" name="UI">
+        <FILE id="f7PwEu" name="createPng.sh" compile="0" resource="1" file="Source/UI/createPng.sh"/>
+        <FILE id="E4nMib" name="createPng.sh~" compile="0" resource="1" file="Source/UI/createPng.sh~"/>
+        <FILE id="aBEIAf" name="Enveloppe.cpp" compile="1" resource="0" file="Source/UI/Enveloppe.cpp"/>
+        <FILE id="sPMUva" name="Enveloppe.h" compile="0" resource="0" file="Source/UI/Enveloppe.h"/>
+        <FILE id="xYAIqg" name="EnveloppeAbstract.cpp" compile="1" resource="0"
+              file="Source/UI/EnveloppeAbstract.cpp"/>
+        <FILE id="q8zmWQ" name="EnveloppeAbstract.h" compile="0" resource="0"
+              file="Source/UI/EnveloppeAbstract.h"/>
+        <FILE id="xm5Xyl" name="EnveloppeFree1.cpp" compile="1" resource="0"
+              file="Source/UI/EnveloppeFree1.cpp"/>
+        <FILE id="R1xPoJ" name="EnveloppeFree1.h" compile="0" resource="0"
+              file="Source/UI/EnveloppeFree1.h"/>
+        <FILE id="jdMZGL" name="EnveloppeFree2.cpp" compile="1" resource="0"
+              file="Source/UI/EnveloppeFree2.cpp"/>
+        <FILE id="xPmU6J" name="EnveloppeFree2.h" compile="0" resource="0"
+              file="Source/UI/EnveloppeFree2.h"/>
+        <FILE id="Bl6ml7" name="Main.cpp" compile="1" resource="0" file="Source/UI/Main.cpp"/>
+        <FILE id="ipjnWZ" name="MainTabs.cpp" compile="1" resource="0" file="Source/UI/MainTabs.cpp"/>
+        <FILE id="psd3mT" name="MainTabs.h" compile="0" resource="0" file="Source/UI/MainTabs.h"/>
+        <FILE id="BeISsq" name="MidifiedComponent.h" compile="0" resource="0"
+              file="Source/UI/MidifiedComponent.h"/>
+        <GROUP id="{57405443-D7A7-629C-05BF-5919F4F1451E}" name="OTF">
+          <FILE id="iFwx6c" name="exoFont.cpp" compile="1" resource="0" file="Source/UI/OTF/exoFont.cpp"/>
+          <FILE id="i49E8x" name="exoFont.h" compile="0" resource="0" file="Source/UI/OTF/exoFont.h"/>
+        </GROUP>
+        <FILE id="K78Fig" name="PanelArpAndFilter.cpp" compile="1" resource="0"
+              file="Source/UI/PanelArpAndFilter.cpp"/>
+        <FILE id="b6qyBE" name="PanelArpAndFilter.h" compile="0" resource="0"
+              file="Source/UI/PanelArpAndFilter.h"/>
+        <FILE id="WezgAA" name="PanelEngine.cpp" compile="1" resource="0" file="Source/UI/PanelEngine.cpp"/>
+        <FILE id="LsV4I5" name="PanelEngine.h" compile="0" resource="0" file="Source/UI/PanelEngine.h"/>
+        <FILE id="ymjr2X" name="PanelModulation.cpp" compile="1" resource="0"
+              file="Source/UI/PanelModulation.cpp"/>
+        <FILE id="Nlr1xZ" name="PanelModulation.h" compile="0" resource="0"
+              file="Source/UI/PanelModulation.h"/>
+        <FILE id="uoK521" name="PanelOfParameters.h" compile="0" resource="0"
+              file="Source/UI/PanelOfParameters.h"/>
+        <GROUP id="{B5F0E8C9-02ED-16C9-125E-2FED5E9292EB}" name="png">
+          <FILE id="jVOlAd" name="AlgoPNG.cpp" compile="1" resource="0" file="Source/UI/png/AlgoPNG.cpp"/>
+          <FILE id="OoxLra" name="AlgoPNG.h" compile="0" resource="0" file="Source/UI/png/AlgoPNG.h"/>
+        </GROUP>
+        <FILE id="QpB5g6" name="PreenLookAndFeel.cpp" compile="1" resource="0"
+              file="Source/UI/PreenLookAndFeel.cpp"/>
+        <FILE id="vuIkKh" name="PreenLookAndFeel.h" compile="0" resource="0"
+              file="Source/UI/PreenLookAndFeel.h"/>
+        <FILE id="kSY6r4" name="StepSequencer.cpp" compile="1" resource="0"
+              file="Source/UI/StepSequencer.cpp"/>
+        <FILE id="A59H2L" name="StepSequencer.h" compile="0" resource="0" file="Source/UI/StepSequencer.h"/>
+      </GROUP>
+      <FILE id="H9SmKj" name="MidifiedParameter.h" compile="0" resource="0"
+            file="Source/MidifiedParameter.h"/>
+      <FILE id="k3O45T" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="BmYEuQ" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
       <FILE id="KrpJW7" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="hqvDuC" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
-      <FILE id="k3O45T" name="PluginEditor.cpp" compile="1" resource="0"
-            file="Source/PluginEditor.cpp"/>
-      <FILE id="BmYEuQ" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="KCj8k4" name="PreenNrpn.h" compile="0" resource="0" file="Source/PreenNrpn.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
@@ -83,6 +165,30 @@
         <MODULEPATH id="juce_audio_plugin_client" path="../../JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
+    <VS2012 targetFolder="Builds/VisualStudio2012" vstFolder="c:\SDKs\vstsdk2.4">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
+                       isDebug="1" optimisation="1" targetName="pfm2"/>
+        <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
+                       isDebug="0" optimisation="2" targetName="pfm2"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_video" path="../../juce"/>
+        <MODULEPATH id="juce_opengl" path="../../juce"/>
+        <MODULEPATH id="juce_gui_extra" path="../../juce"/>
+        <MODULEPATH id="juce_gui_basics" path="../../juce"/>
+        <MODULEPATH id="juce_graphics" path="../../juce"/>
+        <MODULEPATH id="juce_events" path="../../juce"/>
+        <MODULEPATH id="juce_data_structures" path="../../juce"/>
+        <MODULEPATH id="juce_cryptography" path="../../juce"/>
+        <MODULEPATH id="juce_core" path="../../juce"/>
+        <MODULEPATH id="juce_audio_processors" path="../../juce"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../juce"/>
+        <MODULEPATH id="juce_audio_formats" path="../../juce"/>
+        <MODULEPATH id="juce_audio_devices" path="../../juce"/>
+        <MODULEPATH id="juce_audio_basics" path="../../juce"/>
+      </MODULEPATHS>
+    </VS2012>
   </EXPORTFORMATS>
   <MODULES>
     <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="1"/>

@@ -19,9 +19,11 @@
 
 //[Headers] You can add your own extra header files here...
 #include "JuceHeader.h"
-#include "PreenNrpn.h"
-#include "MidifiedComponent.h"
 #include "png/AlgoPNG.h"
+
+// TO REMOVE
+
+#include "../PreenNrpn.h"
 //[/Headers]
 
 #include "PanelEngine.h"
@@ -98,7 +100,7 @@ PanelEngine::PanelEngine ()
 
     //[UserPreSize]
     for (int k=0; k<NUMBER_OF_MIX; k++) {
-        addAndMakeVisible(volumeKnob[k] = new MidifiedSlider(TRANS("Volume" + String(k+1)), PREENFM2_NRPN_MIX1 + 2*k, 0));
+        addAndMakeVisible(volumeKnob[k] = new Slider("Volume " + String(k+1)));
         volumeKnob[k]->setRange (0, 1, .01f);
         volumeKnob[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         volumeKnob[k]->setTextBoxStyle (Slider::NoTextBox, false, 20, 20);
@@ -106,7 +108,7 @@ PanelEngine::PanelEngine ()
         volumeKnob[k]->setValue(1.0f, dontSendNotification);
         volumeKnob[k]->addListener (this);
 
-        addAndMakeVisible(panKnob[k] = new MidifiedSlider(TRANS("Pan" + String(k+1)), PREENFM2_NRPN_PAN1 + 2*k, -1.0f));
+        addAndMakeVisible(panKnob[k] = new Slider("Pan " + String(k+1)));
         panKnob[k]->setRange (-1, 1, .01f);
         panKnob[k]->setSliderStyle (Slider::LinearHorizontal);
         panKnob[k]->setTextBoxStyle (Slider::NoTextBox, false, 40, 20);
@@ -121,7 +123,7 @@ PanelEngine::PanelEngine ()
     	addAndMakeVisible(IMNumber[k] = new Label("IM Label" + String(k+1), String("IM") + String(k+1)));
 
 
-        addAndMakeVisible(IMKnob[k] = new MidifiedSlider(TRANS("IM" + String(k+1)), PREENFM2_NRPN_IM1 + 2*k, 0));
+        addAndMakeVisible(IMKnob[k] = new Slider("IM " + String(k+1)));
         IMKnob[k]->setRange (0, 16, .01f);
         IMKnob[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         IMKnob[k]->setTextBoxStyle (Slider::TextBoxLeft, false, 30, 16);
@@ -129,7 +131,7 @@ PanelEngine::PanelEngine ()
         IMKnob[k]->setValue(1.0f, dontSendNotification);
         IMKnob[k]->addListener (this);
 
-        addAndMakeVisible(IMVelocityKnob[k] = new MidifiedSlider(TRANS("IM Velocity" + String(k+1)), PREENFM2_NRPN_IM1_VELOCITY + 2*k, 0));
+        addAndMakeVisible(IMVelocityKnob[k] = new Slider("IM Velocity " + String(k+1)));
         IMVelocityKnob[k]->setRange (0, 16, .01f);
         IMVelocityKnob[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         IMVelocityKnob[k]->setTextBoxStyle (Slider::TextBoxLeft, false, 30, 16);
@@ -158,7 +160,7 @@ PanelEngine::PanelEngine ()
         enveloppeButton[k]->addListener (this);
         addAndMakeVisible(enveloppeButton[k]);
 
-        opShape[k] = new MidifiedComboBox(TRANS("OP"+String(k+1)+"Shape"), PREENFM2_NRPN_OPERATOR1_SHAPE + 4 * k, 1, 1);
+        opShape[k] = new ComboBox("OP"+String(k+1)+" Shape");
         opShape[k]->setEditableText (false);
         opShape[k]->setJustificationType (Justification::centred);
         opShape[k]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -173,7 +175,7 @@ PanelEngine::PanelEngine ()
         opShape[k]->setSelectedId(1);
         opShape[k]->addListener (this);
 
-        opFrequencyType[k] = new MidifiedComboBox(TRANS("Op frequency type "+ String(k+1)), PREENFM2_NRPN_OPERATOR1_FREQUENCY_TYPE + 4 * k, 1, 1);
+        opFrequencyType[k] = new ComboBox("Op"+ String(1) + " Freq Type");
         opFrequencyType[k]->setEditableText (false);
         opFrequencyType[k]->setJustificationType (Justification::centred);
         opFrequencyType[k]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -182,14 +184,14 @@ PanelEngine::PanelEngine ()
         opFrequencyType[k]->setSelectedId(1);
         opFrequencyType[k]->addListener (this);
 
-        opFrequency[k] = new MidifiedSlider(TRANS("op Frequency" + String(k+1)), PREENFM2_NRPN_OPERATOR1_FREQUENCY + 4*k, 0);
+        opFrequency[k] = new Slider("Op" + String(k+1) + " Frequency");
         opFrequency[k]->setRange (0, 16, 1.0f / 12.0f);
         opFrequency[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         opFrequency[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 60, 16);
         opFrequency[k]->setDoubleClickReturnValue(true, 1.0f);
         opFrequency[k]->addListener (this);
 
-        opFrequencyFineTune[k] = new MidifiedSlider(TRANS("op Frequency FT " + String(k+1)), PREENFM2_NRPN_OPERATOR1_FREQUENCY_FINE_TUNE + 4*k, -1);
+        opFrequencyFineTune[k] = new Slider("Op"+ String(k+1)+ " Fine Tune");
         opFrequencyFineTune[k]->setRange (-1.0f, 1.0f, .01f);
         opFrequencyFineTune[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         opFrequencyFineTune[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 16);
@@ -224,7 +226,7 @@ PanelEngine::PanelEngine ()
     addAndMakeVisible(opFrequencyFineTuneLabel = new Label("op frequency FT label", "Fine Tune"));
     opFrequencyFineTuneLabel->setJustificationType(Justification::centredTop);
 
-    addAndMakeVisible(algoChooser = new MidifiedSlider(TRANS("Algo"), PREENFM2_NRPN_ALGO, 1, 1));
+    addAndMakeVisible(algoChooser = new Slider("Algo"));
     algoChooser->setRange (1, NUMBER_OF_ALGO, 1);
     algoChooser->setTextBoxIsEditable(true);
     algoChooser->setSliderStyle (Slider::IncDecButtons);
@@ -244,7 +246,7 @@ PanelEngine::PanelEngine ()
 	addAndMakeVisible(velocityLabel = new Label("velocity label", "Velocity"));
 	velocityLabel->setJustificationType(Justification::centredTop);
 
-    addAndMakeVisible(velocity = new MidifiedSlider(TRANS("Algo"), PREENFM2_NRPN_VELOCITY, 1, 1));
+    addAndMakeVisible(velocity = new Slider("Algo"));
     velocity->setRange (0, 16, 1);
     velocity->setSliderStyle (Slider::RotaryVerticalDrag);
     velocity->setTextBoxStyle (Slider::TextBoxAbove, false, 30, 16);
@@ -254,7 +256,7 @@ PanelEngine::PanelEngine ()
 	addAndMakeVisible(velocityLabel = new Label("velocity label", "Velocity"));
 	velocityLabel->setJustificationType(Justification::centredTop);
 
-    addAndMakeVisible(velocity = new MidifiedSlider(TRANS("Algo"), PREENFM2_NRPN_VELOCITY, 0, 1));
+    addAndMakeVisible(velocity = new Slider("Velocity"));
     velocity->setRange (0, 16, 1);
     velocity->setValue(12, dontSendNotification);
     velocity->setSliderStyle (Slider::RotaryVerticalDrag);
@@ -265,7 +267,7 @@ PanelEngine::PanelEngine ()
 	addAndMakeVisible(voicesLabel = new Label("voices label", "Voices"));
 	voicesLabel->setJustificationType(Justification::centredTop);
 
-    addAndMakeVisible(voices = new MidifiedSlider(TRANS("Voices"), PREENFM2_NRPN_VOICE, 0, 1));
+    addAndMakeVisible(voices = new Slider("Voices"));
     voices->setRange (0, 8, 1);
     voices->setSliderStyle (Slider::RotaryVerticalDrag);
     voices->setTextBoxStyle (Slider::TextBoxAbove, false, 30, 16);
@@ -275,7 +277,7 @@ PanelEngine::PanelEngine ()
 	addAndMakeVisible(glideLabel = new Label("glide label", "Glide"));
 	glideLabel->setJustificationType(Justification::centredTop);
 
-    addAndMakeVisible(glide = new MidifiedSlider(TRANS("Glide"), PREENFM2_NRPN_GLIDE, 0, 1));
+    addAndMakeVisible(glide = new Slider("Glide"));
     glide->setRange (0, 8, 1);
     glide->setSliderStyle (Slider::RotaryVerticalDrag);
     glide->setTextBoxStyle (Slider::TextBoxAbove, false, 30, 16);
@@ -324,6 +326,7 @@ PanelEngine::~PanelEngine()
 void PanelEngine::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
+	printf("PanelEngin::paint...\r\n");
     //[/UserPrePaint]
 
     //[UserPaint] Add your own custom painting code here..
@@ -387,116 +390,14 @@ void PanelEngine::resized()
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-void PanelEngine::handleIncomingNrpn(int param, int value) {
-	// enveloppe1->handleIncomingNrpn(param, value);
-	static int index;
-	switch (param) {
-	case PREENFM2_NRPN_ALGO:
-		algoChooser->setValue((float)value + 1, dontSendNotification);
-		newAlgo(value + 1);
-		break;
-	case PREENFM2_NRPN_VELOCITY:
-		velocity->setValue((float)value , dontSendNotification);
-		break;
-	case PREENFM2_NRPN_VOICE:
-		voices->setValue((float)value , dontSendNotification);
-		break;
-	case PREENFM2_NRPN_GLIDE:
-		glide->setValue((float)value , dontSendNotification);
-		break;
-	case PREENFM2_NRPN_IM1:
-	case PREENFM2_NRPN_IM2:
-	case PREENFM2_NRPN_IM3:
-	case PREENFM2_NRPN_IM4:
-	case PREENFM2_NRPN_IM5 :
-		index = (param - PREENFM2_NRPN_IM1) / 2;
-		IMKnob[index]->setValue((float)value * .01f, dontSendNotification);
-		break;
-	case PREENFM2_NRPN_IM1_VELOCITY:
-	case PREENFM2_NRPN_IM2_VELOCITY:
-	case PREENFM2_NRPN_IM3_VELOCITY:
-	case PREENFM2_NRPN_IM4_VELOCITY:
-	case PREENFM2_NRPN_IM5_VELOCITY:
-		index = (param - PREENFM2_NRPN_IM1_VELOCITY) / 2;
-		IMVelocityKnob[index]->setValue((float)value * .01f, dontSendNotification);
-		break;
 
-	case PREENFM2_NRPN_MIX1:
-	case PREENFM2_NRPN_MIX2:
-	case PREENFM2_NRPN_MIX3:
-	case PREENFM2_NRPN_MIX4:
-	case PREENFM2_NRPN_MIX5:
-	case PREENFM2_NRPN_MIX6:
-		index = (param - PREENFM2_NRPN_MIX1) / 2;
-		volumeKnob[index]->setValue((float)value * .01f, dontSendNotification);
-		break;
-	case PREENFM2_NRPN_PAN1:
-	case PREENFM2_NRPN_PAN2:
-	case PREENFM2_NRPN_PAN3:
-	case PREENFM2_NRPN_PAN4:
-	case PREENFM2_NRPN_PAN5:
-	case PREENFM2_NRPN_PAN6:
-		index = (param - PREENFM2_NRPN_PAN1) / 2;
-		panKnob[index]->setValue((float)value * .01f - 1.0f, dontSendNotification);
-		break;
-	case PREENFM2_NRPN_OPERATOR1_SHAPE:
-	case PREENFM2_NRPN_OPERATOR2_SHAPE:
-	case PREENFM2_NRPN_OPERATOR3_SHAPE:
-	case PREENFM2_NRPN_OPERATOR4_SHAPE:
-	case PREENFM2_NRPN_OPERATOR5_SHAPE:
-	case PREENFM2_NRPN_OPERATOR6_SHAPE:
-		index = (param - PREENFM2_NRPN_OPERATOR1_SHAPE) / 4;
-		opShape[index]->setSelectedId(value + 1, dontSendNotification);
-		break;
-	case PREENFM2_NRPN_OPERATOR1_FREQUENCY_TYPE:
-	case PREENFM2_NRPN_OPERATOR2_FREQUENCY_TYPE:
-	case PREENFM2_NRPN_OPERATOR3_FREQUENCY_TYPE:
-	case PREENFM2_NRPN_OPERATOR4_FREQUENCY_TYPE:
-	case PREENFM2_NRPN_OPERATOR5_FREQUENCY_TYPE:
-	case PREENFM2_NRPN_OPERATOR6_FREQUENCY_TYPE:
-		index = (param - PREENFM2_NRPN_OPERATOR1_FREQUENCY_TYPE) / 4;
-		opFrequencyType[index]->setSelectedId(value + 1, dontSendNotification);
-		break;
-	case PREENFM2_NRPN_OPERATOR1_FREQUENCY:
-	case PREENFM2_NRPN_OPERATOR2_FREQUENCY:
-	case PREENFM2_NRPN_OPERATOR3_FREQUENCY:
-	case PREENFM2_NRPN_OPERATOR4_FREQUENCY:
-	case PREENFM2_NRPN_OPERATOR5_FREQUENCY:
-	case PREENFM2_NRPN_OPERATOR6_FREQUENCY:
-		index = (param - PREENFM2_NRPN_OPERATOR1_FREQUENCY) / 4;
-		opFrequency[index]->setValue(value * .01f, dontSendNotification);
-		break;
-	case PREENFM2_NRPN_OPERATOR1_FREQUENCY_FINE_TUNE:
-	case PREENFM2_NRPN_OPERATOR2_FREQUENCY_FINE_TUNE:
-	case PREENFM2_NRPN_OPERATOR3_FREQUENCY_FINE_TUNE:
-	case PREENFM2_NRPN_OPERATOR4_FREQUENCY_FINE_TUNE:
-	case PREENFM2_NRPN_OPERATOR5_FREQUENCY_FINE_TUNE:
-	case PREENFM2_NRPN_OPERATOR6_FREQUENCY_FINE_TUNE:
-		index = (param - PREENFM2_NRPN_OPERATOR1_FREQUENCY_FINE_TUNE) / 4;
-		opFrequencyFineTune[index]->setValue(value * .01f - 1.0f, dontSendNotification);
-		break;
-	}
-	if (param >= PREENFM2_NRPN_ENV1_ATTK && param <= PREENFM2_NRPN_ENV6_RELEASE_LEVEL) {
-		int envIndex = (param - PREENFM2_NRPN_ENV1_ATTK) / 8;
-		enveloppe[envIndex]->handleIncomingNrpn(param, value);
-	}
-}
-
-void  PanelEngine::sendNrpn(MidiOutput* midiOutput, int param, int value) {
-	if (midiOutput != nullptr) {
-		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 99, (param >> 7)));
-		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 98, (param & 0xff)));
-		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 6, (value >> 7)));
-		midiOutput->sendMessageNow(MidiMessage::controllerEvent(1, 38, (value & 0xff)));
-	}
-}
 
 void PanelEngine::resizeAlgoDrawableImage() {
 	float left = proportionOfWidth (0.15f);
 	float top = proportionOfHeight (0.007f);
 	float width = proportionOfWidth (0.32f);
 	float height = proportionOfHeight(0.31f);
-	Rectangle<float> rect = Rectangle<float>(left, top, width, height);
+	juce::Rectangle<float> rect = juce::Rectangle<float>(left, top, width, height);
 	algoDrawableImage->setTransformToFit(rect, RectanglePlacement::centred | RectanglePlacement::onlyReduceInSize);
 }
 
@@ -540,19 +441,18 @@ void PanelEngine::sliderValueChanged (Slider* sliderThatWasMoved)
 
 void PanelEngine::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPluginUI)
 {
-    MidifiedSlider* midifiedSlider = dynamic_cast<MidifiedSlider*>(sliderThatWasMoved);
-    if(midifiedSlider != 0) {
-        midifiedSlider->sendNrpn(eventsToAdd, midifiedSlider->getValue());
-        // Must we update parameter value
-        if (fromPluginUI) {
-            teragon::Parameter * parameterReady = parameterMap[midifiedSlider->getName()];
-            if (parameterReady != nullptr) {
-                teragon::ParameterValue value = sliderThatWasMoved->getValue();
-                printf("slider moved, set parameter Value to %f \n", value);
-                parameterSet->set(parameterReady, value, this);
-            }
+    // Update the value if the change comes from the UI
+    if (fromPluginUI) {
+		teragon::Parameter * parameterReady = panelParameterMap[sliderThatWasMoved->getName()];
+        if (parameterReady != nullptr) {
+            teragon::ParameterValue value = sliderThatWasMoved->getValue();
+            printf("slider moved, set parameter Value to %f \n", value);
+            parameterSet->set(parameterReady, value, nullptr);
         }
     }
+	if (sliderThatWasMoved == algoChooser) {
+		newAlgo(algoChooser->getValue());
+	}
     if (sliderThatWasMoved == voices) {
         if (voices->getValue() == 1) {
             if (!glide->isEnabled()) {
@@ -572,20 +472,16 @@ void PanelEngine::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
 }
 
 void PanelEngine::comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPluginUI) {
-    MidifiedComboBox* midifiedComboBox = dynamic_cast<MidifiedComboBox*>(comboBoxThatHasChanged);
-    if(midifiedComboBox != 0) {
-       // old was safely casted to NewType
-        midifiedComboBox->sendNrpn(eventsToAdd, midifiedComboBox->getSelectedId());
-        if (fromPluginUI) {
-            teragon::Parameter * parameterReady = parameterMap[comboBoxThatHasChanged->getName()];
-            if (parameterReady != nullptr) {
-                teragon::ParameterValue value = comboBoxThatHasChanged->getSelectedId();
-                printf("New Combo selection : %d \n", (int)value);
-                parameterSet->set(parameterReady, value, this);
-            }
+    // Update the value if the change comes from the UI
+    if (fromPluginUI) {
+        teragon::Parameter * parameterReady = panelParameterMap[comboBoxThatHasChanged->getName()];
+        if (parameterReady != nullptr) {
+            teragon::ParameterValue value = comboBoxThatHasChanged->getSelectedId();
+            printf("New Combo selection : %d \n", (int)value);
+            parameterSet->set(parameterReady, value, nullptr);
         }
-
     }
+
 }
 
 void PanelEngine::buttonClicked (Button* buttonThatWasClicked)
@@ -624,65 +520,22 @@ void PanelEngine::buttonClicked (Button* buttonThatWasClicked)
 
 
 
-void PanelEngine::setMidiBuffer(MidiBuffer& eventsToAdd) {
-    this->eventsToAdd = &eventsToAdd;
-    for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
-        enveloppe[k]->setMidiBuffer(&eventsToAdd);
-    }
-}
-
-
-
-
 void PanelEngine::buildParameters() {
     for (int k=0; k<NUMBER_OF_MIX; k++) {
         addSliderParameter(volumeKnob[k]);
-    }
-    for (int k=0; k<NUMBER_OF_MIX; k++) {
         addSliderParameter(panKnob[k]);
     }
     for (int k=0; k<NUMBER_OF_IM; k++) {
         addSliderParameter(IMKnob[k]);
-    }
-    for (int k=0; k<NUMBER_OF_IM; k++) {
         addSliderParameter(IMVelocityKnob[k]);
     }
+	/*
     for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
         addComboBoxParameter(opShape[k]);
-    }
+    }*/
 }
 
 
-/**
- * Method to be called when a parameter's value has been updated.
- */
-void PanelEngine::onParameterUpdated(const teragon::Parameter *parameter) {
-    teragon::ParameterString parameterName = parameter->getName().c_str();
-    Component *componentToUpdate = componentMap[parameterName];
-
-    // Was it a slider ?
-    Slider* sliderToUpdate = dynamic_cast<Slider*>(componentToUpdate);
-    if(sliderToUpdate != 0) {
-        // We're in the process audio thread...
-        MessageManagerLock lockMessageThread;
-        sliderToUpdate->setValue(parameter->getValue(),  dontSendNotification);
-        // Don't update parameter back
-        sliderValueChanged(sliderToUpdate, false);
-        return;
-    }
-
-    // Was it a combobox ?
-    ComboBox* comboBotToUpdate= dynamic_cast<ComboBox*>(componentToUpdate);
-    if(comboBotToUpdate != 0) {
-        // We're in the process audio thread...
-        MessageManagerLock lockMessageThread;
-        comboBotToUpdate->setSelectedId(parameter->getValue(),  dontSendNotification);
-        // Don't update parameter back
-        comboBoxChanged(comboBotToUpdate, false);
-        return;
-    }
-
-}
 
 
 

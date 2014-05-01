@@ -21,13 +21,8 @@
 #define __JUCE_HEADER_707E53F8D6330206__
 
 //[Headers]     -- You can add your own extra header files here --
+#include "../PluginParameters/include/PluginParameters.h"
 
-struct Nrpn {
-	char paramMSB;
-	char paramLSB;
-	char valueMSB;
-	char valueLSB;
-};
 
 class PanelEngine;
 class PanelModulation;
@@ -57,6 +52,7 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     void handleIncomingMidiBuffer(MidiBuffer &buffer, int numberOfSamples);
     void buildParameters(teragon::ConcurrentParameterSet& parameterSet);
+	void updateUI();
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -68,11 +64,9 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     int midiInfo;
-    struct Nrpn currentNrpn;
     PanelEngine* panelEngine;
     PanelModulation* panelModulation;
     PanelArpAndFilter* panelArpAndFilter;
-    MidiBuffer eventsToAdd;
     //[/UserVariables]
 
     //==============================================================================

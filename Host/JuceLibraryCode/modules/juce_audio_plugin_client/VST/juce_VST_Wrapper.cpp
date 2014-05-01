@@ -1539,7 +1539,7 @@ namespace
         return pluginEntryPoint (audioMaster);
     }
 
-//    JUCE_EXPORTED_FUNCTION AEffect* main_plugin (audioMasterCallback audioMaster) asm ("main");
+    JUCE_EXPORTED_FUNCTION AEffect* main_plugin (audioMasterCallback audioMaster) asm ("main");
     JUCE_EXPORTED_FUNCTION AEffect* main_plugin (audioMasterCallback audioMaster)
     {
         return VSTPluginMain (audioMaster);

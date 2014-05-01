@@ -19,7 +19,7 @@ class MainTabs;
 //==============================================================================
 /**
 */
-class Pfm2AudioProcessorEditor  : public AudioProcessorEditor
+class Pfm2AudioProcessorEditor  : public AudioProcessorEditor, public Timer
 {
 public:
     Pfm2AudioProcessorEditor (Pfm2AudioProcessor* ownerFilter);
@@ -28,8 +28,11 @@ public:
     //==============================================================================
     // This is just a standard Juce paint method...
     void paint (Graphics& g);
-    void handleIncomingMidiBuffer(MidiBuffer &buffer, int numberOfSamples);
+    void timerCallback ();
+	void mustUpdateUI();
+
 private:
+	bool uiOutOfSync;
     MainTabs * mainTabs;
 };
 

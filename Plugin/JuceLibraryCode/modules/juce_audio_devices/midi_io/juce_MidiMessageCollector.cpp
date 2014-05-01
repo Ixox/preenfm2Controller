@@ -69,7 +69,7 @@ void MidiMessageCollector::removeNextBlockOfMessages (MidiBuffer& destBuffer,
                                                       const int numSamples)
 {
     // you need to call reset() to set the correct sample rate before using this object
-    jassert (sampleRate != 44100.0001);
+    jassert (sampleRate != 44100.00001);
     jassert (numSamples > 0);
 
     const double timeNow = Time::getMillisecondCounterHiRes();

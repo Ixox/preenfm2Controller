@@ -79,9 +79,6 @@ MainTabs::MainTabs ()
 	panelEngine = ((PanelEngine*)tabbedComponent->getTabContentComponent(0));
 	panelModulation = ((PanelModulation*)tabbedComponent->getTabContentComponent(1));
 	panelArpAndFilter = ((PanelArpAndFilter*)tabbedComponent->getTabContentComponent(2));
-	panelEngine->setMidiBuffer(eventsToAdd);
-	panelModulation->setMidiBuffer(eventsToAdd);
-	panelArpAndFilter->setMidiBuffer(eventsToAdd);
     // SET null !
     //[/Constructor]
 }
@@ -133,10 +130,6 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == pullButton)
     {
         //[UserButtonCode_pullButton] -- add your button handler code here..
-        eventsToAdd.addEvent(MidiMessage::controllerEvent(1, 99, 127), (int) Time::getMillisecondCounter());
-        eventsToAdd.addEvent(MidiMessage::controllerEvent(1, 98, 127), (int) Time::getMillisecondCounter());
-        eventsToAdd.addEvent(MidiMessage::controllerEvent(1, 6, 0), (int) Time::getMillisecondCounter());
-        eventsToAdd.addEvent(MidiMessage::controllerEvent(1, 38, 0), (int) Time::getMillisecondCounter());
         //[/UserButtonCode_pullButton]
     }
     else if (buttonThatWasClicked == pushButton)
@@ -152,68 +145,6 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-void MainTabs:: handleIncomingMidiBuffer(MidiBuffer &buffer, int numberOfSamples) {
-    if (!buffer.isEmpty()) {
-        MidiBuffer newBuffer;
-        MidiMessage midiMessage;
-        int samplePosition;
-        MidiBuffer::Iterator midiIterator(buffer);
-        while (midiIterator.getNextEvent(midiMessage, samplePosition)) {
-            bool copyMessageInNewBuffer = true;
-
-            if (midiMessage.isController()) {
-                switch (midiMessage.getControllerNumber()) {
-                case 99:
-                    currentNrpn.paramMSB = midiMessage.getControllerValue();
-                    copyMessageInNewBuffer = false;
-                    break;
-                case 98:
-                    currentNrpn.paramLSB = midiMessage.getControllerValue();
-                    copyMessageInNewBuffer = false;
-                    break;
-                case 6:
-                    currentNrpn.valueMSB = midiMessage.getControllerValue();
-                    copyMessageInNewBuffer = false;
-                    break;
-                case 38:
-                {
-                    currentNrpn.valueLSB = midiMessage.getControllerValue();
-                    copyMessageInNewBuffer = false;
-                    int param = (int)(currentNrpn.paramMSB << 7) + currentNrpn.paramLSB;
-                    int value = (int)(currentNrpn.valueMSB << 7) + currentNrpn.valueLSB;
-
-                    const MessageManagerLock mmLock;
-                    midiInputLabel->setText(String(param), sendNotification);
-                    midiInputLabel2->setText(String(value), sendNotification);
-                    panelEngine->handleIncomingNrpn(param, value);
-                    panelModulation->handleIncomingNrpn(param, value);
-                    panelArpAndFilter->handleIncomingNrpn(param, value);
-                    break;
-                }
-                }
-            }
-            if (copyMessageInNewBuffer) {
-                newBuffer.addEvent(midiMessage, samplePosition);
-            }
-        }
-        buffer.swapWith(newBuffer);
-    }
-
-
-    MidiMessage message (0xf4, 0.0);
-    int time;
-    MidiBuffer::Iterator i2 (eventsToAdd);
-    const int firstEventToAdd = eventsToAdd.getFirstEventTime();
-    const double scaleFactor = numberOfSamples / (double) (eventsToAdd.getLastEventTime() + 1 - firstEventToAdd);
-
-    while (i2.getNextEvent (message, time))
-    {
-        const int pos = jlimit (0, numberOfSamples - 1, roundToInt ((time - firstEventToAdd) * scaleFactor));
-        buffer.addEvent (message, pos);
-    }
-
-    eventsToAdd.clear();
-}
 
 
 void MainTabs::buildParameters(teragon::ConcurrentParameterSet& parameterSet) {
@@ -227,7 +158,11 @@ void MainTabs::buildParameters(teragon::ConcurrentParameterSet& parameterSet) {
     panelArpAndFilter->buildParameters();
 }
 
-
+void MainTabs::updateUI() {
+    panelEngine->buildParameters();
+    panelModulation->buildParameters();
+    panelArpAndFilter->buildParameters();
+}
 //[/MiscUserCode]
 
 

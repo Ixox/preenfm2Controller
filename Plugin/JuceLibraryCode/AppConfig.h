@@ -204,7 +204,7 @@
  #define JucePlugin_Build_VST3             0
 #endif
 #ifndef  JucePlugin_Build_AU
- #define JucePlugin_Build_AU               1
+ #define JucePlugin_Build_AU               0
 #endif
 #ifndef  JucePlugin_Build_RTAS
  #define JucePlugin_Build_RTAS             0
@@ -216,19 +216,19 @@
  #define JucePlugin_Name                   "pfm2"
 #endif
 #ifndef  JucePlugin_Desc
- #define JucePlugin_Desc                   "pfm2"
+ #define JucePlugin_Desc                   "PreenFM2 patch editor"
 #endif
 #ifndef  JucePlugin_Manufacturer
- #define JucePlugin_Manufacturer           "yourcompany"
+ #define JucePlugin_Manufacturer           "Ixox"
 #endif
 #ifndef  JucePlugin_ManufacturerWebsite
- #define JucePlugin_ManufacturerWebsite    ""
+ #define JucePlugin_ManufacturerWebsite    "http://www.preenfm.net"
 #endif
 #ifndef  JucePlugin_ManufacturerEmail
- #define JucePlugin_ManufacturerEmail      ""
+ #define JucePlugin_ManufacturerEmail      "prenfm1@gmail.com"
 #endif
 #ifndef  JucePlugin_ManufacturerCode
- #define JucePlugin_ManufacturerCode       'Manu'
+ #define JucePlugin_ManufacturerCode       'IXOX'
 #endif
 #ifndef  JucePlugin_PluginCode
  #define JucePlugin_PluginCode             'Plug'
@@ -243,7 +243,7 @@
  #define JucePlugin_PreferredChannelConfigurations  {1, 1}, {2, 2}
 #endif
 #ifndef  JucePlugin_IsSynth
- #define JucePlugin_IsSynth                0
+ #define JucePlugin_IsSynth                1
 #endif
 #ifndef  JucePlugin_WantsMidiInput
  #define JucePlugin_WantsMidiInput         1
@@ -258,22 +258,22 @@
  #define JucePlugin_EditorRequiresKeyboardFocus  0
 #endif
 #ifndef  JucePlugin_Version
- #define JucePlugin_Version                1.0.0
+ #define JucePlugin_Version                0.1
 #endif
 #ifndef  JucePlugin_VersionCode
- #define JucePlugin_VersionCode            0x10000
+ #define JucePlugin_VersionCode            0x100
 #endif
 #ifndef  JucePlugin_VersionString
- #define JucePlugin_VersionString          "1.0.0"
+ #define JucePlugin_VersionString          "0.1"
 #endif
 #ifndef  JucePlugin_VSTUniqueID
  #define JucePlugin_VSTUniqueID            JucePlugin_PluginCode
 #endif
 #ifndef  JucePlugin_VSTCategory
- #define JucePlugin_VSTCategory            kPlugCategEffect
+ #define JucePlugin_VSTCategory            kPlugCategSynth
 #endif
 #ifndef  JucePlugin_AUMainType
- #define JucePlugin_AUMainType             kAudioUnitType_MusicEffect
+ #define JucePlugin_AUMainType             kAudioUnitType_MusicDevice
 #endif
 #ifndef  JucePlugin_AUSubType
  #define JucePlugin_AUSubType              JucePlugin_PluginCode
@@ -288,10 +288,10 @@
  #define JucePlugin_AUManufacturerCode     JucePlugin_ManufacturerCode
 #endif
 #ifndef  JucePlugin_CFBundleIdentifier
- #define JucePlugin_CFBundleIdentifier     com.yourcompany.pfm2
+ #define JucePlugin_CFBundleIdentifier     com.ixox.pfm2
 #endif
 #ifndef  JucePlugin_RTASCategory
- #define JucePlugin_RTASCategory           ePlugInCategory_None
+ #define JucePlugin_RTASCategory           ePlugInCategory_SWGenerators
 #endif
 #ifndef  JucePlugin_RTASManufacturerCode
  #define JucePlugin_RTASManufacturerCode   JucePlugin_ManufacturerCode

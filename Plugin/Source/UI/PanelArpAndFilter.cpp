@@ -20,7 +20,6 @@
 //[Headers] You can add your own extra header files here...
 #include "JuceHeader.h"
 #include "../PluginParameters/include/PluginParameters.h"
-#include "PreenNrpn.h"
 //[/Headers]
 
 #include "PanelArpAndFilter.h"
@@ -36,23 +35,23 @@ PanelArpAndFilter::PanelArpAndFilter ()
                                                                TRANS("Arpeggiator")));
     arpGroupComponent->setTextLabelPosition (Justification::centredLeft);
 
-    addAndMakeVisible (arpOffButton = new MidifiedToggleButton ("arp off toggle button"));
+    addAndMakeVisible (arpOffButton = new ToggleButton ("Arp Clock"));
     arpOffButton->setButtonText (TRANS("Off"));
     arpOffButton->setRadioGroupId (5111);
     arpOffButton->addListener (this);
     arpOffButton->setToggleState (true, dontSendNotification);
 
-    addAndMakeVisible (arpInternalButton = new MidifiedToggleButton ("arp int toggle button"));
+    addAndMakeVisible (arpInternalButton = new ToggleButton ("Arp Clock"));
     arpInternalButton->setButtonText (TRANS("Internal clock"));
     arpInternalButton->setRadioGroupId (5111);
     arpInternalButton->addListener (this);
 
-    addAndMakeVisible (arpExternalButton = new MidifiedToggleButton ("arp Ext toggle button"));
+    addAndMakeVisible (arpExternalButton = new ToggleButton ("Arp Clock"));
     arpExternalButton->setButtonText (TRANS("External clock"));
     arpExternalButton->setRadioGroupId (5111);
     arpExternalButton->addListener (this);
 
-    addAndMakeVisible (arpBPM = new MidifiedSlider ("arp bpm slider"));
+    addAndMakeVisible (arpBPM = new Slider ("arp bpm slider"));
     arpBPM->setRange (10, 240, 1);
     arpBPM->setSliderStyle (Slider::RotaryVerticalDrag);
     arpBPM->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
@@ -114,7 +113,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
     arpLatchLabel->setColour (TextEditor::textColourId, Colours::black);
     arpLatchLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (arpDirectionCombo = new MidifiedComboBox ("arp dir combo box"));
+    addAndMakeVisible (arpDirectionCombo = new ComboBox ("arp dir combo box"));
     arpDirectionCombo->setEditableText (false);
     arpDirectionCombo->setJustificationType (Justification::centredLeft);
     arpDirectionCombo->setTextWhenNothingSelected (String::empty);
@@ -127,13 +126,13 @@ PanelArpAndFilter::PanelArpAndFilter ()
     arpDirectionCombo->addSeparator();
     arpDirectionCombo->addListener (this);
 
-    addAndMakeVisible (arpOctavleSlider = new MidifiedSlider ("arp octave slider"));
+    addAndMakeVisible (arpOctavleSlider = new Slider ("arp octave slider"));
     arpOctavleSlider->setRange (1, 3, 1);
     arpOctavleSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     arpOctavleSlider->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
     arpOctavleSlider->addListener (this);
 
-    addAndMakeVisible (arpPatternCombo = new MidifiedComboBox ("arp pattern combo box"));
+    addAndMakeVisible (arpPatternCombo = new ComboBox ("arp pattern combo box"));
     arpPatternCombo->setEditableText (false);
     arpPatternCombo->setJustificationType (Justification::centredLeft);
     arpPatternCombo->setTextWhenNothingSelected (String::empty);
@@ -167,7 +166,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
     arpPatternCombo->addSeparator();
     arpPatternCombo->addListener (this);
 
-    addAndMakeVisible (arpDivisionCombo = new MidifiedComboBox ("arp division combo box"));
+    addAndMakeVisible (arpDivisionCombo = new ComboBox ("arp division combo box"));
     arpDivisionCombo->setEditableText (false);
     arpDivisionCombo->setJustificationType (Justification::centredLeft);
     arpDivisionCombo->setTextWhenNothingSelected (String::empty);
@@ -191,7 +190,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
     arpDivisionCombo->addItem (TRANS("1/96"), 17);
     arpDivisionCombo->addListener (this);
 
-    addAndMakeVisible (arpDurationCombo = new MidifiedComboBox ("arp duration combo box"));
+    addAndMakeVisible (arpDurationCombo = new ComboBox ("arp duration combo box"));
     arpDurationCombo->setEditableText (false);
     arpDurationCombo->setJustificationType (Justification::centredLeft);
     arpDurationCombo->setTextWhenNothingSelected (String::empty);
@@ -215,7 +214,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
     arpDurationCombo->addItem (TRANS("1/96"), 17);
     arpDurationCombo->addListener (this);
 
-    addAndMakeVisible (arpLatchCombo = new MidifiedComboBox ("arp latch combo box"));
+    addAndMakeVisible (arpLatchCombo = new ComboBox ("arp latch combo box"));
     arpLatchCombo->setEditableText (false);
     arpLatchCombo->setJustificationType (Justification::centredLeft);
     arpLatchCombo->setTextWhenNothingSelected (String::empty);
@@ -228,28 +227,28 @@ PanelArpAndFilter::PanelArpAndFilter ()
                                                                   TRANS("Filter")));
     filterGroupComponent->setTextLabelPosition (Justification::centredLeft);
 
-    addAndMakeVisible (filterOffButton = new MidifiedToggleButton ("filter off toggle button"));
+    addAndMakeVisible (filterOffButton = new ToggleButton ("filter off toggle button"));
     filterOffButton->setButtonText (TRANS("Off"));
     filterOffButton->setRadioGroupId (5112);
     filterOffButton->addListener (this);
     filterOffButton->setToggleState (true, dontSendNotification);
 
-    addAndMakeVisible (filterMixButton = new MidifiedToggleButton ("filter mix toggle button"));
+    addAndMakeVisible (filterMixButton = new ToggleButton ("filter mix toggle button"));
     filterMixButton->setButtonText (TRANS("Mix"));
     filterMixButton->setRadioGroupId (5112);
     filterMixButton->addListener (this);
 
-    addAndMakeVisible (filterLPButton = new MidifiedToggleButton ("filter LP toggle button"));
+    addAndMakeVisible (filterLPButton = new ToggleButton ("filter LP toggle button"));
     filterLPButton->setButtonText (TRANS("Low Pass"));
     filterLPButton->setRadioGroupId (5112);
     filterLPButton->addListener (this);
 
-    addAndMakeVisible (filterHPButton = new MidifiedToggleButton ("filter HP toggle button"));
+    addAndMakeVisible (filterHPButton = new ToggleButton ("filter HP toggle button"));
     filterHPButton->setButtonText (TRANS("High Pass"));
     filterHPButton->setRadioGroupId (5112);
     filterHPButton->addListener (this);
 
-    addAndMakeVisible (filterBassButton = new MidifiedToggleButton ("filter Bass toggle button"));
+    addAndMakeVisible (filterBassButton = new ToggleButton ("filter Bass toggle button"));
     filterBassButton->setButtonText (TRANS("Bass"));
     filterBassButton->setRadioGroupId (5112);
     filterBassButton->addListener (this);
@@ -262,7 +261,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
     filterParam1Label->setColour (TextEditor::textColourId, Colours::black);
     filterParam1Label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (filterParam1Slider = new MidifiedSlider ("filter param1 slider"));
+    addAndMakeVisible (filterParam1Slider = new Slider ("filter param1 slider"));
     filterParam1Slider->setRange (0, 1, 0.01);
     filterParam1Slider->setSliderStyle (Slider::RotaryVerticalDrag);
     filterParam1Slider->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
@@ -276,7 +275,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
     filterParam2Label->setColour (TextEditor::textColourId, Colours::black);
     filterParam2Label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (filterParam1Slider2 = new MidifiedSlider ("filter param1 slider"));
+    addAndMakeVisible (filterParam1Slider2 = new Slider ("filter param1 slider"));
     filterParam1Slider2->setRange (0, 1, 0.01);
     filterParam1Slider2->setSliderStyle (Slider::RotaryVerticalDrag);
     filterParam1Slider2->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
@@ -290,7 +289,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
     filterGainLabel->setColour (TextEditor::textColourId, Colours::black);
     filterGainLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (filterParam1Slider3 = new MidifiedSlider ("filter param1 slider"));
+    addAndMakeVisible (filterParam1Slider3 = new Slider ("filter param1 slider"));
     filterParam1Slider3->setRange (0, 2, 0.01);
     filterParam1Slider3->setSliderStyle (Slider::RotaryVerticalDrag);
     filterParam1Slider3->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
@@ -317,17 +316,6 @@ PanelArpAndFilter::PanelArpAndFilter ()
     arpDivisionCombo->setColour (ComboBox::buttonColourId, Colours::blue);
     arpDurationCombo->setColour (ComboBox::buttonColourId, Colours::blue);
     arpLatchCombo->setColour (ComboBox::buttonColourId, Colours::blue);
-
-    arpOffButton->setMidificatorParam(PREENFM2_NRPN_ARP_CLOCK, 0, 0);
-    arpInternalButton->setMidificatorParam(PREENFM2_NRPN_ARP_CLOCK, 1, 0);
-    arpExternalButton->setMidificatorParam(PREENFM2_NRPN_ARP_CLOCK, 2, 0);
-    arpBPM->setMidificatorParam(PREENFM2_NRPN_ARP_BPM, 0, 1);
-    arpDirectionCombo->setMidificatorParam(PREENFM2_NRPN_ARP_DIRECTION, 1, 1);
-    arpOctavleSlider->setMidificatorParam(PREENFM2_NRPN_ARP_OCTAVE, 0, 1);
-    arpPatternCombo->setMidificatorParam(PREENFM2_NRPN_ARP_PATTERN, 1, 1);
-    arpDivisionCombo->setMidificatorParam(PREENFM2_NRPN_ARP_DIVISION, 1, 1);
-    arpDurationCombo->setMidificatorParam(PREENFM2_NRPN_ARP_DURATION, 1, 1);
-    arpLatchCombo->setMidificatorParam(PREENFM2_NRPN_ARP_LATCH, 1, 1);
 
     arpOffButton->setToggleState (false, dontSendNotification);
     arpOffButton->setToggleState (true, sendNotification);
@@ -474,11 +462,6 @@ void PanelArpAndFilter::buttonClicked (Button* buttonThatWasClicked)
     }
 
     //[UserbuttonClicked_Post]
-    MidifiedToggleButton* midifiedButton = dynamic_cast<MidifiedToggleButton*>(buttonThatWasClicked);
-    if(midifiedButton != 0) {
-       // old was safely casted to NewType
-        midifiedButton->sendNrpn(eventsToAdd);
-    }
     //[/UserbuttonClicked_Post]
 }
 
@@ -514,11 +497,6 @@ void PanelArpAndFilter::sliderValueChanged (Slider* sliderThatWasMoved)
     }
 
     //[UsersliderValueChanged_Post]
-    MidifiedSlider* midifiedSlider = dynamic_cast<MidifiedSlider*>(sliderThatWasMoved);
-    if(midifiedSlider != 0) {
-       // old was safely casted to NewType
-        midifiedSlider->sendNrpn(eventsToAdd, midifiedSlider->getValue());
-    }
     //[/UsersliderValueChanged_Post]
 }
 
@@ -554,60 +532,12 @@ void PanelArpAndFilter::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     }
 
     //[UsercomboBoxChanged_Post]
-    MidifiedComboBox* midifiedComboBox = dynamic_cast<MidifiedComboBox*>(comboBoxThatHasChanged);
-    if(midifiedComboBox != 0) {
-       // old was safely casted to NewType
-        midifiedComboBox->sendNrpn(eventsToAdd, midifiedComboBox->getSelectedId());
-    }
     //[/UsercomboBoxChanged_Post]
 }
 
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-void PanelArpAndFilter::handleIncomingNrpn(int param, int value) {
-    // enveloppe1->handleIncomingNrpn(param, value);
-    static int index;
-    switch (param) {
-    case PREENFM2_NRPN_ARP_CLOCK:
-        switch (value) {
-        case 0:
-            arpOffButton->setToggleState(true, dontSendNotification);
-            arpIsNow(false, false);
-            break;
-        case 1:
-            arpInternalButton->setToggleState(true, dontSendNotification);
-            arpIsNow(true, true);
-            break;
-        case 2:
-            arpExternalButton->setToggleState(true, dontSendNotification);
-            arpIsNow(true, false);
-            break;
-        }
-        break;
-    case PREENFM2_NRPN_ARP_BPM:
-        arpBPM->setValue((float)value, dontSendNotification);
-        break;
-    case PREENFM2_NRPN_ARP_DIRECTION:
-        arpDirectionCombo->setSelectedId(value + 1, dontSendNotification);
-        break;
-    case PREENFM2_NRPN_ARP_OCTAVE:
-        arpOctavleSlider->setValue((float)value, dontSendNotification);
-        break;
-    case PREENFM2_NRPN_ARP_PATTERN:
-        arpPatternCombo->setSelectedId(value + 1, dontSendNotification);
-        break;
-    case PREENFM2_NRPN_ARP_DIVISION:
-        arpDivisionCombo->setSelectedId(value + 1, dontSendNotification);
-        break;
-    case PREENFM2_NRPN_ARP_DURATION:
-        arpDurationCombo->setSelectedId(value + 1, dontSendNotification);
-        break;
-    case PREENFM2_NRPN_ARP_LATCH:
-        arpLatchCombo->setSelectedId(value + 1, dontSendNotification);
-        break;
-    }
-}
 
 void PanelArpAndFilter::arpIsNow(bool arpOn, bool enableBPM) {
     arpBPM->setEnabled(enableBPM);

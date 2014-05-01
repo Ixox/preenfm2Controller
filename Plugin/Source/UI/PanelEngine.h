@@ -55,9 +55,6 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void setMidiOutput(MidiOutput* midiOutput);
-    void handleIncomingNrpn(int param, int value);
-    void sendNrpn(MidiOutput* midiOutput, int param, int value);
     void buttonClicked (Button* buttonThatWasClicked);
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void sliderValueChanged (Slider* sliderThatWasMoved, bool fromPluginUI);
@@ -68,13 +65,10 @@ public:
     void setMidiBuffer(MidiBuffer& eventsToAdd);
     // Panel of parameters
     void buildParameters();
-    void onParameterUpdated(const teragon::Parameter *parameter);
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
-
-
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.

@@ -10,12 +10,49 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "MidifiedParameter.h"
 
+int Midificator::paramIndexCounter = 0;
 
 //==============================================================================
 Pfm2AudioProcessor::Pfm2AudioProcessor()
 {
+	// Important !!!! reset paramIndexCounter.
+	Midificator::resetParamIndexCounter();
+
     pfm2Editor = nullptr;
+	teragon::Parameter* newParam;
+	int parameterIndex = 0;
+	for (int k=0; k<6; k++) {
+		int nrpmParam = PREENFM2_NRPN_MIX1 + k * 2;
+		newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Volume "+String(k+1)).toRawUTF8(), nrpmParam, 100, 0,1,1);
+		newParam->addObserver(this);
+		parameterSet.add(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
+	}
+	for (int k=0; k<6; k++) {
+		int nrpmParam = PREENFM2_NRPN_PAN1 + k * 2;
+		newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Pan "+String(k+1)).toRawUTF8(), nrpmParam, 100, -1, 1, 0);
+		newParam->addObserver(this);
+		parameterSet.add(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
+	}
+	for (int k=0; k<5; k++) {
+		int nrpmParam = PREENFM2_NRPN_IM1 + k * 2;
+		newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("IM "+String(k+1)).toRawUTF8(), nrpmParam, 100, 0,16,1.5);
+		newParam->addObserver(this);
+		parameterSet.add(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
+	}
+	for (int k=0; k<5; k++) {
+		int nrpmParam = PREENFM2_NRPN_IM1_VELOCITY + k * 2;
+		newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("IM Velocity "+String(k+1)).toRawUTF8(), nrpmParam, 100, 0,16,1);
+		newParam->addObserver(this);
+		parameterSet.add(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
+	}
+	midiMessageCollector.reset(44100);
+	uiNeedUpdate = false;
 }
 
 Pfm2AudioProcessor::~Pfm2AudioProcessor()
@@ -30,20 +67,14 @@ const String Pfm2AudioProcessor::getName() const
 
 int Pfm2AudioProcessor::getNumParameters()
 {
-    printf("fm2AudioProcessor::getNumParameters : %u\n", parameterSet.size());
-
-    return parameterSet.size();
+   return parameterSet.size();
 }
 
 float Pfm2AudioProcessor::getParameter (int index)
 {
-    return parameterSet[index]->getScaledValue();;
+	return parameterSet[index]->getScaledValue();
 }
 
-void Pfm2AudioProcessor::setParameter (int index, float newValue)
-{
-    parameterSet.setScaled(index, newValue);
-}
 
 const String Pfm2AudioProcessor::getParameterName (int index)
 {
@@ -141,15 +172,19 @@ void Pfm2AudioProcessor::releaseResources()
 
 void Pfm2AudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-    if (pfm2Editor != nullptr) {
-        pfm2Editor->handleIncomingMidiBuffer(midiMessages, buffer.getNumSamples());
-    }
+    handleIncomingMidiBuffer(midiMessages, buffer.getNumSamples());
+
 	// Clear sound
     for (int i = 0; i < getNumOutputChannels(); ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
 	// dispatch realtime events to non realtime observer
 	parameterSet.processRealtimeEvents();
+	midiMessageCollector.removeNextBlockOfMessages(midiMessages,  buffer.getNumSamples());
+	if (pfm2Editor && uiNeedUpdate) {
+		pfm2Editor->mustUpdateUI();
+	}
+	uiNeedUpdate = false;
 }
 
 //==============================================================================
@@ -178,7 +213,7 @@ void Pfm2AudioProcessor::getStateInformation (MemoryBlock& destData)
     for (int p=0; p< parameterSet.size(); p++) {
         printf(">>>>>> %s = %f\n", parameterSet[p]->getName().c_str(), parameterSet[p]->getScaledValue());
 
-        xml.setAttribute(parameterSet[p]->getName().c_str(), parameterSet[p]->getScaledValue());
+        xml.setAttribute(teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str(), parameterSet[p]->getScaledValue());
     }
 
     // then use this helper function to stuff it into the binary blob and return it..
@@ -200,7 +235,7 @@ void Pfm2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
         {
             double value;
             for (int p=0; p< parameterSet.size(); p++) {
-                value  = (float) xmlState->getDoubleAttribute (parameterSet[p]->getName().c_str(), value);
+                value  = (float) xmlState->getDoubleAttribute (teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str(), value);
                 parameterSet.setScaled(parameterSet[p]->getName(), value, this);
                 printf("<<<<< %s = %f\n", parameterSet[p]->getName().c_str(), value);
             }
@@ -211,15 +246,123 @@ void Pfm2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 
 
 bool Pfm2AudioProcessor::isRealtimePriority() const {
-    return false;
+    return true;
+}
+
+
+// 
+void Pfm2AudioProcessor::handleIncomingMidiBuffer(MidiBuffer &buffer, int numberOfSamples) {
+	if (!buffer.isEmpty()) {
+		MidiBuffer newBuffer;
+		MidiMessage midiMessage;
+		int samplePosition;
+		MidiBuffer::Iterator midiIterator(buffer);
+		while (midiIterator.getNextEvent(midiMessage, samplePosition)) {
+			bool copyMessageInNewBuffer = true;
+
+			if (midiMessage.isController()) {
+				switch (midiMessage.getControllerNumber()) {
+				case 99:
+					currentNrpn.paramMSB = midiMessage.getControllerValue();
+					copyMessageInNewBuffer = false;
+					break;
+				case 98:
+					currentNrpn.paramLSB = midiMessage.getControllerValue();
+					copyMessageInNewBuffer = false;
+					break;
+				case 6:
+					currentNrpn.valueMSB = midiMessage.getControllerValue();
+					copyMessageInNewBuffer = false;
+					break;
+				case 38:
+				{
+					currentNrpn.valueLSB = midiMessage.getControllerValue();
+					copyMessageInNewBuffer = false;
+					int param = (int)(currentNrpn.paramMSB << 7) + currentNrpn.paramLSB;
+					int value = (int)(currentNrpn.valueMSB << 7) + currentNrpn.valueLSB;
+
+					const MessageManagerLock mmLock;
+					handleIncomingNrpn(param, value);
+					break;
+				}
+				}
+			}
+			if (copyMessageInNewBuffer) {
+				newBuffer.addEvent(midiMessage, samplePosition);
+			}
+		}
+		buffer.swapWith(newBuffer);
+	}
 }
 
 /**
- * Method to be called when a parameter's value has been updated.
+ * Values updated by the HOST
+ * . Modify value
+    . Send NRPN
+	. Refresh UI
+*/
+void Pfm2AudioProcessor::setParameter (int index, float newValue)
+{
+	parameterSet.setScaled(index, newValue, this);
+
+	const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameterSet[index]);
+	if (midifiedFP != nullptr) {
+		int index = midifiedFP->getParamIndex();
+		// send nrpn
+		midifiedFP->addNrpn(midiMessageCollector, midifiedFP->getValue());
+	}
+	// REDRAW UI : must be done in processblock after parameterSet is really udpated.
+	uiNeedUpdate = true;
+}
+
+
+/**
+ * Values updated by the PreenFM2
+ * Here the values has to be modified
+  . Modify Value
+  . tell host
+  . refresh UI
+ */
+void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value) {
+	// NRPM from the preenFM2 
+	
+	int index = nrpmIndex[param];
+	Parameter* parameter = parameterSet[index];
+
+
+	MidifiedFloatParameter* midifiedFP = dynamic_cast<MidifiedFloatParameter*>(parameter);
+	if (parameter != nullptr) {
+		float newFloatValue = midifiedFP->getValueFromNrpn(value);
+		// Set the value but we don't want to be notified
+		parameterSet.set(index, midifiedFP->getValueFromNrpn(value), this);
+		// Notify host
+		sendParamChangeMessageToListeners(index, midifiedFP->getScaledValueFromNrpn(value));
+		// REDRAW UI : must be done in processblock after parameterSet is really udpated.
+		uiNeedUpdate = true;
+	}
+}
+
+/**
+ * Values updated by the UI
+ * Here values are already up to date
+ . tell host
+ . Send NRPN
  */
 void Pfm2AudioProcessor::onParameterUpdated(const teragon::Parameter *parameter) {
     printf("Panel Engine onParameterUpdated %s\n = %f\n",  parameter->getName().c_str(), parameter->getValue());
+	
+	const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameter);
+	if (midifiedFP != nullptr) {
+		int index = midifiedFP->getParamIndex();
+		// Notify host
+		sendParamChangeMessageToListeners(index, parameter->getScaledValue());
+		// send nrpn
+		midifiedFP->addNrpn(midiMessageCollector, parameter->getValue());
+	}
 }
+
+
+
 
 //==============================================================================
 // This creates new instances of the plugin..
@@ -227,3 +370,4 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new Pfm2AudioProcessor();
 }
+

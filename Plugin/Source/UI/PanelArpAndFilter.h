@@ -73,10 +73,10 @@ private:
 
     //==============================================================================
     ScopedPointer<GroupComponent> arpGroupComponent;
-    ScopedPointer<MidifiedToggleButton> arpOffButton;
-    ScopedPointer<MidifiedToggleButton> arpInternalButton;
-    ScopedPointer<MidifiedToggleButton> arpExternalButton;
-    ScopedPointer<MidifiedSlider> arpBPM;
+    ScopedPointer<ToggleButton> arpOffButton;
+    ScopedPointer<ToggleButton> arpInternalButton;
+    ScopedPointer<ToggleButton> arpExternalButton;
+    ScopedPointer<Slider> arpBPM;
     ScopedPointer<Label> arpBPMLabel;
     ScopedPointer<Label> arpDirectionLabel;
     ScopedPointer<Label> arpOctaveLabel;
@@ -84,24 +84,24 @@ private:
     ScopedPointer<Label> arpDivisionLabel;
     ScopedPointer<Label> arpDurationLabel;
     ScopedPointer<Label> arpLatchLabel;
-    ScopedPointer<MidifiedComboBox> arpDirectionCombo;
-    ScopedPointer<MidifiedSlider> arpOctavleSlider;
-    ScopedPointer<MidifiedComboBox> arpPatternCombo;
-    ScopedPointer<MidifiedComboBox> arpDivisionCombo;
-    ScopedPointer<MidifiedComboBox> arpDurationCombo;
-    ScopedPointer<MidifiedComboBox> arpLatchCombo;
+    ScopedPointer<ComboBox> arpDirectionCombo;
+    ScopedPointer<Slider> arpOctavleSlider;
+    ScopedPointer<ComboBox> arpPatternCombo;
+    ScopedPointer<ComboBox> arpDivisionCombo;
+    ScopedPointer<ComboBox> arpDurationCombo;
+    ScopedPointer<ComboBox> arpLatchCombo;
     ScopedPointer<GroupComponent> filterGroupComponent;
-    ScopedPointer<MidifiedToggleButton> filterOffButton;
-    ScopedPointer<MidifiedToggleButton> filterMixButton;
-    ScopedPointer<MidifiedToggleButton> filterLPButton;
-    ScopedPointer<MidifiedToggleButton> filterHPButton;
-    ScopedPointer<MidifiedToggleButton> filterBassButton;
+    ScopedPointer<ToggleButton> filterOffButton;
+    ScopedPointer<ToggleButton> filterMixButton;
+    ScopedPointer<ToggleButton> filterLPButton;
+    ScopedPointer<ToggleButton> filterHPButton;
+    ScopedPointer<ToggleButton> filterBassButton;
     ScopedPointer<Label> filterParam1Label;
-    ScopedPointer<MidifiedSlider> filterParam1Slider;
+    ScopedPointer<Slider> filterParam1Slider;
     ScopedPointer<Label> filterParam2Label;
-    ScopedPointer<MidifiedSlider> filterParam1Slider2;
+    ScopedPointer<Slider> filterParam1Slider2;
     ScopedPointer<Label> filterGainLabel;
-    ScopedPointer<MidifiedSlider> filterParam1Slider3;
+    ScopedPointer<Slider> filterParam1Slider3;
 
 
     //==============================================================================

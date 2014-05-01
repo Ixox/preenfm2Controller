@@ -15,7 +15,6 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Enveloppe.h"
 #include "MidifiedComponent.h"
-#include "PreenNrpn.h"
 
 //==============================================================================
 EnveloppeFree2::EnveloppeFree2(int nrpnBase)
@@ -39,7 +38,7 @@ EnveloppeFree2::EnveloppeFree2(int nrpnBase)
     pointList.append(point2);
     pointList.append(point3);
 
-    addAndMakeVisible(loopCombo = new MidifiedComboBox(TRANS("loop combo"), nrpnBase + 3 , 1, 1));
+    addAndMakeVisible(loopCombo = new ComboBox("loop combo"));
     loopCombo->setEditableText (false);
     loopCombo->setJustificationType (Justification::centred);
     loopCombo->addItem("None", 1);
@@ -104,10 +103,12 @@ void EnveloppeFree2::handleIncomingNrpn(int param, int value) {
 }
 
 void EnveloppeFree2::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
+/*
 	MidifiedComboBox* midifiedComboBox = dynamic_cast<MidifiedComboBox*>(comboBoxThatHasChanged);
 	if(midifiedComboBox != nullptr) {
 		sendNrpn(nrpnBase + 3,  midifiedComboBox->getSelectedId() - 1);
 	}
+	*/
 }
 
 void EnveloppeFree2::resized() {

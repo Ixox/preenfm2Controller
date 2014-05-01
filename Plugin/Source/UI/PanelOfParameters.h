@@ -14,45 +14,54 @@
 #include "JuceHeader.h"
 #include "../PluginParameters/include/PluginParameters.h"
 
-class PanelOfParameters :public teragon::ParameterObserver
+class PanelOfParameters
 {
 public:
 
+	~PanelOfParameters() {
+	}
+
+
     void setParameterSet(teragon::ConcurrentParameterSet& parameterSet) {
         this->parameterSet = &parameterSet;
+		panelParameterMap.clear();
     }
 
     virtual void buildParameters() = 0;
 
     void addSliderParameter(Slider* slider) {
-        teragon::ParameterString pString = teragon::Parameter::makeSafeName(slider->getName().toRawUTF8());
-        teragon::Parameter* newParam = new teragon::FloatParameter(pString, slider->getMinimum(), slider->getMaximum(), slider->getValue());
-        parameterSet->add(newParam);
-        componentMap.insert(std::pair<teragon::ParameterString ,Component *>(pString , slider));
-        parameterMap.insert(std::pair<String ,teragon::Parameter *>(slider->getName() , newParam));
-        // And last...
-        newParam->addObserver(this);
-    }
+        teragon::ParameterString pString = slider->getName().toRawUTF8();
+		teragon::Parameter* paramToMap =  parameterSet->get(pString);
+		// Will remove that later but dont' BUG for the moment if that doesn't fit
+		if (paramToMap == nullptr) {
+			printf("WHAT %s does not exist...\r\n", pString.c_str());
+			return;
+		}
+/*
+		if (componentMap[pString] == nullptr) {
+			componentMap.insert(std::pair<teragon::ParameterString ,Component *>(pString , slider));
+		}
+		*/
+		if (panelParameterMap[slider->getName()] == nullptr) {
+			panelParameterMap.set(slider->getName() ,paramToMap);
+		}
+
+		// And let's update the value and update the UI Without sending modification !!!
+		// No modification : we dont want sliderValueChanged to be called in the different panels
+		slider->setValue(paramToMap->getValue(), dontSendNotification);
+	}
 
     void addComboBoxParameter(ComboBox* comboBox) {
-        teragon::ParameterString pString = teragon::Parameter::makeSafeName(comboBox->getName().toRawUTF8());
+        teragon::ParameterString pString = comboBox->getName().toRawUTF8();
         teragon::Parameter* newParam = new teragon::IntegerParameter(pString, 1, comboBox->getNumItems(), comboBox->getSelectedId());
         parameterSet->add(newParam);
-        componentMap.insert(std::pair<teragon::ParameterString ,Component *>(pString , comboBox));
-        parameterMap.insert(std::pair<String ,teragon::Parameter *>(comboBox->getName() , newParam));
-        // And last...
-        newParam->addObserver(this);
+        //componentMap.insert(std::pair<teragon::ParameterString ,Component *>(pString , comboBox));
+        panelParameterMap.set(comboBox->getName() , newParam);
     }
 
-    // parameter observer
-    bool isRealtimePriority() const { return false; }
-
-    // The following one mus be implemented by the panel itself
-    //    void onParameterUpdated(const teragon::Parameter *parameter);
-
 protected:
-    std::map<teragon::ParameterString, Component *> componentMap;
-    std::map<String, teragon::Parameter *> parameterMap;
+//    std::map<teragon::ParameterString, Component *> componentMap;
+    HashMap<String, teragon::Parameter *> panelParameterMap;
     teragon::ConcurrentParameterSet* parameterSet;
 };
 

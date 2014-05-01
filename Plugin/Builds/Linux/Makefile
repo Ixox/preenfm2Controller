@@ -18,12 +18,12 @@ ifeq ($(CONFIG),Debug)
     TARGET_ARCH := -march=native
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vstsdk2.4 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=0.1" -D "JUCE_APP_VERSION_HEX=0x100" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vstsdk2.4 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -fPIC -O0
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -shared -L/usr/X11R6/lib/ -lGL -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
   LDDEPS :=
-  RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vstsdk2.4 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=0.1" -D "JUCE_APP_VERSION_HEX=0x100" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vstsdk2.4 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   TARGET := pfm2.so
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
   CLEANCMD = rm -rf $(OUTDIR)/$(TARGET) $(OBJDIR)
@@ -39,30 +39,40 @@ ifeq ($(CONFIG),Release)
     TARGET_ARCH := -march=native
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vstsdk2.4 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=0.1" -D "JUCE_APP_VERSION_HEX=0x100" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vstsdk2.4 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -fPIC -Os
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -shared -fvisibility=hidden -L/usr/X11R6/lib/ -lGL -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
   LDDEPS :=
-  RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vstsdk2.4 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=0.1" -D "JUCE_APP_VERSION_HEX=0x100" -I /usr/include -I /usr/include/freetype2 -I ~/SDKs/vstsdk2.4 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   TARGET := pfm2.so
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
   CLEANCMD = rm -rf $(OUTDIR)/$(TARGET) $(OBJDIR)
 endif
 
 OBJECTS := \
-  $(OBJDIR)/MainTabs_d25c1393.o \
+  $(OBJDIR)/tinythread_6ba26173.o \
+  $(OBJDIR)/fractal_883848e9.o \
+  $(OBJDIR)/hello_faa7e30a.o \
+  $(OBJDIR)/test_2cb86164.o \
+  $(OBJDIR)/MultithreadedTest_1829dc6a.o \
+  $(OBJDIR)/PluginParametersTest_6b9ecfa3.o \
   $(OBJDIR)/Enveloppe_d93dfef8.o \
   $(OBJDIR)/EnveloppeAbstract_fccf6f3a.o \
   $(OBJDIR)/EnveloppeFree1_21bdb4f7.o \
   $(OBJDIR)/EnveloppeFree2_21cbcc78.o \
+  $(OBJDIR)/Main_f5b78af5.o \
+  $(OBJDIR)/MainTabs_d25c1393.o \
+  $(OBJDIR)/exoFont_1fdfe2eb.o \
   $(OBJDIR)/PanelArpAndFilter_ad31c1c2.o \
   $(OBJDIR)/PanelEngine_cf196034.o \
   $(OBJDIR)/PanelModulation_30f357ee.o \
+  $(OBJDIR)/AlgoPNG_60eecabe.o \
   $(OBJDIR)/PreenLookAndFeel_d8d8748e.o \
   $(OBJDIR)/StepSequencer_13b10873.o \
-  $(OBJDIR)/PluginProcessor_a059e380.o \
   $(OBJDIR)/PluginEditor_94d4fb09.o \
+  $(OBJDIR)/PluginProcessor_a059e380.o \
+  $(OBJDIR)/BinaryData_ce4232d4.o \
   $(OBJDIR)/juce_audio_basics_2442e4ea.o \
   $(OBJDIR)/juce_audio_devices_a4c8a728.o \
   $(OBJDIR)/juce_audio_formats_d349f0c8.o \
@@ -83,23 +93,48 @@ OBJECTS := \
 .PHONY: clean
 
 $(OUTDIR)/$(TARGET): $(OBJECTS) $(LDDEPS) $(RESOURCES)
-	@echo Linking pfm2
+	@echo Linking pfm2Plugin
 	-@mkdir -p $(BINDIR)
 	-@mkdir -p $(LIBDIR)
 	-@mkdir -p $(OUTDIR)
 	@$(BLDCMD)
 
 clean:
-	@echo Cleaning pfm2
+	@echo Cleaning pfm2Plugin
 	@$(CLEANCMD)
 
 strip:
-	@echo Stripping pfm2
+	@echo Stripping pfm2Plugin
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
 
-$(OBJDIR)/MainTabs_d25c1393.o: ../../Source/UI/MainTabs.cpp
+$(OBJDIR)/tinythread_6ba26173.o: ../../Source/PluginParameters/include/tinythread/source/tinythread.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling MainTabs.cpp"
+	@echo "Compiling tinythread.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/fractal_883848e9.o: ../../Source/PluginParameters/include/tinythread/test/fractal.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling fractal.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/hello_faa7e30a.o: ../../Source/PluginParameters/include/tinythread/test/hello.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling hello.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/test_2cb86164.o: ../../Source/PluginParameters/include/tinythread/test/test.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling test.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/MultithreadedTest_1829dc6a.o: ../../Source/PluginParameters/test/MultithreadedTest.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling MultithreadedTest.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/PluginParametersTest_6b9ecfa3.o: ../../Source/PluginParameters/test/PluginParametersTest.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling PluginParametersTest.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Enveloppe_d93dfef8.o: ../../Source/UI/Enveloppe.cpp
@@ -122,6 +157,21 @@ $(OBJDIR)/EnveloppeFree2_21cbcc78.o: ../../Source/UI/EnveloppeFree2.cpp
 	@echo "Compiling EnveloppeFree2.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/Main_f5b78af5.o: ../../Source/UI/Main.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling Main.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/MainTabs_d25c1393.o: ../../Source/UI/MainTabs.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling MainTabs.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/exoFont_1fdfe2eb.o: ../../Source/UI/OTF/exoFont.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling exoFont.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/PanelArpAndFilter_ad31c1c2.o: ../../Source/UI/PanelArpAndFilter.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling PanelArpAndFilter.cpp"
@@ -137,6 +187,11 @@ $(OBJDIR)/PanelModulation_30f357ee.o: ../../Source/UI/PanelModulation.cpp
 	@echo "Compiling PanelModulation.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/AlgoPNG_60eecabe.o: ../../Source/UI/png/AlgoPNG.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling AlgoPNG.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/PreenLookAndFeel_d8d8748e.o: ../../Source/UI/PreenLookAndFeel.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling PreenLookAndFeel.cpp"
@@ -147,14 +202,19 @@ $(OBJDIR)/StepSequencer_13b10873.o: ../../Source/UI/StepSequencer.cpp
 	@echo "Compiling StepSequencer.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/PluginEditor_94d4fb09.o: ../../Source/PluginEditor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling PluginEditor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/PluginProcessor_a059e380.o: ../../Source/PluginProcessor.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling PluginProcessor.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/PluginEditor_94d4fb09.o: ../../Source/PluginEditor.cpp
+$(OBJDIR)/BinaryData_ce4232d4.o: ../../JuceLibraryCode/BinaryData.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling PluginEditor.cpp"
+	@echo "Compiling BinaryData.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_audio_basics_2442e4ea.o: ../../JuceLibraryCode/modules/juce_audio_basics/juce_audio_basics.cpp

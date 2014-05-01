@@ -61,8 +61,6 @@ public:
     void buttonClicked (Button* buttonThatWasClicked);
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
-    void handleIncomingNrpn(int param, int value);
-    void setMidiBuffer(MidiBuffer& eventsToAdd);
     void buildParameters();
     void onParameterUpdated(const teragon::Parameter *parameter);
     //[/UserMethods]

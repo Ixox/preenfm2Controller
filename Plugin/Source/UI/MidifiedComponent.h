@@ -51,10 +51,10 @@ protected:
 	int nrpnParam;
 };
 
-class MidifiedSlider : public Slider, public Midificator {
+class MidifiedSliderKO : public Slider, public Midificator {
 public:
 
-	MidifiedSlider (const String& componentName, int nrpnParam = -1, float minValue = 0.0f, float valueMultipler = 100.0f) : Slider(componentName), Midificator(nrpnParam, minValue, valueMultipler) {
+	MidifiedSliderKO (const String& componentName, int nrpnParam = -1, float minValue = 0.0f, float valueMultipler = 100.0f) : Slider(componentName), Midificator(nrpnParam, minValue, valueMultipler) {
 	}
 
     void mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel) override
@@ -75,17 +75,17 @@ public:
 
 };
 
-class MidifiedComboBox: public ComboBox, public Midificator {
+class MidifiedComboBoxKO: public ComboBox, public Midificator {
 public:
-	MidifiedComboBox (const String& componentName, int nrpnParam = -1, float minValue = 0.0f, float valueMultipler = 100.0f) : ComboBox(componentName), Midificator(nrpnParam, minValue, valueMultipler) {
+	MidifiedComboBoxKO (const String& componentName, int nrpnParam = -1, float minValue = 0.0f, float valueMultipler = 100.0f) : ComboBox(componentName), Midificator(nrpnParam, minValue, valueMultipler) {
 	}
 };
 
 
-class MidifiedToggleButton: public ToggleButton, public Midificator {
+class MidifiedToggleButtonKO: public ToggleButton, public Midificator {
 public:
     // sendNrpn is overloaded, we don't use valueMultiplier here
-    MidifiedToggleButton(const String& componentName, int nrpnParam = -1, int nrpnValue = -1) : ToggleButton(componentName), Midificator(nrpnParam, nrpnValue, 0) {
+    MidifiedToggleButtonKO(const String& componentName, int nrpnParam = -1, int nrpnValue = -1) : ToggleButton(componentName), Midificator(nrpnParam, nrpnValue, 0) {
     }
 
     void sendNrpn(MidiBuffer* midiBuffer) {

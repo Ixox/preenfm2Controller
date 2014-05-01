@@ -20,7 +20,6 @@
 //[Headers] You can add your own extra header files here...
 #include "JuceHeader.h"
 #include "../PluginParameters/include/PluginParameters.h"
-#include "PreenNrpn.h"
 #include "MidifiedComponent.h"
 
 //[/Headers]
@@ -80,7 +79,7 @@ PanelModulation::PanelModulation ()
     // LFO
     for (int k = 0; k < NUMBER_OF_LFO; k++) {
         addAndMakeVisible(lfoButton[k] = new TextButton ("lfo button"));
-        lfoButton[k]->setButtonText (TRANS("LFO " + String(k+1)));
+        lfoButton[k]->setButtonText ("LFO " + String(k+1));
         lfoButton[k]->addListener (this);
         lfoButton[k]->setColour (TextButton::buttonColourId, Colour (0xffcff0e5));
         lfoButton[k]->setColour (TextButton::buttonOnColourId, Colours::aliceblue);
@@ -88,7 +87,7 @@ PanelModulation::PanelModulation ()
         lfoButton[k]->setRadioGroupId(4243);
         lfoButton[k]->setConnectedEdges((k!=0 ? Button::ConnectedOnLeft : 0) | (k!= NUMBER_OF_LFO-1 ? Button::ConnectedOnRight : 0 ));
 
-        addAndMakeVisible(lfoShape[k] = new MidifiedComboBox(TRANS("LFO Shape "+ String(k)), PREENFM2_NRPN_LFO1_SHAPE + 4 * k, 1, 1));
+        addAndMakeVisible(lfoShape[k] = new ComboBox("LFO"+ String(k+1)+ " Shape"));
         lfoShape[k]->setEditableText (false);
         lfoShape[k]->setJustificationType (Justification::left);
         lfoShape[k]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -100,7 +99,7 @@ PanelModulation::PanelModulation ()
         lfoShape[k]->setSelectedId(1);
         lfoShape[k]->addListener (this);
 
-        addAndMakeVisible(lfoExtMidiSync[k] = new MidifiedComboBox(TRANS("LFO Ext Sync "+ String(k)), PREENFM2_NRPN_LFO1_FREQUENCY+ 4 * k, -239, 10));
+        addAndMakeVisible(lfoExtMidiSync[k] = new ComboBox("LFO"+ String(k+1) + " Ext Sync"));
         lfoExtMidiSync[k]->setEditableText (false);
         lfoExtMidiSync[k]->setJustificationType (Justification::left);
         lfoExtMidiSync[k]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -117,7 +116,7 @@ PanelModulation::PanelModulation ()
         lfoExtMidiSync[k]->setSelectedId(1);
         lfoExtMidiSync[k]->addListener (this);
 
-        addAndMakeVisible(lfoFrequency[k] = new MidifiedSlider(TRANS("LFO frequency" + String(k+1)), PREENFM2_NRPN_LFO1_FREQUENCY + 4 * k, 0.0f));
+        addAndMakeVisible(lfoFrequency[k] = new Slider("LFO"+ String(k+1) + " Frequency"));
         lfoFrequency[k]->setRange (0, 24.0f, .01f);
         lfoFrequency[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         lfoFrequency[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
@@ -125,7 +124,7 @@ PanelModulation::PanelModulation ()
         lfoFrequency[k]->setValue(3.0f, dontSendNotification);
         lfoFrequency[k]->addListener (this);
 
-        addAndMakeVisible(lfoBias[k] = new MidifiedSlider(TRANS("LFO Bias " + String(k+1)), PREENFM2_NRPN_LFO1_BIAS+ 4 * k, -1.0f));
+        addAndMakeVisible(lfoBias[k] = new Slider("LFO"+ String(k+1) + " Bias"));
         lfoBias[k]->setRange (-1.0f, 1.0f, .01f);
         lfoBias[k]->setSliderStyle (Slider::LinearVertical);
         lfoBias[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
@@ -133,7 +132,7 @@ PanelModulation::PanelModulation ()
         lfoBias[k]->setValue(0.0f, dontSendNotification);
         lfoBias[k]->addListener (this);
 
-        addAndMakeVisible(lfoKSync[k] = new MidifiedSlider(TRANS("LFO KSyn " + String(k+1)), PREENFM2_NRPN_LFO1_KSYN+ 4 * k, -0.01f));
+        addAndMakeVisible(lfoKSync[k] = new Slider("LFO"+ String(k+1) + " KSyn"));
         lfoKSync[k]->setRange (0.0f, 16.0f, .01f);
         lfoKSync[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         lfoKSync[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
@@ -141,7 +140,7 @@ PanelModulation::PanelModulation ()
         lfoKSync[k]->setValue(0.0f, dontSendNotification);
         lfoKSync[k]->addListener (this);
 
-        addAndMakeVisible(lfoKsynOnOff[k] = new MidifiedComboBox(TRANS("Combo KSync "+ String(k)), PREENFM2_NRPN_LFO1_KSYN+ 4 * k, 1.01f, 1));
+        addAndMakeVisible(lfoKsynOnOff[k] = new ComboBox("LFO"+ String(k+1) + " KSyn"));
         lfoKsynOnOff[k]->setEditableText (false);
         lfoKsynOnOff[k]->setJustificationType (Justification::left);
         lfoKsynOnOff[k]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -163,9 +162,8 @@ PanelModulation::PanelModulation ()
     lfoKSynLabel->setJustificationType(Justification::centredTop);
 
 
-    int nrpnStepSeq[] = { PREENFM2_NRPN_STEPSEQ1_STEP1, PREENFM2_NRPN_STEPSEQ2_STEP1};
     for (int k=0; k<NUMBER_OF_STEP_SEQ; k++) {
-        addAndMakeVisible(stepSeqExtMidiSync[k] = new MidifiedComboBox(TRANS("BPM Ext Sync "+ String(k)), PREENFM2_NRPN_STEPSEQ1_BPM + 4 * k, -239, 1));
+        addAndMakeVisible(stepSeqExtMidiSync[k] = new ComboBox("SEQ"+ String(k+1) + " BPM"));
         stepSeqExtMidiSync[k]->setEditableText (false);
         stepSeqExtMidiSync[k]->setColour (ComboBox::buttonColourId, Colours::blue);
         stepSeqExtMidiSync[k]->setJustificationType (Justification::left);
@@ -178,7 +176,7 @@ PanelModulation::PanelModulation ()
         stepSeqExtMidiSync[k]->setSelectedId(1);
         stepSeqExtMidiSync[k]->addListener (this);
 
-        addAndMakeVisible(stepSeqBPM[k] = new MidifiedSlider(TRANS("stepSeq BPM" + String(k+1)), PREENFM2_NRPN_STEPSEQ1_BPM + 4 * k, 0.0f, 1.0f));
+        addAndMakeVisible(stepSeqBPM[k] = new Slider("SEQ"+ String(k+1) + " BPM"));
         stepSeqBPM[k]->setRange (10, 240.0f, 1.0f);
         stepSeqBPM[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         stepSeqBPM[k]->setTextBoxStyle (Slider::TextBoxLeft, false, 35, 16);
@@ -186,7 +184,7 @@ PanelModulation::PanelModulation ()
         stepSeqBPM[k]->setValue(3.0f, dontSendNotification);
         stepSeqBPM[k]->addListener (this);
 
-        addAndMakeVisible(stepSeqGate[k] = new MidifiedSlider(TRANS("stepSeq Gate " + String(k+1)), PREENFM2_NRPN_STEPSEQ1_GATE + 4 * k, 0.0f, 100.0f));
+        addAndMakeVisible(stepSeqGate[k] = new Slider("SEQ" + String(k+1) + " Gate"));
         stepSeqGate[k]->setRange (0.0f, 1.0f, 0.01f);
         stepSeqGate[k]->setSliderStyle (Slider::LinearHorizontal);
         stepSeqGate[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
@@ -194,7 +192,7 @@ PanelModulation::PanelModulation ()
         stepSeqGate[k]->setValue(0.5f, dontSendNotification);
         stepSeqGate[k]->addListener (this);
 
-        stepSequencer[k] = new StepSequencer (16, 16, nrpnStepSeq[k]);
+        stepSequencer[k] = new StepSequencer (16, 16, 100 /* TOC CHANGE !!!!!*/ );
         stepSequencer[k]->setBounds(16, 368, 500, 120);
         stepSequencer[k]->setName (TRANS("step sequencer" + String(k+1)));
         addAndMakeVisible(stepSequencer[k]);
@@ -222,7 +220,7 @@ PanelModulation::PanelModulation ()
     for (int r = 0; r < NUMBER_OF_MATRIX_ROW; r++) {
         addAndMakeVisible(matrixRowLabel[r] = new Label(String("matrix label ")+ String(r+1), String(r+1)));
 
-        addAndMakeVisible(matrixMultipler[r] = new MidifiedSlider(TRANS("matrix multiplier" + String(r+1)), PREENFM2_NRPN_MTX1_MULTIPLIER + 4*r, -10));
+        addAndMakeVisible(matrixMultipler[r] = new Slider("MTX row"+ String (r+1) + " Multipler"));
         matrixMultipler[r]->setRange (-10.0f, 10.0f, .01f);
         matrixMultipler[r]->setSliderStyle (Slider::RotaryVerticalDrag);
         matrixMultipler[r]->setTextBoxStyle (Slider::TextBoxLeft, false, 35, 16);
@@ -230,7 +228,7 @@ PanelModulation::PanelModulation ()
         matrixMultipler[r]->setValue(0.0f, dontSendNotification);
         matrixMultipler[r]->addListener (this);
 
-        addAndMakeVisible(matrixSource[r] = new MidifiedComboBox(TRANS("matrix source "+ String(r)), PREENFM2_NRPN_MTX1_SOURCE + 4 * r, 1, 1));
+        addAndMakeVisible(matrixSource[r] = new ComboBox("MTX row"+ String (r+1) + " Source"));
         matrixSource[r]->setEditableText (false);
         matrixSource[r]->setJustificationType (Justification::centred);
         matrixSource[r]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -240,7 +238,7 @@ PanelModulation::PanelModulation ()
         matrixSource[r]->setSelectedId(1);
         matrixSource[r]->addListener(this);
 
-        addAndMakeVisible(matrixDestination[r] = new MidifiedComboBox(TRANS("matrix destination"+ String(r)), PREENFM2_NRPN_MTX1_DESTINATION + 4 * r, 1, 1));
+        addAndMakeVisible(matrixDestination[r] = new ComboBox("MTX row"+ String (r+1) + " Destination"));
         matrixDestination[r]->setEditableText (false);
         matrixDestination[r]->setJustificationType (Justification::centred);
         matrixDestination[r]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -251,10 +249,11 @@ PanelModulation::PanelModulation ()
         matrixDestination[r]->addListener(this);
     }
 
-    addAndMakeVisible(enveloppeFree1 = new EnveloppeFree1 (PREENFM2_NRPN_FREE_ENV1_ATTK));
+    addAndMakeVisible(enveloppeFree1 = new EnveloppeFree1 (127 /* 
+															   !!!!!!!!!!!!!!!! */));
     enveloppeFree1->setName (TRANS("Free Env 1"));
 
-    addAndMakeVisible(enveloppeFree2 = new EnveloppeFree2 (PREENFM2_NRPN_FREE_ENV2_SILENCE));
+    addAndMakeVisible(enveloppeFree2 = new EnveloppeFree2 (127));
     enveloppeFree2->setName (TRANS("Free Env 2"));
     //[/UserPreSize]
 
@@ -338,160 +337,6 @@ void PanelModulation::resized()
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-void PanelModulation::handleIncomingNrpn(int param, int value) {
-    // enveloppe1->handleIncomingNrpn(param, value);
-    static int index;
-    switch (param) {
-    case PREENFM2_NRPN_MTX1_MULTIPLIER:
-    case PREENFM2_NRPN_MTX2_MULTIPLIER:
-    case PREENFM2_NRPN_MTX3_MULTIPLIER:
-    case PREENFM2_NRPN_MTX4_MULTIPLIER:
-    case PREENFM2_NRPN_MTX5_MULTIPLIER:
-    case PREENFM2_NRPN_MTX6_MULTIPLIER:
-    case PREENFM2_NRPN_MTX7_MULTIPLIER:
-    case PREENFM2_NRPN_MTX8_MULTIPLIER:
-    case PREENFM2_NRPN_MTX9_MULTIPLIER:
-    case PREENFM2_NRPN_MTX10_MULTIPLIER:
-    case PREENFM2_NRPN_MTX11_MULTIPLIER:
-    case PREENFM2_NRPN_MTX12_MULTIPLIER:
-        index = (param - PREENFM2_NRPN_MTX1_MULTIPLIER) / 4;
-        matrixMultipler[index]->setValue((float)value / 100.0f - 10.0f, dontSendNotification);
-        break;
-    case PREENFM2_NRPN_MTX1_SOURCE:
-    case PREENFM2_NRPN_MTX2_SOURCE:
-    case PREENFM2_NRPN_MTX3_SOURCE:
-    case PREENFM2_NRPN_MTX4_SOURCE:
-    case PREENFM2_NRPN_MTX5_SOURCE:
-    case PREENFM2_NRPN_MTX6_SOURCE:
-    case PREENFM2_NRPN_MTX7_SOURCE:
-    case PREENFM2_NRPN_MTX8_SOURCE:
-    case PREENFM2_NRPN_MTX9_SOURCE:
-    case PREENFM2_NRPN_MTX10_SOURCE:
-    case PREENFM2_NRPN_MTX11_SOURCE:
-    case PREENFM2_NRPN_MTX12_SOURCE:
-        index = (param - PREENFM2_NRPN_MTX1_SOURCE) / 4;
-        matrixSource[index]->setSelectedId(value + 1, dontSendNotification);
-        break;
-    case PREENFM2_NRPN_MTX1_DESTINATION:
-    case PREENFM2_NRPN_MTX2_DESTINATION:
-    case PREENFM2_NRPN_MTX3_DESTINATION:
-    case PREENFM2_NRPN_MTX4_DESTINATION:
-    case PREENFM2_NRPN_MTX5_DESTINATION:
-    case PREENFM2_NRPN_MTX6_DESTINATION:
-    case PREENFM2_NRPN_MTX7_DESTINATION:
-    case PREENFM2_NRPN_MTX8_DESTINATION:
-    case PREENFM2_NRPN_MTX9_DESTINATION:
-    case PREENFM2_NRPN_MTX10_DESTINATION:
-    case PREENFM2_NRPN_MTX11_DESTINATION:
-    case PREENFM2_NRPN_MTX12_DESTINATION:
-        index = (param - PREENFM2_NRPN_MTX1_DESTINATION) / 4;
-        matrixDestination[index]->setSelectedId(value + 1, dontSendNotification);
-        break;
-    case PREENFM2_NRPN_FREE_ENV1_ATTK:
-    case PREENFM2_NRPN_FREE_ENV1_DECAY:
-    case PREENFM2_NRPN_FREE_ENV1_RELEASE:
-    case PREENFM2_NRPN_FREE_ENV1_SUSTAIN:
-        enveloppeFree1->handleIncomingNrpn(param, value);
-        break;
-    case PREENFM2_NRPN_FREE_ENV2_SILENCE:
-    case PREENFM2_NRPN_FREE_ENV2_ATTK:
-    case PREENFM2_NRPN_FREE_ENV2_DECAY:
-    case PREENFM2_NRPN_FREE_ENV2_LOOP:
-        enveloppeFree2->handleIncomingNrpn(param, value);
-        break;
-    case PREENFM2_NRPN_LFO1_SHAPE:
-    case PREENFM2_NRPN_LFO2_SHAPE:
-    case PREENFM2_NRPN_LFO3_SHAPE:
-        lfoShape[(param - PREENFM2_NRPN_LFO1_SHAPE) / 4]->setSelectedId(value + 1, dontSendNotification);
-        break;
-    case PREENFM2_NRPN_LFO1_FREQUENCY:
-    case PREENFM2_NRPN_LFO2_FREQUENCY:
-    case PREENFM2_NRPN_LFO3_FREQUENCY:
-        if (value <= 2400) {
-            if (lfoExtMidiSync[(param - PREENFM2_NRPN_LFO1_FREQUENCY) / 4]->getSelectedId() != 1) {
-                lfoExtMidiSync[(param - PREENFM2_NRPN_LFO1_FREQUENCY) / 4]->setSelectedId(1, dontSendNotification);
-                lfoFrequency[(param - PREENFM2_NRPN_LFO1_FREQUENCY) / 4]->setEnabled(true);
-            }
-            lfoFrequency[(param - PREENFM2_NRPN_LFO1_FREQUENCY) / 4]->setValue(value / 100.0f, dontSendNotification);
-        } else {
-            lfoExtMidiSync[(param - PREENFM2_NRPN_LFO1_FREQUENCY) / 4]->setSelectedId((value - 2400) / 10 + 1, dontSendNotification);
-            lfoFrequency[(param - PREENFM2_NRPN_LFO1_FREQUENCY) / 4]->setEnabled(false);
-        }
-        break;
-    case PREENFM2_NRPN_LFO1_BIAS:
-    case PREENFM2_NRPN_LFO2_BIAS:
-    case PREENFM2_NRPN_LFO3_BIAS:
-        lfoBias[(param - PREENFM2_NRPN_LFO1_BIAS) / 4]->setValue(value / 100.0f - 1.0f);
-        break;
-    case PREENFM2_NRPN_LFO1_KSYN:
-    case PREENFM2_NRPN_LFO2_KSYN:
-    case PREENFM2_NRPN_LFO3_KSYN:
-        if (value == 0) {
-            lfoKsynOnOff[(param - PREENFM2_NRPN_LFO1_KSYN) / 4]->setSelectedId(1, dontSendNotification);
-            lfoKSync[(param - PREENFM2_NRPN_LFO1_KSYN) / 4]->setEnabled(false);
-        } else {
-            if (lfoKsynOnOff[(param - PREENFM2_NRPN_LFO1_KSYN) / 4]->getSelectedId() == 1) {
-                lfoKsynOnOff[(param - PREENFM2_NRPN_LFO1_KSYN) / 4]->setSelectedId(2, dontSendNotification);
-                lfoKSync[(param - PREENFM2_NRPN_LFO1_KSYN) / 4]->setEnabled(true);
-            }
-            lfoKSync[(param - PREENFM2_NRPN_LFO1_KSYN) / 4]->setValue(value / 100.0f - 0.01f, dontSendNotification);
-        }
-        break;
-    case PREENFM2_NRPN_STEPSEQ1_BPM:
-    case PREENFM2_NRPN_STEPSEQ2_BPM:
-        if (value <= 240) {
-            if (stepSeqExtMidiSync[(param - PREENFM2_NRPN_STEPSEQ1_BPM) / 4]->getSelectedId() != 1) {
-                stepSeqExtMidiSync[(param - PREENFM2_NRPN_STEPSEQ1_BPM) / 4]->setSelectedId(1, dontSendNotification);
-                stepSeqBPM[(param - PREENFM2_NRPN_STEPSEQ1_BPM) / 4]->setEnabled(true);
-            }
-            stepSeqBPM[(param - PREENFM2_NRPN_STEPSEQ1_BPM) / 4]->setValue(value , dontSendNotification);
-        } else if (value <= 245) {
-            stepSeqExtMidiSync[(param - PREENFM2_NRPN_STEPSEQ1_BPM) / 4]->setSelectedId((value - 239) , dontSendNotification);
-            stepSeqBPM[(param - PREENFM2_NRPN_STEPSEQ1_BPM) / 4]->setEnabled(false);
-        }
-        break;
-    case PREENFM2_NRPN_STEPSEQ1_GATE:
-    case PREENFM2_NRPN_STEPSEQ2_GATE:
-        stepSeqGate[(param - PREENFM2_NRPN_STEPSEQ1_GATE) / 4]->setValue(value / 100.0f);
-        break;
-    case PREENFM2_NRPN_STEPSEQ1_STEP1:
-    case PREENFM2_NRPN_STEPSEQ1_STEP2:
-    case PREENFM2_NRPN_STEPSEQ1_STEP3:
-    case PREENFM2_NRPN_STEPSEQ1_STEP4:
-    case PREENFM2_NRPN_STEPSEQ1_STEP5:
-    case PREENFM2_NRPN_STEPSEQ1_STEP6:
-    case PREENFM2_NRPN_STEPSEQ1_STEP7:
-    case PREENFM2_NRPN_STEPSEQ1_STEP8:
-    case PREENFM2_NRPN_STEPSEQ1_STEP9:
-    case PREENFM2_NRPN_STEPSEQ1_STEP10:
-    case PREENFM2_NRPN_STEPSEQ1_STEP11:
-    case PREENFM2_NRPN_STEPSEQ1_STEP12:
-    case PREENFM2_NRPN_STEPSEQ1_STEP13:
-    case PREENFM2_NRPN_STEPSEQ1_STEP14:
-    case PREENFM2_NRPN_STEPSEQ1_STEP15:
-    case PREENFM2_NRPN_STEPSEQ1_STEP16:
-        stepSequencer[0]->handleIncomingNrpn(param, value);
-        break;
-    case PREENFM2_NRPN_STEPSEQ2_STEP1:
-    case PREENFM2_NRPN_STEPSEQ2_STEP2:
-    case PREENFM2_NRPN_STEPSEQ2_STEP3:
-    case PREENFM2_NRPN_STEPSEQ2_STEP4:
-    case PREENFM2_NRPN_STEPSEQ2_STEP5:
-    case PREENFM2_NRPN_STEPSEQ2_STEP6:
-    case PREENFM2_NRPN_STEPSEQ2_STEP7:
-    case PREENFM2_NRPN_STEPSEQ2_STEP8:
-    case PREENFM2_NRPN_STEPSEQ2_STEP9:
-    case PREENFM2_NRPN_STEPSEQ2_STEP10:
-    case PREENFM2_NRPN_STEPSEQ2_STEP11:
-    case PREENFM2_NRPN_STEPSEQ2_STEP12:
-    case PREENFM2_NRPN_STEPSEQ2_STEP13:
-    case PREENFM2_NRPN_STEPSEQ2_STEP14:
-    case PREENFM2_NRPN_STEPSEQ2_STEP15:
-    case PREENFM2_NRPN_STEPSEQ2_STEP16:
-        stepSequencer[1]->handleIncomingNrpn(param, value);
-        break;
-    }
-}
 
 void PanelModulation::buttonClicked (Button* buttonThatWasClicked) {
     bool lfoButtonClicked = false;
@@ -548,13 +393,6 @@ void PanelModulation::buttonClicked (Button* buttonThatWasClicked) {
 }
 void PanelModulation::sliderValueChanged (Slider* sliderThatWasMoved) {
 
-    if (eventsToAdd == nullptr) return;
-    //[UsersliderValueChanged_Pre]
-    MidifiedSlider* midifiedSlider = dynamic_cast<MidifiedSlider*>(sliderThatWasMoved);
-    if(midifiedSlider != 0) {
-        // old was safely casted to NewType
-        midifiedSlider->sendNrpn(eventsToAdd, midifiedSlider->getValue());
-    }
 
 
 }
@@ -581,43 +419,8 @@ void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
             stepSeqMidiComboChanged = k;
         }
     }
-
-    if (eventsToAdd == nullptr) return;
-    MidifiedComboBox* midifiedComboBox = dynamic_cast<MidifiedComboBox*>(comboBoxThatHasChanged);
-    if (midifiedComboBox != 0) {
-        // If new combo is internal frequency, we must send the nrpn of the slider value
-        if (lfoExteralMidiComboChanged >= 0 && comboBoxThatHasChanged->getSelectedId() == 1) {
-            Slider *lfoSlider = lfoFrequency[lfoExteralMidiComboChanged];
-            MidifiedSlider* midifiedSlider = dynamic_cast<MidifiedSlider*>(lfoSlider);
-            if (midifiedSlider) {
-                midifiedSlider->sendNrpn(eventsToAdd, midifiedSlider->getValue());
-            }
-        } else if (lfoKSyncOnOffChanged >= 0 && comboBoxThatHasChanged->getSelectedId() == 2) {
-            Slider *ksynSlider = lfoKSync[lfoKSyncOnOffChanged];
-            MidifiedSlider* midifiedSlider = dynamic_cast<MidifiedSlider*>(ksynSlider);
-            if (midifiedSlider) {
-                midifiedSlider->sendNrpn(eventsToAdd, midifiedSlider->getValue());
-            }
-        } else if (stepSeqMidiComboChanged >= 0 && comboBoxThatHasChanged->getSelectedId() == 1) {
-            Slider *bpmSlider = stepSeqBPM[stepSeqMidiComboChanged];
-            MidifiedSlider* midifiedSlider = dynamic_cast<MidifiedSlider*>(bpmSlider);
-            if (midifiedSlider) {
-                midifiedSlider->sendNrpn(eventsToAdd, midifiedSlider->getValue());
-            }
-        } else {
-            midifiedComboBox->sendNrpn(eventsToAdd, midifiedComboBox->getSelectedId());
-        }
-    }
 }
 
-void PanelModulation::setMidiBuffer(MidiBuffer& eventsToAdd) {
-    this->eventsToAdd = &eventsToAdd;
-    enveloppeFree1->setMidiBuffer(&eventsToAdd);
-    enveloppeFree2->setMidiBuffer(&eventsToAdd);
-    for (int s=0; s<NUMBER_OF_STEP_SEQ; s++) {
-        stepSequencer[s]->setMidiBuffer(&eventsToAdd);
-    }
-}
 
 void PanelModulation::buildParameters() {
 }
