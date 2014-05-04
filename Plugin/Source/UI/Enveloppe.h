@@ -27,6 +27,7 @@ public:
     // Must be implemented to deal with point value modification
     void newXValue(int draggingPointIndex, float newX);
     void newYValue(int draggingPointIndex, float newY);
+    const char ** getPointSuffix() const;
 
 private:
 

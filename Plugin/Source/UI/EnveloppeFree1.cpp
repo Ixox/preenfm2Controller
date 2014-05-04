@@ -121,4 +121,7 @@ void EnveloppeFree1::newYValue(int draggingPointIndex, float newY) {
 	}
 }
 
-
+static const char* __enveloppeFree2PointSuffix[] = { " Attk", " Attk lvl", " Deca", " Deca lvl", " Sust", " Sust lvl", " Rele", " Rele lvl" };
+const char ** EnveloppeFree1::getPointSuffix() const {
+	return __enveloppeFree2PointSuffix;
+}

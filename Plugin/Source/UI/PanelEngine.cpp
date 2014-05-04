@@ -146,10 +146,10 @@ PanelEngine::PanelEngine ()
 
     for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
         enveloppe[k] = new Enveloppe (PREENFM2_NRPN_ENV1_ATTK + 8*k);
-        enveloppe[k]->setName (TRANS("enveloppe " + String(k+1)));
+        enveloppe[k]->setName ("Op"+String(k+1)+" Env");
 
         enveloppeButton[k] = new TextButton ("enveloppe button");
-        enveloppeButton[k]->setButtonText (TRANS("OP" + String(k+1)));
+        enveloppeButton[k]->setButtonText ("Op" + String(k+1)+ " Button");
 
         enveloppeButton[k]->setColour (TextButton::buttonColourId, Colour (0xffa4c9e9));
         enveloppeButton[k]->setColour (TextButton::buttonOnColourId, Colours::aliceblue);
@@ -160,7 +160,7 @@ PanelEngine::PanelEngine ()
         enveloppeButton[k]->addListener (this);
         addAndMakeVisible(enveloppeButton[k]);
 
-        opShape[k] = new ComboBox("OP"+String(k+1)+" Shape");
+        opShape[k] = new ComboBox("Op"+String(k+1)+" Shape");
         opShape[k]->setEditableText (false);
         opShape[k]->setJustificationType (Justification::centred);
         opShape[k]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -175,7 +175,7 @@ PanelEngine::PanelEngine ()
         opShape[k]->setSelectedId(1);
         opShape[k]->addListener (this);
 
-        opFrequencyType[k] = new ComboBox("Op"+ String(1) + " Freq Type");
+        opFrequencyType[k] = new ComboBox("Op"+ String(k+1) + " Freq Type");
         opFrequencyType[k]->setEditableText (false);
         opFrequencyType[k]->setJustificationType (Justification::centred);
         opFrequencyType[k]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -246,7 +246,7 @@ PanelEngine::PanelEngine ()
 	addAndMakeVisible(velocityLabel = new Label("velocity label", "Velocity"));
 	velocityLabel->setJustificationType(Justification::centredTop);
 
-    addAndMakeVisible(velocity = new Slider("Algo"));
+    addAndMakeVisible(velocity = new Slider("Velocity"));
     velocity->setRange (0, 16, 1);
     velocity->setSliderStyle (Slider::RotaryVerticalDrag);
     velocity->setTextBoxStyle (Slider::TextBoxAbove, false, 30, 16);
@@ -305,6 +305,7 @@ PanelEngine::PanelEngine ()
     voices->setValue(4.0f, sendNotification);
 	sliderValueChanged(voices);
 	sliderValueChanged(algoChooser);
+	initialized = false;
     //[/Constructor]
 }
 
@@ -326,7 +327,6 @@ PanelEngine::~PanelEngine()
 void PanelEngine::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
-	printf("PanelEngin::paint...\r\n");
     //[/UserPrePaint]
 
     //[UserPaint] Add your own custom painting code here..
@@ -446,7 +446,7 @@ void PanelEngine::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPlugin
 		teragon::Parameter * parameterReady = panelParameterMap[sliderThatWasMoved->getName()];
         if (parameterReady != nullptr) {
             teragon::ParameterValue value = sliderThatWasMoved->getValue();
-            printf("slider moved, set parameter Value to %f \n", value);
+            printf("Slider %s : %f \n", parameterReady->getName().c_str(), value);
             parameterSet->set(parameterReady, value, nullptr);
         }
     }
@@ -464,7 +464,6 @@ void PanelEngine::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPlugin
             }
         }
     }
-
 }
 
 void PanelEngine::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
@@ -521,6 +520,11 @@ void PanelEngine::buttonClicked (Button* buttonThatWasClicked)
 
 
 void PanelEngine::buildParameters() {
+    addSliderParameter(algoChooser);
+    addSliderParameter(velocity);
+    addSliderParameter(voices);
+    addSliderParameter(glide);
+
     for (int k=0; k<NUMBER_OF_MIX; k++) {
         addSliderParameter(volumeKnob[k]);
         addSliderParameter(panKnob[k]);
@@ -529,13 +533,64 @@ void PanelEngine::buildParameters() {
         addSliderParameter(IMKnob[k]);
         addSliderParameter(IMVelocityKnob[k]);
     }
+    for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
+        addComboParameter(opShape[k]);
+        addComboParameter(opFrequencyType[k]);
+        addSliderParameter(opFrequency[k]);
+        addSliderParameter(opFrequencyFineTune[k]);
+    }
+
+	const char** pointName = enveloppe[0]->getPointSuffix();
+    for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
+		const char* pString = enveloppe[k]->getName().toRawUTF8();
+
+		for (int p=2; p < enveloppe[k]->getNumberOfPoints() * 2; p++) {
+			String name = String(pString) + String(pointName[p - 2]);
+			teragon::Parameter* paramToMap =  parameterSet->get(name.toRawUTF8());
+			// Will remove that later but dont' BUG for the moment if that doesn't fit
+			if (paramToMap == nullptr) {
+				printf("Enveloppe point %s does not exist...\r\n", name.toRawUTF8());
+				return;
+			}
+
+			if (panelParameterMap[name] == nullptr) {
+				panelParameterMap.set(name ,paramToMap);
+			}
+			// And let's update the value and update the UI Without sending modification !!!
+			// No modification : we dont want sliderValueChanged to be called in the different panels
+			if ((p & 0x1) == 0) {
+				if (paramToMap->getValue() != enveloppe[k]->getX(p / 2)) {
+					enveloppe[k]->setX(p / 2, paramToMap->getValue());
+					printf("X: PanelEngine enveloppe point %d : %f \r\n", p >>1, paramToMap->getValue());
+					enveloppe[k]->repaint();
+				}
+			} else {
+				if (paramToMap->getValue() != enveloppe[k]->getY(p / 2)) {
+					printf("Y: PanelEngine enveloppe point %d : %f \r\n", p >>1, paramToMap->getValue());
+					enveloppe[k]->setY(p / 2, paramToMap->getValue());
+					enveloppe[k]->repaint();
+				}
+			}
+		}
+		// Let listen to enveloppe
+		if (!initialized) {
+			enveloppe[k]->addListener((EnveloppeListener*)this);
+		}
+    }
+
+
+
 	/*
     for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
         addComboBoxParameter(opShape[k]);
     }*/
+    initialized = true;
 }
 
 
+void PanelEngine::addSliderParameter_hook(Slider* slider) {
+	sliderValueChanged(slider, false);
+}
 
 
 

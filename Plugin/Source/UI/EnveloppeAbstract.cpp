@@ -163,11 +163,15 @@ void EnveloppeAbstract::mouseDrag (const MouseEvent &event)  {
     pointList[draggingPointIndex].get()->setY(pointList[draggingPointIndex].get()->getY() - (float)(event.y - startDragY) / scaleY * slowMoveRatio);
     if (oldVX != pointList[draggingPointIndex].get()->getX()) {
     	newXValue(draggingPointIndex, pointList[draggingPointIndex].get()->getX());
-        startDragX = event.x;
+    	// Tell listeners
+    	notifyObservers(draggingPointIndex, true);
+    	startDragX = event.x;
     }
     if (oldVY != pointList[draggingPointIndex ].get()->getY()) {
     	newYValue(draggingPointIndex, pointList[draggingPointIndex].get()->getY());
-        startDragY = event.y;
+    	// Tell listeners
+    	notifyObservers(draggingPointIndex, false);
+    	startDragY = event.y;
     }
     repaint();
 }

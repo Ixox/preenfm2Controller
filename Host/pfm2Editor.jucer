@@ -6,6 +6,8 @@
   <MAINGROUP id="c6LJM5" name="pfm2Editor">
     <GROUP id="{4109EA71-F7BE-3C72-D039-241F993FAEB9}" name="Source">
       <GROUP id="{1D684675-DA20-07E6-EFC5-ECF1687EF7D5}" name="Plugin">
+        <FILE id="qjErtE" name="EnveloppeListener.h" compile="0" resource="0"
+              file="../Plugin/Source/UI/EnveloppeListener.h"/>
         <FILE id="pysef4" name="PanelOfParameters.h" compile="0" resource="0"
               file="../Plugin/Source/UI/PanelOfParameters.h"/>
         <FILE id="LKBfHU" name="tinythread.cpp" compile="1" resource="0" file="../Plugin/Source/PluginParameters/include/tinythread/source/tinythread.cpp"/>

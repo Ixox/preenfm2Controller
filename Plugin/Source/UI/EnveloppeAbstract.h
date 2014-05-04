@@ -11,10 +11,12 @@
 #ifndef ENVELOPPEABTRACT_H_INCLUDED
 #define ENVELOPPEABTRACT_H_INCLUDED
 
+#include <stdlib.h>
 #include "../JuceLibraryCode/modules/juce_audio_devices/midi_io/juce_MidiOutput.h"
 #include "../JuceLibraryCode/modules/juce_core/containers/juce_LinkedListPointer.h"
 #include "../JuceLibraryCode/modules/juce_graphics/contexts/juce_GraphicsContext.h"
 #include "../JuceLibraryCode/modules/juce_gui_basics/components/juce_Component.h"
+#include "EnveloppeListener.h"
 
 namespace juce { class MouseEvent; }
 
@@ -27,6 +29,8 @@ namespace juce { class MouseEvent; }
 #define RIGHT_TEXT_SIZE  120
 
 #include "JuceHeader.h"
+
+typedef std::vector<EnveloppeListener *> EnveloppeListenerList;
 
 //==============================================================================
 
@@ -93,11 +97,47 @@ public:
     virtual void newXValue(int draggingPointIndex, float newX) {};
     virtual void newYValue(int draggingPointIndex, float newY) {};
 
+    int getNumberOfPoints() const { return pointList.size(); }
+    float getX(int index) const { return pointList[index].get()->getX(); }
+    float getY(int index) const { return pointList[index].get()->getY(); }
+    void setX(int index, float x) { pointList[index].get()->setX(x); }
+    void setY(int index, float y) { pointList[index].get()->setY(y); }
+
+    virtual const char ** getPointSuffix() const = 0;
+
+
+    /**
+     * Enveloppe Listener Methods
+     */
+    void addListener(EnveloppeListener *listener) {
+    	listeners.push_back(listener);
+    }
+
+    void removeListener(EnveloppeListener *listener) {
+        EnveloppeListenerList::iterator iterator = listeners.begin();
+        while(iterator != listeners.end() && listeners.size() > 0) {
+            if(*iterator == listener) {
+                iterator = listeners.erase(iterator);
+            }
+            else {
+                ++iterator;
+            }
+        }
+    }
+
+    void notifyObservers(int pointNumber, bool isX) const {
+        for(EnveloppeListenerList::const_iterator iterator = listeners.begin(); iterator != listeners.end(); ++iterator) {
+            (*iterator)->enveloppeValueChanged(this, pointNumber, isX);
+        }
+    }
+
+
 protected:
     LinkedListPointer<EnveloppePoint> pointList;
     volatile int draggingPointIndex;
     int overPointIndex;
     MidiBuffer* eventsToAdd;
+    EnveloppeListenerList listeners;
 
 private:
 

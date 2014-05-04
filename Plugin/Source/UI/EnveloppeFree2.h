@@ -28,6 +28,7 @@ public:
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     // Must be implemented to deal with point value modification
     void newXValue(int draggingPointIndex, float newX);
+    const char ** getPointSuffix() const;
 
 private:
     ScopedPointer<ComboBox> loopCombo;

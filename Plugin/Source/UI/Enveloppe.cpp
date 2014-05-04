@@ -97,3 +97,8 @@ void Enveloppe::newXValue(int draggingPointIndex, float newX) {
 void Enveloppe::newYValue(int draggingPointIndex, float newY) {
 	sendNrpn(nrpnBase + (draggingPointIndex - 1) * 2 + 1, newY * 100.0f);
 }
+
+static const char* __enveloppePointSuffix[] = { " Attk", " Attk lvl", " Deca", " Deca lvl", " Sust", " Sust lvl", " Rele", " Rele lvl" };
+const char ** Enveloppe::getPointSuffix() const {
+	return __enveloppePointSuffix;
+}
