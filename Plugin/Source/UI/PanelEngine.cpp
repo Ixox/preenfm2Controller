@@ -453,7 +453,7 @@ void PanelEngine::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPlugin
         }
     }
 	if (sliderThatWasMoved == algoChooser) {
-		newAlgo(algoChooser->getValue());
+		newAlgo(algoChooser->getValue()-1);
 	}
     if (sliderThatWasMoved == voices) {
         if (voices->getValue() == 1) {
