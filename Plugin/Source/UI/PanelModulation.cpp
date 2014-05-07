@@ -99,7 +99,7 @@ PanelModulation::PanelModulation ()
         lfoShape[k]->setSelectedId(1);
         lfoShape[k]->addListener (this);
 
-        addAndMakeVisible(lfoExtMidiSync[k] = new ComboBox("LFO"+ String(k+1) + " Ext Sync"));
+        addAndMakeVisible(lfoExtMidiSync[k] = new ComboBox("LFO"+ String(k+1) + " External Sync"));
         lfoExtMidiSync[k]->setEditableText (false);
         lfoExtMidiSync[k]->setJustificationType (Justification::left);
         lfoExtMidiSync[k]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -132,7 +132,7 @@ PanelModulation::PanelModulation ()
         lfoBias[k]->setValue(0.0f, dontSendNotification);
         lfoBias[k]->addListener (this);
 
-        addAndMakeVisible(lfoKSync[k] = new Slider("LFO"+ String(k+1) + " KSyn"));
+        addAndMakeVisible(lfoKSync[k] = new Slider("LFO"+ String(k+1) + " KeySync time"));
         lfoKSync[k]->setRange (0.0f, 16.0f, .01f);
         lfoKSync[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         lfoKSync[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
@@ -140,7 +140,7 @@ PanelModulation::PanelModulation ()
         lfoKSync[k]->setValue(0.0f, dontSendNotification);
         lfoKSync[k]->addListener (this);
 
-        addAndMakeVisible(lfoKsynOnOff[k] = new ComboBox("LFO"+ String(k+1) + " KSyn"));
+        addAndMakeVisible(lfoKsynOnOff[k] = new ComboBox("LFO"+ String(k+1) + " KeySync"));
         lfoKsynOnOff[k]->setEditableText (false);
         lfoKsynOnOff[k]->setJustificationType (Justification::left);
         lfoKsynOnOff[k]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -220,7 +220,7 @@ PanelModulation::PanelModulation ()
     for (int r = 0; r < NUMBER_OF_MATRIX_ROW; r++) {
         addAndMakeVisible(matrixRowLabel[r] = new Label(String("matrix label ")+ String(r+1), String(r+1)));
 
-        addAndMakeVisible(matrixMultipler[r] = new Slider("MTX row"+ String (r+1) + " Multipler"));
+        addAndMakeVisible(matrixMultipler[r] = new Slider("Mtx"+ String (r+1) + " Multiplier"));
         matrixMultipler[r]->setRange (-10.0f, 10.0f, .01f);
         matrixMultipler[r]->setSliderStyle (Slider::RotaryVerticalDrag);
         matrixMultipler[r]->setTextBoxStyle (Slider::TextBoxLeft, false, 35, 16);
@@ -228,7 +228,7 @@ PanelModulation::PanelModulation ()
         matrixMultipler[r]->setValue(0.0f, dontSendNotification);
         matrixMultipler[r]->addListener (this);
 
-        addAndMakeVisible(matrixSource[r] = new ComboBox("MTX row"+ String (r+1) + " Source"));
+        addAndMakeVisible(matrixSource[r] = new ComboBox("Mtx"+ String (r+1) + " Source"));
         matrixSource[r]->setEditableText (false);
         matrixSource[r]->setJustificationType (Justification::centred);
         matrixSource[r]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -238,7 +238,7 @@ PanelModulation::PanelModulation ()
         matrixSource[r]->setSelectedId(1);
         matrixSource[r]->addListener(this);
 
-        addAndMakeVisible(matrixDestination[r] = new ComboBox("MTX row"+ String (r+1) + " Destination"));
+        addAndMakeVisible(matrixDestination[r] = new ComboBox("Mtx"+ String (r+1) + " Destination"));
         matrixDestination[r]->setEditableText (false);
         matrixDestination[r]->setJustificationType (Justification::centred);
         matrixDestination[r]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -392,40 +392,72 @@ void PanelModulation::buttonClicked (Button* buttonThatWasClicked) {
 
 }
 void PanelModulation::sliderValueChanged (Slider* sliderThatWasMoved) {
+	sliderValueChanged(sliderThatWasMoved, true);
+}
 
-
-
+void PanelModulation::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPluginUI)
+{
+    // Update the value if the change comes from the UI
+    if (fromPluginUI) {
+		teragon::Parameter * parameterReady = panelParameterMap[sliderThatWasMoved->getName()];
+        if (parameterReady != nullptr) {
+            teragon::ParameterValue value = sliderThatWasMoved->getValue();
+            printf("PanelModulation Slider %s : %f \n", parameterReady->getName().c_str(), value);
+            parameterSet->set(parameterReady, value, nullptr);
+        }
+    }
 }
 
 void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
-    int lfoExteralMidiComboChanged = -1;
-    int lfoKSyncOnOffChanged = -1;
-    int stepSeqMidiComboChanged = -1;
+    comboBoxChanged(comboBoxThatHasChanged, true);
+}
+
+void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPluginUI) {
+    // Update the value if the change comes from the UI
+    if (fromPluginUI) {
+        teragon::Parameter * parameterReady = panelParameterMap[comboBoxThatHasChanged->getName()];
+        if (parameterReady != nullptr) {
+            teragon::ParameterValue value = comboBoxThatHasChanged->getSelectedId();
+            printf("PanelModulation Combo '%s' selection : %d \n", parameterReady->getName().c_str(), (int)value);
+            parameterSet->set(parameterReady, value, nullptr);
+        }
+    }
 
     for (int k = 0 ; k< NUMBER_OF_LFO; k++) {
         if (comboBoxThatHasChanged == lfoExtMidiSync[k]) {
             lfoFrequency[k]->setEnabled(comboBoxThatHasChanged->getSelectedId() == 1);
-            lfoExteralMidiComboChanged = k;
 
         }
         if (comboBoxThatHasChanged == lfoKsynOnOff[k]) {
             lfoKSync[k]->setEnabled(lfoKsynOnOff[k]->getSelectedId() == 2);
-            lfoKSyncOnOffChanged = k;
         }
     }
     for (int k = 0 ; k< NUMBER_OF_STEP_SEQ; k++) {
         if (comboBoxThatHasChanged == stepSeqExtMidiSync[k]) {
             stepSeqBPM[k]->setEnabled(comboBoxThatHasChanged->getSelectedId() == 1);
-            stepSeqMidiComboChanged = k;
         }
     }
+
 }
+
 
 
 void PanelModulation::buildParameters() {
+    for (int k=0; k<NUMBER_OF_MATRIX_ROW; k++) {
+        addComboParameter(matrixSource[k]);
+        addSliderParameter(matrixMultipler[k]);
+        addComboParameter(matrixDestination[k]);
+    }
+
 }
 
-void PanelModulation::onParameterUpdated(const teragon::Parameter *parameter) {
+
+void PanelModulation::addSliderParameter_hook(Slider* slider) {
+	// Nothing to do
+}
+
+void PanelModulation::addComboParameter_hook(ComboBox* combo) {
+	comboBoxChanged(combo, false);
 }
 
 //[/MiscUserCode]

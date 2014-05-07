@@ -60,9 +60,12 @@ public:
     void setMidiOutput(MidiOutput* midiOutput);
     void buttonClicked (Button* buttonThatWasClicked);
     void sliderValueChanged (Slider* sliderThatWasMoved);
+    void sliderValueChanged(Slider* sliderThatWasMoved, bool fromPluginUI);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPluginUI);
     void buildParameters();
-    void onParameterUpdated(const teragon::Parameter *parameter);
+    void addSliderParameter_hook(Slider* slider);
+    void addComboParameter_hook(ComboBox* combo);
     //[/UserMethods]
 
     void paint (Graphics& g);

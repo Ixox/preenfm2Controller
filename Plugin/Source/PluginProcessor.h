@@ -93,7 +93,7 @@ private:
 	 int nrpmIndex[2048];
      Pfm2AudioProcessorEditor* pfm2Editor;
 	 bool uiNeedUpdate;
-
+	 LookAndFeel* myLookAndFeel;
 
 
 	 //==============================================================================

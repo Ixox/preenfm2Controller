@@ -159,7 +159,7 @@ public:
                                                               0, 0, 0, 0,
                                                               true, true,
                                                               true, true));
-        o.content->setSize (400, 250);
+        o.content->setSize (400, 270);
 
         o.dialogTitle                   = TRANS("Midi Settings");
         o.dialogBackgroundColour        = Colour (0xfff0f0f0);

@@ -149,7 +149,8 @@ PanelEngine::PanelEngine ()
         enveloppe[k]->setName ("Op"+String(k+1)+" Env");
 
         enveloppeButton[k] = new TextButton ("enveloppe button");
-        enveloppeButton[k]->setButtonText ("Op" + String(k+1)+ " Button");
+        printf("enveloppeButton[%d] = %p\r\n", k, (void*)enveloppeButton[k]);
+        enveloppeButton[k]->setButtonText ("Op" + String(k+1));
 
         enveloppeButton[k]->setColour (TextButton::buttonColourId, Colour (0xffa4c9e9));
         enveloppeButton[k]->setColour (TextButton::buttonOnColourId, Colours::aliceblue);
@@ -161,7 +162,7 @@ PanelEngine::PanelEngine ()
         addAndMakeVisible(enveloppeButton[k]);
 
         opShape[k] = new ComboBox("Op"+String(k+1)+" Shape");
-        opShape[k]->setEditableText (false);
+        printf("opShape[%d] = %p\r\n", k, (void*)opShape[k]);
         opShape[k]->setJustificationType (Justification::centred);
         opShape[k]->setColour (ComboBox::buttonColourId, Colours::blue);
         opShape[k]->addItem("Sin", 1);
@@ -173,6 +174,7 @@ PanelEngine::PanelEngine ()
         opShape[k]->addItem("Noise", 7);
         opShape[k]->addItem("Off", 8);
         opShape[k]->setSelectedId(1);
+        opShape[k]->setEditableText (false);
         opShape[k]->addListener (this);
 
         opFrequencyType[k] = new ComboBox("Op"+ String(k+1) + " Freq Type");
@@ -278,7 +280,7 @@ PanelEngine::PanelEngine ()
 	glideLabel->setJustificationType(Justification::centredTop);
 
     addAndMakeVisible(glide = new Slider("Glide"));
-    glide->setRange (0, 8, 1);
+    glide->setRange (0, 10, 1);
     glide->setSliderStyle (Slider::RotaryVerticalDrag);
     glide->setTextBoxStyle (Slider::TextBoxAbove, false, 30, 16);
     glide->setDoubleClickReturnValue(true, 3.0f);
@@ -446,7 +448,7 @@ void PanelEngine::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPlugin
 		teragon::Parameter * parameterReady = panelParameterMap[sliderThatWasMoved->getName()];
         if (parameterReady != nullptr) {
             teragon::ParameterValue value = sliderThatWasMoved->getValue();
-            printf("Slider %s : %f \n", parameterReady->getName().c_str(), value);
+            printf("PanelEngine Slider %s : %f \n", parameterReady->getName().c_str(), value);
             parameterSet->set(parameterReady, value, nullptr);
         }
     }
@@ -480,7 +482,6 @@ void PanelEngine::comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPl
             parameterSet->set(parameterReady, value, nullptr);
         }
     }
-
 }
 
 void PanelEngine::buttonClicked (Button* buttonThatWasClicked)

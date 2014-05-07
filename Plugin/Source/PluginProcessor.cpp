@@ -11,12 +11,17 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "MidifiedParameter.h"
+#include "UI/PreenLookAndFeel.h"
 
 int Midificator::paramIndexCounter = 0;
 
 //==============================================================================
 Pfm2AudioProcessor::Pfm2AudioProcessor()
 {
+
+	myLookAndFeel = new preenfmLookAndFeel();
+	LookAndFeel::setDefaultLookAndFeel(myLookAndFeel);
+
 	// Important !!!! reset paramIndexCounter.
 	Midificator::resetParamIndexCounter();
 
@@ -140,6 +145,25 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 		//        enveloppe[k]->setName (TRANS("enveloppe " + String(k+1)));
 		//
 	}
+	for (int k=0; k<12; k++) {
+		nrpmParam = PREENFM2_NRPN_MTX1_SOURCE + k *4 ;
+		newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Mtx"+String(k+1)+" Source").toRawUTF8(), nrpmParam, 1, 1, 18, 1);
+		newParam->addObserver(this);
+		parameterSet.add(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
+
+		nrpmParam = PREENFM2_NRPN_MTX1_MULTIPLIER + k *4 ;
+		newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Mtx"+String(k+1)+" Multiplier").toRawUTF8(), nrpmParam, 100, -10, 10, 0);
+		newParam->addObserver(this);
+		parameterSet.add(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
+
+		nrpmParam = PREENFM2_NRPN_MTX1_DESTINATION + k *4 ;
+		newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Mtx"+String(k+1)+" Destination").toRawUTF8(), nrpmParam, 1, 1, 43, 1);
+		newParam->addObserver(this);
+		parameterSet.add(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
+	}
 
 
 	midiMessageCollector.reset(44100);
@@ -148,6 +172,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 
 Pfm2AudioProcessor::~Pfm2AudioProcessor()
 {
+    delete myLookAndFeel;
 }
 
 //==============================================================================

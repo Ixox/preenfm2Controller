@@ -11,7 +11,6 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "pfm2Window.h"
-#include "../../Plugin/Source/UI/PreenLookAndFeel.h"
 
 //==============================================================================
 class pfm2EditorApplication  : public JUCEApplication
@@ -29,8 +28,7 @@ public:
     void initialise (const String& commandLine) override
     {
         // Add your application's initialisation code here...
-        myLookAndFeel = new preenfmLookAndFeel();
-        LookAndFeel::setDefaultLookAndFeel(myLookAndFeel);
+
 
         mainWindow = new StandalonePFM2Window("TEST", Colours::lightblue, nullptr);
         mainWindow->setVisible (true);
@@ -40,7 +38,6 @@ public:
     {
         // Add your application's shutdown code here..
         delete mainWindow;
-        delete myLookAndFeel;
     }
 
     //==============================================================================
@@ -59,7 +56,6 @@ public:
     }
 
     StandalonePFM2Window* mainWindow;
-    LookAndFeel* myLookAndFeel;
 };
 
 //==============================================================================

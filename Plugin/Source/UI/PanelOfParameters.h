@@ -79,15 +79,6 @@ public:
     // Can be overriden by sub classes
     virtual void addComboParameter_hook(ComboBox* combo) { }
 
-
-    void addComboBoxParameter(ComboBox* comboBox) {
-        teragon::ParameterString pString = comboBox->getName().toRawUTF8();
-        teragon::Parameter* newParam = new teragon::IntegerParameter(pString, 1, comboBox->getNumItems(), comboBox->getSelectedId());
-        parameterSet->add(newParam);
-        //componentMap.insert(std::pair<teragon::ParameterString ,Component *>(pString , comboBox));
-        panelParameterMap.set(comboBox->getName() , newParam);
-    }
-
     // Enveloppe Listener
     void enveloppeValueChanged(const EnveloppeAbstract* enveloppeThatWasMoved, int pointNumber, bool isX)
     {
