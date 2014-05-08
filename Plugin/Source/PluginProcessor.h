@@ -79,7 +79,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes);
 
 	void handleIncomingMidiBuffer(MidiBuffer &buffer, int numberOfSamples);
-	void handleIncomingNrpn(int param, int value);
+	void handleIncomingNrpn(int param, int value, int forceIndex = -1);
     // Parameter observer
     bool isRealtimePriority() const;
     void onParameterUpdated(const teragon::Parameter *parameter);

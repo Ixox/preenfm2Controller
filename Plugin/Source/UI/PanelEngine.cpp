@@ -521,24 +521,24 @@ void PanelEngine::buttonClicked (Button* buttonThatWasClicked)
 
 
 void PanelEngine::buildParameters() {
-    addSliderParameter(algoChooser);
-    addSliderParameter(velocity);
-    addSliderParameter(voices);
-    addSliderParameter(glide);
+    updateSliderParameter(algoChooser);
+    updateSliderParameter(velocity);
+    updateSliderParameter(voices);
+    updateSliderParameter(glide);
 
     for (int k=0; k<NUMBER_OF_MIX; k++) {
-        addSliderParameter(volumeKnob[k]);
-        addSliderParameter(panKnob[k]);
+        updateSliderParameter(volumeKnob[k]);
+        updateSliderParameter(panKnob[k]);
     }
     for (int k=0; k<NUMBER_OF_IM; k++) {
-        addSliderParameter(IMKnob[k]);
-        addSliderParameter(IMVelocityKnob[k]);
+        updateSliderParameter(IMKnob[k]);
+        updateSliderParameter(IMVelocityKnob[k]);
     }
     for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
-        addComboParameter(opShape[k]);
-        addComboParameter(opFrequencyType[k]);
-        addSliderParameter(opFrequency[k]);
-        addSliderParameter(opFrequencyFineTune[k]);
+        updateComboParameter(opShape[k]);
+        updateComboParameter(opFrequencyType[k]);
+        updateSliderParameter(opFrequency[k]);
+        updateSliderParameter(opFrequencyFineTune[k]);
     }
 
 	const char** pointName = enveloppe[0]->getPointSuffix();
@@ -589,7 +589,7 @@ void PanelEngine::buildParameters() {
 }
 
 
-void PanelEngine::addSliderParameter_hook(Slider* slider) {
+void PanelEngine::updateSliderParameter_hook(Slider* slider) {
 	sliderValueChanged(slider, false);
 }
 

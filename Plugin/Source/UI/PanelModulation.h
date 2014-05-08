@@ -64,8 +64,8 @@ public:
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPluginUI);
     void buildParameters();
-    void addSliderParameter_hook(Slider* slider);
-    void addComboParameter_hook(ComboBox* combo);
+    void updateSliderParameter_hook(Slider* slider);
+    void updateComboParameter_hook(ComboBox* combo);
     //[/UserMethods]
 
     void paint (Graphics& g);

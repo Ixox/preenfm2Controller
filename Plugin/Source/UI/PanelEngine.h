@@ -65,7 +65,7 @@ public:
     void setMidiBuffer(MidiBuffer& eventsToAdd);
     // Panel of parameters
     void buildParameters();
-    void addSliderParameter_hook(Slider* slider);
+    void updateSliderParameter_hook(Slider* slider);
     //[/UserMethods]
 
     void paint (Graphics& g);

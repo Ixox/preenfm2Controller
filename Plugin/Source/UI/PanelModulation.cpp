@@ -103,17 +103,17 @@ PanelModulation::PanelModulation ()
         lfoExtMidiSync[k]->setEditableText (false);
         lfoExtMidiSync[k]->setJustificationType (Justification::left);
         lfoExtMidiSync[k]->setColour (ComboBox::buttonColourId, Colours::blue);
-        lfoExtMidiSync[k]->addItem("Internal", 1);
-        lfoExtMidiSync[k]->addItem("MC/16", 2);
-        lfoExtMidiSync[k]->addItem("MC/8", 3);
-        lfoExtMidiSync[k]->addItem("MC/4", 4);
-        lfoExtMidiSync[k]->addItem("MC/2", 5);
-        lfoExtMidiSync[k]->addItem("MC", 6);
-        lfoExtMidiSync[k]->addItem("MC*2", 7);
-        lfoExtMidiSync[k]->addItem("MC*3", 8);
-        lfoExtMidiSync[k]->addItem("MC*4", 9);
-        lfoExtMidiSync[k]->addItem("MC*8", 10);
-        lfoExtMidiSync[k]->setSelectedId(1);
+        lfoExtMidiSync[k]->addItem("Internal", 2400);
+        lfoExtMidiSync[k]->addItem("MC/16", 2410);
+        lfoExtMidiSync[k]->addItem("MC/8", 2420);
+        lfoExtMidiSync[k]->addItem("MC/4", 2430);
+        lfoExtMidiSync[k]->addItem("MC/2", 2440);
+        lfoExtMidiSync[k]->addItem("MC", 2450);
+        lfoExtMidiSync[k]->addItem("MC*2", 2460);
+        lfoExtMidiSync[k]->addItem("MC*3", 2470);
+        lfoExtMidiSync[k]->addItem("MC*4", 2480);
+        lfoExtMidiSync[k]->addItem("MC*8", 2490);
+        lfoExtMidiSync[k]->setSelectedId(2400);
         lfoExtMidiSync[k]->addListener (this);
 
         addAndMakeVisible(lfoFrequency[k] = new Slider("LFO"+ String(k+1) + " Frequency"));
@@ -402,10 +402,23 @@ void PanelModulation::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPl
 		teragon::Parameter * parameterReady = panelParameterMap[sliderThatWasMoved->getName()];
         if (parameterReady != nullptr) {
             teragon::ParameterValue value = sliderThatWasMoved->getValue();
-            printf("PanelModulation Slider %s : %f \n", parameterReady->getName().c_str(), value);
             parameterSet->set(parameterReady, value, nullptr);
         }
     }
+    printf("PanelModulation Slider %s : %f \n", sliderThatWasMoved->getName().toRawUTF8(), sliderThatWasMoved->getValue());
+
+    for (int k=0; k < NUMBER_OF_LFO; k++) {
+    	if (sliderThatWasMoved == lfoFrequency[k] && lfoExtMidiSync[k]->getSelectedId() != 1) {
+    		lfoFrequency[k]->setEnabled(true);
+    		lfoExtMidiSync[k]->setSelectedId(2400, dontSendNotification);
+    	}
+
+        if (sliderThatWasMoved == lfoKSync[k] && lfoKsynOnOff[k]->getSelectedId() != 2) {
+            lfoKSync[k]->setEnabled(true);
+            lfoKsynOnOff[k]->setSelectedId(2, dontSendNotification);
+        }
+    }
+
 }
 
 void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
@@ -418,18 +431,34 @@ void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fr
         teragon::Parameter * parameterReady = panelParameterMap[comboBoxThatHasChanged->getName()];
         if (parameterReady != nullptr) {
             teragon::ParameterValue value = comboBoxThatHasChanged->getSelectedId();
-            printf("PanelModulation Combo '%s' selection : %d \n", parameterReady->getName().c_str(), (int)value);
+            printf("PanelModulation::comboBoxChanged '%s' selection : %d \n", parameterReady->getName().c_str(), (int)value);
             parameterSet->set(parameterReady, value, nullptr);
         }
     }
 
     for (int k = 0 ; k< NUMBER_OF_LFO; k++) {
         if (comboBoxThatHasChanged == lfoExtMidiSync[k]) {
-            lfoFrequency[k]->setEnabled(comboBoxThatHasChanged->getSelectedId() == 1);
-
+            // Refresh Ksyn frequency on pfm2
+            if (comboBoxThatHasChanged->getSelectedId() == 2400) {
+                lfoFrequency[k]->setEnabled(true);
+                // Force sending new value
+                float value = lfoFrequency[k]->getValue();
+                lfoFrequency[k]->setValue(24.0);
+                lfoFrequency[k]->setValue(value);
+            } else {
+                lfoFrequency[k]->setEnabled(false);
+            }
         }
         if (comboBoxThatHasChanged == lfoKsynOnOff[k]) {
-            lfoKSync[k]->setEnabled(lfoKsynOnOff[k]->getSelectedId() == 2);
+            if (lfoKsynOnOff[k]->getSelectedId() == 2) {
+                lfoKSync[k]->setEnabled(true);
+                // Refresh Ksyn frequency on pfm2
+                float value = lfoKSync[k]->getValue();
+                lfoKSync[k]->setValue(.0f);
+                lfoKSync[k]->setValue(value);
+            } else {
+                lfoKSync[k]->setEnabled(false);
+            }
         }
     }
     for (int k = 0 ; k< NUMBER_OF_STEP_SEQ; k++) {
@@ -444,19 +473,27 @@ void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fr
 
 void PanelModulation::buildParameters() {
     for (int k=0; k<NUMBER_OF_MATRIX_ROW; k++) {
-        addComboParameter(matrixSource[k]);
-        addSliderParameter(matrixMultipler[k]);
-        addComboParameter(matrixDestination[k]);
+        updateComboParameter(matrixSource[k]);
+        updateSliderParameter(matrixMultipler[k]);
+        updateComboParameter(matrixDestination[k]);
+    }
+    for (int k = 0; k < NUMBER_OF_LFO; k++) {
+        updateComboParameter(lfoShape[k]);
+        updateComboParameter(lfoExtMidiSync[k]);
+        updateSliderParameter(lfoFrequency[k]);
+        updateSliderParameter(lfoBias[k]);
+        updateComboParameter(lfoKsynOnOff[k]);
+        updateSliderParameter(lfoKSync[k]);
     }
 
 }
 
 
-void PanelModulation::addSliderParameter_hook(Slider* slider) {
-	// Nothing to do
+void PanelModulation::updateSliderParameter_hook(Slider* slider) {
+	sliderValueChanged(slider, false);
 }
 
-void PanelModulation::addComboParameter_hook(ComboBox* combo) {
+void PanelModulation::updateComboParameter_hook(ComboBox* combo) {
 	comboBoxChanged(combo, false);
 }
 

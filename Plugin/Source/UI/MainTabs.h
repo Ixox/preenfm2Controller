@@ -23,6 +23,7 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "../PluginParameters/include/PluginParameters.h"
 
+#include <unordered_set>
 
 class PanelEngine;
 class PanelModulation;
@@ -52,7 +53,7 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     void handleIncomingMidiBuffer(MidiBuffer &buffer, int numberOfSamples);
     void buildParameters(teragon::ConcurrentParameterSet& parameterSet);
-	void updateUI();
+	void updateUI(std::unordered_set<const char*> &paramSet);
     //[/UserMethods]
 
     void paint (Graphics& g);

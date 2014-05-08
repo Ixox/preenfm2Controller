@@ -11,6 +11,7 @@
 #ifndef PLUGINEDITOR_H_INCLUDED
 #define PLUGINEDITOR_H_INCLUDED
 
+#include <unordered_set>
 #include "JuceHeader.h"
 #include "PluginProcessor.h"
 
@@ -29,11 +30,13 @@ public:
     // This is just a standard Juce paint method...
     void paint (Graphics& g);
     void timerCallback ();
-	void mustUpdateUI();
+    void mustUpdateUI();
+    void addParamToUpdateUI(const char* paramName);
 
 private:
 	bool uiOutOfSync;
     MainTabs * mainTabs;
+    std::unordered_set<const char*> parametersToUpdate;
 };
 
 

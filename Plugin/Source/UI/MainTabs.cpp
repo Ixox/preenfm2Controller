@@ -158,10 +158,10 @@ void MainTabs::buildParameters(teragon::ConcurrentParameterSet& parameterSet) {
     panelArpAndFilter->buildParameters();
 }
 
-void MainTabs::updateUI() {
-    panelEngine->buildParameters();
-    panelModulation->buildParameters();
-    panelArpAndFilter->buildParameters();
+void MainTabs::updateUI(std::unordered_set<const char*> &paramSet) {
+    panelEngine->updateUI(paramSet);
+    panelModulation->updateUI(paramSet);
+    panelArpAndFilter->updateUI(paramSet);
 }
 //[/MiscUserCode]
 

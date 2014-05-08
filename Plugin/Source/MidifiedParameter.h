@@ -25,6 +25,7 @@ class Midificator {
 public:
 	Midificator(int nrpmP, float minV, float valueM) {
 	    setMidificatorParam(nrpmP, minV, valueM);
+	    bias = 0;
 		paramIndex = paramIndexCounter++;
 	};
 
@@ -51,21 +52,30 @@ public:
 		MidiMessage byte4 = MidiMessage::controllerEvent(1, 38, getNrpnValueLSB(value));
 		byte4.setTimeStamp(timeNow);
 		midiMessageCollector.addMessageToQueue(byte4);
+		printf("addNrpn : %d > %d\r\n", nrpnParam, ((getNrpnValueMSB(value)) << 7)+getNrpnValueLSB(value));
 	}
 
 	int getNrpnParamMSB() const { return nrpnParam >> 7; }
 	int getNrpnParamLSB() const { return nrpnParam & 0xff; }
 	virtual int getNrpnValueMSB (double value) const {
-		int iv = (value - pfm2MinValue ) * valueMultiplier + .005f;
+		int iv = (value - pfm2MinValue + bias) * valueMultiplier + .005f ;
 		return iv >> 7;
 	}
 	virtual int getNrpnValueLSB(double value) const {
-		int iv = (value - pfm2MinValue ) * valueMultiplier + .005f;
+		int iv = (value - pfm2MinValue + bias) * valueMultiplier + .005f;
 		return iv & 0x7f;
 	}
 
 	static void resetParamIndexCounter() { paramIndexCounter = 0; }
 	int getParamIndex() const { return paramIndex; }
+
+    void setBias(float b) {
+        this->bias = b;
+    }
+
+    bool getBias() const {
+        return this->bias;
+    }
 
 protected:
 	float pfm2MinValue;
@@ -73,6 +83,8 @@ protected:
 	int nrpnParam;
 	int paramIndex;
 	static int paramIndexCounter;
+    float bias;
+
 };
 
 class MidifiedFloatParameter: public FloatParameter, public Midificator {
@@ -90,16 +102,49 @@ public:
 	{
 		nrpmParameterMap->insert(std::pair<int , teragon::Parameter* > (nrpnParam, this));
 		range = maxValue - minValue;
+		sendRealValue = false;
 	}
 
+	int getNrpnValueMSB (double value) const {
+		if (!sendRealValue) {
+			return Midificator::getNrpnValueMSB(value);
+		} else {
+			int iv = value + .005f + bias;
+			return iv >> 7;
+		}
+	}
+	int getNrpnValueLSB(double value) const {
+		if (!sendRealValue) {
+			return Midificator::getNrpnValueLSB(value);
+		} else {
+			int iv = value + .005f + bias;
+			return iv & 0x7f;
+		}
+	}
+
+
 	float getValueFromNrpn(int value) const {
-		return (float)value / this->valueMultiplier + this->pfm2MinValue;
+		if (!sendRealValue) {
+			return (float)value / this->valueMultiplier + this->pfm2MinValue - bias;
+		} else {
+			return value - bias;
+		}
 	}
 
 	float getScaledValueFromNrpn(int value) const {
-		return (float)value / this->valueMultiplier / range;
+		return (float)value / this->valueMultiplier / range - bias;
 	}
+
+	void setSendRealValue(bool srv) {
+		this->sendRealValue = srv;
+	}
+
+	bool getSendRealValue() const {
+		return this->sendRealValue;
+	}
+
 private:
+	bool sendRealValue;
 	float range;
 };
 /*

@@ -11,6 +11,7 @@
 #ifndef PANELOFPARAMETERS_CPP_INCLUDED
 #define PANELOFPARAMETERS_CPP_INCLUDED
 
+#include <unordered_set>
 #include "JuceHeader.h"
 #include "../PluginParameters/include/PluginParameters.h"
 #include "EnveloppeAbstract.h"
@@ -30,7 +31,7 @@ public:
 
     virtual void buildParameters() = 0;
 
-    void addSliderParameter(Slider* slider) {
+    void updateSliderParameter(Slider* slider) {
         teragon::ParameterString pString = slider->getName().toRawUTF8();
 		teragon::Parameter* paramToMap =  parameterSet->get(pString);
 		// Will remove that later but dont' BUG for the moment if that doesn't fit
@@ -38,26 +39,25 @@ public:
 			printf("Slider %s does not exist...\r\n", pString.c_str());
 			return;
 		}
-/*
-		if (componentMap[pString] == nullptr) {
-			componentMap.insert(std::pair<teragon::ParameterString ,Component *>(pString , slider));
+
+		if (componentMap[pString.c_str()] == nullptr) {
+			componentMap.set(String(pString.c_str()) , slider);
 		}
-		*/
+
 		if (panelParameterMap[slider->getName()] == nullptr) {
 			panelParameterMap.set(slider->getName() ,paramToMap);
 		}
 
 		// And let's update the value and update the UI Without sending modification !!!
 		// No modification : we dont want sliderValueChanged to be called in the different panels
-		slider->setValue(paramToMap->getValue(), dontSendNotification);
-
-		addSliderParameter_hook(slider);
+        slider->setValue(paramToMap->getValue(), dontSendNotification);
+        updateSliderParameter_hook(slider);
 	}
 
     // Can be overriden by sub classes
-    virtual void addSliderParameter_hook(Slider* slider) { }
+    virtual void updateSliderParameter_hook(Slider* slider) { }
 
-    void addComboParameter(ComboBox* combo) {
+    void updateComboParameter(ComboBox* combo) {
         teragon::ParameterString pString = combo->getName().toRawUTF8();
 		teragon::Parameter* paramToMap =  parameterSet->get(pString);
 		// Will remove that later but dont' BUG for the moment if that doesn't fit
@@ -65,19 +65,25 @@ public:
 			printf("Combo box %s does not exist...\r\n", pString.c_str());
 			return;
 		}
+
+		if (componentMap[pString.c_str()] == nullptr) {
+			componentMap.set(String(pString.c_str()) , combo);
+		}
+
 		if (panelParameterMap[combo->getName()] == nullptr) {
 			panelParameterMap.set(combo->getName() ,paramToMap);
 		}
 
 		// And let's update the value and update the UI Without sending modification !!!
 		// No modification : we dont want sliderValueChanged to be called in the different panels
-		combo->setSelectedId(paramToMap->getValue(), dontSendNotification);
-
-		addComboParameter_hook(combo);
+		if (combo->getSelectedId() != paramToMap->getValue()) {
+			combo->setSelectedId(paramToMap->getValue(), dontSendNotification);
+			updateComboParameter_hook(combo);
+		}
 	}
 
     // Can be overriden by sub classes
-    virtual void addComboParameter_hook(ComboBox* combo) { }
+    virtual void updateComboParameter_hook(ComboBox* combo) { }
 
     // Enveloppe Listener
     void enveloppeValueChanged(const EnveloppeAbstract* enveloppeThatWasMoved, int pointNumber, bool isX)
@@ -106,10 +112,29 @@ public:
         }
     }
 
+    void updateUI(std::unordered_set<const char*> &paramSet) {
+    	for(std::unordered_set<const char*>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
+    		Component* component = componentMap[String(*it)];
+
+    		Slider* slider = dynamic_cast<Slider*>(component);
+    		if (slider != nullptr) {
+    			updateSliderParameter(slider);
+    			return;
+    		}
+
+    		ComboBox* combo = dynamic_cast<ComboBox*>(component);
+    		if (combo != nullptr) {
+    			updateComboParameter(combo);
+    			return;
+    		}
+    	}
+    }
+
 
 protected:
 //    std::map<teragon::ParameterString, Component *> componentMap;
     HashMap<const String, teragon::Parameter *> panelParameterMap;
+    HashMap<const String, Component*> componentMap;
     teragon::ConcurrentParameterSet* parameterSet;
 };
 

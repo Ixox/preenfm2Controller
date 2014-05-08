@@ -40,9 +40,17 @@ void Pfm2AudioProcessorEditor::mustUpdateUI() {
 	uiOutOfSync = true;
 }
 
+void Pfm2AudioProcessorEditor::addParamToUpdateUI(const char* paramName) {
+	int oldSize = parametersToUpdate.size();
+	parametersToUpdate.insert(paramName);
+	int newSize = parametersToUpdate.size();
+}
+
 void Pfm2AudioProcessorEditor::timerCallback () {
 	if (uiOutOfSync) {
-		mainTabs->updateUI();
+		std::unordered_set<const char*> newSet;
+		newSet.swap(parametersToUpdate);
+		mainTabs->updateUI(newSet);
 		uiOutOfSync = false;
 	}
 }
