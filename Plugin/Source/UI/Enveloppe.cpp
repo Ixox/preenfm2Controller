@@ -17,21 +17,21 @@ Enveloppe::Enveloppe(int nrpnBase)
 {
 
 	this->nrpnBase = nrpnBase;
-	EnveloppePoint* point0 = new EnveloppePoint(0,0,0,0);
-	point0->setX(0);
-	point0->setY(0);
-    EnveloppePoint* point1 = new EnveloppePoint(0,16.0,0.0, 1.0);
-    point1->setX(0.2);
-    point1->setY(1.0);
-    EnveloppePoint* point2 = new EnveloppePoint(0,16.0,0,1.0);
-    point2->setX(0.2);
-    point2->setY(0.6);
-    EnveloppePoint* point3 = new EnveloppePoint(0,16.0,0, 1.0);
-    point3->setX(0.4);
-    point3->setY(0.8);
-    EnveloppePoint* point4 = new EnveloppePoint(0,16.0,0, 1.0);
-    point4->setX(1.0);
-    point4->setY(0);
+	EnveloppePoint* point0 = new EnveloppePoint(this, 0, 0,0,0,0);
+	point0->setX(0, false);
+	point0->setY(0, false);
+    EnveloppePoint* point1 = new EnveloppePoint(this, 1, 0,16.0,0.0, 1.0);
+    point1->setX(0.2, false);
+    point1->setY(1.0, false);
+    EnveloppePoint* point2 = new EnveloppePoint(this, 2, 0,16.0,0,1.0);
+    point2->setX(0.2, false);
+    point2->setY(0.6, false);
+    EnveloppePoint* point3 = new EnveloppePoint(this, 3, 0,16.0,0, 1.0);
+    point3->setX(0.4, false);
+    point3->setY(0.8, false);
+    EnveloppePoint* point4 = new EnveloppePoint(this, 4, 0,16.0,0, 1.0);
+    point4->setX(1.0, false);
+    point4->setY(0, false);
 	pointList.append(point0);
     pointList.append(point1);
     pointList.append(point2);
@@ -69,36 +69,18 @@ void Enveloppe::paint (Graphics& g)
 }
 
 
-void Enveloppe::handleIncomingNrpn(int param, int value) {
-	int index = (param - nrpnBase) / 2;
-	switch (param - nrpnBase) {
-	case 0:
-	case 2:
-	case 4:
-	case 6:
-		// point 0 is not modifiable
-		pointList[index+1].get()->setX((float)value / 100.0f);
-		repaint();
-		break;
-	case 1:
-	case 3:
-	case 5:
-	case 7:
-		pointList[index+1].get()->setY((float)value / 100.0f);
-		repaint();
-		break;
-	}
-}
 
 void Enveloppe::newXValue(int draggingPointIndex, float newX) {
-	sendNrpn(nrpnBase + (draggingPointIndex - 1) * 2, newX * 100.0f);
 }
 
 void Enveloppe::newYValue(int draggingPointIndex, float newY) {
-	sendNrpn(nrpnBase + (draggingPointIndex - 1) * 2 + 1, newY * 100.0f);
 }
 
 static const char* __enveloppePointSuffix[] = { " Attk", " Attk lvl", " Deca", " Deca lvl", " Sust", " Sust lvl", " Rele", " Rele lvl" };
 const char ** Enveloppe::getPointSuffix() const {
 	return __enveloppePointSuffix;
+}
+
+const char* Enveloppe::getPointSuffix(int pointNumber, bool isX) const {
+    return __enveloppePointSuffix[(pointNumber - 1) *2 + (isX ? 0 : 1)];
 }

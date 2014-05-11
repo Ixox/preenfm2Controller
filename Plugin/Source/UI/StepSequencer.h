@@ -12,6 +12,7 @@
 #define STEPSEQUENCER_H_INCLUDED
 
 #include "JuceHeader.h"
+#include "StepSequencerListener.h"
 
 //==============================================================================
 /*
@@ -29,15 +30,44 @@ public:
     int  limitX(int x);
     int  limitY(int y);
     void updateValues(const MouseEvent& event);
-    void setMidiBuffer(MidiBuffer* eventsToAdd) {
-        this->eventsToAdd = eventsToAdd;
-    }
-    void sendNrpn (int nrpnParam, int nrpnValue);
     void setValues(int x, int y);
-    void handleIncomingNrpn(int param, int value);
+    int getValue(int step) const { if (step <numberOfValues) return values[step]; else return 0; }
+//    void setMidiBuffer(MidiBuffer* eventsToAdd) {
+//        this->eventsToAdd = eventsToAdd;
+//    }
+//    void sendNrpn (int nrpnParam, int nrpnValue);
+//    void handleIncomingNrpn(int param, int value);
 
     void paint (Graphics&);
     void resized();
+
+
+    /**
+     * Enveloppe Listener Methods
+     */
+    void addListener(StepSequencerListener *listener) {
+        listeners.push_back(listener);
+    }
+
+    void removeListener(StepSequencerListener *listener) {
+        StepSequencerListenerList::iterator iterator = listeners.begin();
+        while(iterator != listeners.end() && listeners.size() > 0) {
+            if(*iterator == listener) {
+                iterator = listeners.erase(iterator);
+            }
+            else {
+                ++iterator;
+            }
+        }
+    }
+
+    void notifyObservers(int pointNumber) const {
+        for(StepSequencerListenerList::const_iterator iterator = listeners.begin(); iterator != listeners.end(); ++iterator) {
+            (*iterator)->stepSeqSequencerChanged(this, pointNumber);
+        }
+    }
+
+
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StepSequencer)
@@ -46,9 +76,7 @@ private:
     int maxValue;
 	int* values;
 	bool dragging;
-	int nrpnBase;
-    MidiBuffer* eventsToAdd;
-
+	StepSequencerListenerList listeners;
 	// DEBUG
 	float debugValue;
 };

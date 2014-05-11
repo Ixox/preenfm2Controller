@@ -192,10 +192,10 @@ PanelModulation::PanelModulation ()
         stepSeqGate[k]->setValue(0.5f, dontSendNotification);
         stepSeqGate[k]->addListener (this);
 
-        stepSequencer[k] = new StepSequencer (16, 16, 100 /* TOC CHANGE !!!!!*/ );
+        addAndMakeVisible(stepSequencer[k] = new StepSequencer (16, 16, 100 /* TOC CHANGE !!!!!*/ ));
         stepSequencer[k]->setBounds(16, 368, 500, 120);
-        stepSequencer[k]->setName (TRANS("step sequencer" + String(k+1)));
-        addAndMakeVisible(stepSequencer[k]);
+        stepSequencer[k]->setName ("Step Seq " + String(k+1));
+        stepSequencer[k]->addListener(this);
 
         stepSeqButton[k] = new TextButton ("step sequencer button");
         stepSeqButton[k]->setBounds(16 + 80*k,336, 80, 20);
@@ -255,13 +255,27 @@ PanelModulation::PanelModulation ()
 
     addAndMakeVisible(enveloppeFree2 = new EnveloppeFree2 (127));
     enveloppeFree2->setName (TRANS("Free Env 2"));
+
+    addAndMakeVisible(enveloppeFree2LoopLabel = new Label("Freen Env 2 Loop label", "Loop"));
+
+    addAndMakeVisible(enveloppeFree2Loop = new ComboBox("Free Env 2 Loop"));
+    enveloppeFree2Loop->setEditableText (false);
+    enveloppeFree2Loop->setJustificationType (Justification::centred);
+    enveloppeFree2Loop->addItem("None", 1);
+    enveloppeFree2Loop->addItem("Silence", 2);
+    enveloppeFree2Loop->addItem("Attack", 3);
+    enveloppeFree2Loop->setSelectedId(1);
+    enveloppeFree2Loop->addListener (this);
     //[/UserPreSize]
+
+
 
     setSize (900, 700);
 
 
     //[Constructor] You can add your own custom stuff here..
     eventsToAdd = nullptr;
+    initialized = false;
     //[/Constructor]
 }
 
@@ -330,6 +344,9 @@ void PanelModulation::resized()
     }
     enveloppeFree1->setBounds(proportionOfWidth (0.02f), proportionOfHeight (0.27f), proportionOfWidth (0.55f), proportionOfHeight (0.14f));
     enveloppeFree2->setBounds(proportionOfWidth (0.02f), proportionOfHeight (0.46f), proportionOfWidth (0.55f), proportionOfHeight (0.14f));
+
+    enveloppeFree2LoopLabel->setBounds(proportionOfWidth (0.42)  , proportionOfHeight (.55f), 60, 20);
+    enveloppeFree2Loop->setBounds(proportionOfWidth (0.47) , proportionOfHeight (.55f), 80, 20);
 
     //[/UserResized]
 }
@@ -486,7 +503,103 @@ void PanelModulation::buildParameters() {
         updateSliderParameter(lfoKSync[k]);
     }
 
+    updateComboParameter(enveloppeFree2Loop);
+
+    updateStepSeqParameter(stepSequencer[0]);
+    updateStepSeqParameter(stepSequencer[1]);
+
+    updateUIEnveloppe();
+
+    // Let listen to enveloppe
+    if (!initialized) {
+        enveloppeFree1->addListener((EnveloppeListener*)this);
+        enveloppeFree2->addListener((EnveloppeListener*)this);
+    }
+
+    initialized = true;
 }
+
+
+void PanelModulation::updateUIEnveloppe(const char* paramName) {
+    const char** pointName = enveloppeFree1->getPointSuffix();
+    const char* pString = enveloppeFree1->getName().toRawUTF8();
+
+    for (int p=1; p < enveloppeFree1->getNumberOfPoints() ; p++) {
+        String name = String(pString) + String(pointName[p-1]);
+        teragon::Parameter* paramToMap =  parameterSet->get(name.toRawUTF8());
+
+        if (paramName != nullptr && name != String(paramName)) {
+            continue;
+        } else {
+            printf("Cool... It's %s\r\n", name.toRawUTF8());
+        }
+
+        // Will remove that later but dont' BUG for the moment if that doesn't fit
+        if (paramToMap == nullptr) {
+            printf("Enveloppe point %s does not exist...\r\n", name.toRawUTF8());
+            return;
+        }
+
+        if (panelParameterMap[name] == nullptr) {
+            panelParameterMap.set(name ,paramToMap);
+        }
+        // And let's update the value and update the UI Without sending modification !!!
+        // No modification : we dont want sliderValueChanged to be called in the different panels
+        if (p  == 3) {
+            if (paramToMap->getValue() != enveloppeFree1->getY(p)) {
+                printf("Y: PanelModulation enveloppe point %d : %f \r\n", p , paramToMap->getValue());
+                enveloppeFree1->setY(p, paramToMap->getValue());
+                enveloppeFree1->repaint();
+            }
+        } else {
+            if (paramToMap->getValue() != enveloppeFree1->getX(p)) {
+                enveloppeFree1->setX(p, paramToMap->getValue());
+                printf("X: PanelModulation enveloppe point %d : %f \r\n", p , paramToMap->getValue());
+                enveloppeFree1->repaint();
+            }
+        }
+    }
+
+    pointName = enveloppeFree2->getPointSuffix();
+    pString = enveloppeFree2->getName().toRawUTF8();
+
+    for (int p=1; p < enveloppeFree2->getNumberOfPoints() ; p++) {
+        String name = String(pString) + String(pointName[p-1]);
+        teragon::Parameter* paramToMap =  parameterSet->get(name.toRawUTF8());
+
+        if (paramName != nullptr && name != String(paramName)) {
+            continue;
+        } else {
+            printf("Cool... It's %s\r\n", name.toRawUTF8());
+        }
+
+        // Will remove that later but dont' BUG for the moment if that doesn't fit
+        if (paramToMap == nullptr) {
+            printf("Enveloppe point %s does not exist...\r\n", name.toRawUTF8());
+            return;
+        }
+
+        if (panelParameterMap[name] == nullptr) {
+            panelParameterMap.set(name ,paramToMap);
+        }
+        // And let's update the value and update the UI Without sending modification !!!
+        // No modification : we dont want sliderValueChanged to be called in the different panels
+        if (paramToMap->getValue() != enveloppeFree2->getX(p)) {
+            printf("Y: PanelModulation enveloppeFREE2 point %d : %f \r\n", p , paramToMap->getValue());
+            enveloppeFree2->setX(p, paramToMap->getValue());
+            enveloppeFree2->repaint();
+        }
+    }
+}
+
+void PanelModulation::updateUIStepSequencer(const char* paramName) {
+    if (String(paramName).startsWith("Step Seq 1")) {
+        updateStepSeqParameter(stepSequencer[0]);
+    } else  {
+        updateStepSeqParameter(stepSequencer[1]);
+    }
+}
+
 
 
 void PanelModulation::updateSliderParameter_hook(Slider* slider) {

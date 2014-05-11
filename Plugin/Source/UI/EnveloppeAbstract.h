@@ -30,48 +30,10 @@ namespace juce { class MouseEvent; }
 
 #include "JuceHeader.h"
 
-typedef std::vector<EnveloppeListener *> EnveloppeListenerList;
+
+class EnveloppePoint;
 
 //==============================================================================
-
-class EnveloppePoint {
-    friend class LinkedListPointer<EnveloppePoint>;
-public:
-    EnveloppePoint(float xMin, float xMax, float yMin, float yMax) {
-        this->x = 0.0f;
-        this->y = 0.0f;
-        this->xMin = xMin;
-        this->yMin = yMin;
-        this->xMax = xMax;
-        this->yMax = yMax;
-        this->positionInComponentX = 0;
-        this->positionInComponentY = 0;
-    }
-    void setX(float x) { this->x =  x > xMax ? xMax : (x < xMin ? xMin : x); }
-    void setY(float y) { this->y =  y > yMax ? yMax : (y < yMin ? yMin : y); }
-
-    void setXFixedValue(float value) { this->x = value; this-> xMax = value; this-> xMin = value;}
-    void setYFixedValue(float value) { this->y = value; this-> yMax = value; this-> yMin = value;}
-    bool isXConstrained() { return this->xMax == this-> xMin; };
-    bool isYConstrained() { return this->yMax == this-> yMin; };
-    float getX() { return this->x; }
-    float getY() { return this->y; }
-    float getPositionOnScreenX() { return this->positionInComponentX; }
-    float getPositionOnScreenY() { return this->positionInComponentY; }
-    void setPositionOnScreen(float xOnScreen, float yOnScreen) {
-        this->positionInComponentX = xOnScreen;
-        this->positionInComponentY = yOnScreen;
-    }
-private:
-    // A linkable object must contain a member with this name and type, which must be
-    // accessible by the LinkedListPointer class. (This doesn't mean it has to be public -
-    // you could make your class a friend of a LinkedListPointer<MyObject> instead).
-    LinkedListPointer<EnveloppePoint> nextListItem;
-    float x, xMin, xMax;
-    float y, yMin, yMax;
-    float positionInComponentX;
-    float positionInComponentY;
-};
 
 
 class EnveloppeAbstract : public Component
@@ -88,23 +50,20 @@ public:
     void mouseDrag (const MouseEvent &event);
     void mouseDown(const MouseEvent &event);
     void mouseUp(const MouseEvent &event);
-    void setMidiBuffer(MidiBuffer* eventsToAdd) {
-        this->eventsToAdd = eventsToAdd;
-    }
     void sendNrpn (int nrpnParam, int nrpnValue);
 
     // Can be implemented to deal with point value modification
     virtual void newXValue(int draggingPointIndex, float newX) {};
     virtual void newYValue(int draggingPointIndex, float newY) {};
 
-    int getNumberOfPoints() const { return pointList.size(); }
-    float getX(int index) const { return pointList[index].get()->getX(); }
-    float getY(int index) const { return pointList[index].get()->getY(); }
-    void setX(int index, float x) { pointList[index].get()->setX(x); }
-    void setY(int index, float y) { pointList[index].get()->setY(y); }
+    int getNumberOfPoints() const;
+    float getX(int index) const;
+    float getY(int index) const;
+    void setX(int index, float x);
+    void setY(int index, float y);
 
     virtual const char ** getPointSuffix() const = 0;
-
+    virtual const char *getPointSuffix(int pointNumber, bool isX) const = 0;
 
     /**
      * Enveloppe Listener Methods
@@ -136,7 +95,6 @@ protected:
     LinkedListPointer<EnveloppePoint> pointList;
     volatile int draggingPointIndex;
     int overPointIndex;
-    MidiBuffer* eventsToAdd;
     EnveloppeListenerList listeners;
 
 private:
@@ -150,4 +108,60 @@ private:
 };
 
 
+class EnveloppePoint {
+    friend class LinkedListPointer<EnveloppePoint>;
+public:
+    EnveloppePoint(EnveloppeAbstract* myEnv, int index, float xMin, float xMax, float yMin, float yMax) {
+        this->x = 0.0f;
+        this->y = 0.0f;
+        this->xMin = xMin;
+        this->yMin = yMin;
+        this->xMax = xMax;
+        this->yMax = yMax;
+        this->positionInComponentX = 0;
+        this->positionInComponentY = 0;
+        this->myEnv = myEnv;
+        this->index = index;
+    }
+    void setX(float x, bool notification = true) {
+        this->x =  x > xMax ? xMax : (x < xMin ? xMin : x);
+        if (notification) {
+            this->myEnv->newXValue(index, x);
+        }
+    }
+    void setY(float y, bool notification = true) {
+        this->y =  y > yMax ? yMax : (y < yMin ? yMin : y);
+        if (notification) {
+            this->myEnv->newYValue(index, y);
+        }
+    }
+
+    void setXFixedValue(float value) { this->x = value; this-> xMax = value; this-> xMin = value;}
+    void setYFixedValue(float value) { this->y = value; this-> yMax = value; this-> yMin = value;}
+    bool isXConstrained() { return this->xMax == this-> xMin; };
+    bool isYConstrained() { return this->yMax == this-> yMin; };
+    float getX() { return this->x; }
+    float getY() { return this->y; }
+    float getPositionOnScreenX() { return this->positionInComponentX; }
+    float getPositionOnScreenY() { return this->positionInComponentY; }
+    void setPositionOnScreen(float xOnScreen, float yOnScreen) {
+        this->positionInComponentX = xOnScreen;
+        this->positionInComponentY = yOnScreen;
+    }
+private:
+    // A linkable object must contain a member with this name and type, which must be
+    // accessible by the LinkedListPointer class. (This doesn't mean it has to be public -
+    // you could make your class a friend of a LinkedListPointer<MyObject> instead).
+    LinkedListPointer<EnveloppePoint> nextListItem;
+    float x, xMin, xMax;
+    float y, yMin, yMax;
+    float positionInComponentX;
+    float positionInComponentY;
+    EnveloppeAbstract *myEnv;
+    int index;
+};
+
+
+
 #endif  // ENVELOPPEABTRACT_H_INCLUDED
+

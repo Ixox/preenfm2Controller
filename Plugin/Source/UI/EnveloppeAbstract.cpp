@@ -21,7 +21,6 @@ EnveloppeAbstract::EnveloppeAbstract()
     this->draggingPointIndex = -1;
     this->overPointIndex = -1;
     this->xMax = 4.0;
-    this->eventsToAdd = nullptr;
 }
 
 EnveloppeAbstract::~EnveloppeAbstract()
@@ -162,13 +161,13 @@ void EnveloppeAbstract::mouseDrag (const MouseEvent &event)  {
     float oldVY = pointList[draggingPointIndex].get()->getY();
     pointList[draggingPointIndex].get()->setY(pointList[draggingPointIndex].get()->getY() - (float)(event.y - startDragY) / scaleY * slowMoveRatio);
     if (oldVX != pointList[draggingPointIndex].get()->getX()) {
-    	newXValue(draggingPointIndex, pointList[draggingPointIndex].get()->getX());
+    	//newXValue(draggingPointIndex, pointList[draggingPointIndex].get()->getX());
     	// Tell listeners
     	notifyObservers(draggingPointIndex, true);
     	startDragX = event.x;
     }
     if (oldVY != pointList[draggingPointIndex ].get()->getY()) {
-    	newYValue(draggingPointIndex, pointList[draggingPointIndex].get()->getY());
+    	//newYValue(draggingPointIndex, pointList[draggingPointIndex].get()->getY());
     	// Tell listeners
     	notifyObservers(draggingPointIndex, false);
     	startDragY = event.y;
@@ -182,12 +181,10 @@ void EnveloppeAbstract::resized()
     // components that your component contains..
 }
 
+int EnveloppeAbstract::getNumberOfPoints() const { return pointList.size(); }
+float EnveloppeAbstract::getX(int index) const { return pointList[index].get()->getX(); }
+float EnveloppeAbstract::getY(int index) const { return pointList[index].get()->getY(); }
+void EnveloppeAbstract::setX(int index, float x) { pointList[index].get()->setX(x); }
+void EnveloppeAbstract::setY(int index, float y) { pointList[index].get()->setY(y); }
 
-void EnveloppeAbstract::sendNrpn (int nrpnParam, int nrpnValue) {
-	if (eventsToAdd != nullptr) {
-	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 99, (nrpnParam >> 7)), Time::getMillisecondCounter());
-	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 98, (nrpnParam & 0xFF)), Time::getMillisecondCounter());
-	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 6, (nrpnValue >> 7)), Time::getMillisecondCounter());
-	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 38, (nrpnValue & 0xFF)), Time::getMillisecondCounter());
-	}
-}
+

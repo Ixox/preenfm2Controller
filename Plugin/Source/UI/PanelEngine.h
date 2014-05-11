@@ -66,6 +66,7 @@ public:
     // Panel of parameters
     void buildParameters();
     void updateSliderParameter_hook(Slider* slider);
+    void updateUIEnveloppe(const char* paramName = nullptr);
     //[/UserMethods]
 
     void paint (Graphics& g);

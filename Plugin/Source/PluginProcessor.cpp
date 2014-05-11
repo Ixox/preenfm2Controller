@@ -241,7 +241,41 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         nrpmIndex[nrpmParam] = parameterIndex++;
     }
 
+    for (int p=0; p<4; p++) {
+        const char* pointName[] = { " Attk", " Deca", " Sust", " Rele" };
+        nrpmParam = PREENFM2_NRPN_FREE_ENV1_ATTK + p;
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String(String("Free Env 1") + pointName[p]).toRawUTF8(), nrpmParam, 100, 0, 16, 1);
+        newParam->addObserver(this);
+        parameterSet.add(newParam);
+        nrpmIndex[nrpmParam] = parameterIndex++;
+    }
 
+    for (int p=0; p<3; p++) {
+        const char* pointName[] = { " Sile", " Attk", " Deca" };
+        nrpmParam = PREENFM2_NRPN_FREE_ENV2_SILENCE + p;
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String(String("Free Env 2") + pointName[p]).toRawUTF8(), nrpmParam, 100, 0, 16, 1);
+        newParam->addObserver(this);
+        parameterSet.add(newParam);
+        nrpmIndex[nrpmParam] = parameterIndex++;
+    }
+
+
+    //"Step Seq " + String(k+1)
+    for (int seq=0; seq<2; seq++) {
+        for (int step= 0; step <16; step ++) {
+            nrpmParam = PREENFM2_NRPN_STEPSEQ1_STEP1 + (seq * 128) + step;
+            newParam = new MidifiedFloatParameter(&nrpmParameterMap, String(String("Step Seq ") + String(seq + 1) + " Step " + String(step  + 1 )).toRawUTF8(), nrpmParam, 1, 0, 16, 16 - step);
+            newParam->addObserver(this);
+            parameterSet.add(newParam);
+            nrpmIndex[nrpmParam] = parameterIndex++;
+        }
+    }
+
+    nrpmParam = PREENFM2_NRPN_FREE_ENV2_LOOP;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, "Free Env 2 Loop", nrpmParam, 1, 1, 3, 1);
+    newParam->addObserver(this);
+    parameterSet.add(newParam);
+    nrpmIndex[nrpmParam] = parameterIndex++;
 
     midiMessageCollector.reset(44100);
     uiNeedUpdate = false;

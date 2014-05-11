@@ -23,5 +23,6 @@ public:
     virtual void enveloppeValueChanged(const EnveloppeAbstract* enveloppeThatWasMoved, int pointNumber, bool isX) = 0;
 };
 
+typedef std::vector<EnveloppeListener *> EnveloppeListenerList;
 
 #endif  // ENVELOPPELISTENER_H_INCLUDED

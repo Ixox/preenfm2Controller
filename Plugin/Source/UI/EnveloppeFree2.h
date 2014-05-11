@@ -24,15 +24,13 @@ public:
     ~EnveloppeFree2();
     void resized();
     void paint (Graphics&);
-    void handleIncomingNrpn(int param, int value);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     // Must be implemented to deal with point value modification
     void newXValue(int draggingPointIndex, float newX);
     const char ** getPointSuffix() const;
+    const char *getPointSuffix(int pointNumber, bool isX) const;
 
 private:
-    ScopedPointer<ComboBox> loopCombo;
-    ScopedPointer<Label> loopComboLabel;
 
     int nrpnBase;
     EnveloppePoint* decayPoint;

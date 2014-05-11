@@ -541,44 +541,13 @@ void PanelEngine::buildParameters() {
         updateSliderParameter(opFrequencyFineTune[k]);
     }
 
-	const char** pointName = enveloppe[0]->getPointSuffix();
+    updateUIEnveloppe();
     for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
-		const char* pString = enveloppe[k]->getName().toRawUTF8();
-
-		for (int p=2; p < enveloppe[k]->getNumberOfPoints() * 2; p++) {
-			String name = String(pString) + String(pointName[p - 2]);
-			teragon::Parameter* paramToMap =  parameterSet->get(name.toRawUTF8());
-			// Will remove that later but dont' BUG for the moment if that doesn't fit
-			if (paramToMap == nullptr) {
-				printf("Enveloppe point %s does not exist...\r\n", name.toRawUTF8());
-				return;
-			}
-
-			if (panelParameterMap[name] == nullptr) {
-				panelParameterMap.set(name ,paramToMap);
-			}
-			// And let's update the value and update the UI Without sending modification !!!
-			// No modification : we dont want sliderValueChanged to be called in the different panels
-			if ((p & 0x1) == 0) {
-				if (paramToMap->getValue() != enveloppe[k]->getX(p / 2)) {
-					enveloppe[k]->setX(p / 2, paramToMap->getValue());
-					printf("X: PanelEngine enveloppe point %d : %f \r\n", p >>1, paramToMap->getValue());
-					enveloppe[k]->repaint();
-				}
-			} else {
-				if (paramToMap->getValue() != enveloppe[k]->getY(p / 2)) {
-					printf("Y: PanelEngine enveloppe point %d : %f \r\n", p >>1, paramToMap->getValue());
-					enveloppe[k]->setY(p / 2, paramToMap->getValue());
-					enveloppe[k]->repaint();
-				}
-			}
-		}
-		// Let listen to enveloppe
-		if (!initialized) {
-			enveloppe[k]->addListener((EnveloppeListener*)this);
-		}
+        // Let listen to enveloppe
+        if (!initialized) {
+            enveloppe[k]->addListener((EnveloppeListener*)this);
+        }
     }
-
 
 
 	/*
@@ -586,6 +555,50 @@ void PanelEngine::buildParameters() {
         addComboBoxParameter(opShape[k]);
     }*/
     initialized = true;
+}
+
+void PanelEngine::updateUIEnveloppe(const char* paramName) {
+    const char** pointName = enveloppe[0]->getPointSuffix();
+    for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
+        const char* pString = enveloppe[k]->getName().toRawUTF8();
+
+        for (int p=2; p < enveloppe[k]->getNumberOfPoints() * 2; p++) {
+            String name = String(pString) + String(pointName[p - 2]);
+
+            if (paramName != nullptr && name != String(paramName)) {
+                continue;
+            } else {
+                printf("Cool... It's %s\r\n", name.toRawUTF8());
+            }
+
+            teragon::Parameter* paramToMap =  parameterSet->get(name.toRawUTF8());
+            // Will remove that later but dont' BUG for the moment if that doesn't fit
+            if (paramToMap == nullptr) {
+                printf("Enveloppe point %s does not exist...\r\n", name.toRawUTF8());
+                return;
+            }
+
+            if (panelParameterMap[name] == nullptr) {
+                panelParameterMap.set(name ,paramToMap);
+            }
+            // And let's update the value and update the UI Without sending modification !!!
+            // No modification : we dont want sliderValueChanged to be called in the different panels
+            if ((p & 0x1) == 0) {
+                if (paramToMap->getValue() != enveloppe[k]->getX(p / 2)) {
+                    enveloppe[k]->setX(p / 2, paramToMap->getValue());
+                    printf("X: PanelEngine enveloppe point %d : %f \r\n", p >>1, paramToMap->getValue());
+                    enveloppe[k]->repaint();
+
+                }
+            } else {
+                if (paramToMap->getValue() != enveloppe[k]->getY(p / 2)) {
+                    printf("Y: PanelEngine enveloppe point %d : %f \r\n", p >>1, paramToMap->getValue());
+                    enveloppe[k]->setY(p / 2, paramToMap->getValue());
+                    enveloppe[k]->repaint();
+                }
+            }
+        }
+    }
 }
 
 

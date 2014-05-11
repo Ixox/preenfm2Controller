@@ -66,6 +66,8 @@ public:
     void buildParameters();
     void updateSliderParameter_hook(Slider* slider);
     void updateComboParameter_hook(ComboBox* combo);
+    void updateUIEnveloppe(const char* paramName = nullptr);
+    void updateUIStepSequencer(const char* paramName = nullptr);
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -88,7 +90,8 @@ private:
     ScopedPointer<Label> lfoFrequencyLabel;
     ScopedPointer<Label> lfoBiasLabel;
     ScopedPointer<Label> lfoKSynLabel;
-
+    ScopedPointer<ComboBox> enveloppeFree2Loop;
+    ScopedPointer<Label> enveloppeFree2LoopLabel;
 
 
     // MATRIX
@@ -111,8 +114,8 @@ private:
     ScopedPointer<Label> stepSeqGateLabel;
     ScopedPointer<Slider> stepSeqGate[NUMBER_OF_STEP_SEQ];
 
-
     MidiBuffer* eventsToAdd;
+    bool initialized;
     //[/UserVariables]
 
     //==============================================================================

@@ -23,11 +23,12 @@ public:
     ~Enveloppe();
 
     void paint (Graphics&);
-    void handleIncomingNrpn(int param, int value);
     // Must be implemented to deal with point value modification
     void newXValue(int draggingPointIndex, float newX);
     void newYValue(int draggingPointIndex, float newY);
     const char ** getPointSuffix() const;
+    const char *getPointSuffix(int pointNumber, bool isX) const;
+
 
 private:
 

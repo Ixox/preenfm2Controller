@@ -23,8 +23,6 @@ StepSequencer::StepSequencer(int numberOfValues, int maxValue, int nrpnBase)
 	for (int k=0; k < numberOfValues; k++) {
 		this->values[k] = (float) maxValue / numberOfValues * k;
 	}
-	this->nrpnBase = nrpnBase;
-	this->eventsToAdd = nullptr;
 }
 
 StepSequencer::~StepSequencer()
@@ -120,28 +118,31 @@ void StepSequencer::resized()
 
 }
 
-void StepSequencer::sendNrpn (int nrpnParam, int nrpnValue) {
-	if (eventsToAdd != nullptr) {
-	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 99, (nrpnParam >> 7)), Time::getMillisecondCounter());
-	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 98, (nrpnParam & 0xFF)), Time::getMillisecondCounter());
-	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 6, (nrpnValue >> 7)), Time::getMillisecondCounter());
-	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 38, (nrpnValue & 0xFF)), Time::getMillisecondCounter());
-	}
-}
-
 void StepSequencer::setValues(int x, int y) {
-	if (values[x] != y && y >= 0 && y < maxValue) {
-		sendNrpn(nrpnBase + x, y);
-		values[x] = y;
-		repaint();
-	}
+    if (values[x] != y && y >= 0 && y < maxValue) {
+        values[x] = y;
+        notifyObservers(x);
+        repaint();
+    }
 }
 
-void StepSequencer::handleIncomingNrpn(int param, int value) {
-	int x = param - nrpnBase;
-	if (values[x] != value && value >= 0 && value < maxValue) {
-		values[x] = value;
-		repaint();
-	}
-}
+//void StepSequencer::sendNrpn (int nrpnParam, int nrpnValue) {
+//	if (eventsToAdd != nullptr) {
+//	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 99, (nrpnParam >> 7)), Time::getMillisecondCounter());
+//	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 98, (nrpnParam & 0xFF)), Time::getMillisecondCounter());
+//	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 6, (nrpnValue >> 7)), Time::getMillisecondCounter());
+//	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 38, (nrpnValue & 0xFF)), Time::getMillisecondCounter());
+//	}
+//}
+//
+
+
+//
+//void StepSequencer::handleIncomingNrpn(int param, int value) {
+//	int x = param - nrpnBase;
+//	if (values[x] != value && value >= 0 && value < maxValue) {
+//		values[x] = value;
+//		repaint();
+//	}
+//}
 
