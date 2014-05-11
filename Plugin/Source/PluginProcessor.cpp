@@ -1,12 +1,21 @@
 /*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic startup code for a Juce application.
-
-  ==============================================================================
+ * Copyright 2014 Xavier Hosxe
+ *
+ * Author: Xavier Hosxe (xavier <dot> hosxe
+ *                      (at) g m a i l <dot> com)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
@@ -260,8 +269,65 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     }
 
 
+
+
+
+
     //"Step Seq " + String(k+1)
     for (int seq=0; seq<2; seq++) {
+//        addAndMakeVisible(stepSeqExtMidiSync[k] = new ComboBox("Step Seq " + String(k+1) + " External Sync"));
+//        stepSeqExtMidiSync[k]->setEditableText (false);
+//        stepSeqExtMidiSync[k]->setColour (ComboBox::buttonColourId, Colours::blue);
+//        stepSeqExtMidiSync[k]->setJustificationType (Justification::left);
+//        stepSeqExtMidiSync[k]->addItem("Internal", 1);
+//        stepSeqExtMidiSync[k]->addItem("MC/4", 2);
+//        stepSeqExtMidiSync[k]->addItem("MC/2", 3);
+//        stepSeqExtMidiSync[k]->addItem("MC", 4);
+//        stepSeqExtMidiSync[k]->addItem("MC*2", 5);
+//        stepSeqExtMidiSync[k]->addItem("MC*4", 6);
+//        stepSeqExtMidiSync[k]->setSelectedId(1);
+//        stepSeqExtMidiSync[k]->addListener (this);
+
+
+        nrpmParam = PREENFM2_NRPN_STEPSEQ1_BPM + seq *4 ;
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Step Seq " + String(seq+1) + " External Sync").toRawUTF8(), nrpmParam, 1, 240, 2450, 240);
+        newParam->addObserver(this);
+        ((MidifiedFloatParameter*)newParam)->setSendRealValue(true);
+        parameterSet.add(newParam);
+        nrpmIndex[nrpmParam] = parameterIndex++;
+
+
+//        addAndMakeVisible(stepSeqBPM[k] = new Slider("SEQ"+ String(k+1) + " BPM"));
+//        stepSeqBPM[k]->setRange (10, 240.0f, 1.0f);
+//        stepSeqBPM[k]->setSliderStyle (Slider::RotaryVerticalDrag);
+//        stepSeqBPM[k]->setTextBoxStyle (Slider::TextBoxLeft, false, 35, 16);
+//        stepSeqBPM[k]->setDoubleClickReturnValue(true, 3.0f);
+//        stepSeqBPM[k]->setValue(3.0f, dontSendNotification);
+//        stepSeqBPM[k]->addListener (this);
+
+        nrpmParam = PREENFM2_NRPN_STEPSEQ1_BPM + seq *4 ;
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Step Seq " + String(seq+1) + " BPM").toRawUTF8(), nrpmParam, 1, 10, 240, 1);
+        newParam->addObserver(this);
+        ((MidifiedFloatParameter*)newParam)->setBias(10);
+        parameterSet.add(newParam);
+        nrpmIndex[nrpmParam] = parameterIndex++;
+
+
+//        addAndMakeVisible(stepSeqGate[k] = new Slider("SEQ"+ String(k+1) + " Gate"));
+//        stepSeqGate[k]->setRange (0.0f, 1.0f, 0.01f);
+//        stepSeqGate[k]->setSliderStyle (Slider::LinearHorizontal);
+//        stepSeqGate[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
+//        stepSeqGate[k]->setDoubleClickReturnValue(true, 0.5f);
+//        stepSeqGate[k]->setValue(0.5f, dontSendNotification);
+//        stepSeqGate[k]->addListener (this);
+
+        nrpmParam = PREENFM2_NRPN_STEPSEQ1_GATE + seq *4 ;
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Step Seq " + String(seq+1) + " Gate").toRawUTF8(), nrpmParam, 100, 0, 1, .5);
+        newParam->addObserver(this);
+        parameterSet.add(newParam);
+        nrpmIndex[nrpmParam] = parameterIndex++;
+
+
         for (int step= 0; step <16; step ++) {
             nrpmParam = PREENFM2_NRPN_STEPSEQ1_STEP1 + (seq * 128) + step;
             newParam = new MidifiedFloatParameter(&nrpmParameterMap, String(String("Step Seq ") + String(seq + 1) + " Step " + String(step  + 1 )).toRawUTF8(), nrpmParam, 1, 0, 16, 16 - step);
@@ -582,6 +648,7 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
         sendParamChangeMessageToListeners(index, midifiedFP->getScaledValueFromNrpn(value));
         // REDRAW UI : must be done in processblock after parameterSet is really udpated.
         if (pfm2Editor) {
+            pfm2Editor->newNrpnParam(param, value);
             pfm2Editor->addParamToUpdateUI(midifiedFP->getName().c_str());
         }
         uiNeedUpdate = true;

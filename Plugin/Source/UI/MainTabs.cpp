@@ -51,14 +51,18 @@ MainTabs::MainTabs ()
     midiInputLabel->setColour (TextEditor::textColourId, Colours::black);
     midiInputLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (midiInputLabel2 = new Label ("midi input label",
-                                                    TRANS("0")));
+    addAndMakeVisible (midiInputLabel2 = new Label ("midi input label", TRANS("0")));
     midiInputLabel2->setFont (Font (15.00f, Font::plain));
     midiInputLabel2->setJustificationType (Justification::centredLeft);
     midiInputLabel2->setEditable (false, false, false);
     midiInputLabel2->setColour (Label::textColourId, Colours::blue);
     midiInputLabel2->setColour (TextEditor::textColourId, Colours::black);
     midiInputLabel2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (titleLabel = new Label ("Title label", "Preset"));
+    titleLabel->setFont (Font (24.00f, Font::plain));
+    titleLabel->setJustificationType (Justification::centredLeft);
+    titleLabel->setEditable (true, true, false);
 
     addAndMakeVisible (pullButton = new TextButton ("pull button"));
     pullButton->setButtonText (TRANS("Pull"));
@@ -114,10 +118,11 @@ void MainTabs::paint (Graphics& g)
 void MainTabs::resized()
 {
     tabbedComponent->setBounds (proportionOfWidth (0.0095f), proportionOfHeight (0.0248f), proportionOfWidth (0.9786f), proportionOfHeight (0.9689f));
-    midiInputLabel->setBounds (552, 8, 48, 16);
-    midiInputLabel2->setBounds (616, 8, 48, 16);
+    midiInputLabel->setBounds (600, 8, 48, 16);
+    midiInputLabel2->setBounds (650, 8, 48, 16);
     pullButton->setBounds (getWidth() - 74, 8, 55, 24);
     pushButton->setBounds (getWidth() - 146, 8, 55, 24);
+    titleLabel->setBounds (getWidth() / 2.5, 10, 200, 30);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -162,6 +167,12 @@ void MainTabs::updateUI(std::unordered_set<const char*> &paramSet) {
     panelEngine->updateUI(paramSet);
     panelModulation->updateUI(paramSet);
     panelArpAndFilter->updateUI(paramSet);
+}
+
+
+void MainTabs::newNrpnParam(int nrpn, int value) {
+    midiInputLabel->setText(String(nrpn), dontSendNotification);
+    midiInputLabel2->setText(String(value), dontSendNotification);
 }
 //[/MiscUserCode]
 

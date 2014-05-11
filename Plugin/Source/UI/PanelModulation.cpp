@@ -163,20 +163,20 @@ PanelModulation::PanelModulation ()
 
 
     for (int k=0; k<NUMBER_OF_STEP_SEQ; k++) {
-        addAndMakeVisible(stepSeqExtMidiSync[k] = new ComboBox("SEQ"+ String(k+1) + " BPM"));
+        addAndMakeVisible(stepSeqExtMidiSync[k] = new ComboBox("Step Seq " + String(k+1) + " External Sync"));
         stepSeqExtMidiSync[k]->setEditableText (false);
         stepSeqExtMidiSync[k]->setColour (ComboBox::buttonColourId, Colours::blue);
         stepSeqExtMidiSync[k]->setJustificationType (Justification::left);
-        stepSeqExtMidiSync[k]->addItem("Internal", 1);
-        stepSeqExtMidiSync[k]->addItem("MC/4", 2);
-        stepSeqExtMidiSync[k]->addItem("MC/2", 3);
-        stepSeqExtMidiSync[k]->addItem("MC", 4);
-        stepSeqExtMidiSync[k]->addItem("MC*2", 5);
-        stepSeqExtMidiSync[k]->addItem("MC*4", 6);
+        stepSeqExtMidiSync[k]->addItem("Internal", 240);
+        stepSeqExtMidiSync[k]->addItem("MC/4", 241);
+        stepSeqExtMidiSync[k]->addItem("MC/2", 242);
+        stepSeqExtMidiSync[k]->addItem("MC", 243);
+        stepSeqExtMidiSync[k]->addItem("MC*2", 244);
+        stepSeqExtMidiSync[k]->addItem("MC*4", 245);
         stepSeqExtMidiSync[k]->setSelectedId(1);
         stepSeqExtMidiSync[k]->addListener (this);
 
-        addAndMakeVisible(stepSeqBPM[k] = new Slider("SEQ"+ String(k+1) + " BPM"));
+        addAndMakeVisible(stepSeqBPM[k] = new Slider("Step Seq " + String(k+1) +  " BPM"));
         stepSeqBPM[k]->setRange (10, 240.0f, 1.0f);
         stepSeqBPM[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         stepSeqBPM[k]->setTextBoxStyle (Slider::TextBoxLeft, false, 35, 16);
@@ -184,7 +184,7 @@ PanelModulation::PanelModulation ()
         stepSeqBPM[k]->setValue(3.0f, dontSendNotification);
         stepSeqBPM[k]->addListener (this);
 
-        addAndMakeVisible(stepSeqGate[k] = new Slider("SEQ" + String(k+1) + " Gate"));
+        addAndMakeVisible(stepSeqGate[k] = new Slider("Step Seq " + String(k+1) +  " Gate"));
         stepSeqGate[k]->setRange (0.0f, 1.0f, 0.01f);
         stepSeqGate[k]->setSliderStyle (Slider::LinearHorizontal);
         stepSeqGate[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
@@ -425,7 +425,7 @@ void PanelModulation::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPl
     printf("PanelModulation Slider %s : %f \n", sliderThatWasMoved->getName().toRawUTF8(), sliderThatWasMoved->getValue());
 
     for (int k=0; k < NUMBER_OF_LFO; k++) {
-    	if (sliderThatWasMoved == lfoFrequency[k] && lfoExtMidiSync[k]->getSelectedId() != 1) {
+    	if (sliderThatWasMoved == lfoFrequency[k] && lfoExtMidiSync[k]->getSelectedId() != 2400) {
     		lfoFrequency[k]->setEnabled(true);
     		lfoExtMidiSync[k]->setSelectedId(2400, dontSendNotification);
     	}
@@ -436,6 +436,12 @@ void PanelModulation::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPl
         }
     }
 
+    for (int k=0; k < NUMBER_OF_STEP_SEQ; k++) {
+        if (sliderThatWasMoved == stepSeqBPM[k] && stepSeqExtMidiSync[k]->getSelectedId() != 240) {
+            stepSeqBPM[k]->setEnabled(true);
+            stepSeqExtMidiSync[k]->setSelectedId(240, dontSendNotification);
+        }
+    }
 }
 
 void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
@@ -480,7 +486,14 @@ void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fr
     }
     for (int k = 0 ; k< NUMBER_OF_STEP_SEQ; k++) {
         if (comboBoxThatHasChanged == stepSeqExtMidiSync[k]) {
-            stepSeqBPM[k]->setEnabled(comboBoxThatHasChanged->getSelectedId() == 1);
+            if (comboBoxThatHasChanged->getSelectedId() == 240) {
+                stepSeqBPM[k]->setEnabled(true);
+                float value = stepSeqBPM[k]->getValue();
+                stepSeqBPM[k]->setValue(10);
+                stepSeqBPM[k]->setValue(value);
+            } else {
+                stepSeqBPM[k]->setEnabled(false);
+            }
         }
     }
 
@@ -505,9 +518,12 @@ void PanelModulation::buildParameters() {
 
     updateComboParameter(enveloppeFree2Loop);
 
-    updateStepSeqParameter(stepSequencer[0]);
-    updateStepSeqParameter(stepSequencer[1]);
-
+    for (int k=0; k < NUMBER_OF_STEP_SEQ; k++) {
+        updateStepSeqParameter(stepSequencer[k]);
+        updateComboParameter(stepSeqExtMidiSync[k]);
+        updateSliderParameter(stepSeqBPM[k]);
+        updateSliderParameter(stepSeqGate[k]);
+    }
     updateUIEnveloppe();
 
     // Let listen to enveloppe

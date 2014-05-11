@@ -54,6 +54,7 @@ public:
     void handleIncomingMidiBuffer(MidiBuffer &buffer, int numberOfSamples);
     void buildParameters(teragon::ConcurrentParameterSet& parameterSet);
 	void updateUI(std::unordered_set<const char*> &paramSet);
+	void newNrpnParam(int nrpn, int value);
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -76,7 +77,7 @@ private:
     ScopedPointer<Label> midiInputLabel2;
     ScopedPointer<TextButton> pullButton;
     ScopedPointer<TextButton> pushButton;
-
+    ScopedPointer<Label> titleLabel;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainTabs)
