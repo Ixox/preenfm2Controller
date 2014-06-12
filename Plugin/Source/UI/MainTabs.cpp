@@ -83,6 +83,7 @@ MainTabs::MainTabs ()
 	panelEngine = ((PanelEngine*)tabbedComponent->getTabContentComponent(0));
 	panelModulation = ((PanelModulation*)tabbedComponent->getTabContentComponent(1));
 	panelArpAndFilter = ((PanelArpAndFilter*)tabbedComponent->getTabContentComponent(2));
+	pullButtonValue = 0;
     // SET null !
     //[/Constructor]
 }
@@ -135,6 +136,18 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == pullButton)
     {
         //[UserButtonCode_pullButton] -- add your button handler code here..
+
+        teragon::Parameter* param =  parameterSet->get("Pull button");
+        // Will remove that later but dont' BUG for the moment if that doesn't fit
+        if (param == nullptr) {
+            printf("PULL BUTTON does not exist...\r\n");
+            return;
+        }
+
+        pullButtonValue = (pullButtonValue == 0 ? 1 : 0) ;
+        printf("MainTabs::PULL BUTTON PRESSED");
+        parameterSet->set(param, pullButtonValue, nullptr);
+
         //[/UserButtonCode_pullButton]
     }
     else if (buttonThatWasClicked == pushButton)
@@ -153,6 +166,8 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
 
 
 void MainTabs::buildParameters(teragon::ConcurrentParameterSet& parameterSet) {
+    this->parameterSet = &parameterSet;
+
     panelEngine->setParameterSet(parameterSet);
     panelEngine->buildParameters();
 

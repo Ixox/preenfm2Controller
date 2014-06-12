@@ -185,14 +185,14 @@ public:
     			return;
     		}
 
-            printf("PanelOfParameters::component %s \r\n", (*it));
+//            printf("PanelOfParameters::component %s \r\n", (*it));
 
             if (String(*it).startsWith("Step Seq")) {
                 updateUIStepSequencer(*it);
                 return;
             }
 
-    		printf("Can be an eveloppe : %s\r\n", (*it));
+//    		printf("Can be an eveloppe : %s\r\n", (*it));
     		updateUIEnveloppe((*it));
     	}
     }

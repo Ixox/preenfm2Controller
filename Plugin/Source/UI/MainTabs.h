@@ -69,6 +69,8 @@ private:
     PanelEngine* panelEngine;
     PanelModulation* panelModulation;
     PanelArpAndFilter* panelArpAndFilter;
+    teragon::ConcurrentParameterSet* parameterSet;
+    teragon::ParameterValue pullButtonValue;
     //[/UserVariables]
 
     //==============================================================================

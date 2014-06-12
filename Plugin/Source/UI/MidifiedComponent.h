@@ -98,4 +98,6 @@ public:
     }
 };
 
+
+
 #endif  // MIDIFIEDCOMPONENT_H_INCLUDED

@@ -99,6 +99,8 @@ public:
 private:
 	 std::map<int , teragon::Parameter* > nrpmParameterMap;
 	 int nrpmIndex[2048];
+	 int parameterIndex;
+
      Pfm2AudioProcessorEditor* pfm2Editor;
 	 bool uiNeedUpdate;
 	 LookAndFeel* myLookAndFeel;

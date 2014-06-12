@@ -36,7 +36,12 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 
     pfm2Editor = nullptr;
     teragon::Parameter* newParam;
-    int parameterIndex = 0;
+    parameterIndex = 0;
+
+    for (int k=0; k<2048; k++) {
+        nrpmIndex[k] = -1;
+    }
+
     // Algo
     int nrpmParam = PREENFM2_NRPN_ALGO;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Algo").toRawUTF8(), nrpmParam, 1, 1, 28,1);
@@ -343,6 +348,14 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     parameterSet.add(newParam);
     nrpmIndex[nrpmParam] = parameterIndex++;
 
+    nrpmParam = 127 * 128 + 127;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, "Pull button", nrpmParam, 1, 0, 127, 0);
+    newParam->addObserver(this);
+    parameterSet.add(newParam);
+    // Put in last slot
+    nrpmIndex[2047] = parameterIndex++;
+
+
     midiMessageCollector.reset(44100);
     uiNeedUpdate = false;
 }
@@ -614,7 +627,7 @@ void Pfm2AudioProcessor::setParameter (int index, float newValue)
 
 
 /**
- * Values updated by the PreenFM2
+ * Values updated by the PreenFM2 hardware
  * Here the values has to be modified
   . Modify Value
   . tell host
@@ -623,7 +636,16 @@ void Pfm2AudioProcessor::setParameter (int index, float newValue)
 void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex) {
     // NRPM from the preenFM2
 
+    if (param > 9) {
+        return;
+    }
+
     int index = (forceIndex == -1 ? nrpmIndex[param] : forceIndex);
+
+    if (index == -1) {
+        printf("Pfm2AudioProcessor::handleIncomingNrpn NRPNparam %d not registered\r\n", param);
+        return;
+    }
 
     Parameter* parameter = parameterSet[index];
     if (forceIndex != -1) {
