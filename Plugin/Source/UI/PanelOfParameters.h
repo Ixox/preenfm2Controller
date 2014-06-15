@@ -172,7 +172,11 @@ public:
     void updateUI(std::unordered_set<const char*> &paramSet) {
     	for(std::unordered_set<const char*>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
     		Component* component = componentMap[String(*it)];
-
+			if (component == nullptr) {
+				// printf("Can be an eveloppe : %s\r\n", (*it));
+	    		updateUIEnveloppe((*it));
+				continue;
+			}
     		Slider* slider = dynamic_cast<Slider*>(component);
     		if (slider != nullptr) {
     			updateSliderParameter(slider);
@@ -192,8 +196,6 @@ public:
                 return;
             }
 
-//    		printf("Can be an eveloppe : %s\r\n", (*it));
-    		updateUIEnveloppe((*it));
     	}
     }
 

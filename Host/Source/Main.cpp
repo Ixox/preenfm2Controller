@@ -29,8 +29,7 @@ public:
     {
         // Add your application's initialisation code here...
 
-
-        mainWindow = new StandalonePFM2Window("TEST", Colours::lightblue, nullptr);
+        mainWindow = new StandalonePFM2Window("pfm2 Editor", Colours::lightblue, nullptr);
         mainWindow->setVisible (true);
     }
 

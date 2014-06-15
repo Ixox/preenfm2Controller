@@ -156,7 +156,7 @@ public:
     {
         DialogWindow::LaunchOptions o;
         o.content.setOwned (new AudioDeviceSelectorComponent (deviceManager,
-                                                              0, 0, 0, 0,
+                                                              2,2,2,2,
                                                               true, true,
                                                               true, true));
         o.content->setSize (400, 270);
@@ -252,7 +252,7 @@ private:
     that the other plugin wrappers use.
 */
 class StandalonePFM2Window    : public DocumentWindow,
-                                  public ButtonListener   // (can't use Button::Listener due to VC2005 bug)
+                                public ButtonListener   // (can't use Button::Listener due to VC2005 bug)
 {
 public:
     //==============================================================================

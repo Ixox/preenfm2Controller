@@ -44,22 +44,18 @@ void Pfm2AudioProcessorEditor::paint (Graphics& g)
 {
 }
 
-void Pfm2AudioProcessorEditor::mustUpdateUI() {
-	uiOutOfSync = true;
+void Pfm2AudioProcessorEditor::updateUIWith(std::unordered_set<const char*> &ptu) {
+    for(std::unordered_set<const char*>::iterator it = ptu.begin(); it != ptu.end(); ++it) {
+		this->parametersToUpdate.insert(*it);
+	}
 }
 
-void Pfm2AudioProcessorEditor::addParamToUpdateUI(const char* paramName) {
-	int oldSize = parametersToUpdate.size();
-	parametersToUpdate.insert(paramName);
-	int newSize = parametersToUpdate.size();
-}
 
 void Pfm2AudioProcessorEditor::timerCallback () {
-	if (uiOutOfSync) {
+	if (this->parametersToUpdate.size() > 0) {
 		std::unordered_set<const char*> newSet;
-		newSet.swap(parametersToUpdate);
+		newSet.swap(this->parametersToUpdate);
 		mainTabs->updateUI(newSet);
-		uiOutOfSync = false;
 	}
 }
 

@@ -20,6 +20,7 @@
 #define PLUGINPROCESSOR_H_INCLUDED
 
 #include <map>
+#include <unordered_set>
 #include "JuceHeader.h"
 #include "PluginParameters/include/PluginParameters.h"
 #include "PreenNrpn.h"
@@ -102,8 +103,8 @@ private:
 	 int parameterIndex;
 
      Pfm2AudioProcessorEditor* pfm2Editor;
-	 bool uiNeedUpdate;
 	 LookAndFeel* myLookAndFeel;
+     std::unordered_set<const char*> parametersToUpdate;
 
 
 	 //==============================================================================

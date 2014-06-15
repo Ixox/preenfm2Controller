@@ -95,9 +95,9 @@
     <VS2012 targetFolder="Builds/VisualStudio2012">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
-                       isDebug="1" optimisation="1" targetName="pfm2Editor"/>
+                       isDebug="1" optimisation="1" targetName="pfm2Editor" headerPath="G:\dev\vstsdk2.4"/>
         <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
-                       isDebug="0" optimisation="2" targetName="pfm2Editor"/>
+                       isDebug="0" optimisation="2" targetName="pfm2Editor" headerPath="G:\dev\vstsdk2.4"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_opengl" path="../../juce"/>

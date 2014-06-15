@@ -35,6 +35,7 @@ AudioProcessorPlayerWithMidiOutput::AudioProcessorPlayerWithMidiOutput()
       numInputChans (0),
       numOutputChans (0)
 {
+    messageCollector.reset (44100);
 }
 
 AudioProcessorPlayerWithMidiOutput::~AudioProcessorPlayerWithMidiOutput()

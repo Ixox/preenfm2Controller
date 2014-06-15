@@ -39,7 +39,7 @@ public:
     // This is just a standard Juce paint method...
     void paint (Graphics& g);
     void timerCallback ();
-    void mustUpdateUI();
+    void updateUIWith(std::unordered_set<const char*> &ptu);
     void addParamToUpdateUI(const char* paramName);
     void newNrpnParam(int nrpn, int value);
 

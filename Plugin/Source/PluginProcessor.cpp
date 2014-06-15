@@ -357,7 +357,6 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 
 
     midiMessageCollector.reset(44100);
-    uiNeedUpdate = false;
 }
 
 Pfm2AudioProcessor::~Pfm2AudioProcessor()
@@ -487,10 +486,11 @@ void Pfm2AudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
     // dispatch realtime events to non realtime observer
     parameterSet.processRealtimeEvents();
     midiMessageCollector.removeNextBlockOfMessages(midiMessages,  buffer.getNumSamples());
-    if (pfm2Editor && uiNeedUpdate) {
-        pfm2Editor->mustUpdateUI();
+	std::unordered_set<const char*> newSet;
+	newSet.swap(parametersToUpdate);
+	if (pfm2Editor && newSet.size() > 0) {
+        pfm2Editor->updateUIWith(newSet);
     }
-    uiNeedUpdate = false;
 }
 
 //==============================================================================
@@ -620,9 +620,8 @@ void Pfm2AudioProcessor::setParameter (int index, float newValue)
     }
     // REDRAW UI : must be done in processblock after parameterSet is really udpated.
     if (pfm2Editor) {
-        pfm2Editor->addParamToUpdateUI(midifiedFP->getName().c_str());
+		parametersToUpdate.insert(midifiedFP->getName().c_str());
     }
-    uiNeedUpdate = true;
 }
 
 
@@ -635,10 +634,6 @@ void Pfm2AudioProcessor::setParameter (int index, float newValue)
  */
 void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex) {
     // NRPM from the preenFM2
-
-    if (param > 9) {
-        return;
-    }
 
     int index = (forceIndex == -1 ? nrpmIndex[param] : forceIndex);
 
@@ -669,11 +664,10 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
         // Notify host
         sendParamChangeMessageToListeners(index, midifiedFP->getScaledValueFromNrpn(value));
         // REDRAW UI : must be done in processblock after parameterSet is really udpated.
-        if (pfm2Editor) {
-            pfm2Editor->newNrpnParam(param, value);
-            pfm2Editor->addParamToUpdateUI(midifiedFP->getName().c_str());
-        }
-        uiNeedUpdate = true;
+	    if (pfm2Editor) {
+			pfm2Editor->newNrpnParam(param, value);
+			parametersToUpdate.insert(midifiedFP->getName().c_str());
+		}
     }
 }
 
