@@ -257,8 +257,11 @@ public:
     */
     void showEditor();
 
-    /** Pops up the combo box's list. */
-    void showPopup();
+    /** Pops up the combo box's list.
+        This is virtual so that you can override it with your own custom popup
+        mechanism if you need some really unusual behaviour.
+    */
+    virtual void showPopup();
 
     //==============================================================================
     /**
@@ -393,6 +396,8 @@ public:
     bool keyPressed (const KeyPress&) override;
     /** @internal */
     void valueChanged (Value&) override;
+    /** @internal */
+    void parentHierarchyChanged() override;
 
     // These methods' bool parameters have changed: see their new method signatures.
     JUCE_DEPRECATED (void clear (bool));
