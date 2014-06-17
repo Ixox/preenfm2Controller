@@ -422,8 +422,6 @@ void PanelModulation::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPl
             parameterSet->set(parameterReady, value, nullptr);
         }
     }
-    printf("PanelModulation Slider %s : %f \n", sliderThatWasMoved->getName().toRawUTF8(), sliderThatWasMoved->getValue());
-
     for (int k=0; k < NUMBER_OF_LFO; k++) {
     	if (sliderThatWasMoved == lfoFrequency[k] && lfoExtMidiSync[k]->getSelectedId() != 2400) {
     		lfoFrequency[k]->setEnabled(true);
@@ -454,7 +452,6 @@ void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fr
         teragon::Parameter * parameterReady = panelParameterMap[comboBoxThatHasChanged->getName()];
         if (parameterReady != nullptr) {
             teragon::ParameterValue value = comboBoxThatHasChanged->getSelectedId();
-            printf("PanelModulation::comboBoxChanged '%s' selection : %d \n", parameterReady->getName().c_str(), (int)value);
             parameterSet->set(parameterReady, value, nullptr);
         }
     }
@@ -547,7 +544,7 @@ void PanelModulation::updateUIEnveloppe(const char* paramName) {
         if (paramName != nullptr && name != String(paramName)) {
             continue;
         } else {
-            printf("Cool... It's %s\r\n", name.toRawUTF8());
+//            printf("Cool... It's %s\r\n", name.toRawUTF8());
         }
 
         // Will remove that later but dont' BUG for the moment if that doesn't fit
@@ -563,14 +560,12 @@ void PanelModulation::updateUIEnveloppe(const char* paramName) {
         // No modification : we dont want sliderValueChanged to be called in the different panels
         if (p  == 3) {
             if (paramToMap->getValue() != enveloppeFree1->getY(p)) {
-                printf("Y: PanelModulation enveloppe point %d : %f \r\n", p , paramToMap->getValue());
                 enveloppeFree1->setY(p, paramToMap->getValue());
                 enveloppeFree1->repaint();
             }
         } else {
             if (paramToMap->getValue() != enveloppeFree1->getX(p)) {
                 enveloppeFree1->setX(p, paramToMap->getValue());
-                printf("X: PanelModulation enveloppe point %d : %f \r\n", p , paramToMap->getValue());
                 enveloppeFree1->repaint();
             }
         }
@@ -586,7 +581,7 @@ void PanelModulation::updateUIEnveloppe(const char* paramName) {
         if (paramName != nullptr && name != String(paramName)) {
             continue;
         } else {
-            printf("Cool... It's %s\r\n", name.toRawUTF8());
+//            printf("Cool... It's %s\r\n", name.toRawUTF8());
         }
 
         // Will remove that later but dont' BUG for the moment if that doesn't fit
@@ -601,7 +596,6 @@ void PanelModulation::updateUIEnveloppe(const char* paramName) {
         // And let's update the value and update the UI Without sending modification !!!
         // No modification : we dont want sliderValueChanged to be called in the different panels
         if (paramToMap->getValue() != enveloppeFree2->getX(p)) {
-            printf("Y: PanelModulation enveloppeFREE2 point %d : %f \r\n", p , paramToMap->getValue());
             enveloppeFree2->setX(p, paramToMap->getValue());
             enveloppeFree2->repaint();
         }

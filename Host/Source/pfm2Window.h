@@ -156,10 +156,10 @@ public:
     {
         DialogWindow::LaunchOptions o;
         o.content.setOwned (new AudioDeviceSelectorComponent (deviceManager,
-                                                              2,2,2,2,
+                                                              1,2,1,2,
                                                               true, true,
                                                               true, true));
-        o.content->setSize (400, 270);
+        o.content->setSize (400, 600);
 
         o.dialogTitle                   = TRANS("Midi Settings");
         o.dialogBackgroundColour        = Colour (0xfff0f0f0);

@@ -108,7 +108,6 @@ public:
 
             if (panelParameterMap[paramName] == nullptr) {
                 panelParameterMap.set(paramName ,paramToMap);
-                printf("updateStepSeqParameter added : '%s' to panelParameterMap \r\n", paramName.toRawUTF8());
             }
 
             // And let's update the value and update the UI Without sending modification !!!
@@ -142,10 +141,10 @@ public:
                 } else {
                 	value = enveloppeThatWasMoved->getY(pointNumber);
                 }
-                printf("PanelOfParameter::enveloppeValueChanged '%s' : %f \r\n", parameterReady->getName().c_str(), value);
+//                printf("PanelOfParameter::enveloppeValueChanged '%s' : %f \r\n", parameterReady->getName().c_str(), value);
                 parameterSet->set(parameterReady, value, nullptr);
             } else {
-                printf("PanelOfParameter::enveloppeValueChanged '%s' name does not EXIST \r\n", String(enveloppeThatWasMoved->getName() + suffix).toRawUTF8());
+//                printf("PanelOfParameter::enveloppeValueChanged '%s' name does not EXIST \r\n", String(enveloppeThatWasMoved->getName() + suffix).toRawUTF8());
             }
         }
     }
@@ -161,10 +160,10 @@ public:
             if (parameterReady != nullptr) {
                 teragon::ParameterValue value;
                 value = stepSeqThatChanged->getValue(stepNumber);
-                printf("PanelOfParameter::stepSeqSequencerChanged %s : %f \r\n", parameterReady->getName().c_str(), value);
+//                printf("PanelOfParameter::stepSeqSequencerChanged %s : %f \r\n", parameterReady->getName().c_str(), value);
                 parameterSet->set(parameterReady, value, nullptr);
             } else {
-                printf("PanelOfParameter::stepSeqSequencerChanged %s name does not EXIST \r\n", String(stepSeqThatChanged->getName() + " Step"+ String(stepNumber + 1)).toRawUTF8());
+//              printf("PanelOfParameter::stepSeqSequencerChanged %s name does not EXIST \r\n", String(stepSeqThatChanged->getName() + " Step"+ String(stepNumber + 1)).toRawUTF8());
             }
         }
     }
@@ -172,36 +171,35 @@ public:
     void updateUI(std::unordered_set<const char*> &paramSet) {
     	for(std::unordered_set<const char*>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
     		Component* component = componentMap[String(*it)];
-			if (component == nullptr) {
-				// printf("Can be an eveloppe : %s\r\n", (*it));
-	    		updateUIEnveloppe((*it));
-				continue;
+
+
+            if (component == nullptr) {
+                if (String(*it).startsWith("Step Seq")) {
+                    printf("PanelOfParameters:updateUI : update step sequencer %s \r\n", *it);
+                    updateUIStepSequencer(*it);
+                    continue;
+                } else {
+                    updateUIEnveloppe((*it));
+                }
 			}
+
     		Slider* slider = dynamic_cast<Slider*>(component);
     		if (slider != nullptr) {
     			updateSliderParameter(slider);
-    			return;
+                continue;
     		}
 
     		ComboBox* combo = dynamic_cast<ComboBox*>(component);
     		if (combo != nullptr) {
     			updateComboParameter(combo);
-    			return;
+                continue;
     		}
-
-//            printf("PanelOfParameters::component %s \r\n", (*it));
-
-            if (String(*it).startsWith("Step Seq")) {
-                updateUIStepSequencer(*it);
-                return;
-            }
-
     	}
     }
 
     virtual void updateUIEnveloppe(const char* paramName) { }
     virtual void updateUIStepSequencer(const char* paramName) {
-        printf("PanelOfParameters::updateUIStepSequencer (NOT IMPLEMENTER): %s\r\n", paramName);
+        printf("PanelOfParameters::updateUIStepSequencer (NOT IMPLEMENTED): %s\r\n", paramName);
 
     }
 

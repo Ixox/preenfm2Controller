@@ -486,10 +486,12 @@ void Pfm2AudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
     // dispatch realtime events to non realtime observer
     parameterSet.processRealtimeEvents();
     midiMessageCollector.removeNextBlockOfMessages(midiMessages,  buffer.getNumSamples());
-	std::unordered_set<const char*> newSet;
-	newSet.swap(parametersToUpdate);
-	if (pfm2Editor && newSet.size() > 0) {
-        pfm2Editor->updateUIWith(newSet);
+    if (parametersToUpdate.size() > 0 ) {
+        std::unordered_set<const char*> newSet;
+        newSet.swap(parametersToUpdate);
+        if (pfm2Editor) {
+            pfm2Editor->updateUIWith(newSet);
+        }
     }
 }
 
@@ -619,9 +621,7 @@ void Pfm2AudioProcessor::setParameter (int index, float newValue)
         midifiedFP->addNrpn(midiMessageCollector, midifiedFP->getValue());
     }
     // REDRAW UI : must be done in processblock after parameterSet is really udpated.
-    if (pfm2Editor) {
-		parametersToUpdate.insert(midifiedFP->getName().c_str());
-    }
+    parametersToUpdate.insert(midifiedFP->getName().c_str());
 }
 
 
@@ -643,6 +643,7 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
     }
 
     Parameter* parameter = parameterSet[index];
+
     if (forceIndex != -1) {
         printf("Pfm2AudioProcessor::handleIncomingNrpn redirected to combBox %s (%d, %d)\r\n", parameter->getName().c_str(), param, value);
     } else {
@@ -659,15 +660,15 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
             return;
         }
         // Set the value but we don't want to be notified
-        printf("Pfm2AudioProcessor::handleIncomingNrpn valueFromNrpn (%f)\r\n", midifiedFP->getValueFromNrpn(value));
+//        printf("Pfm2AudioProcessor::handleIncomingNrpn valueFromNrpn (%f)\r\n", midifiedFP->getValueFromNrpn(value));
         parameterSet.set(index, midifiedFP->getValueFromNrpn(value), this);
         // Notify host
         sendParamChangeMessageToListeners(index, midifiedFP->getScaledValueFromNrpn(value));
         // REDRAW UI : must be done in processblock after parameterSet is really udpated.
 	    if (pfm2Editor) {
 			pfm2Editor->newNrpnParam(param, value);
-			parametersToUpdate.insert(midifiedFP->getName().c_str());
-		}
+	    }
+		parametersToUpdate.insert(midifiedFP->getName().c_str());
     }
 }
 
@@ -685,7 +686,7 @@ void Pfm2AudioProcessor::onParameterUpdated(const teragon::Parameter *parameter)
         // Notify host
         sendParamChangeMessageToListeners(index, parameter->getScaledValue());
         // send nrpn
-        printf("Pfm2AudioProcessor::onParameterUpdated %s = %f (send real value %d)\n", parameter->getName().c_str(), parameter->getValue(), midifiedFP->getSendRealValue());
+//        printf("Pfm2AudioProcessor::onParameterUpdated %s = %f (send real value %d)\n", parameter->getName().c_str(), parameter->getValue(), midifiedFP->getSendRealValue());
         if (!midifiedFP->getSendRealValue() || parameter->getValue() != 1) {
             midifiedFP->addNrpn(midiMessageCollector, parameter->getValue());
         }

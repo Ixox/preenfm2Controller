@@ -51,11 +51,8 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
-  $(OBJDIR)/tinythread_3b828360.o \
-  $(OBJDIR)/exoFont_8e57ed9e.o \
   $(OBJDIR)/AlgoPNG_cf66d571.o \
-  $(OBJDIR)/PluginEditor_5326167c.o \
-  $(OBJDIR)/PluginProcessor_e32f2d.o \
+  $(OBJDIR)/Enveloppe_978f1a6b.o \
   $(OBJDIR)/EnveloppeAbstract_ac9367ad.o \
   $(OBJDIR)/EnveloppeFree1_8522c964.o \
   $(OBJDIR)/EnveloppeFree2_8530e0e5.o \
@@ -63,11 +60,17 @@ OBJECTS := \
   $(OBJDIR)/PanelArpAndFilter_5cf5ba35.o \
   $(OBJDIR)/PanelEngine_3d916ae7.o \
   $(OBJDIR)/PanelModulation_3a30d121.o \
+  $(OBJDIR)/PluginEditor_5326167c.o \
+  $(OBJDIR)/PluginProcessor_e32f2d.o \
   $(OBJDIR)/PreenLookAndFeel_f74a21bb.o \
   $(OBJDIR)/StepSequencer_c4513266.o \
-  $(OBJDIR)/Enveloppe_978f1a6b.o \
+  $(OBJDIR)/exoFont_8e57ed9e.o \
+  $(OBJDIR)/tinythread_3b828360.o \
   $(OBJDIR)/AudioProcessorPlayerWithMidiOutput_efdf50ae.o \
   $(OBJDIR)/Main_90ebc5c2.o \
+  $(OBJDIR)/juce_PluginUtilities_e2e19a34.o \
+  $(OBJDIR)/juce_VST_Wrapper_bb62e93d.o \
+  $(OBJDIR)/juce_VST3_Wrapper_77e7c73b.o \
   $(OBJDIR)/juce_audio_basics_2442e4ea.o \
   $(OBJDIR)/juce_audio_devices_a4c8a728.o \
   $(OBJDIR)/juce_audio_formats_d349f0c8.o \
@@ -81,9 +84,6 @@ OBJECTS := \
   $(OBJDIR)/juce_gui_basics_a630dd20.o \
   $(OBJDIR)/juce_gui_extra_7767d6a8.o \
   $(OBJDIR)/juce_opengl_c7e3506c.o \
-  $(OBJDIR)/juce_PluginUtilities_e2e19a34.o \
-  $(OBJDIR)/juce_VST3_Wrapper_77e7c73b.o \
-  $(OBJDIR)/juce_VST_Wrapper_bb62e93d.o \
 
 .PHONY: clean
 
@@ -102,29 +102,14 @@ strip:
 	@echo Stripping pfm2Editor
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
 
-$(OBJDIR)/tinythread_3b828360.o: ../../../Plugin/Source/PluginParameters/include/tinythread/source/tinythread.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling tinythread.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/exoFont_8e57ed9e.o: ../../../Plugin/Source/UI/OTF/exoFont.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling exoFont.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
 $(OBJDIR)/AlgoPNG_cf66d571.o: ../../../Plugin/Source/UI/png/AlgoPNG.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling AlgoPNG.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/PluginEditor_5326167c.o: ../../../Plugin/Source/PluginEditor.cpp
+$(OBJDIR)/Enveloppe_978f1a6b.o: ../../../Plugin/Source/UI/Enveloppe.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling PluginEditor.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/PluginProcessor_e32f2d.o: ../../../Plugin/Source/PluginProcessor.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling PluginProcessor.cpp"
+	@echo "Compiling Enveloppe.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/EnveloppeAbstract_ac9367ad.o: ../../../Plugin/Source/UI/EnveloppeAbstract.cpp
@@ -162,6 +147,16 @@ $(OBJDIR)/PanelModulation_3a30d121.o: ../../../Plugin/Source/UI/PanelModulation.
 	@echo "Compiling PanelModulation.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/PluginEditor_5326167c.o: ../../../Plugin/Source/PluginEditor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling PluginEditor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/PluginProcessor_e32f2d.o: ../../../Plugin/Source/PluginProcessor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling PluginProcessor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/PreenLookAndFeel_f74a21bb.o: ../../../Plugin/Source/UI/PreenLookAndFeel.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling PreenLookAndFeel.cpp"
@@ -172,9 +167,14 @@ $(OBJDIR)/StepSequencer_c4513266.o: ../../../Plugin/Source/UI/StepSequencer.cpp
 	@echo "Compiling StepSequencer.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/Enveloppe_978f1a6b.o: ../../../Plugin/Source/UI/Enveloppe.cpp
+$(OBJDIR)/exoFont_8e57ed9e.o: ../../../Plugin/Source/UI/OTF/exoFont.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Enveloppe.cpp"
+	@echo "Compiling exoFont.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/tinythread_3b828360.o: ../../../Plugin/Source/PluginParameters/include/tinythread/source/tinythread.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling tinythread.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/AudioProcessorPlayerWithMidiOutput_efdf50ae.o: ../../Source/AudioProcessorPlayerWithMidiOutput.cpp
@@ -185,6 +185,21 @@ $(OBJDIR)/AudioProcessorPlayerWithMidiOutput_efdf50ae.o: ../../Source/AudioProce
 $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling Main.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/juce_PluginUtilities_e2e19a34.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/utility/juce_PluginUtilities.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling juce_PluginUtilities.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/juce_VST_Wrapper_bb62e93d.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/VST/juce_VST_Wrapper.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling juce_VST_Wrapper.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/juce_VST3_Wrapper_77e7c73b.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/VST3/juce_VST3_Wrapper.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling juce_VST3_Wrapper.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_audio_basics_2442e4ea.o: ../../JuceLibraryCode/modules/juce_audio_basics/juce_audio_basics.cpp
@@ -250,21 +265,6 @@ $(OBJDIR)/juce_gui_extra_7767d6a8.o: ../../JuceLibraryCode/modules/juce_gui_extr
 $(OBJDIR)/juce_opengl_c7e3506c.o: ../../JuceLibraryCode/modules/juce_opengl/juce_opengl.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_opengl.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/juce_PluginUtilities_e2e19a34.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/utility/juce_PluginUtilities.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling juce_PluginUtilities.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/juce_VST3_Wrapper_77e7c73b.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/VST3/juce_VST3_Wrapper.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling juce_VST3_Wrapper.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/juce_VST_Wrapper_bb62e93d.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/VST/juce_VST_Wrapper.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling juce_VST_Wrapper.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 -include $(OBJECTS:%.o=%.d)

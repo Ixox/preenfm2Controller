@@ -6,22 +6,10 @@
   <MAINGROUP id="c6LJM5" name="pfm2Editor">
     <GROUP id="{4109EA71-F7BE-3C72-D039-241F993FAEB9}" name="Source">
       <GROUP id="{1D684675-DA20-07E6-EFC5-ECF1687EF7D5}" name="Plugin">
-        <FILE id="qjErtE" name="EnveloppeListener.h" compile="0" resource="0"
-              file="../Plugin/Source/UI/EnveloppeListener.h"/>
-        <FILE id="pysef4" name="PanelOfParameters.h" compile="0" resource="0"
-              file="../Plugin/Source/UI/PanelOfParameters.h"/>
-        <FILE id="LKBfHU" name="tinythread.cpp" compile="1" resource="0" file="../Plugin/Source/PluginParameters/include/tinythread/source/tinythread.cpp"/>
-        <FILE id="SGs1a4" name="exoFont.cpp" compile="1" resource="0" file="../Plugin/Source/UI/OTF/exoFont.cpp"/>
-        <FILE id="GyvX8T" name="exoFont.h" compile="0" resource="0" file="../Plugin/Source/UI/OTF/exoFont.h"/>
         <FILE id="psmrC7" name="AlgoPNG.cpp" compile="1" resource="0" file="../Plugin/Source/UI/png/AlgoPNG.cpp"/>
         <FILE id="XG0f87" name="AlgoPNG.h" compile="0" resource="0" file="../Plugin/Source/UI/png/AlgoPNG.h"/>
-        <FILE id="VIEd6L" name="PluginEditor.cpp" compile="1" resource="0"
-              file="../Plugin/Source/PluginEditor.cpp"/>
-        <FILE id="pe564r" name="PluginEditor.h" compile="0" resource="0" file="../Plugin/Source/PluginEditor.h"/>
-        <FILE id="CR8c4t" name="PluginProcessor.cpp" compile="1" resource="0"
-              file="../Plugin/Source/PluginProcessor.cpp"/>
-        <FILE id="q2N4NE" name="PluginProcessor.h" compile="0" resource="0"
-              file="../Plugin/Source/PluginProcessor.h"/>
+        <FILE id="o49x3a" name="Enveloppe.cpp" compile="1" resource="0" file="../Plugin/Source/UI/Enveloppe.cpp"/>
+        <FILE id="HCFPhv" name="Enveloppe.h" compile="0" resource="0" file="../Plugin/Source/UI/Enveloppe.h"/>
         <FILE id="yUykgS" name="EnveloppeAbstract.cpp" compile="1" resource="0"
               file="../Plugin/Source/UI/EnveloppeAbstract.cpp"/>
         <FILE id="qIbx2v" name="EnveloppeAbstract.h" compile="0" resource="0"
@@ -34,6 +22,8 @@
               file="../Plugin/Source/UI/EnveloppeFree2.cpp"/>
         <FILE id="d2fnlb" name="EnveloppeFree2.h" compile="0" resource="0"
               file="../Plugin/Source/UI/EnveloppeFree2.h"/>
+        <FILE id="qjErtE" name="EnveloppeListener.h" compile="0" resource="0"
+              file="../Plugin/Source/UI/EnveloppeListener.h"/>
         <FILE id="We4G3E" name="MainTabs.cpp" compile="1" resource="0" file="../Plugin/Source/UI/MainTabs.cpp"/>
         <FILE id="ASxXjn" name="MainTabs.h" compile="0" resource="0" file="../Plugin/Source/UI/MainTabs.h"/>
         <FILE id="zZwe9K" name="MidifiedComponent.h" compile="0" resource="0"
@@ -48,16 +38,26 @@
               file="../Plugin/Source/UI/PanelModulation.cpp"/>
         <FILE id="KEWRRt" name="PanelModulation.h" compile="0" resource="0"
               file="../Plugin/Source/UI/PanelModulation.h"/>
+        <FILE id="pysef4" name="PanelOfParameters.h" compile="0" resource="0"
+              file="../Plugin/Source/UI/PanelOfParameters.h"/>
+        <FILE id="VIEd6L" name="PluginEditor.cpp" compile="1" resource="0"
+              file="../Plugin/Source/PluginEditor.cpp"/>
+        <FILE id="pe564r" name="PluginEditor.h" compile="0" resource="0" file="../Plugin/Source/PluginEditor.h"/>
+        <FILE id="CR8c4t" name="PluginProcessor.cpp" compile="1" resource="0"
+              file="../Plugin/Source/PluginProcessor.cpp"/>
+        <FILE id="q2N4NE" name="PluginProcessor.h" compile="0" resource="0"
+              file="../Plugin/Source/PluginProcessor.h"/>
         <FILE id="gPpchR" name="PreenLookAndFeel.cpp" compile="1" resource="0"
               file="../Plugin/Source/UI/PreenLookAndFeel.cpp"/>
         <FILE id="BLH8sw" name="PreenLookAndFeel.h" compile="0" resource="0"
               file="../Plugin/Source/UI/PreenLookAndFeel.h"/>
-        <FILE id="LIqP9Z" name="PreenNrpn.h" compile="0" resource="0" file="../Plugin/Source/UI/PreenNrpn.h"/>
+        <FILE id="bgOvnw" name="PreenNrpn.h" compile="0" resource="0" file="../Plugin/Source/PreenNrpn.h"/>
         <FILE id="Ql80Jn" name="StepSequencer.cpp" compile="1" resource="0"
               file="../Plugin/Source/UI/StepSequencer.cpp"/>
         <FILE id="s9fzsf" name="StepSequencer.h" compile="0" resource="0" file="../Plugin/Source/UI/StepSequencer.h"/>
-        <FILE id="o49x3a" name="Enveloppe.cpp" compile="1" resource="0" file="../Plugin/Source/UI/Enveloppe.cpp"/>
-        <FILE id="HCFPhv" name="Enveloppe.h" compile="0" resource="0" file="../Plugin/Source/UI/Enveloppe.h"/>
+        <FILE id="SGs1a4" name="exoFont.cpp" compile="1" resource="0" file="../Plugin/Source/UI/OTF/exoFont.cpp"/>
+        <FILE id="GyvX8T" name="exoFont.h" compile="0" resource="0" file="../Plugin/Source/UI/OTF/exoFont.h"/>
+        <FILE id="LKBfHU" name="tinythread.cpp" compile="1" resource="0" file="../Plugin/Source/PluginParameters/include/tinythread/source/tinythread.cpp"/>
       </GROUP>
       <FILE id="K7kPuZ" name="AudioProcessorPlayerWithMidiOutput.cpp" compile="1"
             resource="0" file="Source/AudioProcessorPlayerWithMidiOutput.cpp"/>
@@ -116,6 +116,30 @@
         <MODULEPATH id="juce_audio_basics" path="../../juce"/>
       </MODULEPATHS>
     </VS2012>
+    <CODEBLOCKS targetFolder="Builds/CodeBlocks" extraCompilerFlags="-DLINUX">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="pfm2Editor"
+                       headerPath="/usr/include/freetype2/&#10;/home/xhosxe/SDKs"/>
+        <CONFIGURATION name="Release" isDebug="0" optimisation="2" targetName="pfm2Editor"
+                       headerPath="/usr/include/freetype2/&#10;/home/xhosxe/SDKs"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_opengl" path="../../juce"/>
+        <MODULEPATH id="juce_gui_extra" path="../../juce"/>
+        <MODULEPATH id="juce_gui_basics" path="../../juce"/>
+        <MODULEPATH id="juce_graphics" path="../../juce"/>
+        <MODULEPATH id="juce_events" path="../../juce"/>
+        <MODULEPATH id="juce_data_structures" path="../../juce"/>
+        <MODULEPATH id="juce_cryptography" path="../../juce"/>
+        <MODULEPATH id="juce_core" path="../../juce"/>
+        <MODULEPATH id="juce_audio_utils" path="../../juce"/>
+        <MODULEPATH id="juce_audio_processors" path="../../juce"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../juce"/>
+        <MODULEPATH id="juce_audio_formats" path="../../juce"/>
+        <MODULEPATH id="juce_audio_devices" path="../../juce"/>
+        <MODULEPATH id="juce_audio_basics" path="../../juce"/>
+      </MODULEPATHS>
+    </CODEBLOCKS>
   </EXPORTFORMATS>
   <MODULES>
     <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="1"/>

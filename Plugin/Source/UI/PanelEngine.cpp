@@ -149,7 +149,6 @@ PanelEngine::PanelEngine ()
         enveloppe[k]->setName ("Op"+String(k+1)+" Env");
 
         enveloppeButton[k] = new TextButton ("enveloppe button");
-        printf("enveloppeButton[%d] = %p\r\n", k, (void*)enveloppeButton[k]);
         enveloppeButton[k]->setButtonText ("Op" + String(k+1));
 
         enveloppeButton[k]->setColour (TextButton::buttonColourId, Colour (0xffa4c9e9));
@@ -162,7 +161,6 @@ PanelEngine::PanelEngine ()
         addAndMakeVisible(enveloppeButton[k]);
 
         opShape[k] = new ComboBox("Op"+String(k+1)+" Shape");
-        printf("opShape[%d] = %p\r\n", k, (void*)opShape[k]);
         opShape[k]->setJustificationType (Justification::centred);
         opShape[k]->setColour (ComboBox::buttonColourId, Colours::blue);
         opShape[k]->addItem("Sin", 1);
@@ -448,7 +446,6 @@ void PanelEngine::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPlugin
 		teragon::Parameter * parameterReady = panelParameterMap[sliderThatWasMoved->getName()];
         if (parameterReady != nullptr) {
             teragon::ParameterValue value = sliderThatWasMoved->getValue();
-            printf("PanelEngine Slider %s : %f \n", parameterReady->getName().c_str(), value);
             parameterSet->set(parameterReady, value, nullptr);
         }
     }
@@ -478,7 +475,6 @@ void PanelEngine::comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPl
         teragon::Parameter * parameterReady = panelParameterMap[comboBoxThatHasChanged->getName()];
         if (parameterReady != nullptr) {
             teragon::ParameterValue value = comboBoxThatHasChanged->getSelectedId();
-            printf("New Combo selection : %d \n", (int)value);
             parameterSet->set(parameterReady, value, nullptr);
         }
     }
@@ -567,8 +563,6 @@ void PanelEngine::updateUIEnveloppe(const char* paramName) {
 
             if (paramName != nullptr && name != String(paramName)) {
                 continue;
-            } else {
-                printf("Cool... It's %s\r\n", name.toRawUTF8());
             }
 
             teragon::Parameter* paramToMap =  parameterSet->get(name.toRawUTF8());
@@ -586,13 +580,11 @@ void PanelEngine::updateUIEnveloppe(const char* paramName) {
             if ((p & 0x1) == 0) {
                 if (paramToMap->getValue() != enveloppe[k]->getX(p / 2)) {
                     enveloppe[k]->setX(p / 2, paramToMap->getValue());
-                    printf("X: PanelEngine enveloppe point %d : %f \r\n", p >>1, paramToMap->getValue());
                     enveloppe[k]->repaint();
 
                 }
             } else {
                 if (paramToMap->getValue() != enveloppe[k]->getY(p / 2)) {
-                    printf("Y: PanelEngine enveloppe point %d : %f \r\n", p >>1, paramToMap->getValue());
                     enveloppe[k]->setY(p / 2, paramToMap->getValue());
                     enveloppe[k]->repaint();
                 }

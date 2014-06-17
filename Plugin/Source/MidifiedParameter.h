@@ -61,7 +61,7 @@ public:
 		MidiMessage byte4 = MidiMessage::controllerEvent(1, 38, getNrpnValueLSB(value));
 		byte4.setTimeStamp(timeNow);
 		midiMessageCollector.addMessageToQueue(byte4);
-		printf("addNrpn : %d > %d\r\n", nrpnParam, ((getNrpnValueMSB(value)) << 7)+getNrpnValueLSB(value));
+//		printf("addNrpn : %d > %d\r\n", nrpnParam, ((getNrpnValueMSB(value)) << 7)+getNrpnValueLSB(value));
 	}
 
 	int getNrpnParamMSB() const { return nrpnParam >> 7; }
