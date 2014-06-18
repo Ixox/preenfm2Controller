@@ -36,10 +36,9 @@ MainTabs::MainTabs ()
 {
     addAndMakeVisible (tabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtTop));
     tabbedComponent->setTabBarDepth (30);
-    tabbedComponent->addTab (TRANS("Engine"), Colour (0xffdef8ff), new PanelEngine(), true);
-    tabbedComponent->addTab (TRANS("Moldulation"), Colour (0xffdeffe4), new PanelModulation(), true);
+    tabbedComponent->addTab (TRANS("Engine"), Colour (0xffe5f9ff), new PanelEngine(), true);
+    tabbedComponent->addTab (TRANS("Modulation"), Colour (0xffdeffe4), new PanelModulation(), true);
     tabbedComponent->addTab (TRANS("Arp & Filter"), Colour (0xfffffade), new PanelArpAndFilter(), true);
-    tabbedComponent->addTab (TRANS("Settings"), Colour (0xfff6ffc7), 0, false);
     tabbedComponent->setCurrentTabIndex (0);
 
     addAndMakeVisible (midiInputLabel = new Label ("midi input label",
@@ -51,18 +50,14 @@ MainTabs::MainTabs ()
     midiInputLabel->setColour (TextEditor::textColourId, Colours::black);
     midiInputLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (midiInputLabel2 = new Label ("midi input label", TRANS("0")));
+    addAndMakeVisible (midiInputLabel2 = new Label ("midi input label",
+                                                    TRANS("0")));
     midiInputLabel2->setFont (Font (15.00f, Font::plain));
     midiInputLabel2->setJustificationType (Justification::centredLeft);
     midiInputLabel2->setEditable (false, false, false);
     midiInputLabel2->setColour (Label::textColourId, Colours::blue);
     midiInputLabel2->setColour (TextEditor::textColourId, Colours::black);
     midiInputLabel2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (titleLabel = new Label ("Title label", "Preset"));
-    titleLabel->setFont (Font (24.00f, Font::plain));
-    titleLabel->setJustificationType (Justification::centredLeft);
-    titleLabel->setEditable (true, true, false);
 
     addAndMakeVisible (pullButton = new TextButton ("pull button"));
     pullButton->setButtonText (TRANS("Pull"));
@@ -71,6 +66,16 @@ MainTabs::MainTabs ()
     addAndMakeVisible (pushButton = new TextButton ("push button"));
     pushButton->setButtonText (TRANS("push"));
     pushButton->addListener (this);
+
+    addAndMakeVisible (presetNameLabel = new Label ("preset name label",
+                                                    TRANS("preset")));
+    presetNameLabel->setTooltip (TRANS("Click to edit"));
+    presetNameLabel->setFont (Font (25.90f, Font::bold));
+    presetNameLabel->setJustificationType (Justification::centredLeft);
+    presetNameLabel->setEditable (true, true, false);
+    presetNameLabel->setColour (TextEditor::textColourId, Colours::black);
+    presetNameLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    presetNameLabel->addListener (this);
 
 
     //[UserPreSize]
@@ -98,6 +103,7 @@ MainTabs::~MainTabs()
     midiInputLabel2 = nullptr;
     pullButton = nullptr;
     pushButton = nullptr;
+    presetNameLabel = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -118,12 +124,12 @@ void MainTabs::paint (Graphics& g)
 
 void MainTabs::resized()
 {
-    tabbedComponent->setBounds (proportionOfWidth (0.0095f), proportionOfHeight (0.0248f), proportionOfWidth (0.9786f), proportionOfHeight (0.9689f));
-    midiInputLabel->setBounds (600, 8, 48, 16);
-    midiInputLabel2->setBounds (650, 8, 48, 16);
+    tabbedComponent->setBounds (proportionOfWidth (0.0093f), proportionOfHeight (0.0251f), proportionOfWidth (0.9785f), proportionOfHeight (0.9694f));
+    midiInputLabel->setBounds (552, 8, 48, 16);
+    midiInputLabel2->setBounds (616, 8, 48, 16);
     pullButton->setBounds (getWidth() - 74, 8, 55, 24);
     pushButton->setBounds (getWidth() - 146, 8, 55, 24);
-    titleLabel->setBounds (getWidth() / 2.5, 10, 200, 30);
+    presetNameLabel->setBounds (288, 8, 200, 32);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -158,6 +164,41 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
+}
+
+void MainTabs::labelTextChanged (Label* labelThatHasChanged)
+{
+    //[UserlabelTextChanged_Pre]
+    //[/UserlabelTextChanged_Pre]
+
+    if (labelThatHasChanged == presetNameLabel)
+    {
+        //[UserLabelCode_presetNameLabel] -- add your label text handling code here..
+        for (int k=0; k<12; k++) {
+            int timeNow = Time::getMillisecondCounter();
+            MidiMessage byte1 = MidiMessage::controllerEvent(1, 99, 1);
+            byte1.setTimeStamp(timeNow);
+            midiMessageCollector->addMessageToQueue(byte1);
+
+            MidiMessage byte2 = MidiMessage::controllerEvent(1, 98, 100 + k);
+            byte2.setTimeStamp(timeNow);
+            midiMessageCollector->addMessageToQueue(byte2);
+
+            int letter = presetNameLabel->getText().toRawUTF8()[k];
+
+            MidiMessage byte3 = MidiMessage::controllerEvent(1, 6, letter >> 7);
+            byte3.setTimeStamp(timeNow);
+            midiMessageCollector->addMessageToQueue(byte3);
+
+            MidiMessage byte4 = MidiMessage::controllerEvent(1, 38, letter & 0xff);
+            byte4.setTimeStamp(timeNow);
+            midiMessageCollector->addMessageToQueue(byte4);
+        }
+        //[/UserLabelCode_presetNameLabel]
+    }
+
+    //[UserlabelTextChanged_Post]
+    //[/UserlabelTextChanged_Post]
 }
 
 
@@ -199,6 +240,15 @@ void MainTabs::newNrpnParam(int nrpn, int value) {
     midiInputLabel->setText(String(nrpn), dontSendNotification);
     midiInputLabel2->setText(String(value), dontSendNotification);
 }
+
+
+void MainTabs::setPresetName(const char* presetName) {
+    presetNameLabel->setText(String(presetName), dontSendNotification);
+}
+
+void MainTabs::setMidiMessageCollector(MidiMessageCollector &midiMessageCollector) {
+    this->midiMessageCollector = &midiMessageCollector;
+}
 //[/MiscUserCode]
 
 
@@ -217,15 +267,13 @@ BEGIN_JUCER_METADATA
                  fixedSize="0" initialWidth="900" initialHeight="710">
   <BACKGROUND backgroundColour="fff0f8ff"/>
   <TABBEDCOMPONENT name="new tabbed component" id="f175981f6c34a740" memberName="tabbedComponent"
-                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="0.95% 2.484% 97.862% 96.894%"
+                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="0.931% 2.505% 97.851% 96.939%"
                    orientation="top" tabBarDepth="30" initialTab="0">
-    <TAB name="Engine" colour="ffdef8ff" useJucerComp="0" contentClassName="PanelEngine"
+    <TAB name="Engine" colour="ffe5f9ff" useJucerComp="0" contentClassName="PanelEngine"
          constructorParams="" jucerComponentFile=""/>
-    <TAB name="Moldulation" colour="ffdeffe4" useJucerComp="0" contentClassName="PanelModulation"
+    <TAB name="Modulation" colour="ffdeffe4" useJucerComp="0" contentClassName="PanelModulation"
          constructorParams="" jucerComponentFile=""/>
     <TAB name="Arp &amp; Filter" colour="fffffade" useJucerComp="0" contentClassName="PanelArpAndFilter"
-         constructorParams="" jucerComponentFile=""/>
-    <TAB name="Settings" colour="fff6ffc7" useJucerComp="0" contentClassName=""
          constructorParams="" jucerComponentFile=""/>
   </TABBEDCOMPONENT>
   <LABEL name="midi input label" id="f77b232960a175fb" memberName="midiInputLabel"
@@ -244,6 +292,11 @@ BEGIN_JUCER_METADATA
   <TEXTBUTTON name="push button" id="cd85e35be3968a4b" memberName="pushButton"
               virtualName="" explicitFocusOrder="0" pos="146R 8 55 24" buttonText="push"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <LABEL name="preset name label" id="4201f054ae2edbe" memberName="presetNameLabel"
+         virtualName="" explicitFocusOrder="0" pos="288 8 200 32" tooltip="Click to edit"
+         edTextCol="ff000000" edBkgCol="0" labelText="preset" editableSingleClick="1"
+         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="25.899999999999998579" bold="1" italic="0" justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

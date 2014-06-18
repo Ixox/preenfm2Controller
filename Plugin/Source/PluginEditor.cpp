@@ -63,4 +63,13 @@ void Pfm2AudioProcessorEditor::newNrpnParam(int nrpn, int value) {
     mainTabs->newNrpnParam(nrpn, value);
 }
 
+void Pfm2AudioProcessorEditor::setMidiMessageCollector(MidiMessageCollector &midiMessageCollector) {
+    mainTabs->setMidiMessageCollector(midiMessageCollector);
+}
+
+
+void Pfm2AudioProcessorEditor::setPresetName(const char* presetName) {
+    mainTabs->setPresetName(presetName);
+}
+
 

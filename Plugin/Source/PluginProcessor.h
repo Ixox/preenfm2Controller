@@ -101,6 +101,7 @@ private:
 	 std::map<int , teragon::Parameter* > nrpmParameterMap;
 	 int nrpmIndex[2048];
 	 int parameterIndex;
+	 char presetName[13];
 
      Pfm2AudioProcessorEditor* pfm2Editor;
 	 LookAndFeel* myLookAndFeel;

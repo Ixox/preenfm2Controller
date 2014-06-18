@@ -42,7 +42,8 @@ class PanelArpAndFilter;
                                                                     //[/Comments]
 */
 class MainTabs  : public Component,
-                  public ButtonListener
+                  public ButtonListener,
+                  public LabelListener
 {
 public:
     //==============================================================================
@@ -55,11 +56,14 @@ public:
     void buildParameters(teragon::ConcurrentParameterSet& parameterSet);
 	void updateUI(std::unordered_set<const char*> &paramSet);
 	void newNrpnParam(int nrpn, int value);
+	void setPresetName(const char* presetName);
+    void setMidiMessageCollector(MidiMessageCollector &midiMessageCollector);
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
     void buttonClicked (Button* buttonThatWasClicked);
+    void labelTextChanged (Label* labelThatHasChanged);
 
 
 
@@ -71,6 +75,7 @@ private:
     PanelArpAndFilter* panelArpAndFilter;
     teragon::ConcurrentParameterSet* parameterSet;
     teragon::ParameterValue pullButtonValue;
+    MidiMessageCollector *midiMessageCollector;
     //[/UserVariables]
 
     //==============================================================================
@@ -79,7 +84,8 @@ private:
     ScopedPointer<Label> midiInputLabel2;
     ScopedPointer<TextButton> pullButton;
     ScopedPointer<TextButton> pushButton;
-    ScopedPointer<Label> titleLabel;
+    ScopedPointer<Label> presetNameLabel;
+
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainTabs)

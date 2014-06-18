@@ -42,6 +42,8 @@ public:
     void updateUIWith(std::unordered_set<const char*> &ptu);
     void addParamToUpdateUI(const char* paramName);
     void newNrpnParam(int nrpn, int value);
+    void setMidiMessageCollector(MidiMessageCollector &midiMessageCollector);
+    void setPresetName(const char* presetName);
 
 private:
 	bool uiOutOfSync;

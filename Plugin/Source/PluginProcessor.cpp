@@ -348,6 +348,15 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     parameterSet.add(newParam);
     nrpmIndex[nrpmParam] = parameterIndex++;
 
+    presetName[0] = 'p';
+    presetName[1] = 'f';
+    presetName[2] = 'm';
+    presetName[3] = '2';
+    for (int k=4; k<13; k++) {
+        presetName[k] = 0;
+    }
+
+
     nrpmParam = 127 * 128 + 127;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, "Pull button", nrpmParam, 1, 0, 127, 0);
     newParam->addObserver(this);
@@ -504,6 +513,8 @@ bool Pfm2AudioProcessor::hasEditor() const
 AudioProcessorEditor* Pfm2AudioProcessor::createEditor()
 {
     pfm2Editor = new Pfm2AudioProcessorEditor (this);
+    pfm2Editor->setMidiMessageCollector(midiMessageCollector);
+    pfm2Editor->setPresetName(presetName);
     printf("createEditor : %u\n", parameterSet.size());
     return pfm2Editor;
 }
@@ -634,6 +645,12 @@ void Pfm2AudioProcessor::setParameter (int index, float newValue)
  */
 void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex) {
     // NRPM from the preenFM2
+    if (param >= PREENFM2_NRPN_LETTER1 && param <= PREENFM2_NRPN_LETTER12) {
+        presetName[param - PREENFM2_NRPN_LETTER1] = value;
+        if (pfm2Editor) {
+            pfm2Editor->setPresetName(presetName);
+        }
+    }
 
     int index = (forceIndex == -1 ? nrpmIndex[param] : forceIndex);
 
