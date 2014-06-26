@@ -91,7 +91,7 @@ public:
 			combo->setSelectedId(paramToMap->getValue(), dontSendNotification);
 			updateComboParameter_hook(combo);
 		}
-	}
+    }
 
     void updateStepSeqParameter(StepSequencer* stepSeq) {
 
@@ -175,7 +175,7 @@ public:
 
             if (component == nullptr) {
                 if (String(*it).startsWith("Step Seq")) {
-                    printf("PanelOfParameters:updateUI : update step sequencer %s \r\n", *it);
+//                    printf("PanelOfParameters:updateUI : update step sequencer %s \r\n", *it);
                     updateUIStepSequencer(*it);
                     continue;
                 } else {
@@ -191,6 +191,7 @@ public:
 
     		ComboBox* combo = dynamic_cast<ComboBox*>(component);
     		if (combo != nullptr) {
+//                printf("PanelOfParameters:updateUI : update combo box %s \r\n", *it);
     			updateComboParameter(combo);
                 continue;
     		}
@@ -199,7 +200,7 @@ public:
 
     virtual void updateUIEnveloppe(const char* paramName) { }
     virtual void updateUIStepSequencer(const char* paramName) {
-        printf("PanelOfParameters::updateUIStepSequencer (NOT IMPLEMENTED): %s\r\n", paramName);
+//        printf("PanelOfParameters::updateUIStepSequencer (NOT IMPLEMENTED): %s\r\n", paramName);
 
     }
 

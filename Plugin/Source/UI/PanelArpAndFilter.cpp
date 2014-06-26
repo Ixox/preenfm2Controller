@@ -35,22 +35,6 @@ PanelArpAndFilter::PanelArpAndFilter ()
                                                                TRANS("Arpeggiator")));
     arpGroupComponent->setTextLabelPosition (Justification::centredLeft);
 
-    addAndMakeVisible (arpOffButton = new ToggleButton ("Arp Clock"));
-    arpOffButton->setButtonText (TRANS("Off"));
-    arpOffButton->setRadioGroupId (5111);
-    arpOffButton->addListener (this);
-    arpOffButton->setToggleState (true, dontSendNotification);
-
-    addAndMakeVisible (arpInternalButton = new ToggleButton ("Arp Clock"));
-    arpInternalButton->setButtonText (TRANS("Internal clock"));
-    arpInternalButton->setRadioGroupId (5111);
-    arpInternalButton->addListener (this);
-
-    addAndMakeVisible (arpExternalButton = new ToggleButton ("Arp Clock"));
-    arpExternalButton->setButtonText (TRANS("External clock"));
-    arpExternalButton->setRadioGroupId (5111);
-    arpExternalButton->addListener (this);
-
     addAndMakeVisible (arpBPM = new Slider ("arp bpm slider"));
     arpBPM->setRange (10, 240, 1);
     arpBPM->setSliderStyle (Slider::RotaryVerticalDrag);
@@ -123,6 +107,13 @@ PanelArpAndFilter::PanelArpAndFilter ()
     arpDirectionCombo->addItem (TRANS("Up & Down"), 3);
     arpDirectionCombo->addItem (TRANS("As played"), 4);
     arpDirectionCombo->addItem (TRANS("Random"), 5);
+    arpDirectionCombo->addItem (TRANS("Chord"), 6);
+    arpDirectionCombo->addItem (TRANS("Rotate Up"), 7);
+    arpDirectionCombo->addItem (TRANS("Rotate Down"), 8);
+    arpDirectionCombo->addItem (TRANS("Rotate U&D"), 9);
+    arpDirectionCombo->addItem (TRANS("Shift Up"), 10);
+    arpDirectionCombo->addItem (TRANS("Shift Down"), 11);
+    arpDirectionCombo->addItem (TRANS("Shift U&D"), 12);
     arpDirectionCombo->addSeparator();
     arpDirectionCombo->addListener (this);
 
@@ -227,32 +218,6 @@ PanelArpAndFilter::PanelArpAndFilter ()
                                                                   TRANS("Filter")));
     filterGroupComponent->setTextLabelPosition (Justification::centredLeft);
 
-    addAndMakeVisible (filterOffButton = new ToggleButton ("filter off toggle button"));
-    filterOffButton->setButtonText (TRANS("Off"));
-    filterOffButton->setRadioGroupId (5112);
-    filterOffButton->addListener (this);
-    filterOffButton->setToggleState (true, dontSendNotification);
-
-    addAndMakeVisible (filterMixButton = new ToggleButton ("filter mix toggle button"));
-    filterMixButton->setButtonText (TRANS("Mix"));
-    filterMixButton->setRadioGroupId (5112);
-    filterMixButton->addListener (this);
-
-    addAndMakeVisible (filterLPButton = new ToggleButton ("filter LP toggle button"));
-    filterLPButton->setButtonText (TRANS("Low Pass"));
-    filterLPButton->setRadioGroupId (5112);
-    filterLPButton->addListener (this);
-
-    addAndMakeVisible (filterHPButton = new ToggleButton ("filter HP toggle button"));
-    filterHPButton->setButtonText (TRANS("High Pass"));
-    filterHPButton->setRadioGroupId (5112);
-    filterHPButton->addListener (this);
-
-    addAndMakeVisible (filterBassButton = new ToggleButton ("filter Bass toggle button"));
-    filterBassButton->setButtonText (TRANS("Bass"));
-    filterBassButton->setRadioGroupId (5112);
-    filterBassButton->addListener (this);
-
     addAndMakeVisible (filterParam1Label = new Label ("filter param1 label",
                                                       TRANS("Param1\n")));
     filterParam1Label->setFont (Font (15.00f, Font::plain));
@@ -275,11 +240,11 @@ PanelArpAndFilter::PanelArpAndFilter ()
     filterParam2Label->setColour (TextEditor::textColourId, Colours::black);
     filterParam2Label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (filterParam1Slider2 = new Slider ("filter param1 slider"));
-    filterParam1Slider2->setRange (0, 1, 0.01);
-    filterParam1Slider2->setSliderStyle (Slider::RotaryVerticalDrag);
-    filterParam1Slider2->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
-    filterParam1Slider2->addListener (this);
+    addAndMakeVisible (filterParam2Slider = new Slider ("filter param2 slider"));
+    filterParam2Slider->setRange (0, 1, 0.01);
+    filterParam2Slider->setSliderStyle (Slider::RotaryVerticalDrag);
+    filterParam2Slider->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
+    filterParam2Slider->addListener (this);
 
     addAndMakeVisible (filterGainLabel = new Label ("filter gain label",
                                                     TRANS("Gain")));
@@ -289,11 +254,42 @@ PanelArpAndFilter::PanelArpAndFilter ()
     filterGainLabel->setColour (TextEditor::textColourId, Colours::black);
     filterGainLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (filterParam1Slider3 = new Slider ("filter param1 slider"));
-    filterParam1Slider3->setRange (0, 2, 0.01);
-    filterParam1Slider3->setSliderStyle (Slider::RotaryVerticalDrag);
-    filterParam1Slider3->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
-    filterParam1Slider3->addListener (this);
+    addAndMakeVisible (filterGainSlider = new Slider ("filter gain slider"));
+    filterGainSlider->setRange (0, 2, 0.01);
+    filterGainSlider->setSliderStyle (Slider::RotaryVerticalDrag);
+    filterGainSlider->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
+    filterGainSlider->addListener (this);
+
+    addAndMakeVisible (arpClockComboBox = new ComboBox ("Clock Combo"));
+    arpClockComboBox->setEditableText (false);
+    arpClockComboBox->setJustificationType (Justification::centredLeft);
+    arpClockComboBox->setTextWhenNothingSelected (TRANS("Off"));
+    arpClockComboBox->setTextWhenNoChoicesAvailable (TRANS("Off"));
+    arpClockComboBox->addItem (TRANS("Off"), 1);
+    arpClockComboBox->addItem (TRANS("Internal"), 2);
+    arpClockComboBox->addItem (TRANS("External"), 3);
+    arpClockComboBox->addSeparator();
+    arpClockComboBox->addListener (this);
+
+    addAndMakeVisible (clockLabel = new Label ("clock label",
+                                               TRANS("Clock:\n")));
+    clockLabel->setFont (Font (15.00f, Font::plain));
+    clockLabel->setJustificationType (Justification::centredLeft);
+    clockLabel->setEditable (false, false, false);
+    clockLabel->setColour (TextEditor::textColourId, Colours::black);
+    clockLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (filterComboBox = new ComboBox ("Filter Combo"));
+    filterComboBox->setEditableText (false);
+    filterComboBox->setJustificationType (Justification::centredLeft);
+    filterComboBox->setTextWhenNothingSelected (TRANS("Off"));
+    filterComboBox->setTextWhenNoChoicesAvailable (TRANS("Off"));
+    filterComboBox->addItem (TRANS("Off"), 1);
+    filterComboBox->addItem (TRANS("Mix"), 2);
+    filterComboBox->addItem (TRANS("Low Pass"), 3);
+    filterComboBox->addItem (TRANS("High Pass"), 4);
+    filterComboBox->addItem (TRANS("Bass Boost"), 5);
+    filterComboBox->addListener (this);
 
 
     //[UserPreSize]
@@ -304,6 +300,9 @@ PanelArpAndFilter::PanelArpAndFilter ()
 
     //[Constructor] You can add your own custom stuff here..
     eventsToAdd = nullptr;
+
+    arpClockComboBox->setSelectedId(1);
+    filterComboBox->setSelectedId(1);
 
     arpDirectionCombo->setSelectedId(1);
     arpPatternCombo->setSelectedId(1);
@@ -317,8 +316,6 @@ PanelArpAndFilter::PanelArpAndFilter ()
     arpDurationCombo->setColour (ComboBox::buttonColourId, Colours::blue);
     arpLatchCombo->setColour (ComboBox::buttonColourId, Colours::blue);
 
-    arpOffButton->setToggleState (false, dontSendNotification);
-    arpOffButton->setToggleState (true, sendNotification);
 
     //[/Constructor]
 }
@@ -329,9 +326,6 @@ PanelArpAndFilter::~PanelArpAndFilter()
     //[/Destructor_pre]
 
     arpGroupComponent = nullptr;
-    arpOffButton = nullptr;
-    arpInternalButton = nullptr;
-    arpExternalButton = nullptr;
     arpBPM = nullptr;
     arpBPMLabel = nullptr;
     arpDirectionLabel = nullptr;
@@ -347,17 +341,15 @@ PanelArpAndFilter::~PanelArpAndFilter()
     arpDurationCombo = nullptr;
     arpLatchCombo = nullptr;
     filterGroupComponent = nullptr;
-    filterOffButton = nullptr;
-    filterMixButton = nullptr;
-    filterLPButton = nullptr;
-    filterHPButton = nullptr;
-    filterBassButton = nullptr;
     filterParam1Label = nullptr;
     filterParam1Slider = nullptr;
     filterParam2Label = nullptr;
-    filterParam1Slider2 = nullptr;
+    filterParam2Slider = nullptr;
     filterGainLabel = nullptr;
-    filterParam1Slider3 = nullptr;
+    filterGainSlider = nullptr;
+    arpClockComboBox = nullptr;
+    clockLabel = nullptr;
+    filterComboBox = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -378,96 +370,39 @@ void PanelArpAndFilter::paint (Graphics& g)
 
 void PanelArpAndFilter::resized()
 {
-    arpGroupComponent->setBounds (proportionOfWidth (0.0570f), proportionOfHeight (0.0248f), proportionOfWidth (0.8741f), proportionOfHeight (0.4845f));
-    arpOffButton->setBounds (proportionOfWidth (0.0950f), proportionOfHeight (0.0745f), 48, 24);
-    arpInternalButton->setBounds (proportionOfWidth (0.1615f), proportionOfHeight (0.0745f), 104, 24);
-    arpExternalButton->setBounds (proportionOfWidth (0.2945f), proportionOfHeight (0.0745f), 112, 24);
-    arpBPM->setBounds (proportionOfWidth (0.0760f), proportionOfHeight (0.1863f), proportionOfWidth (0.0855f), proportionOfHeight (0.1118f));
-    arpBPMLabel->setBounds (proportionOfWidth (0.0950f), proportionOfHeight (0.1491f), 40, 20);
-    arpDirectionLabel->setBounds (proportionOfWidth (0.1900f), proportionOfHeight (0.1491f), 60, 20);
-    arpOctaveLabel->setBounds (proportionOfWidth (0.3135f), proportionOfHeight (0.1491f), 60, 20);
-    arpPatternLabel->setBounds (proportionOfWidth (0.4276f), proportionOfHeight (0.1491f), 60, 20);
-    arpDivisionLabel->setBounds (proportionOfWidth (0.5511f), proportionOfHeight (0.1491f), 60, 20);
-    arpDurationLabel->setBounds (proportionOfWidth (0.6841f), proportionOfHeight (0.1491f), 60, 20);
-    arpLatchLabel->setBounds (proportionOfWidth (0.8076f), proportionOfHeight (0.1491f), 60, 20);
-    arpDirectionCombo->setBounds (proportionOfWidth (0.1805f), proportionOfHeight (0.2112f), 80, 20);
-    arpOctavleSlider->setBounds (proportionOfWidth (0.3040f), proportionOfHeight (0.1863f), proportionOfWidth (0.0855f), proportionOfHeight (0.1118f));
-    arpPatternCombo->setBounds (proportionOfWidth (0.4276f), proportionOfHeight (0.2112f), 60, 20);
-    arpDivisionCombo->setBounds (proportionOfWidth (0.5511f), proportionOfHeight (0.2112f), 60, 20);
-    arpDurationCombo->setBounds (proportionOfWidth (0.6841f), proportionOfHeight (0.2112f), 60, 20);
-    arpLatchCombo->setBounds (proportionOfWidth (0.8171f), proportionOfHeight (0.2112f), 52, 20);
-    filterGroupComponent->setBounds (proportionOfWidth (0.2565f), proportionOfHeight (0.5590f), proportionOfWidth (0.5226f), proportionOfHeight (0.2981f));
-    filterOffButton->setBounds (proportionOfWidth (0.2922f), proportionOfHeight (0.6071f), 48, 24);
-    filterMixButton->setBounds (proportionOfWidth (0.3611f), proportionOfHeight (0.6087f), 48, 24);
-    filterLPButton->setBounds (proportionOfWidth (0.4276f), proportionOfHeight (0.6087f), 96, 24);
-    filterHPButton->setBounds (proportionOfWidth (0.5321f), proportionOfHeight (0.6087f), 96, 24);
-    filterBassButton->setBounds (proportionOfWidth (0.6461f), proportionOfHeight (0.6087f), 96, 24);
-    filterParam1Label->setBounds (proportionOfWidth (0.3492f), proportionOfHeight (0.6661f), 60, 20);
-    filterParam1Slider->setBounds (proportionOfWidth (0.3397f), proportionOfHeight (0.7034f), proportionOfWidth (0.0855f), proportionOfHeight (0.1118f));
-    filterParam2Label->setBounds (proportionOfWidth (0.4751f), proportionOfHeight (0.6661f), 60, 20);
-    filterParam1Slider2->setBounds (proportionOfWidth (0.4703f), proportionOfHeight (0.7034f), proportionOfWidth (0.0855f), proportionOfHeight (0.1118f));
-    filterGainLabel->setBounds (proportionOfWidth (0.6081f), proportionOfHeight (0.6661f), 60, 20);
-    filterParam1Slider3->setBounds (proportionOfWidth (0.5986f), proportionOfHeight (0.7034f), proportionOfWidth (0.0855f), proportionOfHeight (0.1118f));
+    arpGroupComponent->setBounds (proportionOfWidth (0.0573f), proportionOfHeight (0.0223f), proportionOfWidth (0.8739f), proportionOfHeight (0.4842f));
+    arpBPM->setBounds (proportionOfWidth (0.0759f), proportionOfHeight (0.1865f), proportionOfWidth (0.0852f), proportionOfHeight (0.1122f));
+    arpBPMLabel->setBounds (proportionOfWidth (0.0953f), proportionOfHeight (0.1494f), 40, 20);
+    arpDirectionLabel->setBounds (proportionOfWidth (0.1898f), proportionOfHeight (0.1494f), 60, 20);
+    arpOctaveLabel->setBounds (proportionOfWidth (0.3137f), proportionOfHeight (0.1494f), 60, 20);
+    arpPatternLabel->setBounds (proportionOfWidth (0.4277f), proportionOfHeight (0.1494f), 60, 20);
+    arpDivisionLabel->setBounds (proportionOfWidth (0.5509f), proportionOfHeight (0.1494f), 60, 20);
+    arpDurationLabel->setBounds (proportionOfWidth (0.6841f), proportionOfHeight (0.1494f), 60, 20);
+    arpLatchLabel->setBounds (proportionOfWidth (0.8073f), proportionOfHeight (0.1494f), 60, 20);
+    arpDirectionCombo->setBounds (proportionOfWidth (0.1805f), proportionOfHeight (0.2115f), 80, 20);
+    arpOctavleSlider->setBounds (proportionOfWidth (0.3037f), proportionOfHeight (0.1865f), proportionOfWidth (0.0852f), proportionOfHeight (0.1122f));
+    arpPatternCombo->setBounds (proportionOfWidth (0.4277f), proportionOfHeight (0.2115f), 60, 20);
+    arpDivisionCombo->setBounds (proportionOfWidth (0.5509f), proportionOfHeight (0.2115f), 60, 20);
+    arpDurationCombo->setBounds (proportionOfWidth (0.6841f), proportionOfHeight (0.2115f), 60, 20);
+    arpLatchCombo->setBounds (proportionOfWidth (0.8173f), proportionOfHeight (0.2115f), 52, 20);
+    filterGroupComponent->setBounds (proportionOfWidth (0.2565f), proportionOfHeight (0.5594f), proportionOfWidth (0.5229f), proportionOfHeight (0.2978f));
+    filterParam1Label->setBounds (proportionOfWidth (0.3553f), proportionOfHeight (0.6679f), 60, 20);
+    filterParam1Slider->setBounds (proportionOfWidth (0.3395f), proportionOfHeight (0.7031f), proportionOfWidth (0.0852f), proportionOfHeight (0.1122f));
+    filterParam2Label->setBounds (proportionOfWidth (0.4871f), proportionOfHeight (0.6679f), 60, 20);
+    filterParam2Slider->setBounds (proportionOfWidth (0.4699f), proportionOfHeight (0.7050f), proportionOfWidth (0.0852f), proportionOfHeight (0.1122f));
+    filterGainLabel->setBounds (proportionOfWidth (0.6189f), proportionOfHeight (0.6679f), 60, 20);
+    filterGainSlider->setBounds (proportionOfWidth (0.5989f), proportionOfHeight (0.7031f), proportionOfWidth (0.0852f), proportionOfHeight (0.1122f));
+    arpClockComboBox->setBounds (proportionOfWidth (0.1433f), proportionOfHeight (0.0816f), 120, 24);
+    clockLabel->setBounds (proportionOfWidth (0.0974f), proportionOfHeight (0.0816f), 64, 24);
+    filterComboBox->setBounds (proportionOfWidth (0.3037f), proportionOfHeight (0.5937f), 120, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
-}
-
-void PanelArpAndFilter::buttonClicked (Button* buttonThatWasClicked)
-{
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
-
-    if (buttonThatWasClicked == arpOffButton)
-    {
-        //[UserButtonCode_arpOffButton] -- add your button handler code here..
-        arpIsNow(false, false);
-        //[/UserButtonCode_arpOffButton]
-    }
-    else if (buttonThatWasClicked == arpInternalButton)
-    {
-        //[UserButtonCode_arpInternalButton] -- add your button handler code here..
-        arpIsNow(true, true);
-        //[/UserButtonCode_arpInternalButton]
-    }
-    else if (buttonThatWasClicked == arpExternalButton)
-    {
-        //[UserButtonCode_arpExternalButton] -- add your button handler code here..
-        arpIsNow(true, false);
-        //[/UserButtonCode_arpExternalButton]
-    }
-    else if (buttonThatWasClicked == filterOffButton)
-    {
-        //[UserButtonCode_filterOffButton] -- add your button handler code here..
-        //[/UserButtonCode_filterOffButton]
-    }
-    else if (buttonThatWasClicked == filterMixButton)
-    {
-        //[UserButtonCode_filterMixButton] -- add your button handler code here..
-        //[/UserButtonCode_filterMixButton]
-    }
-    else if (buttonThatWasClicked == filterLPButton)
-    {
-        //[UserButtonCode_filterLPButton] -- add your button handler code here..
-        //[/UserButtonCode_filterLPButton]
-    }
-    else if (buttonThatWasClicked == filterHPButton)
-    {
-        //[UserButtonCode_filterHPButton] -- add your button handler code here..
-        //[/UserButtonCode_filterHPButton]
-    }
-    else if (buttonThatWasClicked == filterBassButton)
-    {
-        //[UserButtonCode_filterBassButton] -- add your button handler code here..
-        //[/UserButtonCode_filterBassButton]
-    }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
 }
 
 void PanelArpAndFilter::sliderValueChanged (Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
+    sliderValueChanged(sliderThatWasMoved, true);
     //[/UsersliderValueChanged_Pre]
 
     if (sliderThatWasMoved == arpBPM)
@@ -485,24 +420,27 @@ void PanelArpAndFilter::sliderValueChanged (Slider* sliderThatWasMoved)
         //[UserSliderCode_filterParam1Slider] -- add your slider handling code here..
         //[/UserSliderCode_filterParam1Slider]
     }
-    else if (sliderThatWasMoved == filterParam1Slider2)
+    else if (sliderThatWasMoved == filterParam2Slider)
     {
-        //[UserSliderCode_filterParam1Slider2] -- add your slider handling code here..
-        //[/UserSliderCode_filterParam1Slider2]
+        //[UserSliderCode_filterParam2Slider] -- add your slider handling code here..
+        //[/UserSliderCode_filterParam2Slider]
     }
-    else if (sliderThatWasMoved == filterParam1Slider3)
+    else if (sliderThatWasMoved == filterGainSlider)
     {
-        //[UserSliderCode_filterParam1Slider3] -- add your slider handling code here..
-        //[/UserSliderCode_filterParam1Slider3]
+        //[UserSliderCode_filterGainSlider] -- add your slider handling code here..
+        //[/UserSliderCode_filterGainSlider]
     }
 
     //[UsersliderValueChanged_Post]
     //[/UsersliderValueChanged_Post]
 }
 
+
+
 void PanelArpAndFilter::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 {
     //[UsercomboBoxChanged_Pre]
+    comboBoxChanged(comboBoxThatHasChanged, true);
     //[/UsercomboBoxChanged_Pre]
 
     if (comboBoxThatHasChanged == arpDirectionCombo)
@@ -530,6 +468,16 @@ void PanelArpAndFilter::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
         //[UserComboBoxCode_arpLatchCombo] -- add your combo box handling code here..
         //[/UserComboBoxCode_arpLatchCombo]
     }
+    else if (comboBoxThatHasChanged == arpClockComboBox)
+    {
+        //[UserComboBoxCode_arpClockComboBox] -- add your combo box handling code here..
+        //[/UserComboBoxCode_arpClockComboBox]
+    }
+    else if (comboBoxThatHasChanged == filterComboBox)
+    {
+        //[UserComboBoxCode_filterComboBox] -- add your combo box handling code here..
+        //[/UserComboBoxCode_filterComboBox]
+    }
 
     //[UsercomboBoxChanged_Post]
     //[/UsercomboBoxChanged_Post]
@@ -538,6 +486,53 @@ void PanelArpAndFilter::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+
+
+void PanelArpAndFilter::comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPluginUI) {
+    // Update the value if the change comes from the UI
+    if (fromPluginUI) {
+        teragon::Parameter * parameterReady = panelParameterMap[comboBoxThatHasChanged->getName()];
+        if (parameterReady != nullptr) {
+            teragon::ParameterValue value = comboBoxThatHasChanged->getSelectedId();
+            parameterSet->set(parameterReady, value, nullptr);
+        }
+    }
+
+    if (comboBoxThatHasChanged == arpClockComboBox) {
+        if (arpClockComboBox->getSelectedId() == 1) {
+            arpIsNow(false, false);
+        } else if (arpClockComboBox->getSelectedId() == 2) {
+            arpIsNow(true, true);
+        } else if (arpClockComboBox->getSelectedId() == 3) {
+            arpIsNow(true, false);
+        }
+    } else if (comboBoxThatHasChanged == filterComboBox) {
+        if (filterComboBox->getSelectedId() == 1) {
+            filterIsNow(false, false);
+        } else if (filterComboBox->getSelectedId() == 2) {
+            filterIsNow(true, false);
+        } else if (filterComboBox->getSelectedId() == 3) {
+            filterIsNow(true, true);
+        } else if (filterComboBox->getSelectedId() == 4) {
+            filterIsNow(true, true);
+        } else if (filterComboBox->getSelectedId() == 5) {
+            filterIsNow(true, true);
+        }
+    }
+}
+
+void PanelArpAndFilter::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPluginUI)
+{
+    // Update the value if the change comes from the UI
+    if (fromPluginUI) {
+        teragon::Parameter * parameterReady = panelParameterMap[sliderThatWasMoved->getName()];
+        if (parameterReady != nullptr) {
+            teragon::ParameterValue value = sliderThatWasMoved->getValue();
+            parameterSet->set(parameterReady, value, nullptr);
+        }
+    }
+}
 
 void PanelArpAndFilter::arpIsNow(bool arpOn, bool enableBPM) {
     arpBPM->setEnabled(enableBPM);
@@ -555,12 +550,53 @@ void PanelArpAndFilter::arpIsNow(bool arpOn, bool enableBPM) {
     arpLatchCombo->setEnabled(arpOn);
 }
 
+void PanelArpAndFilter::filterIsNow(bool paramOn1, bool paramOn2) {
+    filterParam1Label->setEnabled(paramOn1);
+    filterParam1Slider->setEnabled(paramOn1);
+    filterParam2Label->setEnabled(paramOn2);
+    filterParam2Slider->setEnabled(paramOn2);
+}
 
 void PanelArpAndFilter::buildParameters() {
+//    arpClockComboBox->setSelectedId(1);
+//    filterComboBox->setSelectedId(1);
+//
+//    arpDirectionCombo->setSelectedId(1);
+//    arpPatternCombo->setSelectedId(1);
+//    arpDivisionCombo->setSelectedId(1);
+//    arpDurationCombo->setSelectedId(1);
+//    arpLatchCombo->setSelectedId(1);
+
+    updateComboParameter(arpClockComboBox);
+    updateComboParameter(filterComboBox);
+
+    updateComboParameter(arpDirectionCombo);
+    updateComboParameter(arpPatternCombo);
+    updateComboParameter(arpDivisionCombo);
+    updateComboParameter(arpDurationCombo);
+    updateComboParameter(arpLatchCombo);
+
+    updateSliderParameter(arpBPM);
+    updateSliderParameter(arpOctavleSlider);
+
+    updateComboParameter(filterComboBox);
+    updateSliderParameter(filterParam1Slider);
+    updateSliderParameter(filterParam2Slider);
+    updateSliderParameter(filterGainSlider);
+
 }
 
 void PanelArpAndFilter::onParameterUpdated(const teragon::Parameter *parameter) {
 }
+
+void PanelArpAndFilter::updateComboParameter_hook(ComboBox* combo) {
+    comboBoxChanged(combo, false);
+}
+
+void PanelArpAndFilter::updateSliderParameter_hook(Slider* slider) {
+    sliderValueChanged(slider, false);
+}
+
 
 //[/MiscUserCode]
 
@@ -580,136 +616,117 @@ BEGIN_JUCER_METADATA
                  overlayOpacity="0.330" fixedSize="0" initialWidth="900" initialHeight="700">
   <BACKGROUND backgroundColour="fffffade"/>
   <GROUPCOMPONENT name="Arp group" id="13e5d1a66afb37f8" memberName="arpGroupComponent"
-                  virtualName="" explicitFocusOrder="0" pos="5.701% 2.484% 87.411% 48.447%"
+                  virtualName="GroupComponent" explicitFocusOrder="0" pos="5.731% 2.226% 87.393% 48.423%"
                   title="Arpeggiator" textpos="33"/>
-  <TOGGLEBUTTON name="arp off toggle button" id="541a7783c4a10ff6" memberName="arpOffButton"
-                virtualName="MidifiedToggleButton" explicitFocusOrder="0" pos="9.501% 7.453% 48 24"
-                buttonText="Off" connectedEdges="0" needsCallback="1" radioGroupId="5111"
-                state="1"/>
-  <TOGGLEBUTTON name="arp int toggle button" id="8aea137f0870de41" memberName="arpInternalButton"
-                virtualName="MidifiedToggleButton" explicitFocusOrder="0" pos="16.152% 7.453% 104 24"
-                buttonText="Internal clock" connectedEdges="0" needsCallback="1"
-                radioGroupId="5111" state="0"/>
-  <TOGGLEBUTTON name="arp Ext toggle button" id="536036d94e481e69" memberName="arpExternalButton"
-                virtualName="MidifiedToggleButton" explicitFocusOrder="0" pos="29.454% 7.453% 112 24"
-                buttonText="External clock" connectedEdges="0" needsCallback="1"
-                radioGroupId="5111" state="0"/>
   <SLIDER name="arp bpm slider" id="834b58daf5daacae" memberName="arpBPM"
-          virtualName="MidifiedSlider" explicitFocusOrder="0" pos="7.601% 18.634% 8.551% 11.18%"
+          virtualName="Slider" explicitFocusOrder="0" pos="7.593% 18.646% 8.524% 11.224%"
           min="10" max="240" int="1" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="40" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="arp bpm label" id="ae9087ef378fcc73" memberName="arpBPMLabel"
-         virtualName="" explicitFocusOrder="0" pos="9.501% 14.907% 40 20"
+         virtualName="" explicitFocusOrder="0" pos="9.527% 14.935% 40 20"
          edTextCol="ff000000" edBkgCol="0" labelText="BPM" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="12"/>
   <LABEL name="arp direction label" id="dd08708728c535e1" memberName="arpDirectionLabel"
-         virtualName="" explicitFocusOrder="0" pos="19.002% 14.907% 60 20"
+         virtualName="" explicitFocusOrder="0" pos="18.983% 14.935% 60 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Direction" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="12"/>
   <LABEL name="arp octave label" id="a1efff324e6fc45a" memberName="arpOctaveLabel"
-         virtualName="" explicitFocusOrder="0" pos="31.354% 14.907% 60 20"
+         virtualName="" explicitFocusOrder="0" pos="31.375% 14.935% 60 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Octave" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="12"/>
   <LABEL name="arp pattern label" id="81abe99d3c3b9cb" memberName="arpPatternLabel"
-         virtualName="" explicitFocusOrder="0" pos="42.755% 14.907% 60 20"
+         virtualName="" explicitFocusOrder="0" pos="42.765% 14.935% 60 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Pattern" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="12"/>
   <LABEL name="arp division label" id="bc6d9b8d07143332" memberName="arpDivisionLabel"
-         virtualName="" explicitFocusOrder="0" pos="55.107% 14.907% 60 20"
+         virtualName="" explicitFocusOrder="0" pos="55.086% 14.935% 60 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Division" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="12"/>
   <LABEL name="arp Duration label" id="6e39565df396e160" memberName="arpDurationLabel"
-         virtualName="" explicitFocusOrder="0" pos="68.409% 14.907% 60 20"
+         virtualName="" explicitFocusOrder="0" pos="68.41% 14.935% 60 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Duration" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="12"/>
   <LABEL name="arp Latch label" id="4bba356716a40a00" memberName="arpLatchLabel"
-         virtualName="" explicitFocusOrder="0" pos="80.76% 14.907% 60 20"
+         virtualName="" explicitFocusOrder="0" pos="80.731% 14.935% 60 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Latch" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="12"/>
   <COMBOBOX name="arp dir combo box" id="5403f05ff830eb2e" memberName="arpDirectionCombo"
-            virtualName="MidifiedComboBox" explicitFocusOrder="0" pos="18.052% 21.118% 80 20"
-            editable="0" layout="33" items="Up&#10;Down&#10;Up &amp; Down&#10;As played&#10;Random&#10;"
+            virtualName="ComboBox" explicitFocusOrder="0" pos="18.052% 21.15% 80 20"
+            editable="0" layout="33" items="Up&#10;Down&#10;Up &amp; Down&#10;As played&#10;Random&#10;Chord&#10;Rotate Up&#10;Rotate Down&#10;Rotate U&amp;D&#10;Shift Up&#10;Shift Down&#10;Shift U&amp;D&#10;"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <SLIDER name="arp octave slider" id="1cb995267258f0bb" memberName="arpOctavleSlider"
-          virtualName="MidifiedSlider" explicitFocusOrder="0" pos="30.404% 18.634% 8.551% 11.18%"
+          virtualName="Slider" explicitFocusOrder="0" pos="30.372% 18.646% 8.524% 11.224%"
           min="1" max="3" int="1" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="40" textBoxHeight="20" skewFactor="1"/>
   <COMBOBOX name="arp pattern combo box" id="4ab8dec3ec103766" memberName="arpPatternCombo"
-            virtualName="MidifiedComboBox" explicitFocusOrder="0" pos="42.755% 21.118% 60 20"
+            virtualName="ComboBox" explicitFocusOrder="0" pos="42.765% 21.15% 60 20"
             editable="0" layout="33" items="1&#10;2&#10;3&#10;4&#10;5&#10;6&#10;7&#10;8&#10;9&#10;10&#10;11&#10;12&#10;13&#10;14&#10;15&#10;16&#10;17&#10;18&#10;19&#10;20&#10;21&#10;22&#10;User 1&#10;User 2&#10;User 3&#10;User 4&#10;"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="arp division combo box" id="40d9cbf865d21a6d" memberName="arpDivisionCombo"
-            virtualName="MidifiedComboBox" explicitFocusOrder="0" pos="55.107% 21.118% 60 20"
+            virtualName="ComboBox" explicitFocusOrder="0" pos="55.086% 21.15% 60 20"
             editable="0" layout="33" items="2/1&#10;3/2&#10;1/1&#10;3/4&#10;2/3&#10;1/2&#10;3/8&#10;1/3&#10;1/4&#10;1/6&#10;1/8&#10;1/12&#10;1/16&#10;1/24&#10;1/32&#10;1/48&#10;1/96"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="arp duration combo box" id="40f06b2b6126c25d" memberName="arpDurationCombo"
-            virtualName="MidifiedComboBox" explicitFocusOrder="0" pos="68.409% 21.118% 60 20"
+            virtualName="ComboBox" explicitFocusOrder="0" pos="68.41% 21.15% 60 20"
             editable="0" layout="33" items="2/1&#10;3/2&#10;1/1&#10;3/4&#10;2/3&#10;1/2&#10;3/8&#10;1/3&#10;1/4&#10;1/6&#10;1/8&#10;1/12&#10;1/16&#10;1/24&#10;1/32&#10;1/48&#10;1/96"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="arp latch combo box" id="3072fb2928d8c8f4" memberName="arpLatchCombo"
-            virtualName="MidifiedComboBox" explicitFocusOrder="0" pos="81.71% 21.118% 52 20"
+            virtualName="ComboBox" explicitFocusOrder="0" pos="81.734% 21.15% 52 20"
             editable="0" layout="33" items="Off&#10;On" textWhenNonSelected=""
             textWhenNoItems="(no choices)"/>
   <GROUPCOMPONENT name="Filter group" id="ef53faceed268e04" memberName="filterGroupComponent"
-                  virtualName="" explicitFocusOrder="0" pos="25.653% 55.901% 52.257% 29.814%"
+                  virtualName="" explicitFocusOrder="0" pos="25.645% 55.937% 52.292% 29.777%"
                   title="Filter" textpos="33"/>
-  <TOGGLEBUTTON name="filter off toggle button" id="f555890481d0a1f" memberName="filterOffButton"
-                virtualName="MidifiedToggleButton" explicitFocusOrder="0" pos="29.216% 60.714% 48 24"
-                buttonText="Off" connectedEdges="0" needsCallback="1" radioGroupId="5112"
-                state="1"/>
-  <TOGGLEBUTTON name="filter mix toggle button" id="172947188d32c0f8" memberName="filterMixButton"
-                virtualName="MidifiedToggleButton" explicitFocusOrder="0" pos="36.105% 60.87% 48 24"
-                buttonText="Mix" connectedEdges="0" needsCallback="1" radioGroupId="5112"
-                state="0"/>
-  <TOGGLEBUTTON name="filter LP toggle button" id="ec6deacb84b7389b" memberName="filterLPButton"
-                virtualName="MidifiedToggleButton" explicitFocusOrder="0" pos="42.755% 60.87% 96 24"
-                buttonText="Low Pass" connectedEdges="0" needsCallback="1" radioGroupId="5112"
-                state="0"/>
-  <TOGGLEBUTTON name="filter HP toggle button" id="541432d4f0649caf" memberName="filterHPButton"
-                virtualName="MidifiedToggleButton" explicitFocusOrder="0" pos="53.207% 60.87% 96 24"
-                buttonText="High Pass" connectedEdges="0" needsCallback="1" radioGroupId="5112"
-                state="0"/>
-  <TOGGLEBUTTON name="filter Bass toggle button" id="845c86de86519034" memberName="filterBassButton"
-                virtualName="MidifiedToggleButton" explicitFocusOrder="0" pos="64.608% 60.87% 96 24"
-                buttonText="Bass" connectedEdges="0" needsCallback="1" radioGroupId="5112"
-                state="0"/>
   <LABEL name="filter param1 label" id="ad964c1a500045d4" memberName="filterParam1Label"
-         virtualName="" explicitFocusOrder="0" pos="34.917% 66.615% 60 20"
+         virtualName="" explicitFocusOrder="0" pos="35.53% 66.79% 60 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Param1&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="12"/>
   <SLIDER name="filter param1 slider" id="c05a5ec6435b8dba" memberName="filterParam1Slider"
-          virtualName="MidifiedSlider" explicitFocusOrder="0" pos="33.967% 70.342% 8.551% 11.18%"
+          virtualName="Slider" explicitFocusOrder="0" pos="33.954% 70.315% 8.524% 11.224%"
           min="0" max="1" int="0.010000000000000000208" style="RotaryVerticalDrag"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="40"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="filter param2 label" id="8e05a7e79e0d078c" memberName="filterParam2Label"
-         virtualName="" explicitFocusOrder="0" pos="47.506% 66.615% 60 20"
+         virtualName="" explicitFocusOrder="0" pos="48.711% 66.79% 60 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Param2&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="12"/>
-  <SLIDER name="filter param1 slider" id="d542ada05f27098e" memberName="filterParam1Slider2"
-          virtualName="MidifiedSlider" explicitFocusOrder="0" pos="47.031% 70.342% 8.551% 11.18%"
+  <SLIDER name="filter param2 slider" id="d542ada05f27098e" memberName="filterParam2Slider"
+          virtualName="Slider" explicitFocusOrder="0" pos="46.991% 70.501% 8.524% 11.224%"
           min="0" max="1" int="0.010000000000000000208" style="RotaryVerticalDrag"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="40"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="filter gain label" id="1739e718e2bf97c" memberName="filterGainLabel"
-         virtualName="" explicitFocusOrder="0" pos="60.808% 66.615% 60 20"
+         virtualName="" explicitFocusOrder="0" pos="61.891% 66.79% 60 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Gain" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="12"/>
-  <SLIDER name="filter param1 slider" id="4d28a9c9b11da6ce" memberName="filterParam1Slider3"
-          virtualName="MidifiedSlider" explicitFocusOrder="0" pos="59.857% 70.342% 8.551% 11.18%"
+  <SLIDER name="filter gain slider" id="4d28a9c9b11da6ce" memberName="filterGainSlider"
+          virtualName="Slider" explicitFocusOrder="0" pos="59.885% 70.315% 8.524% 11.224%"
           min="0" max="2" int="0.010000000000000000208" style="RotaryVerticalDrag"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="40"
           textBoxHeight="20" skewFactor="1"/>
+  <COMBOBOX name="Clock Combo" id="1b23d19ebc4cb655" memberName="arpClockComboBox"
+            virtualName="" explicitFocusOrder="0" pos="14.327% 8.163% 120 24"
+            editable="0" layout="33" items="Off&#10;Internal&#10;External&#10;"
+            textWhenNonSelected="Off" textWhenNoItems="Off"/>
+  <LABEL name="clock label" id="6a7e1148cc077687" memberName="clockLabel"
+         virtualName="" explicitFocusOrder="0" pos="9.742% 8.163% 64 24"
+         edTextCol="ff000000" edBkgCol="0" labelText="Clock:&#10;" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="33"/>
+  <COMBOBOX name="Filter Combo" id="599ad67e6f27bfd7" memberName="filterComboBox"
+            virtualName="" explicitFocusOrder="0" pos="30.372% 59.369% 120 24"
+            editable="0" layout="33" items="Off&#10;Mix&#10;Low Pass&#10;High Pass&#10;Bass Boost"
+            textWhenNonSelected="Off" textWhenNoItems="Off"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

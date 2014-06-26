@@ -241,7 +241,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("LFO"+ String(k+1) + " KeySync").toRawUTF8(), nrpmParam, 1, 0, 1, 0);
         newParam->addObserver(this);
         ((MidifiedFloatParameter*)newParam)->setBias(-1);
-//        ((MidifiedFloatParameter*)newParam)->setSendRealValue(true);
+        //        ((MidifiedFloatParameter*)newParam)->setSendRealValue(true);
         parameterSet.add(newParam);
         nrpmIndex[nrpmParam] = parameterIndex++;
 
@@ -280,18 +280,18 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 
     //"Step Seq " + String(k+1)
     for (int seq=0; seq<2; seq++) {
-//        addAndMakeVisible(stepSeqExtMidiSync[k] = new ComboBox("Step Seq " + String(k+1) + " External Sync"));
-//        stepSeqExtMidiSync[k]->setEditableText (false);
-//        stepSeqExtMidiSync[k]->setColour (ComboBox::buttonColourId, Colours::blue);
-//        stepSeqExtMidiSync[k]->setJustificationType (Justification::left);
-//        stepSeqExtMidiSync[k]->addItem("Internal", 1);
-//        stepSeqExtMidiSync[k]->addItem("MC/4", 2);
-//        stepSeqExtMidiSync[k]->addItem("MC/2", 3);
-//        stepSeqExtMidiSync[k]->addItem("MC", 4);
-//        stepSeqExtMidiSync[k]->addItem("MC*2", 5);
-//        stepSeqExtMidiSync[k]->addItem("MC*4", 6);
-//        stepSeqExtMidiSync[k]->setSelectedId(1);
-//        stepSeqExtMidiSync[k]->addListener (this);
+        //        addAndMakeVisible(stepSeqExtMidiSync[k] = new ComboBox("Step Seq " + String(k+1) + " External Sync"));
+        //        stepSeqExtMidiSync[k]->setEditableText (false);
+        //        stepSeqExtMidiSync[k]->setColour (ComboBox::buttonColourId, Colours::blue);
+        //        stepSeqExtMidiSync[k]->setJustificationType (Justification::left);
+        //        stepSeqExtMidiSync[k]->addItem("Internal", 1);
+        //        stepSeqExtMidiSync[k]->addItem("MC/4", 2);
+        //        stepSeqExtMidiSync[k]->addItem("MC/2", 3);
+        //        stepSeqExtMidiSync[k]->addItem("MC", 4);
+        //        stepSeqExtMidiSync[k]->addItem("MC*2", 5);
+        //        stepSeqExtMidiSync[k]->addItem("MC*4", 6);
+        //        stepSeqExtMidiSync[k]->setSelectedId(1);
+        //        stepSeqExtMidiSync[k]->addListener (this);
 
 
         nrpmParam = PREENFM2_NRPN_STEPSEQ1_BPM + seq *4 ;
@@ -302,13 +302,13 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         nrpmIndex[nrpmParam] = parameterIndex++;
 
 
-//        addAndMakeVisible(stepSeqBPM[k] = new Slider("SEQ"+ String(k+1) + " BPM"));
-//        stepSeqBPM[k]->setRange (10, 240.0f, 1.0f);
-//        stepSeqBPM[k]->setSliderStyle (Slider::RotaryVerticalDrag);
-//        stepSeqBPM[k]->setTextBoxStyle (Slider::TextBoxLeft, false, 35, 16);
-//        stepSeqBPM[k]->setDoubleClickReturnValue(true, 3.0f);
-//        stepSeqBPM[k]->setValue(3.0f, dontSendNotification);
-//        stepSeqBPM[k]->addListener (this);
+        //        addAndMakeVisible(stepSeqBPM[k] = new Slider("SEQ"+ String(k+1) + " BPM"));
+        //        stepSeqBPM[k]->setRange (10, 240.0f, 1.0f);
+        //        stepSeqBPM[k]->setSliderStyle (Slider::RotaryVerticalDrag);
+        //        stepSeqBPM[k]->setTextBoxStyle (Slider::TextBoxLeft, false, 35, 16);
+        //        stepSeqBPM[k]->setDoubleClickReturnValue(true, 3.0f);
+        //        stepSeqBPM[k]->setValue(3.0f, dontSendNotification);
+        //        stepSeqBPM[k]->addListener (this);
 
         nrpmParam = PREENFM2_NRPN_STEPSEQ1_BPM + seq *4 ;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Step Seq " + String(seq+1) + " BPM").toRawUTF8(), nrpmParam, 1, 10, 240, 1);
@@ -318,13 +318,13 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         nrpmIndex[nrpmParam] = parameterIndex++;
 
 
-//        addAndMakeVisible(stepSeqGate[k] = new Slider("SEQ"+ String(k+1) + " Gate"));
-//        stepSeqGate[k]->setRange (0.0f, 1.0f, 0.01f);
-//        stepSeqGate[k]->setSliderStyle (Slider::LinearHorizontal);
-//        stepSeqGate[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
-//        stepSeqGate[k]->setDoubleClickReturnValue(true, 0.5f);
-//        stepSeqGate[k]->setValue(0.5f, dontSendNotification);
-//        stepSeqGate[k]->addListener (this);
+        //        addAndMakeVisible(stepSeqGate[k] = new Slider("SEQ"+ String(k+1) + " Gate"));
+        //        stepSeqGate[k]->setRange (0.0f, 1.0f, 0.01f);
+        //        stepSeqGate[k]->setSliderStyle (Slider::LinearHorizontal);
+        //        stepSeqGate[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
+        //        stepSeqGate[k]->setDoubleClickReturnValue(true, 0.5f);
+        //        stepSeqGate[k]->setValue(0.5f, dontSendNotification);
+        //        stepSeqGate[k]->addListener (this);
 
         nrpmParam = PREENFM2_NRPN_STEPSEQ1_GATE + seq *4 ;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Step Seq " + String(seq+1) + " Gate").toRawUTF8(), nrpmParam, 100, 0, 1, .5);
@@ -344,6 +344,82 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 
     nrpmParam = PREENFM2_NRPN_FREE_ENV2_LOOP;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, "Free Env 2 Loop", nrpmParam, 1, 1, 3, 1);
+    newParam->addObserver(this);
+    parameterSet.add(newParam);
+    nrpmIndex[nrpmParam] = parameterIndex++;
+
+
+
+    nrpmParam = PREENFM2_NRPN_ARP_CLOCK ;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Clock Combo").toRawUTF8(), nrpmParam, 1, 1, 3, 1);
+    newParam->addObserver(this);
+    parameterSet.add(newParam);
+    nrpmIndex[nrpmParam] = parameterIndex++;
+
+    nrpmParam = PREENFM2_NRPN_ARP_BPM ;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp bpm slider").toRawUTF8(), nrpmParam, 1, 10, 240, 60);
+    newParam->addObserver(this);
+    ((MidifiedFloatParameter*)newParam)->setBias(10);
+    parameterSet.add(newParam);
+    nrpmIndex[nrpmParam] = parameterIndex++;
+
+    nrpmParam = PREENFM2_NRPN_ARP_DIRECTION ;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp dir combo box").toRawUTF8(), nrpmParam, 1, 1, 13, 1);
+    newParam->addObserver(this);
+    parameterSet.add(newParam);
+    nrpmIndex[nrpmParam] = parameterIndex++;
+
+    nrpmParam = PREENFM2_NRPN_ARP_OCTAVE ;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp octave slider").toRawUTF8(), nrpmParam, 1, 1, 3, 1);
+    newParam->addObserver(this);
+    ((MidifiedFloatParameter*)newParam)->setBias(1);
+    parameterSet.add(newParam);
+    nrpmIndex[nrpmParam] = parameterIndex++;
+
+    nrpmParam = PREENFM2_NRPN_ARP_PATTERN;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp pattern combo box").toRawUTF8(), nrpmParam, 1, 1, 25, 1);
+    newParam->addObserver(this);
+    parameterSet.add(newParam);
+    nrpmIndex[nrpmParam] = parameterIndex++;
+
+    nrpmParam = PREENFM2_NRPN_ARP_DIVISION;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp division combo box").toRawUTF8(), nrpmParam, 1, 1, 17, 1);
+    newParam->addObserver(this);
+    parameterSet.add(newParam);
+    nrpmIndex[nrpmParam] = parameterIndex++;
+
+    nrpmParam = PREENFM2_NRPN_ARP_DURATION;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp duration combo box").toRawUTF8(), nrpmParam, 1, 1, 17, 1);
+    newParam->addObserver(this);
+    parameterSet.add(newParam);
+    nrpmIndex[nrpmParam] = parameterIndex++;
+
+    nrpmParam = PREENFM2_NRPN_ARP_LATCH;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp latch combo box").toRawUTF8(), nrpmParam, 1, 1, 2, 1);
+    newParam->addObserver(this);
+    parameterSet.add(newParam);
+    nrpmIndex[nrpmParam] = parameterIndex++;
+
+    nrpmParam = PREENFM2_NRPN_FILTER_TYPE;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Filter Combo").toRawUTF8(), nrpmParam, 1, 1, 5, 1);
+    newParam->addObserver(this);
+    parameterSet.add(newParam);
+    nrpmIndex[nrpmParam] = parameterIndex++;
+
+    nrpmParam = PREENFM2_NRPN_FILTER_PARAM1;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("filter param1 slider").toRawUTF8(), nrpmParam, 100, 0, 1, .5);
+    newParam->addObserver(this);
+    parameterSet.add(newParam);
+    nrpmIndex[nrpmParam] = parameterIndex++;
+
+    nrpmParam = PREENFM2_NRPN_FILTER_PARAM2;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("filter param2 slider").toRawUTF8(), nrpmParam, 100, 0, 1, .5);
+    newParam->addObserver(this);
+    parameterSet.add(newParam);
+    nrpmIndex[nrpmParam] = parameterIndex++;
+
+    nrpmParam = PREENFM2_NRPN_FILTER_GAIN;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("filter gain slider").toRawUTF8(), nrpmParam, 100, 0, 2, .9);
     newParam->addObserver(this);
     parameterSet.add(newParam);
     nrpmIndex[nrpmParam] = parameterIndex++;
@@ -655,37 +731,46 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
     int index = (forceIndex == -1 ? nrpmIndex[param] : forceIndex);
 
     if (index == -1) {
-        printf("Pfm2AudioProcessor::handleIncomingNrpn NRPNparam %d not registered\r\n", param);
+        //printf("Pfm2AudioProcessor::handleIncomingNrpn NRPNparam %d not registered\r\n", param);
         return;
     }
 
     Parameter* parameter = parameterSet[index];
 
+    /*
     if (forceIndex != -1) {
         printf("Pfm2AudioProcessor::handleIncomingNrpn redirected to combBox %s (%d, %d)\r\n", parameter->getName().c_str(), param, value);
     } else {
         printf("Pfm2AudioProcessor::handleIncomingNrpn(%d, %d) : %s\r\n", param, value, parameter->getName().c_str());
     }
-
+     */
     MidifiedFloatParameter* midifiedFP = dynamic_cast<MidifiedFloatParameter*>(parameter);
     if (parameter != nullptr) {
         float newFloatValue = midifiedFP->getValueFromNrpn(value);
         // Redirect to combo ?
         if ((newFloatValue > midifiedFP->getMaxValue() || newFloatValue < midifiedFP->getMinValue()) && forceIndex == -1) {
+            // First remove current Slider value
+            int n = parametersToUpdate.count(parameter->getName().c_str());
+            //            printf(">>>   ###### ERASE : %d times the key %s\r\n", n,  parameter->getName().c_str());
+            parametersToUpdate.erase(midifiedFP->getName().c_str());
+            if (pfm2Editor) {
+                pfm2Editor->removeParamToUpdateUI(midifiedFP->getName().c_str());
+            }
+
             // We redirect the Nrpn to previous param
             handleIncomingNrpn(param, value, index -1);
             return;
         }
         // Set the value but we don't want to be notified
-//        printf("Pfm2AudioProcessor::handleIncomingNrpn valueFromNrpn (%f)\r\n", midifiedFP->getValueFromNrpn(value));
+        //        printf("Pfm2AudioProcessor::handleIncomingNrpn valueFromNrpn (%f)\r\n", midifiedFP->getValueFromNrpn(value));
         parameterSet.set(index, midifiedFP->getValueFromNrpn(value), this);
         // Notify host
         sendParamChangeMessageToListeners(index, midifiedFP->getScaledValueFromNrpn(value));
         // REDRAW UI : must be done in processblock after parameterSet is really udpated.
-	    if (pfm2Editor) {
-			pfm2Editor->newNrpnParam(param, value);
-	    }
-		parametersToUpdate.insert(midifiedFP->getName().c_str());
+        if (pfm2Editor) {
+            pfm2Editor->newNrpnParam(param, value);
+        }
+        parametersToUpdate.insert(midifiedFP->getName().c_str());
     }
 }
 
@@ -703,7 +788,7 @@ void Pfm2AudioProcessor::onParameterUpdated(const teragon::Parameter *parameter)
         // Notify host
         sendParamChangeMessageToListeners(index, parameter->getScaledValue());
         // send nrpn
-//        printf("Pfm2AudioProcessor::onParameterUpdated %s = %f (send real value %d)\n", parameter->getName().c_str(), parameter->getValue(), midifiedFP->getSendRealValue());
+        //        printf("Pfm2AudioProcessor::onParameterUpdated %s = %f (send real value %d)\n", parameter->getName().c_str(), parameter->getValue(), midifiedFP->getSendRealValue());
         if (!midifiedFP->getSendRealValue() || parameter->getValue() != 1) {
             midifiedFP->addNrpn(midiMessageCollector, parameter->getValue());
         }

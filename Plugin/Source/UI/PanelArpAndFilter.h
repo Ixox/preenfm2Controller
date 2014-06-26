@@ -39,7 +39,6 @@
 */
 class PanelArpAndFilter  : public Component,
                            public PanelOfParameters,
-                           public ButtonListener,
                            public SliderListener,
                            public ComboBoxListener
 {
@@ -53,14 +52,18 @@ public:
     void setMidiOutput(MidiOutput* midiOutput);
     void handleIncomingNrpn(int param, int value);
     void arpIsNow(bool arpOn, bool enableBPM);
+    void filterIsNow(bool paramOn1, bool paramOn2);
     void setMidiBuffer(MidiBuffer& eventsToAdd) { this->eventsToAdd = &eventsToAdd; }
     void buildParameters();
     void onParameterUpdated(const teragon::Parameter *parameter);
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPluginUI);
+    void sliderValueChanged (Slider* sliderThatWasMoved, bool fromPluginUI);
+    void updateComboParameter_hook(ComboBox* combo);
+    void updateSliderParameter_hook(Slider* slider);
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
-    void buttonClicked (Button* buttonThatWasClicked);
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
 
@@ -73,9 +76,6 @@ private:
 
     //==============================================================================
     ScopedPointer<GroupComponent> arpGroupComponent;
-    ScopedPointer<ToggleButton> arpOffButton;
-    ScopedPointer<ToggleButton> arpInternalButton;
-    ScopedPointer<ToggleButton> arpExternalButton;
     ScopedPointer<Slider> arpBPM;
     ScopedPointer<Label> arpBPMLabel;
     ScopedPointer<Label> arpDirectionLabel;
@@ -91,17 +91,15 @@ private:
     ScopedPointer<ComboBox> arpDurationCombo;
     ScopedPointer<ComboBox> arpLatchCombo;
     ScopedPointer<GroupComponent> filterGroupComponent;
-    ScopedPointer<ToggleButton> filterOffButton;
-    ScopedPointer<ToggleButton> filterMixButton;
-    ScopedPointer<ToggleButton> filterLPButton;
-    ScopedPointer<ToggleButton> filterHPButton;
-    ScopedPointer<ToggleButton> filterBassButton;
     ScopedPointer<Label> filterParam1Label;
     ScopedPointer<Slider> filterParam1Slider;
     ScopedPointer<Label> filterParam2Label;
-    ScopedPointer<Slider> filterParam1Slider2;
+    ScopedPointer<Slider> filterParam2Slider;
     ScopedPointer<Label> filterGainLabel;
-    ScopedPointer<Slider> filterParam1Slider3;
+    ScopedPointer<Slider> filterGainSlider;
+    ScopedPointer<ComboBox> arpClockComboBox;
+    ScopedPointer<Label> clockLabel;
+    ScopedPointer<ComboBox> filterComboBox;
 
 
     //==============================================================================

@@ -50,6 +50,12 @@ void Pfm2AudioProcessorEditor::updateUIWith(std::unordered_set<const char*> &ptu
 	}
 }
 
+void Pfm2AudioProcessorEditor::removeParamToUpdateUI(const char* paramName) {
+    if (this->parametersToUpdate.count(paramName) > 0) {
+//        printf("#### Pfm2AudioProcessorEditor ERASE %d times\r\n", this->parametersToUpdate.count(paramName));
+        this->parametersToUpdate.erase(paramName);
+    }
+}
 
 void Pfm2AudioProcessorEditor::timerCallback () {
 	if (this->parametersToUpdate.size() > 0) {
