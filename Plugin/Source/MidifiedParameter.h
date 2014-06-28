@@ -86,6 +86,10 @@ public:
         return this->bias;
     }
 
+    int getNrpn() const {
+        return this->nrpnParam;
+    }
+
 protected:
 	float pfm2MinValue;
 	float valueMultiplier;

@@ -63,10 +63,6 @@ MainTabs::MainTabs ()
     pullButton->setButtonText (TRANS("Pull"));
     pullButton->addListener (this);
 
-    addAndMakeVisible (pushButton = new TextButton ("push button"));
-    pushButton->setButtonText (TRANS("push"));
-    pushButton->addListener (this);
-
     addAndMakeVisible (presetNameLabel = new Label ("preset name label",
                                                     TRANS("preset")));
     presetNameLabel->setTooltip (TRANS("Click to edit"));
@@ -76,6 +72,10 @@ MainTabs::MainTabs ()
     presetNameLabel->setColour (TextEditor::textColourId, Colours::black);
     presetNameLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     presetNameLabel->addListener (this);
+
+    addAndMakeVisible (pushButton = new TextButton ("push button"));
+    pushButton->setButtonText (TRANS("Push"));
+    pushButton->addListener (this);
 
 
     //[UserPreSize]
@@ -102,8 +102,8 @@ MainTabs::~MainTabs()
     midiInputLabel = nullptr;
     midiInputLabel2 = nullptr;
     pullButton = nullptr;
-    pushButton = nullptr;
     presetNameLabel = nullptr;
+    pushButton = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -128,8 +128,8 @@ void MainTabs::resized()
     midiInputLabel->setBounds (552, 8, 48, 16);
     midiInputLabel2->setBounds (616, 8, 48, 16);
     pullButton->setBounds (getWidth() - 74, 8, 55, 24);
-    pushButton->setBounds (getWidth() - 146, 8, 55, 24);
     presetNameLabel->setBounds (288, 8, 200, 32);
+    pushButton->setBounds (getWidth() - 156, 8, 55, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -143,7 +143,7 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_pullButton] -- add your button handler code here..
 
-        teragon::Parameter* param =  parameterSet->get("Pull button");
+        teragon::Parameter* param =  parameterSet->get("pull button");
         // Will remove that later but dont' BUG for the moment if that doesn't fit
         if (param == nullptr) {
             printf("PULL BUTTON does not exist...\r\n");
@@ -151,7 +151,7 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
         }
 
         pullButtonValue = (pullButtonValue == 0 ? 1 : 0) ;
-        printf("MainTabs::PULL BUTTON PRESSED");
+        printf("MainTabs::PULL BUTTON PRESSED\r\n");
         parameterSet->set(param, pullButtonValue, nullptr);
 
         //[/UserButtonCode_pullButton]
@@ -159,6 +159,17 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == pushButton)
     {
         //[UserButtonCode_pushButton] -- add your button handler code here..
+        teragon::Parameter* param =  parameterSet->get("push button");
+        // Will remove that later but dont' BUG for the moment if that doesn't fit
+        if (param == nullptr) {
+            printf("PUSH BUTTON does not exist...\r\n");
+            return;
+        }
+
+        pushButtonValue = (pushButtonValue == 0 ? 1 : 0) ;
+        printf("MainTabs::PUSH BUTTON PRESSED\r\n");
+        parameterSet->set(param, pushButtonValue, nullptr);
+
         //[/UserButtonCode_pushButton]
     }
 
@@ -289,14 +300,14 @@ BEGIN_JUCER_METADATA
   <TEXTBUTTON name="pull button" id="9da85c0691256028" memberName="pullButton"
               virtualName="" explicitFocusOrder="0" pos="74R 8 55 24" buttonText="Pull"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="push button" id="cd85e35be3968a4b" memberName="pushButton"
-              virtualName="" explicitFocusOrder="0" pos="146R 8 55 24" buttonText="push"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="preset name label" id="4201f054ae2edbe" memberName="presetNameLabel"
          virtualName="" explicitFocusOrder="0" pos="288 8 200 32" tooltip="Click to edit"
          edTextCol="ff000000" edBkgCol="0" labelText="preset" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
          fontsize="25.899999999999998579" bold="1" italic="0" justification="33"/>
+  <TEXTBUTTON name="push button" id="52c3034a926a2609" memberName="pushButton"
+              virtualName="" explicitFocusOrder="0" pos="156R 8 55 24" buttonText="Push"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

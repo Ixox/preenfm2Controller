@@ -433,8 +433,15 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     }
 
 
+    nrpmParam = 127 * 128 + 126;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, "push button", nrpmParam, 1, 0, 127, 0);
+    newParam->addObserver(this);
+    parameterSet.add(newParam);
+    // Put in last slot
+    nrpmIndex[2046] = parameterIndex++;
+
     nrpmParam = 127 * 128 + 127;
-    newParam = new MidifiedFloatParameter(&nrpmParameterMap, "Pull button", nrpmParam, 1, 0, 127, 0);
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, "pull button", nrpmParam, 1, 0, 127, 0);
     newParam->addObserver(this);
     parameterSet.add(newParam);
     // Put in last slot
@@ -604,12 +611,15 @@ void Pfm2AudioProcessor::getStateInformation (MemoryBlock& destData)
     // Create an outer XML element..
     XmlElement xml ("PreenFM2AppStatus");
 
+    xml.setAttribute("presetName", presetName);
+
     // add some attributes to it..
     for (int p=0; p< parameterSet.size(); p++) {
-        printf("%s  Min:%f - Max:%f\n", parameterSet[p]->getName().c_str(), parameterSet[p]->getMinValue(), parameterSet[p]->getMaxValue());
+        printf("%d : %s = %f :  Min:%f - Max:%f\n", p, parameterSet[p]->getName().c_str(), parameterSet[p]->getScaledValue(),parameterSet[p]->getMinValue(), parameterSet[p]->getMaxValue());
 
         xml.setAttribute(teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str(), parameterSet[p]->getScaledValue());
     }
+
 
     // then use this helper function to stuff it into the binary blob and return it..
     copyXmlToBinary (xml, destData);
@@ -625,15 +635,62 @@ void Pfm2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 
     if (xmlState != nullptr)
     {
+        String name = xmlState->getStringAttribute("presetName");
+        for (int k=0; k<13; k++) {
+            presetName[k] = 0;
+        }
+        for (int k=0; k<13 && name.toRawUTF8()[k] != 0; k++) {
+            presetName[k] = name.toRawUTF8()[k];
+        }
+        if (pfm2Editor) {
+            pfm2Editor->setPresetName(presetName);
+        }
+        printf(">>> PresetName : %s\n", presetName);
         // make sure that it's actually our type of XML object..
-        if (xmlState->hasTagName ("PreenFM2AppStatus"))
-        {
+        if (xmlState->hasTagName ("PreenFM2AppStatus")) {
             double value;
             for (int p=0; p< parameterSet.size(); p++) {
-                value  = (float) xmlState->getDoubleAttribute (teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str(), value);
-                parameterSet.setScaled(parameterSet[p]->getName(), value, this);
-                printf("<<<<< %s = %f\n", parameterSet[p]->getName().c_str(), value);
+                if (p == nrpmIndex[2047]) continue;
+
+                if (xmlState->getStringAttribute(teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str()) != String::empty) {
+                    value  = (float) xmlState->getDoubleAttribute (teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str(), value);
+                    parameterSet.setScaled(p, value, this);
+                    printf("%d : %s = %f\n", p, parameterSet[p]->getName().c_str(), value);
+                } else {
+                    printf("Cannot set %d : %s\n", p, parameterSet[p]->getName().c_str());
+                }
             }
+            parameterSet.processRealtimeEvents();
+
+            // REDRAW UI
+            for (int p=0; p< parameterSet.size(); p++) {
+                const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameterSet[p]);
+                if (midifiedFP != nullptr) {
+                    parametersToUpdate.insert(midifiedFP->getName().c_str());
+                }
+            }
+
+            // Flush NRPN
+            flushAllParametrsToNrpn();
+        }
+    }
+}
+
+
+void Pfm2AudioProcessor::flushAllParametrsToNrpn() {
+    sendNrpnPresetName();
+
+    for (int p=0; p< parameterSet.size(); p++) {
+        // Pull button
+        if (p == nrpmIndex[2046] || p == nrpmIndex[2047]) {
+            continue;
+        }
+        const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameterSet[p]);
+        if (midifiedFP != nullptr) {
+            printf("%d Add Nrpn %d : %d\n", p, midifiedFP->getNrpnParamMSB() * 127 + midifiedFP->getNrpnParamLSB(),
+                    midifiedFP->getNrpnValueMSB(midifiedFP->getValue()) * 127 + midifiedFP->getNrpnValueLSB(midifiedFP->getValue()));
+            midifiedFP->addNrpn(midiMessageCollector, midifiedFP->getValue());
+            usleep(5000);
         }
     }
 }
@@ -698,14 +755,17 @@ void Pfm2AudioProcessor::handleIncomingMidiBuffer(MidiBuffer &buffer, int number
  */
 void Pfm2AudioProcessor::setParameter (int index, float newValue)
 {
+    printf("Pfm2AudioProcessor::setParameter  %d : %f\r\n", index, newValue);
+
     parameterSet.setScaled(index, newValue, this);
 
-    printf("Pfm2AudioProcessor::setParameter  %d : %f\r\n", index, newValue);
     const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameterSet[index]);
     if (midifiedFP != nullptr) {
         int index = midifiedFP->getParamIndex();
         // send nrpn
         midifiedFP->addNrpn(midiMessageCollector, midifiedFP->getValue());
+    } else {
+        printf("Pfm2AudioProcessor::setParameter NULL midifiedFP \r\n");
     }
     // REDRAW UI : must be done in processblock after parameterSet is really udpated.
     parametersToUpdate.insert(midifiedFP->getName().c_str());
@@ -781,21 +841,53 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
  . Send NRPN
  */
 void Pfm2AudioProcessor::onParameterUpdated(const teragon::Parameter *parameter) {
+    printf("Pfm2AudioProcessor::onParameterUpdated %s = %f \n", parameter->getName().c_str(), parameter->getValue());
 
     const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameter);
     if (midifiedFP != nullptr) {
         int index = midifiedFP->getParamIndex();
-        // Notify host
-        sendParamChangeMessageToListeners(index, parameter->getScaledValue());
-        // send nrpn
-        //        printf("Pfm2AudioProcessor::onParameterUpdated %s = %f (send real value %d)\n", parameter->getName().c_str(), parameter->getValue(), midifiedFP->getSendRealValue());
-        if (!midifiedFP->getSendRealValue() || parameter->getValue() != 1) {
-            midifiedFP->addNrpn(midiMessageCollector, parameter->getValue());
+
+        // Push button ??
+        if (index == nrpmIndex[2046]) {
+            flushAllParametrsToNrpn();
+        } else {
+            // Notify host
+            sendParamChangeMessageToListeners(index, parameter->getScaledValue());
+            // send nrpn
+            if (!midifiedFP->getSendRealValue() || parameter->getValue() != 1) {
+                midifiedFP->addNrpn(midiMessageCollector, parameter->getValue());
+            }
         }
     }
 }
 
 
+
+void Pfm2AudioProcessor::sendNrpnPresetName() {
+    for (int k=0; k<12; k++) {
+        int timeNow = Time::getMillisecondCounter();
+        MidiMessage byte1 = MidiMessage::controllerEvent(1, 99, 1);
+        byte1.setTimeStamp(timeNow);
+        midiMessageCollector.addMessageToQueue(byte1);
+
+        MidiMessage byte2 = MidiMessage::controllerEvent(1, 98, 100 + k);
+        byte2.setTimeStamp(timeNow);
+        midiMessageCollector.addMessageToQueue(byte2);
+
+        int letter = presetName[k];
+
+        MidiMessage byte3 = MidiMessage::controllerEvent(1, 6, letter >> 7);
+        byte3.setTimeStamp(timeNow);
+        midiMessageCollector.addMessageToQueue(byte3);
+
+        MidiMessage byte4 = MidiMessage::controllerEvent(1, 38, letter & 0xff);
+        byte4.setTimeStamp(timeNow);
+        midiMessageCollector.addMessageToQueue(byte4);
+
+        usleep(5000);
+    }
+
+}
 
 
 //==============================================================================

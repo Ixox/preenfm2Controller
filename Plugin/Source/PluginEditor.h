@@ -45,6 +45,7 @@ public:
     void setMidiMessageCollector(MidiMessageCollector &midiMessageCollector);
     void setPresetName(const char* presetName);
 
+
 private:
 	bool uiOutOfSync;
     MainTabs * mainTabs;

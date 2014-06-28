@@ -75,6 +75,7 @@ private:
     PanelArpAndFilter* panelArpAndFilter;
     teragon::ConcurrentParameterSet* parameterSet;
     teragon::ParameterValue pullButtonValue;
+    teragon::ParameterValue pushButtonValue;
     MidiMessageCollector *midiMessageCollector;
     //[/UserVariables]
 
@@ -83,8 +84,8 @@ private:
     ScopedPointer<Label> midiInputLabel;
     ScopedPointer<Label> midiInputLabel2;
     ScopedPointer<TextButton> pullButton;
-    ScopedPointer<TextButton> pushButton;
     ScopedPointer<Label> presetNameLabel;
+    ScopedPointer<TextButton> pushButton;
 
 
     //==============================================================================

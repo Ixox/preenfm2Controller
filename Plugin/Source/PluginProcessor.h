@@ -96,6 +96,9 @@ public:
     teragon::ConcurrentParameterSet parameterSet;
 	MidiMessageCollector midiMessageCollector;
 	struct Nrpn currentNrpn;
+	void flushAllParametrsToNrpn();
+    void sendNrpnPresetName();
+
 
 private:
 	 std::map<int , teragon::Parameter* > nrpmParameterMap;
