@@ -567,6 +567,7 @@ void Pfm2AudioProcessor::releaseResources()
     // spare memory, etc.
 }
 
+
 void Pfm2AudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
     handleIncomingMidiBuffer(midiMessages, buffer.getNumSamples());
@@ -578,6 +579,9 @@ void Pfm2AudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
     // dispatch realtime events to non realtime observer
     parameterSet.processRealtimeEvents();
     midiMessageCollector.removeNextBlockOfMessages(midiMessages,  buffer.getNumSamples());
+    if (midiMessages.getNumEvents() > 0) {
+        printf("processBlock : %d midi messages \n", midiMessages.getNumEvents());
+    }
     if (parametersToUpdate.size() > 0 ) {
         std::unordered_set<const char*> newSet;
         newSet.swap(parametersToUpdate);
@@ -655,7 +659,7 @@ void Pfm2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
                 if (xmlState->getStringAttribute(teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str()) != String::empty) {
                     value  = (float) xmlState->getDoubleAttribute (teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str(), value);
                     parameterSet.setScaled(p, value, this);
-                    printf("%d : %s = %f\n", p, parameterSet[p]->getName().c_str(), value);
+//                    printf("%d : %s = %f\n", p, parameterSet[p]->getName().c_str(), value);
                 } else {
                     printf("Cannot set %d : %s\n", p, parameterSet[p]->getName().c_str());
                 }
@@ -680,6 +684,8 @@ void Pfm2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 void Pfm2AudioProcessor::flushAllParametrsToNrpn() {
     sendNrpnPresetName();
 
+    printf("Pfm2AudioProcessor::flushAllParametrsToNrpn this : 0x%x \n", &midiMessageCollector);
+
     for (int p=0; p< parameterSet.size(); p++) {
         // Pull button
         if (p == nrpmIndex[2046] || p == nrpmIndex[2047]) {
@@ -687,10 +693,10 @@ void Pfm2AudioProcessor::flushAllParametrsToNrpn() {
         }
         const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameterSet[p]);
         if (midifiedFP != nullptr) {
-            printf("%d Add Nrpn %d : %d\n", p, midifiedFP->getNrpnParamMSB() * 127 + midifiedFP->getNrpnParamLSB(),
-                    midifiedFP->getNrpnValueMSB(midifiedFP->getValue()) * 127 + midifiedFP->getNrpnValueLSB(midifiedFP->getValue()));
+//            printf("%d %s Add Nrpn %d : %d\n", p, midifiedFP->getName().c_str(), midifiedFP->getNrpnParamMSB() * 127 + midifiedFP->getNrpnParamLSB(),
+//                    midifiedFP->getNrpnValueMSB(midifiedFP->getValue()) * 127 + midifiedFP->getNrpnValueLSB(midifiedFP->getValue()));
             midifiedFP->addNrpn(midiMessageCollector, midifiedFP->getValue());
-            usleep(5000);
+//            usleep(5000);
         }
     }
 }
@@ -841,7 +847,7 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
  . Send NRPN
  */
 void Pfm2AudioProcessor::onParameterUpdated(const teragon::Parameter *parameter) {
-    printf("Pfm2AudioProcessor::onParameterUpdated %s = %f \n", parameter->getName().c_str(), parameter->getValue());
+//    printf("Pfm2AudioProcessor::onParameterUpdated %s = %f \n", parameter->getName().c_str(), parameter->getValue());
 
     const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameter);
     if (midifiedFP != nullptr) {
@@ -865,7 +871,7 @@ void Pfm2AudioProcessor::onParameterUpdated(const teragon::Parameter *parameter)
 
 void Pfm2AudioProcessor::sendNrpnPresetName() {
     for (int k=0; k<12; k++) {
-        int timeNow = Time::getMillisecondCounter();
+        double timeNow = Time::getMillisecondCounterHiRes() * .001;
         MidiMessage byte1 = MidiMessage::controllerEvent(1, 99, 1);
         byte1.setTimeStamp(timeNow);
         midiMessageCollector.addMessageToQueue(byte1);
@@ -884,7 +890,7 @@ void Pfm2AudioProcessor::sendNrpnPresetName() {
         byte4.setTimeStamp(timeNow);
         midiMessageCollector.addMessageToQueue(byte4);
 
-        usleep(5000);
+//        usleep(5000);
     }
 
 }

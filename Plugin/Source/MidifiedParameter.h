@@ -44,8 +44,8 @@ public:
 	    nrpnParam = nrpmP;
 	}
 
-	virtual void addNrpn(juce::MidiMessageCollector& midiMessageCollector, double value) const {
-		int timeNow = Time::getMillisecondCounter();
+	void addNrpn(juce::MidiMessageCollector& midiMessageCollector, double value) const {
+		double timeNow = Time::getMillisecondCounterHiRes() * .001;
 		MidiMessage byte1 = MidiMessage::controllerEvent(1, 99, getNrpnParamMSB());
 		byte1.setTimeStamp(timeNow);
 		midiMessageCollector.addMessageToQueue(byte1);
