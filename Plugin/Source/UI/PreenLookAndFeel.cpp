@@ -29,7 +29,15 @@ static Colour createBaseColourPFM2 (Colour buttonColour,
 
 
 preenfmLookAndFeel::preenfmLookAndFeel() : LookAndFeel_V3() {
-	exoFont = Typeface::createSystemTypefaceFor(exoFont::exoregular_otf, exoFont::exoregular_otfSize);
+
+//    Font* myNewFont = 0;
+    MemoryInputStream fontStream (exoFont::exofont, exoFont::exofontSize, false);
+    exoFont = new CustomTypeface (fontStream);
+//    myNewFont = new Font (*typeFace);
+  //  myNewFont->setHeight (10.0f);
+//    delete typeFace;
+
+//	exoFont = Typeface::createSystemTypefaceFor(exoFont::exofont, exoFont::exofontSize);
 }
 
 Typeface::Ptr preenfmLookAndFeel::getTypefaceForFont(const Font &) {
