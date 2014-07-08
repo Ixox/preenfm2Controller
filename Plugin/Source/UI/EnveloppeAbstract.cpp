@@ -116,7 +116,7 @@ void EnveloppeAbstract::paint (Graphics& g)
 
 void EnveloppeAbstract::mouseMove(const MouseEvent &event)  {
 
-    for (int p = 0 ; p< pointList.size(); p++) {
+    for (int p = pointList.size() -1 ; p >= 0 ; p--) {
         if (abs(event.x - pointList[p].get()->getPositionOnScreenX()) < 5
                 && abs(event.y - pointList[p].get()->getPositionOnScreenY()) < 5) {
             if (overPointIndex != p) {
@@ -137,7 +137,7 @@ void EnveloppeAbstract::mouseMove(const MouseEvent &event)  {
 }
 
 void EnveloppeAbstract::mouseDown (const MouseEvent &event)  {
-    for (int p = 0 ; p< pointList.size(); p++) {
+    for (int p = pointList.size() -1 ; p >= 0 ; p--) {
         if (abs(event.x - pointList[p].get()->getPositionOnScreenX()) < 5
                 && abs(event.y - pointList[p].get()->getPositionOnScreenY()) < 5) {
             draggingPointIndex = p  ;
