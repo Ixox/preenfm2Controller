@@ -6,6 +6,7 @@
   <MAINGROUP id="c6LJM5" name="pfm2Editor">
     <GROUP id="{4109EA71-F7BE-3C72-D039-241F993FAEB9}" name="Source">
       <GROUP id="{1D684675-DA20-07E6-EFC5-ECF1687EF7D5}" name="Plugin">
+        <FILE id="XbD5Gd" name="SliderPfm2.h" compile="0" resource="0" file="../Plugin/Source/UI/SliderPfm2.h"/>
         <FILE id="psmrC7" name="AlgoPNG.cpp" compile="1" resource="0" file="../Plugin/Source/UI/png/AlgoPNG.cpp"/>
         <FILE id="XG0f87" name="AlgoPNG.h" compile="0" resource="0" file="../Plugin/Source/UI/png/AlgoPNG.h"/>
         <FILE id="o49x3a" name="Enveloppe.cpp" compile="1" resource="0" file="../Plugin/Source/UI/Enveloppe.cpp"/>
