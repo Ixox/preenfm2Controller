@@ -13,7 +13,7 @@
 #include "pfm2Window.h"
 
 
-#define EDITOR_VERSION "v0.2"
+#define EDITOR_VERSION "v0.3"
 
 //==============================================================================
 class pfm2EditorApplication  : public JUCEApplication
