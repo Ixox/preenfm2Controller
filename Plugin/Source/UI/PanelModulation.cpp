@@ -20,7 +20,8 @@
 //[Headers] You can add your own extra header files here...
 #include "JuceHeader.h"
 #include "../PluginParameters/include/PluginParameters.h"
-#include "MidifiedComponent.h"
+
+#include "SliderPfm2.h"
 
 //[/Headers]
 
@@ -116,7 +117,7 @@ PanelModulation::PanelModulation ()
         lfoExtMidiSync[k]->setSelectedId(2400);
         lfoExtMidiSync[k]->addListener (this);
 
-        addAndMakeVisible(lfoFrequency[k] = new Slider("LFO"+ String(k+1) + " Frequency"));
+        addAndMakeVisible(lfoFrequency[k] = new SliderPfm2("LFO"+ String(k+1) + " Frequency"));
         lfoFrequency[k]->setRange (0, 24.0f, .01f);
         lfoFrequency[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         lfoFrequency[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
@@ -124,7 +125,7 @@ PanelModulation::PanelModulation ()
         lfoFrequency[k]->setValue(3.0f, dontSendNotification);
         lfoFrequency[k]->addListener (this);
 
-        addAndMakeVisible(lfoBias[k] = new Slider("LFO"+ String(k+1) + " Bias"));
+        addAndMakeVisible(lfoBias[k] = new SliderPfm2("LFO"+ String(k+1) + " Bias"));
         lfoBias[k]->setRange (-1.0f, 1.0f, .01f);
         lfoBias[k]->setSliderStyle (Slider::LinearVertical);
         lfoBias[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
@@ -132,7 +133,7 @@ PanelModulation::PanelModulation ()
         lfoBias[k]->setValue(0.0f, dontSendNotification);
         lfoBias[k]->addListener (this);
 
-        addAndMakeVisible(lfoKSync[k] = new Slider("LFO"+ String(k+1) + " KeySync time"));
+        addAndMakeVisible(lfoKSync[k] = new SliderPfm2("LFO"+ String(k+1) + " KeySync time"));
         lfoKSync[k]->setRange (0.0f, 16.0f, .01f);
         lfoKSync[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         lfoKSync[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
@@ -176,7 +177,7 @@ PanelModulation::PanelModulation ()
         stepSeqExtMidiSync[k]->setSelectedId(1);
         stepSeqExtMidiSync[k]->addListener (this);
 
-        addAndMakeVisible(stepSeqBPM[k] = new Slider("Step Seq " + String(k+1) +  " BPM"));
+        addAndMakeVisible(stepSeqBPM[k] = new SliderPfm2("Step Seq " + String(k+1) +  " BPM"));
         stepSeqBPM[k]->setRange (10, 240.0f, 1.0f);
         stepSeqBPM[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         stepSeqBPM[k]->setTextBoxStyle (Slider::TextBoxLeft, false, 35, 16);
@@ -184,7 +185,7 @@ PanelModulation::PanelModulation ()
         stepSeqBPM[k]->setValue(3.0f, dontSendNotification);
         stepSeqBPM[k]->addListener (this);
 
-        addAndMakeVisible(stepSeqGate[k] = new Slider("Step Seq " + String(k+1) +  " Gate"));
+        addAndMakeVisible(stepSeqGate[k] = new SliderPfm2("Step Seq " + String(k+1) +  " Gate"));
         stepSeqGate[k]->setRange (0.0f, 1.0f, 0.01f);
         stepSeqGate[k]->setSliderStyle (Slider::LinearHorizontal);
         stepSeqGate[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
@@ -220,7 +221,7 @@ PanelModulation::PanelModulation ()
     for (int r = 0; r < NUMBER_OF_MATRIX_ROW; r++) {
         addAndMakeVisible(matrixRowLabel[r] = new Label(String("matrix label ")+ String(r+1), String(r+1)));
 
-        addAndMakeVisible(matrixMultipler[r] = new Slider("Mtx"+ String (r+1) + " Multiplier"));
+        addAndMakeVisible(matrixMultipler[r] = new SliderPfm2("Mtx"+ String (r+1) + " Multiplier"));
         matrixMultipler[r]->setRange (-10.0f, 10.0f, .01f);
         matrixMultipler[r]->setSliderStyle (Slider::RotaryVerticalDrag);
         matrixMultipler[r]->setTextBoxStyle (Slider::TextBoxLeft, false, 35, 16);

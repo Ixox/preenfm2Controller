@@ -20,10 +20,8 @@
 //[Headers] You can add your own extra header files here...
 #include "JuceHeader.h"
 #include "png/AlgoPNG.h"
+#include "SliderPfm2.h"
 
-// TO REMOVE
-
-#include "../PreenNrpn.h"
 //[/Headers]
 
 #include "PanelEngine.h"
@@ -100,7 +98,7 @@ PanelEngine::PanelEngine ()
 
     //[UserPreSize]
     for (int k=0; k<NUMBER_OF_MIX; k++) {
-        addAndMakeVisible(volumeKnob[k] = new Slider("Volume " + String(k+1)));
+        addAndMakeVisible(volumeKnob[k] = new SliderPfm2("Volume " + String(k+1)));
         volumeKnob[k]->setRange (0, 1, .01f);
         volumeKnob[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         volumeKnob[k]->setTextBoxStyle (Slider::NoTextBox, false, 20, 20);
@@ -108,7 +106,7 @@ PanelEngine::PanelEngine ()
         volumeKnob[k]->setValue(1.0f, dontSendNotification);
         volumeKnob[k]->addListener (this);
 
-        addAndMakeVisible(panKnob[k] = new Slider("Pan " + String(k+1)));
+        addAndMakeVisible(panKnob[k] = new SliderPfm2("Pan " + String(k+1)));
         panKnob[k]->setRange (-1, 1, .01f);
         panKnob[k]->setSliderStyle (Slider::LinearHorizontal);
         panKnob[k]->setTextBoxStyle (Slider::NoTextBox, false, 40, 20);
@@ -123,7 +121,7 @@ PanelEngine::PanelEngine ()
     	addAndMakeVisible(IMNumber[k] = new Label("IM Label" + String(k+1), String("IM") + String(k+1)));
 
 
-        addAndMakeVisible(IMKnob[k] = new Slider("IM " + String(k+1)));
+        addAndMakeVisible(IMKnob[k] = new SliderPfm2("IM " + String(k+1)));
         IMKnob[k]->setRange (0, 16, .01f);
         IMKnob[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         IMKnob[k]->setTextBoxStyle (Slider::TextBoxLeft, false, 30, 16);
@@ -131,7 +129,7 @@ PanelEngine::PanelEngine ()
         IMKnob[k]->setValue(1.0f, dontSendNotification);
         IMKnob[k]->addListener (this);
 
-        addAndMakeVisible(IMVelocityKnob[k] = new Slider("IM Velocity " + String(k+1)));
+        addAndMakeVisible(IMVelocityKnob[k] = new SliderPfm2("IM Velocity " + String(k+1)));
         IMVelocityKnob[k]->setRange (0, 16, .01f);
         IMVelocityKnob[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         IMVelocityKnob[k]->setTextBoxStyle (Slider::TextBoxLeft, false, 30, 16);
@@ -145,7 +143,7 @@ PanelEngine::PanelEngine ()
 	IMVelocityLabel->setJustificationType(Justification::centredTop);
 
     for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
-        enveloppe[k] = new Enveloppe (PREENFM2_NRPN_ENV1_ATTK + 8*k);
+        enveloppe[k] = new Enveloppe ();
         enveloppe[k]->setName ("Op"+String(k+1)+" Env");
 
         enveloppeButton[k] = new TextButton ("enveloppe button");
@@ -184,14 +182,14 @@ PanelEngine::PanelEngine ()
         opFrequencyType[k]->setSelectedId(1);
         opFrequencyType[k]->addListener (this);
 
-        opFrequency[k] = new Slider("Op" + String(k+1) + " Frequency");
+		opFrequency[k] = new SliderPfm2Always2Decimals("Op" + String(k+1) + " Frequency");
         opFrequency[k]->setRange (0, 16, 1.0f / 12.0f);
         opFrequency[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         opFrequency[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 60, 16);
         opFrequency[k]->setDoubleClickReturnValue(true, 1.0f);
         opFrequency[k]->addListener (this);
 
-        opFrequencyFineTune[k] = new Slider("Op"+ String(k+1)+ " Fine Tune");
+        opFrequencyFineTune[k] = new SliderPfm2("Op"+ String(k+1)+ " Fine Tune");
         opFrequencyFineTune[k]->setRange (-1.0f, 1.0f, .01f);
         opFrequencyFineTune[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         opFrequencyFineTune[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 16);
@@ -226,7 +224,7 @@ PanelEngine::PanelEngine ()
     addAndMakeVisible(opFrequencyFineTuneLabel = new Label("op frequency FT label", "Fine Tune"));
     opFrequencyFineTuneLabel->setJustificationType(Justification::centredTop);
 
-    addAndMakeVisible(algoChooser = new Slider("Algo"));
+    addAndMakeVisible(algoChooser = new SliderPfm2("Algo"));
     algoChooser->setRange (1, NUMBER_OF_ALGO, 1);
     algoChooser->setTextBoxIsEditable(true);
     algoChooser->setSliderStyle (Slider::IncDecButtons);
@@ -246,7 +244,7 @@ PanelEngine::PanelEngine ()
 	addAndMakeVisible(velocityLabel = new Label("velocity label", "Velocity"));
 	velocityLabel->setJustificationType(Justification::centredTop);
 
-    addAndMakeVisible(velocity = new Slider("Velocity"));
+    addAndMakeVisible(velocity = new SliderPfm2("Velocity"));
     velocity->setRange (0, 16, 1);
     velocity->setSliderStyle (Slider::RotaryVerticalDrag);
     velocity->setTextBoxStyle (Slider::TextBoxAbove, false, 30, 16);
@@ -256,7 +254,7 @@ PanelEngine::PanelEngine ()
 	addAndMakeVisible(velocityLabel = new Label("velocity label", "Velocity"));
 	velocityLabel->setJustificationType(Justification::centredTop);
 
-    addAndMakeVisible(velocity = new Slider("Velocity"));
+    addAndMakeVisible(velocity = new SliderPfm2("Velocity"));
     velocity->setRange (0, 16, 1);
     velocity->setValue(12, dontSendNotification);
     velocity->setSliderStyle (Slider::RotaryVerticalDrag);
@@ -267,7 +265,7 @@ PanelEngine::PanelEngine ()
 	addAndMakeVisible(voicesLabel = new Label("voices label", "Voices"));
 	voicesLabel->setJustificationType(Justification::centredTop);
 
-    addAndMakeVisible(voices = new Slider("Voices"));
+    addAndMakeVisible(voices = new SliderPfm2("Voices"));
     voices->setRange (0, 8, 1);
     voices->setSliderStyle (Slider::RotaryVerticalDrag);
     voices->setTextBoxStyle (Slider::TextBoxAbove, false, 30, 16);
@@ -277,7 +275,7 @@ PanelEngine::PanelEngine ()
 	addAndMakeVisible(glideLabel = new Label("glide label", "Glide"));
 	glideLabel->setJustificationType(Justification::centredTop);
 
-    addAndMakeVisible(glide = new Slider("Glide"));
+    addAndMakeVisible(glide = new SliderPfm2("Glide"));
     glide->setRange (0, 10, 1);
     glide->setSliderStyle (Slider::RotaryVerticalDrag);
     glide->setTextBoxStyle (Slider::TextBoxAbove, false, 30, 16);

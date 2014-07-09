@@ -20,6 +20,7 @@
 //[Headers] You can add your own extra header files here...
 #include "JuceHeader.h"
 #include "../PluginParameters/include/PluginParameters.h"
+#include "SliderPfm2.h"
 //[/Headers]
 
 #include "PanelArpAndFilter.h"
