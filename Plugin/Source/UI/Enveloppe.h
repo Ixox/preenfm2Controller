@@ -27,7 +27,7 @@
 class Enveloppe    : public  EnveloppeAbstract
 {
 public:
-    Enveloppe(int nrpnBase);
+    Enveloppe();
     ~Enveloppe();
 
     void paint (Graphics&);
@@ -39,8 +39,6 @@ public:
 
 
 private:
-
-    int nrpnBase;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Enveloppe)
 

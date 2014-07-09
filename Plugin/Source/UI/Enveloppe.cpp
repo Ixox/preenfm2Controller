@@ -21,10 +21,8 @@
 
 
 //==============================================================================
-Enveloppe::Enveloppe(int nrpnBase)
+Enveloppe::Enveloppe()
 {
-
-	this->nrpnBase = nrpnBase;
 	EnveloppePoint* point0 = new EnveloppePoint(this, 0, 0,0,0,0);
 	point0->setX(0, false);
 	point0->setY(0, false);
