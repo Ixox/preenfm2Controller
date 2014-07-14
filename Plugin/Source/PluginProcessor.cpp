@@ -424,6 +424,8 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     parameterSet.add(newParam);
     nrpmIndex[nrpmParam] = parameterIndex++;
 
+    programName[0] = "pfm2";
+
     presetName[0] = 'p';
     presetName[1] = 'f';
     presetName[2] = 'm';
@@ -433,6 +435,14 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     }
 
 
+    // Midi Channel
+    currentMidiChannel = 1;
+    nrpmParam = 127 * 128 + 126;
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, "Midi Channel", nrpmParam, 1, 0, 16,1);
+    newParam->addObserver(this);
+    parameterSet.add(newParam);
+    nrpmIndex[2045] = parameterIndex++;
+    
     nrpmParam = 127 * 128 + 126;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, "push button", nrpmParam, 1, 0, 127, 0);
     newParam->addObserver(this);
@@ -447,7 +457,8 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     // Put in last slot
     nrpmIndex[2047] = parameterIndex++;
 
-
+    
+    
     midiMessageCollector.reset(44100);
 }
 
@@ -533,25 +544,35 @@ double Pfm2AudioProcessor::getTailLengthSeconds() const
 
 int Pfm2AudioProcessor::getNumPrograms()
 {
-    return 0;
+    return NUMBER_OF_PROGRAM;
 }
 
 int Pfm2AudioProcessor::getCurrentProgram()
 {
-    return 0;
+    return currentProgram;
 }
 
 void Pfm2AudioProcessor::setCurrentProgram (int index)
 {
+    currentProgram = index;
+    if (pfm2Editor) {
+        pfm2Editor->setPresetName(programName[index].toRawUTF8());
+    }
 }
 
 const String Pfm2AudioProcessor::getProgramName (int index)
 {
-    return String::empty;
+    return programName[index];
 }
 
 void Pfm2AudioProcessor::changeProgramName (int index, const String& newName)
 {
+    programName[index] = newName;
+    if (index == currentProgram) {
+        if (pfm2Editor) {
+            pfm2Editor->setPresetName(programName[index].toRawUTF8());
+        }        
+    }
 }
 
 //==============================================================================
@@ -579,9 +600,11 @@ void Pfm2AudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
     // dispatch realtime events to non realtime observer
     parameterSet.processRealtimeEvents();
     midiMessageCollector.removeNextBlockOfMessages(midiMessages,  buffer.getNumSamples());
+    /*
     if (midiMessages.getNumEvents() > 0) {
         printf("processBlock : %d midi messages \n", midiMessages.getNumEvents());
     }
+     */
     if (parametersToUpdate.size() > 0 ) {
         std::unordered_set<const char*> newSet;
         newSet.swap(parametersToUpdate);
@@ -619,11 +642,14 @@ void Pfm2AudioProcessor::getStateInformation (MemoryBlock& destData)
 
     // add some attributes to it..
     for (int p=0; p< parameterSet.size(); p++) {
-        printf("%d : %s = %f :  Min:%f - Max:%f\n", p, parameterSet[p]->getName().c_str(), parameterSet[p]->getScaledValue(),parameterSet[p]->getMinValue(), parameterSet[p]->getMaxValue());
+//        printf("%d : %s = %f :  Min:%f - Max:%f\n", p, parameterSet[p]->getName().c_str(), parameterSet[p]->getScaledValue(),parameterSet[p]->getMinValue(), parameterSet[p]->getMaxValue());
 
         xml.setAttribute(teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str(), parameterSet[p]->getScaledValue());
     }
 
+    for (int k=0; k<NUMBER_OF_PROGRAM; k++) {
+        xml.setAttribute("Preset"+ String(k), programName[k]);
+    }
 
     // then use this helper function to stuff it into the binary blob and return it..
     copyXmlToBinary (xml, destData);
@@ -652,6 +678,13 @@ void Pfm2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
         printf(">>> PresetName : %s\n", presetName);
         // make sure that it's actually our type of XML object..
         if (xmlState->hasTagName ("PreenFM2AppStatus")) {
+            
+            for (int k=0; k<NUMBER_OF_PROGRAM; k++) {
+                if (xmlState->getStringAttribute("Preset" + String(k)) != String::empty){
+                    programName[k] = xmlState->getStringAttribute("Preset" + String(k));
+                }
+            }
+            
             double value;
             for (int p=0; p< parameterSet.size(); p++) {
                 if (p == nrpmIndex[2047]) continue;
@@ -659,7 +692,7 @@ void Pfm2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
                 if (xmlState->getStringAttribute(teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str()) != String::empty) {
                     value  = (float) xmlState->getDoubleAttribute (teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str(), value);
                     parameterSet.setScaled(p, value, this);
-//                    printf("%d : %s = %f\n", p, parameterSet[p]->getName().c_str(), value);
+  //                   printf("%d : %s = %f\n", p, parameterSet[p]->getName().c_str(), value);
                 } else {
                     printf("Cannot set %d : %s\n", p, parameterSet[p]->getName().c_str());
                 }
@@ -695,7 +728,7 @@ void Pfm2AudioProcessor::flushAllParametrsToNrpn() {
         if (midifiedFP != nullptr) {
 //            printf("%d %s Add Nrpn %d : %d\n", p, midifiedFP->getName().c_str(), midifiedFP->getNrpnParamMSB() * 127 + midifiedFP->getNrpnParamLSB(),
 //                    midifiedFP->getNrpnValueMSB(midifiedFP->getValue()) * 127 + midifiedFP->getNrpnValueLSB(midifiedFP->getValue()));
-            midifiedFP->addNrpn(midiMessageCollector, midifiedFP->getValue());
+            midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel, midifiedFP->getValue());
 //            usleep(5000);
         }
     }
@@ -718,7 +751,7 @@ void Pfm2AudioProcessor::handleIncomingMidiBuffer(MidiBuffer &buffer, int number
         while (midiIterator.getNextEvent(midiMessage, samplePosition)) {
             bool copyMessageInNewBuffer = true;
 
-            if (midiMessage.isController()) {
+            if (midiMessage.isController() && midiMessage.getChannel() == currentMidiChannel) {
                 switch (midiMessage.getControllerNumber()) {
                 case 99:
                     currentNrpn.paramMSB = midiMessage.getControllerValue();
@@ -767,9 +800,8 @@ void Pfm2AudioProcessor::setParameter (int index, float newValue)
 
     const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameterSet[index]);
     if (midifiedFP != nullptr) {
-        int index = midifiedFP->getParamIndex();
         // send nrpn
-        midifiedFP->addNrpn(midiMessageCollector, midifiedFP->getValue());
+        midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel, midifiedFP->getValue());
     } else {
         printf("Pfm2AudioProcessor::setParameter NULL midifiedFP \r\n");
     }
@@ -816,8 +848,6 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
         // Redirect to combo ?
         if ((newFloatValue > midifiedFP->getMaxValue() || newFloatValue < midifiedFP->getMinValue()) && forceIndex == -1) {
             // First remove current Slider value
-            int n = parametersToUpdate.count(parameter->getName().c_str());
-            //            printf(">>>   ###### ERASE : %d times the key %s\r\n", n,  parameter->getName().c_str());
             parametersToUpdate.erase(midifiedFP->getName().c_str());
             if (pfm2Editor) {
                 pfm2Editor->removeParamToUpdateUI(midifiedFP->getName().c_str());
@@ -828,7 +858,6 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
             return;
         }
         // Set the value but we don't want to be notified
-        //        printf("Pfm2AudioProcessor::handleIncomingNrpn valueFromNrpn (%f)\r\n", midifiedFP->getValueFromNrpn(value));
         parameterSet.set(index, midifiedFP->getValueFromNrpn(value), this);
         // Notify host
         sendParamChangeMessageToListeners(index, midifiedFP->getScaledValueFromNrpn(value));
@@ -853,15 +882,19 @@ void Pfm2AudioProcessor::onParameterUpdated(const teragon::Parameter *parameter)
     if (midifiedFP != nullptr) {
         int index = midifiedFP->getParamIndex();
 
-        // Push button ??
         if (index == nrpmIndex[2046]) {
+            // Push button
             flushAllParametrsToNrpn();
+        } else if (index == nrpmIndex[2045]) {
+            // Midi Channel changed
+            currentMidiChannel = parameter->getValue();
+            printf("New midi channel : %d\r\n", currentMidiChannel);
         } else {
             // Notify host
             sendParamChangeMessageToListeners(index, parameter->getScaledValue());
             // send nrpn
             if (!midifiedFP->getSendRealValue() || parameter->getValue() != 1) {
-                midifiedFP->addNrpn(midiMessageCollector, parameter->getValue());
+                midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel, parameter->getValue());
             }
         }
     }
@@ -872,25 +905,23 @@ void Pfm2AudioProcessor::onParameterUpdated(const teragon::Parameter *parameter)
 void Pfm2AudioProcessor::sendNrpnPresetName() {
     for (int k=0; k<12; k++) {
         double timeNow = Time::getMillisecondCounterHiRes() * .001;
-        MidiMessage byte1 = MidiMessage::controllerEvent(1, 99, 1);
+        MidiMessage byte1 = MidiMessage::controllerEvent(currentMidiChannel, 99, 1);
         byte1.setTimeStamp(timeNow);
         midiMessageCollector.addMessageToQueue(byte1);
 
-        MidiMessage byte2 = MidiMessage::controllerEvent(1, 98, 100 + k);
+        MidiMessage byte2 = MidiMessage::controllerEvent(currentMidiChannel, 98, 100 + k);
         byte2.setTimeStamp(timeNow);
         midiMessageCollector.addMessageToQueue(byte2);
 
         int letter = presetName[k];
 
-        MidiMessage byte3 = MidiMessage::controllerEvent(1, 6, letter >> 7);
+        MidiMessage byte3 = MidiMessage::controllerEvent(currentMidiChannel, 6, letter >> 7);
         byte3.setTimeStamp(timeNow);
         midiMessageCollector.addMessageToQueue(byte3);
 
-        MidiMessage byte4 = MidiMessage::controllerEvent(1, 38, letter & 0xff);
+        MidiMessage byte4 = MidiMessage::controllerEvent(currentMidiChannel, 38, letter & 0xff);
         byte4.setTimeStamp(timeNow);
         midiMessageCollector.addMessageToQueue(byte4);
-
-//        usleep(5000);
     }
 
 }

@@ -13,7 +13,7 @@
 #include "pfm2Window.h"
 
 
-#define EDITOR_VERSION "v0.3"
+#define EDITOR_VERSION "v0.4"
 
 //==============================================================================
 class pfm2EditorApplication  : public JUCEApplication
@@ -32,7 +32,7 @@ public:
     {
         // Add your application's initialisation code here...
 
-        mainWindow = new StandalonePFM2Window("pfm2 Editor "+ String(EDITOR_VERSION), Colours::lightblue, nullptr);
+        mainWindow = new StandalonePFM2Window("PreenFM2 Editor "+ String(EDITOR_VERSION), Colours::lightblue, nullptr);
         mainWindow->setVisible (true);
     }
 

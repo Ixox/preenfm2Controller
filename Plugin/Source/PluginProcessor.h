@@ -25,6 +25,8 @@
 #include "PluginParameters/include/PluginParameters.h"
 #include "PreenNrpn.h"
 
+#define NUMBER_OF_PROGRAM 1
+
 struct Nrpn {
 	char paramMSB;
 	char paramLSB;
@@ -105,6 +107,9 @@ private:
 	 int nrpmIndex[2048];
 	 int parameterIndex;
 	 char presetName[13];
+    int currentProgram;
+    String programName[NUMBER_OF_PROGRAM];
+    int currentMidiChannel;
 
      Pfm2AudioProcessorEditor* pfm2Editor;
 	 LookAndFeel* myLookAndFeel;

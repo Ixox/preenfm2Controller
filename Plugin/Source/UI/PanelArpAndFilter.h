@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __PANEL_ARP_AND_FILTER__
-#define __PANEL_ARP_AND_FILTER__
+#ifndef __JUCE_HEADER_1D750F415828AF8__
+#define __JUCE_HEADER_1D750F415828AF8__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
@@ -109,4 +109,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __PANEL_ARP_AND_FILTER__
+#endif   // __JUCE_HEADER_1D750F415828AF8__

@@ -37,6 +37,8 @@ public:
 	    bias = 0;
 		paramIndex = paramIndexCounter++;
 	};
+    
+    virtual ~Midificator() {};
 
 	void setMidificatorParam(int nrpmP, float minV, float valueM) {
 	    pfm2MinValue = minV;
@@ -44,24 +46,23 @@ public:
 	    nrpnParam = nrpmP;
 	}
 
-	void addNrpn(juce::MidiMessageCollector& midiMessageCollector, double value) const {
+	void addNrpn(juce::MidiMessageCollector& midiMessageCollector, const int midiChannel, const double value) const {
 		double timeNow = Time::getMillisecondCounterHiRes() * .001;
-		MidiMessage byte1 = MidiMessage::controllerEvent(1, 99, getNrpnParamMSB());
+		MidiMessage byte1 = MidiMessage::controllerEvent(midiChannel, 99, getNrpnParamMSB());
 		byte1.setTimeStamp(timeNow);
 		midiMessageCollector.addMessageToQueue(byte1);
 
-		MidiMessage byte2 = MidiMessage::controllerEvent(1, 98, getNrpnParamLSB());
+		MidiMessage byte2 = MidiMessage::controllerEvent(midiChannel, 98, getNrpnParamLSB());
 		byte2.setTimeStamp(timeNow);
 		midiMessageCollector.addMessageToQueue(byte2);
 
-		MidiMessage byte3 = MidiMessage::controllerEvent(1, 6, getNrpnValueMSB(value));
+		MidiMessage byte3 = MidiMessage::controllerEvent(midiChannel, 6, getNrpnValueMSB(value));
 		byte3.setTimeStamp(timeNow);
 		midiMessageCollector.addMessageToQueue(byte3);
 
-		MidiMessage byte4 = MidiMessage::controllerEvent(1, 38, getNrpnValueLSB(value));
+		MidiMessage byte4 = MidiMessage::controllerEvent(midiChannel, 38, getNrpnValueLSB(value));
 		byte4.setTimeStamp(timeNow);
 		midiMessageCollector.addMessageToQueue(byte4);
-//		printf("addNrpn : %d > %d\r\n", nrpnParam, ((getNrpnValueMSB(value)) << 7)+getNrpnValueLSB(value));
 	}
 
 	int getNrpnParamMSB() const { return nrpnParam >> 7; }

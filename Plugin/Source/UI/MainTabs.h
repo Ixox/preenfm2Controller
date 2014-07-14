@@ -43,7 +43,8 @@ class PanelArpAndFilter;
 */
 class MainTabs  : public Component,
                   public ButtonListener,
-                  public LabelListener
+                  public LabelListener,
+                  public ComboBoxListener
 {
 public:
     //==============================================================================
@@ -64,6 +65,7 @@ public:
     void resized();
     void buttonClicked (Button* buttonThatWasClicked);
     void labelTextChanged (Label* labelThatHasChanged);
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
 
 
 
@@ -76,6 +78,7 @@ private:
     teragon::ConcurrentParameterSet* parameterSet;
     teragon::ParameterValue pullButtonValue;
     teragon::ParameterValue pushButtonValue;
+    int currentMidiChannel;
     MidiMessageCollector *midiMessageCollector;
     //[/UserVariables]
 
@@ -86,6 +89,8 @@ private:
     ScopedPointer<TextButton> pullButton;
     ScopedPointer<Label> presetNameLabel;
     ScopedPointer<TextButton> pushButton;
+    ScopedPointer<ComboBox> midiChannelCombo;
+    ScopedPointer<Label> midiChannelLabel;
 
 
     //==============================================================================
