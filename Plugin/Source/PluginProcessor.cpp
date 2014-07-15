@@ -623,6 +623,7 @@ bool Pfm2AudioProcessor::hasEditor() const
 AudioProcessorEditor* Pfm2AudioProcessor::createEditor()
 {
     pfm2Editor = new Pfm2AudioProcessorEditor (this);
+	pfm2Editor->setMidiChannel(currentMidiChannel);
     pfm2Editor->setMidiMessageCollector(midiMessageCollector);
     pfm2Editor->setPresetName(presetName);
     printf("createEditor : %u\n", parameterSet.size());
@@ -698,7 +699,9 @@ void Pfm2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
                 }
             }
             parameterSet.processRealtimeEvents();
-
+			// If no UI we must set current
+			currentMidiChannel = parameterSet[nrpmIndex[2045]]->getValue();
+			
             // REDRAW UI
             for (int p=0; p< parameterSet.size(); p++) {
                 const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameterSet[p]);

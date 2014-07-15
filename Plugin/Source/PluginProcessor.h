@@ -100,7 +100,7 @@ public:
 	struct Nrpn currentNrpn;
 	void flushAllParametrsToNrpn();
     void sendNrpnPresetName();
-
+	void editorClosed() {  pfm2Editor = nullptr; }
 
 private:
 	 std::map<int , teragon::Parameter* > nrpmParameterMap;

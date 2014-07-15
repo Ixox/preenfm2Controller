@@ -26,6 +26,7 @@
 Pfm2AudioProcessorEditor::Pfm2AudioProcessorEditor (Pfm2AudioProcessor* ownerFilter)
     : AudioProcessorEditor (ownerFilter)
 {
+	this->ownerFilter = ownerFilter;
     addAndMakeVisible (mainTabs = new MainTabs());
     mainTabs->buildParameters(ownerFilter->parameterSet);
     // This is where our plugin's editor size is set.
@@ -36,6 +37,7 @@ Pfm2AudioProcessorEditor::Pfm2AudioProcessorEditor (Pfm2AudioProcessor* ownerFil
 
 Pfm2AudioProcessorEditor::~Pfm2AudioProcessorEditor()
 {
+	this->ownerFilter->editorClosed();
     delete mainTabs;
 }
 
@@ -73,6 +75,9 @@ void Pfm2AudioProcessorEditor::setMidiMessageCollector(MidiMessageCollector &mid
     mainTabs->setMidiMessageCollector(midiMessageCollector);
 }
 
+void Pfm2AudioProcessorEditor::setMidiChannel(int newMidiChannel) {
+	mainTabs->setMidiChannel(newMidiChannel);
+}
 
 void Pfm2AudioProcessorEditor::setPresetName(const char* presetName) {
     mainTabs->setPresetName(presetName);

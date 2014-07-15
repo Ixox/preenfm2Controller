@@ -59,6 +59,7 @@ public:
 	void newNrpnParam(int nrpn, int value);
 	void setPresetName(const char* presetName);
     void setMidiMessageCollector(MidiMessageCollector &midiMessageCollector);
+	void setMidiChannel(int newMidiChannel);
     //[/UserMethods]
 
     void paint (Graphics& g);

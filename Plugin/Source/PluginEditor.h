@@ -43,6 +43,7 @@ public:
     void removeParamToUpdateUI(const char* paramName);
     void newNrpnParam(int nrpn, int value);
     void setMidiMessageCollector(MidiMessageCollector &midiMessageCollector);
+	void setMidiChannel(int newMidiChannel);
     void setPresetName(const char* presetName);
 
 
@@ -50,6 +51,7 @@ private:
 	bool uiOutOfSync;
     MainTabs * mainTabs;
     std::unordered_set<const char*> parametersToUpdate;
+	Pfm2AudioProcessor* ownerFilter;
 };
 
 

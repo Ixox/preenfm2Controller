@@ -150,12 +150,12 @@
         <MODULEPATH id="juce_audio_plugin_client" path="../../JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <VS2012 targetFolder="Builds/VisualStudio2012" vstFolder="c:\SDKs\vstsdk2.4">
+    <VS2012 targetFolder="Builds/VisualStudio2012" vstFolder="C:\VST" toolset="v110_xp">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
-                       isDebug="1" optimisation="1" targetName="pfm2"/>
+                       isDebug="1" optimisation="1" targetName="pfm2" headerPath="G:\dev\VST3 SDK"/>
         <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
-                       isDebug="0" optimisation="2" targetName="pfm2"/>
+                       isDebug="0" optimisation="2" targetName="pfm2" headerPath="G:\dev\VST3 SDK"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_video" path="../../juce"/>

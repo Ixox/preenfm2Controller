@@ -163,7 +163,7 @@ void MainTabs::paint (Graphics& g)
 
 void MainTabs::resized()
 {
-    tabbedComponent->setBounds (proportionOfWidth (0.0097f), proportionOfHeight (0.0245f), proportionOfWidth (0.9779f), proportionOfHeight (0.9698f));
+    tabbedComponent->setBounds (proportionOfWidth (0.0092f), proportionOfHeight (0.0241f), proportionOfWidth (0.9782f), proportionOfHeight (0.9699f));
     midiInputLabel->setBounds (16, 0, 48, 16);
     midiInputLabel2->setBounds (72, 0, 48, 16);
     pullButton->setBounds (getWidth() - 67, 8, 55, 24);
@@ -287,7 +287,7 @@ void MainTabs::updateUI(std::unordered_set<const char*> &paramSet) {
     }
     printf("====================================================\r\n");
     */
-    
+
     for(std::unordered_set<const char*>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
         if (strcmp((*it), "Midi Channel") == 0) {
             midiChannelCombo->setSelectedId(this->parameterSet->get("Midi Channel")->getValue());
@@ -313,6 +313,11 @@ void MainTabs::setPresetName(const char* presetName) {
 void MainTabs::setMidiMessageCollector(MidiMessageCollector &midiMessageCollector) {
     this->midiMessageCollector = &midiMessageCollector;
 }
+
+
+void MainTabs::setMidiChannel(int newMidiChannel) {
+	midiChannelCombo->setSelectedId(newMidiChannel);
+}
 //[/MiscUserCode]
 
 
@@ -331,7 +336,7 @@ BEGIN_JUCER_METADATA
                  fixedSize="0" initialWidth="900" initialHeight="710">
   <BACKGROUND backgroundColour="fff0f8ff"/>
   <TABBEDCOMPONENT name="new tabbed component" id="f175981f6c34a740" memberName="tabbedComponent"
-                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="0.968% 2.446% 97.787% 96.978%"
+                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="0.931% 2.421% 97.851% 97.02%"
                    orientation="top" tabBarDepth="30" initialTab="0">
     <TAB name="Engine" colour="ffe5f9ff" useJucerComp="0" contentClassName="PanelEngine"
          constructorParams="" jucerComponentFile=""/>
@@ -357,7 +362,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="288 8 168 32" tooltip="Click to edit"
          edTextCol="ff000000" edBkgCol="0" labelText="preset" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="25.899999999999998579" bold="1" italic="0" justification="33"/>
+         fontsize="25.899999999999999" bold="1" italic="0" justification="33"/>
   <TEXTBUTTON name="push button" id="52c3034a926a2609" memberName="pushButton"
               virtualName="" explicitFocusOrder="0" pos="283R 8 55 24" tooltip="Push all parameters from plugin to preenfm2"
               buttonText="Push" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
