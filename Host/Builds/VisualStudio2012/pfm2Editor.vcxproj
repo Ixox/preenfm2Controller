@@ -63,7 +63,7 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\Release\</OutDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pfm2Editor</TargetName>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release 32|Win32'">.\Release 32\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release 32|Win32'">.\deploy\</OutDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release 32|Win32'">pfm2Editor</TargetName>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release 32|Win32'">true</GenerateManifest>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug 32|Win32'">.\Debug 32\</OutDir>
