@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="I4cnWy" name="pfm2Editor" projectType="guiapp" version="1.0.0"
-              bundleIdentifier="com.yourcompany.pfm2Editor" includeBinaryInAppConfig="1"
-              jucerVersion="3.1.0" defines="">
+<JUCERPROJECT id="I4cnWy" name="pfm2Editor" projectType="guiapp" version="0.4"
+              bundleIdentifier="com.ixox.pfm2Editor" includeBinaryInAppConfig="1"
+              jucerVersion="3.1.0" defines="" companyName="Xavier Hosxe" companyWebsite="http://www.preenfm.net"
+              companyEmail="preenfm1@gmail.com">
   <MAINGROUP id="c6LJM5" name="pfm2Editor">
     <GROUP id="{4109EA71-F7BE-3C72-D039-241F993FAEB9}" name="Source">
       <GROUP id="{1D684675-DA20-07E6-EFC5-ECF1687EF7D5}" name="Plugin">
@@ -88,7 +89,6 @@
         <MODULEPATH id="juce_audio_devices" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_audio_formats" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../../JUCE/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_audio_utils" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../JUCE/modules"/>
       </MODULEPATHS>
@@ -115,18 +115,40 @@
         <MODULEPATH id="juce_core" path="../../juce"/>
         <MODULEPATH id="juce_audio_utils" path="../../juce"/>
         <MODULEPATH id="juce_audio_processors" path="../../juce"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../juce"/>
         <MODULEPATH id="juce_audio_formats" path="../../juce"/>
         <MODULEPATH id="juce_audio_devices" path="../../juce"/>
         <MODULEPATH id="juce_audio_basics" path="../../juce"/>
       </MODULEPATHS>
     </VS2012>
+    <XCODE_MAC targetFolder="Builds/MacOSX" extraLinkerFlags="-std=c++11&#10;-stdlib=libc++"
+               extraCompilerFlags="-std=c++11&#10;-stdlib=libc++">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" osxSDK="10.8 SDK" osxCompatibility="10.7 SDK" osxArchitecture="64BitIntel"
+                       isDebug="1" optimisation="1" targetName="pfm2Editor"/>
+        <CONFIGURATION name="Release" osxSDK="10.8 SDK" osxCompatibility="10.7 SDK"
+                       osxArchitecture="64BitIntel" isDebug="0" optimisation="2" targetName="pfm2Editor"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_opengl" path="../../juce"/>
+        <MODULEPATH id="juce_gui_extra" path="../../juce"/>
+        <MODULEPATH id="juce_gui_basics" path="../../juce"/>
+        <MODULEPATH id="juce_graphics" path="../../juce"/>
+        <MODULEPATH id="juce_events" path="../../juce"/>
+        <MODULEPATH id="juce_data_structures" path="../../juce"/>
+        <MODULEPATH id="juce_cryptography" path="../../juce"/>
+        <MODULEPATH id="juce_core" path="../../juce"/>
+        <MODULEPATH id="juce_audio_utils" path="../../juce"/>
+        <MODULEPATH id="juce_audio_processors" path="../../juce"/>
+        <MODULEPATH id="juce_audio_formats" path="../../juce"/>
+        <MODULEPATH id="juce_audio_devices" path="../../juce"/>
+        <MODULEPATH id="juce_audio_basics" path="../../juce"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
   </EXPORTFORMATS>
   <MODULES>
     <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_audio_devices" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_audio_formats" showAllCode="1" useLocalCopy="1"/>
-    <MODULES id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_audio_processors" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_audio_utils" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_core" showAllCode="1" useLocalCopy="1"/>
