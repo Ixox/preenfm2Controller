@@ -38,7 +38,7 @@ MainTabs::MainTabs ()
     tabbedComponent->setTabBarDepth (30);
     tabbedComponent->addTab (TRANS("Engine"), Colour (0xffe5f9ff), new PanelEngine(), true);
     tabbedComponent->addTab (TRANS("Modulation"), Colour (0xffdeffe4), new PanelModulation(), true);
-    tabbedComponent->addTab (TRANS("Arp & Filter"), Colours::bisque, new PanelArpAndFilter(), true);
+    tabbedComponent->addTab (TRANS("Arp & Filter"), Colour (0xfffffcc4), new PanelArpAndFilter(), true);
     tabbedComponent->setCurrentTabIndex (0);
 
     addAndMakeVisible (midiInputLabel = new Label ("midi input label",
@@ -112,9 +112,19 @@ MainTabs::MainTabs ()
     midiChannelLabel->setColour (TextEditor::textColourId, Colours::black);
     midiChannelLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
+    addAndMakeVisible (versionLabel = new Label ("Version Label",
+                                                 TRANS("v?.?\n")));
+    versionLabel->setFont (Font (15.00f, Font::plain));
+    versionLabel->setJustificationType (Justification::centredLeft);
+    versionLabel->setEditable (false, false, false);
+    versionLabel->setColour (Label::textColourId, Colours::blue);
+    versionLabel->setColour (TextEditor::textColourId, Colours::black);
+    versionLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
 
     //[UserPreSize]
     midiChannelCombo->setSelectedId(1);
+    versionLabel->setText(String("v") + ProjectInfo::versionString, dontSendNotification);
     //[/UserPreSize]
 
     setSize (900, 710);
@@ -143,6 +153,7 @@ MainTabs::~MainTabs()
     pushButton = nullptr;
     midiChannelCombo = nullptr;
     midiChannelLabel = nullptr;
+    versionLabel = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -163,14 +174,15 @@ void MainTabs::paint (Graphics& g)
 
 void MainTabs::resized()
 {
-    tabbedComponent->setBounds (proportionOfWidth (0.0092f), proportionOfHeight (0.0241f), proportionOfWidth (0.9782f), proportionOfHeight (0.9699f));
+    tabbedComponent->setBounds (proportionOfWidth (0.0098f), proportionOfHeight (0.0247f), proportionOfWidth (0.9771f), proportionOfHeight (0.9694f));
     midiInputLabel->setBounds (16, 0, 48, 16);
-    midiInputLabel2->setBounds (72, 0, 48, 16);
-    pullButton->setBounds (getWidth() - 67, 8, 55, 24);
+    midiInputLabel2->setBounds (80, 0, 48, 16);
+    pullButton->setBounds (getWidth() - 108, 8, 55, 24);
     presetNameLabel->setBounds (288, 8, 168, 32);
-    pushButton->setBounds (getWidth() - 283, 8, 55, 24);
-    midiChannelCombo->setBounds (getWidth() - 131, 8, 55, 24);
-    midiChannelLabel->setBounds (getWidth() - 227, 8, 103, 24);
+    pushButton->setBounds (getWidth() - 180, 8, 55, 24);
+    midiChannelCombo->setBounds (getWidth() - 268, 8, 55, 24);
+    midiChannelLabel->setBounds (getWidth() - 364, 8, 103, 24);
+    versionLabel->setBounds (getWidth() - 44, 8, 39, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -336,13 +348,13 @@ BEGIN_JUCER_METADATA
                  fixedSize="0" initialWidth="900" initialHeight="710">
   <BACKGROUND backgroundColour="fff0f8ff"/>
   <TABBEDCOMPONENT name="new tabbed component" id="f175981f6c34a740" memberName="tabbedComponent"
-                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="0.931% 2.421% 97.851% 97.02%"
+                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="0.983% 2.471% 97.707% 96.941%"
                    orientation="top" tabBarDepth="30" initialTab="0">
     <TAB name="Engine" colour="ffe5f9ff" useJucerComp="0" contentClassName="PanelEngine"
          constructorParams="" jucerComponentFile=""/>
     <TAB name="Modulation" colour="ffdeffe4" useJucerComp="0" contentClassName="PanelModulation"
          constructorParams="" jucerComponentFile=""/>
-    <TAB name="Arp &amp; Filter" colour="ffffe4c4" useJucerComp="0" contentClassName="PanelArpAndFilter"
+    <TAB name="Arp &amp; Filter" colour="fffffcc4" useJucerComp="0" contentClassName="PanelArpAndFilter"
          constructorParams="" jucerComponentFile=""/>
   </TABBEDCOMPONENT>
   <LABEL name="midi input label" id="f77b232960a175fb" memberName="midiInputLabel"
@@ -351,30 +363,35 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <LABEL name="midi input label" id="f5bde9938974ba9f" memberName="midiInputLabel2"
-         virtualName="" explicitFocusOrder="0" pos="72 0 48 16" textCol="ff0000ff"
+         virtualName="" explicitFocusOrder="0" pos="80 0 48 16" textCol="ff0000ff"
          edTextCol="ff000000" edBkgCol="0" labelText="0" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="pull button" id="9da85c0691256028" memberName="pullButton"
-              virtualName="" explicitFocusOrder="0" pos="67R 8 55 24" tooltip="Pull all parameters from the preenfm2 to this plugin"
+              virtualName="" explicitFocusOrder="0" pos="108R 8 55 24" tooltip="Pull all parameters from the preenfm2 to this plugin"
               buttonText="Pull" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="preset name label" id="4201f054ae2edbe" memberName="presetNameLabel"
          virtualName="" explicitFocusOrder="0" pos="288 8 168 32" tooltip="Click to edit"
          edTextCol="ff000000" edBkgCol="0" labelText="preset" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="25.899999999999999" bold="1" italic="0" justification="33"/>
+         fontsize="25.899999999999998579" bold="1" italic="0" justification="33"/>
   <TEXTBUTTON name="push button" id="52c3034a926a2609" memberName="pushButton"
-              virtualName="" explicitFocusOrder="0" pos="283R 8 55 24" tooltip="Push all parameters from plugin to preenfm2"
+              virtualName="" explicitFocusOrder="0" pos="180R 8 55 24" tooltip="Push all parameters from plugin to preenfm2"
               buttonText="Push" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="Midi Channel" id="a2c1c2de24e3a5a3" memberName="midiChannelCombo"
-            virtualName="" explicitFocusOrder="0" pos="131R 8 55 24" tooltip="Midi Channel"
+            virtualName="" explicitFocusOrder="0" pos="268R 8 55 24" tooltip="Midi Channel"
             editable="0" layout="36" items="1&#10;2&#10;3&#10;4&#10;5&#10;6&#10;7&#10;8&#10;9&#10;10&#10;11&#10;12&#10;13&#10;14&#10;15&#10;16&#10;"
             textWhenNonSelected="1" textWhenNoItems="1"/>
   <LABEL name="Midi Channel Label" id="6b9a0088a5f5afa" memberName="midiChannelLabel"
-         virtualName="" explicitFocusOrder="0" pos="227R 8 103 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="364R 8 103 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Midi Channel:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
+  <LABEL name="Version Label" id="c8880c204a60b679" memberName="versionLabel"
+         virtualName="" explicitFocusOrder="0" pos="44R 8 39 24" textCol="ff0000ff"
+         edTextCol="ff000000" edBkgCol="0" labelText="v?.?&#10;" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

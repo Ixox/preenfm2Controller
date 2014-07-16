@@ -92,6 +92,7 @@ private:
     ScopedPointer<TextButton> pushButton;
     ScopedPointer<ComboBox> midiChannelCombo;
     ScopedPointer<Label> midiChannelLabel;
+    ScopedPointer<Label> versionLabel;
 
 
     //==============================================================================
