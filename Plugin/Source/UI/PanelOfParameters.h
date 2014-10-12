@@ -88,7 +88,7 @@ public:
 		// And let's update the value and update the UI Without sending modification !!!
 		// No modification : we dont want sliderValueChanged to be called in the different panels
 		if (combo->getSelectedId() != paramToMap->getValue()) {
-			combo->setSelectedId(paramToMap->getValue(), dontSendNotification);
+			combo->setSelectedId(paramToMap->getValue() + .0001f, dontSendNotification);
 			updateComboParameter_hook(combo);
 		}
     }

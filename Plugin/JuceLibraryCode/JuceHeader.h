@@ -39,8 +39,8 @@
 namespace ProjectInfo
 {
     const char* const  projectName    = "pfm2Plugin";
-    const char* const  versionString  = "0.4";
-    const int          versionNumber  = 0x400;
+    const char* const  versionString  = "0.5";
+    const int          versionNumber  = 0x0400;
 }
 
 #endif   // __APPHEADERFILE_NWJAEW__

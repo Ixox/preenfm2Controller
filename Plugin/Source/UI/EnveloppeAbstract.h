@@ -135,13 +135,13 @@ public:
     void setX(float x, bool notification = true) {
         this->x =  x > xMax ? xMax : (x < xMin ? xMin : x);
         if (notification) {
-            this->myEnv->newXValue(index, x);
+            this->myEnv->newXValue(index, this->x);
         }
     }
     void setY(float y, bool notification = true) {
         this->y =  y > yMax ? yMax : (y < yMin ? yMin : y);
         if (notification) {
-            this->myEnv->newYValue(index, y);
+            this->myEnv->newYValue(index, this->y);
         }
     }
 

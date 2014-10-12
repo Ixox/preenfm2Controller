@@ -290,6 +290,8 @@ PanelArpAndFilter::PanelArpAndFilter ()
     filterComboBox->addItem (TRANS("Low Pass"), 3);
     filterComboBox->addItem (TRANS("High Pass"), 4);
     filterComboBox->addItem (TRANS("Bass Boost"), 5);
+    filterComboBox->addItem (TRANS("Band Pass"), 6);
+    filterComboBox->addItem (TRANS("Crusher"), 7);
     filterComboBox->addListener (this);
 
 
@@ -516,6 +518,10 @@ void PanelArpAndFilter::comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool 
         } else if (filterComboBox->getSelectedId() == 4) {
             filterIsNow(true, true);
         } else if (filterComboBox->getSelectedId() == 5) {
+            filterIsNow(true, true);
+        } else if (filterComboBox->getSelectedId() == 6) {
+            filterIsNow(true, true);
+        } else if (filterComboBox->getSelectedId() == 7) {
             filterIsNow(true, true);
         }
     }

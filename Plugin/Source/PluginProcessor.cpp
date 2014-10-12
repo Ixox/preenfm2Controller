@@ -401,7 +401,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_FILTER_TYPE;
-    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Filter Combo").toRawUTF8(), nrpmParam, 1, 1, 5, 1);
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Filter Combo").toRawUTF8(), nrpmParam, 1, 1, 7, 1);
     newParam->addObserver(this);
     parameterSet.add(newParam);
     nrpmIndex[nrpmParam] = parameterIndex++;
@@ -643,8 +643,6 @@ void Pfm2AudioProcessor::getStateInformation (MemoryBlock& destData)
 
     // add some attributes to it..
     for (int p=0; p< parameterSet.size(); p++) {
-//        printf("%d : %s = %f :  Min:%f - Max:%f\n", p, parameterSet[p]->getName().c_str(), parameterSet[p]->getScaledValue(),parameterSet[p]->getMinValue(), parameterSet[p]->getMaxValue());
-
         xml.setAttribute(teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str(), parameterSet[p]->getScaledValue());
     }
 
@@ -693,7 +691,6 @@ void Pfm2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
                 if (xmlState->getStringAttribute(teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str()) != String::empty) {
                     value  = (float) xmlState->getDoubleAttribute (teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str(), value);
                     parameterSet.setScaled(p, value, this);
-  //                   printf("%d : %s = %f\n", p, parameterSet[p]->getName().c_str(), value);
                 } else {
                     printf("Cannot set %d : %s\n", p, parameterSet[p]->getName().c_str());
                 }
