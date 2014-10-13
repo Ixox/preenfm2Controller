@@ -20,6 +20,7 @@
 #define PLUGINPROCESSOR_H_INCLUDED
 
 #include <map>
+#include <mutex>
 #include <unordered_set>
 #include "JuceHeader.h"
 #include "PluginParameters/include/PluginParameters.h"
@@ -114,7 +115,7 @@ private:
      Pfm2AudioProcessorEditor* pfm2Editor;
 	 LookAndFeel* myLookAndFeel;
      std::unordered_set<const char*> parametersToUpdate;
-
+	 std::mutex parametersToUpdateMutex;
 
 	 //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Pfm2AudioProcessor)

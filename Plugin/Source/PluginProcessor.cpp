@@ -607,7 +607,9 @@ void Pfm2AudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
      */
     if (parametersToUpdate.size() > 0 ) {
         std::unordered_set<const char*> newSet;
+		parametersToUpdateMutex.lock();
         newSet.swap(parametersToUpdate);
+		parametersToUpdateMutex.unlock();
         if (pfm2Editor) {
             pfm2Editor->updateUIWith(newSet);
         }
@@ -703,7 +705,9 @@ void Pfm2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
             for (int p=0; p< parameterSet.size(); p++) {
                 const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameterSet[p]);
                 if (midifiedFP != nullptr) {
+					parametersToUpdateMutex.lock();
                     parametersToUpdate.insert(midifiedFP->getName().c_str());
+					parametersToUpdateMutex.unlock();
                 }
             }
 
@@ -806,7 +810,9 @@ void Pfm2AudioProcessor::setParameter (int index, float newValue)
         printf("Pfm2AudioProcessor::setParameter NULL midifiedFP \r\n");
     }
     // REDRAW UI : must be done in processblock after parameterSet is really udpated.
+	parametersToUpdateMutex.lock();
     parametersToUpdate.insert(midifiedFP->getName().c_str());
+	parametersToUpdateMutex.unlock();
 }
 
 
@@ -848,7 +854,9 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
         // Redirect to combo ?
         if ((newFloatValue > midifiedFP->getMaxValue() || newFloatValue < midifiedFP->getMinValue()) && forceIndex == -1) {
             // First remove current Slider value
+			parametersToUpdateMutex.lock();
             parametersToUpdate.erase(midifiedFP->getName().c_str());
+			parametersToUpdateMutex.unlock();
             if (pfm2Editor) {
                 pfm2Editor->removeParamToUpdateUI(midifiedFP->getName().c_str());
             }
@@ -865,7 +873,9 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
         if (pfm2Editor) {
             pfm2Editor->newNrpnParam(param, value);
         }
+		parametersToUpdateMutex.lock();
         parametersToUpdate.insert(midifiedFP->getName().c_str());
+		parametersToUpdateMutex.unlock();
     }
 }
 

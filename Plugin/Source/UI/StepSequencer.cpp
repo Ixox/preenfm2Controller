@@ -67,7 +67,7 @@ void StepSequencer::paint (Graphics& g)
 }
 
 int  StepSequencer::limitX(int x) {
-	return x < 0 ? 0 : (x > numberOfValues ? numberOfValues : x);
+	return x < 0 ? 0 : (x >= numberOfValues ? numberOfValues - 1: x);
 }
 int  StepSequencer::limitY(int y) {
 	return y < 0 ? 0 : (y > maxValue ? maxValue : y);

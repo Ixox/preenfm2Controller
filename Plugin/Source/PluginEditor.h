@@ -51,6 +51,7 @@ private:
 	bool uiOutOfSync;
     MainTabs * mainTabs;
     std::unordered_set<const char*> parametersToUpdate;
+	std::mutex parametersToUpdateMutex;
 	Pfm2AudioProcessor* ownerFilter;
 };
 

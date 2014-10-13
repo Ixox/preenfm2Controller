@@ -48,21 +48,27 @@ void Pfm2AudioProcessorEditor::paint (Graphics& g)
 
 void Pfm2AudioProcessorEditor::updateUIWith(std::unordered_set<const char*> &ptu) {
     for(std::unordered_set<const char*>::iterator it = ptu.begin(); it != ptu.end(); ++it) {
+		this->parametersToUpdateMutex.lock();
 		this->parametersToUpdate.insert(*it);
+		this->parametersToUpdateMutex.unlock();
 	}
 }
 
 void Pfm2AudioProcessorEditor::removeParamToUpdateUI(const char* paramName) {
     if (this->parametersToUpdate.count(paramName) > 0) {
 //        printf("#### Pfm2AudioProcessorEditor ERASE %d times\r\n", this->parametersToUpdate.count(paramName));
+		this->parametersToUpdateMutex.lock();
         this->parametersToUpdate.erase(paramName);
+		this->parametersToUpdateMutex.unlock();
     }
 }
 
 void Pfm2AudioProcessorEditor::timerCallback () {
 	if (this->parametersToUpdate.size() > 0) {
 		std::unordered_set<const char*> newSet;
+		this->parametersToUpdateMutex.lock();
 		newSet.swap(this->parametersToUpdate);
+		this->parametersToUpdateMutex.unlock();
 		mainTabs->updateUI(newSet);
 	}
 }
