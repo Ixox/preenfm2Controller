@@ -58,6 +58,7 @@ public:
 	void updateUI(std::unordered_set<const char*> &paramSet);
 	void newNrpnParam(int nrpn, int value);
 	void setPresetName(const char* presetName);
+	void setPresetNamePtr(char* presetNamePtr);
     void setMidiMessageCollector(MidiMessageCollector &midiMessageCollector);
 	void setMidiChannel(int newMidiChannel);
     //[/UserMethods]
@@ -81,6 +82,7 @@ private:
     teragon::ParameterValue pushButtonValue;
     int currentMidiChannel;
     MidiMessageCollector *midiMessageCollector;
+	char *presetNamePtr;
     //[/UserVariables]
 
     //==============================================================================

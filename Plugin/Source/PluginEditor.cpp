@@ -85,6 +85,10 @@ void Pfm2AudioProcessorEditor::setMidiChannel(int newMidiChannel) {
 	mainTabs->setMidiChannel(newMidiChannel);
 }
 
+void Pfm2AudioProcessorEditor::setPresetNamePtr(char* presetNamePtr) {
+    mainTabs->setPresetNamePtr(presetNamePtr);
+}
+
 void Pfm2AudioProcessorEditor::setPresetName(const char* presetName) {
     mainTabs->setPresetName(presetName);
 }

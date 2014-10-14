@@ -606,13 +606,14 @@ void Pfm2AudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
     }
      */
     if (parametersToUpdate.size() > 0 ) {
-        std::unordered_set<const char*> newSet;
-		parametersToUpdateMutex.lock();
-        newSet.swap(parametersToUpdate);
-		parametersToUpdateMutex.unlock();
-        if (pfm2Editor) {
-            pfm2Editor->updateUIWith(newSet);
-        }
+		if (parametersToUpdateMutex.try_lock()) {
+	        std::unordered_set<const char*> newSet;
+			newSet.swap(parametersToUpdate);
+			parametersToUpdateMutex.unlock();
+			if (pfm2Editor) {
+				pfm2Editor->updateUIWith(newSet);
+			}
+		}
     }
 }
 
@@ -628,6 +629,7 @@ AudioProcessorEditor* Pfm2AudioProcessor::createEditor()
 	pfm2Editor->setMidiChannel(currentMidiChannel);
     pfm2Editor->setMidiMessageCollector(midiMessageCollector);
     pfm2Editor->setPresetName(presetName);
+    pfm2Editor->setPresetNamePtr(presetName);
     printf("createEditor : %u\n", parameterSet.size());
     return pfm2Editor;
 }

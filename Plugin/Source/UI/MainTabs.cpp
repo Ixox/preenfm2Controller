@@ -235,6 +235,7 @@ void MainTabs::labelTextChanged (Label* labelThatHasChanged)
             midiMessageCollector->addMessageToQueue(byte2);
 
             int letter = presetNameLabel->getText().toRawUTF8()[k];
+			this->presetNamePtr[k] = (char)letter;
 
             MidiMessage byte3 = MidiMessage::controllerEvent(currentMidiChannel, 6, letter >> 7);
             byte3.setTimeStamp(timeNow);
@@ -320,6 +321,10 @@ void MainTabs::newNrpnParam(int nrpn, int value) {
 
 void MainTabs::setPresetName(const char* presetName) {
     presetNameLabel->setText(String(presetName), dontSendNotification);
+}
+
+void MainTabs::setPresetNamePtr(char* presetNamePtr) {
+	this->presetNamePtr = presetNamePtr;
 }
 
 void MainTabs::setMidiMessageCollector(MidiMessageCollector &midiMessageCollector) {

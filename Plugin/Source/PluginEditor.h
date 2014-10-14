@@ -45,6 +45,7 @@ public:
     void setMidiMessageCollector(MidiMessageCollector &midiMessageCollector);
 	void setMidiChannel(int newMidiChannel);
     void setPresetName(const char* presetName);
+    void setPresetNamePtr(char* presetName);
 
 
 private:
