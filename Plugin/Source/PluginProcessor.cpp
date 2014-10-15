@@ -27,7 +27,6 @@ int Midificator::paramIndexCounter = 0;
 //==============================================================================
 Pfm2AudioProcessor::Pfm2AudioProcessor()
 {
-
     myLookAndFeel = new preenfmLookAndFeel();
     LookAndFeel::setDefaultLookAndFeel(myLookAndFeel);
 
@@ -456,10 +455,10 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     parameterSet.add(newParam);
     // Put in last slot
     nrpmIndex[2047] = parameterIndex++;
-
-    
-    
+   
     midiMessageCollector.reset(44100);
+
+
 }
 
 Pfm2AudioProcessor::~Pfm2AudioProcessor()
@@ -625,12 +624,17 @@ bool Pfm2AudioProcessor::hasEditor() const
 
 AudioProcessorEditor* Pfm2AudioProcessor::createEditor()
 {
+	parameterSet.pause();
+
     pfm2Editor = new Pfm2AudioProcessorEditor (this);
 	pfm2Editor->setMidiChannel(currentMidiChannel);
     pfm2Editor->setMidiMessageCollector(midiMessageCollector);
     pfm2Editor->setPresetName(presetName);
     pfm2Editor->setPresetNamePtr(presetName);
     printf("createEditor : %u\n", parameterSet.size());
+
+	parameterSet.resume();
+
     return pfm2Editor;
 }
 
