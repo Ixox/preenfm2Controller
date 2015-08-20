@@ -38,7 +38,7 @@ MainTabs::MainTabs ()
     tabbedComponent->setTabBarDepth (30);
     tabbedComponent->addTab (TRANS("Engine"), Colour (0xffe5f9ff), new PanelEngine(), true);
     tabbedComponent->addTab (TRANS("Modulation"), Colour (0xffdeffe4), new PanelModulation(), true);
-    tabbedComponent->addTab (TRANS("Arp & Filter"), Colour (0xfffffcc4), new PanelArpAndFilter(), true);
+    tabbedComponent->addTab (TRANS("Other"), Colour (0xfffffcc4), new PanelArpAndFilter(), true);
     tabbedComponent->setCurrentTabIndex (0);
 
     addAndMakeVisible (midiInputLabel = new Label ("midi input label",

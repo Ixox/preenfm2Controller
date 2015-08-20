@@ -910,6 +910,7 @@ void Pfm2AudioProcessor::onParameterUpdated(const teragon::Parameter *parameter)
             sendParamChangeMessageToListeners(index, parameter->getScaledValue());
             // send nrpn
             if (!midifiedFP->getSendRealValue() || parameter->getValue() != 1) {
+				printf("Value : %f\n",  parameter->getValue());
                 midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel, parameter->getValue());
             }
         }

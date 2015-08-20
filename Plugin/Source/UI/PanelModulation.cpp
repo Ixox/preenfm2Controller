@@ -30,20 +30,30 @@
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 const char* matrixSourceNames [] = { "None", "lfo 1", "lfo 2", "lfo 3", "Free Env 1", "Free Env 2", "Step Seq 1", "Step Seq 2",
-        "Mod Wheel", "Pit Bend", "After touch",  "Key Velocity", "Key number", "Performance 1  ", "Performance 2", "Performance 3", "Performance 4",
+        "Mod Wheel", "Pit Bend", "After touch",  "Key Velocity", "Key Note1", "Key Note2", "Performance 1  ", "Performance 2", "Performance 3", "Performance 4",
         nullptr
 } ;
+
+const int matrixSourceIds[] = { 0, 1, 2, 3, 4 , 5, 6, 7, 8, 9, 10, 11, 12, 17, 13, 14, 15, 16 };
 
 
 const char* matrixDestNames [] = {
         "None", "Gate", "Modulation Index 1", "Modulation Index 2", "Modulation Index 3", "Modulation index 4", "All Mod. Indexes",
         "Mix 1", "Pan 1", "Mix 2", "Pan 2", "Mix 3", "Pan 3", "Mix 4", "Pan 4", "All Mixes", "All Pans",
         "Op1 Frequency", "Op2 Frequency", "Op3 Frequency", "Op4 Frequency", "Op5 Frequency", "Op6 Frequency", "All Op Frequencies",
-        "Op1 Attack", "Op2 Attack", "Op3 Attack", "Op4 Attack", "Op5 Attack", "Op6 Attack", "All Op Attack", "All Op Release",
+//         "Op1 Attack", "Op2 Attack", "Op3 Attack", "Op4 Attack", "Op5 Attack", "Op6 Attack", "All Op Attack", "All Op Release",
         "Mtx Multiplier 1", "Mtx Multiplier 2", "Mtx Multiplier 3", "Mtx Multiplier 4",
         "lfo 1 Frequency", "lfo 2 Frequency", "lfo 3 Frequency", "Free Env2 Silence", "Step Seq 1 gate", "Step Seq 2 gate",
         "Filter frequency", nullptr
 } ;
+
+const int matrixDestIds [] = { 0, 1, 2, 3, 4, 5, 6,
+	7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+	17, 18, 19, 20, 21, 22, 23,
+	32, 33, 34, 35,
+	36, 37, 38, 39, 40, 41, 42
+};
+
 //[/MiscUserDefs]
 
 //==============================================================================
@@ -234,7 +244,7 @@ PanelModulation::PanelModulation ()
         matrixSource[r]->setJustificationType (Justification::centred);
         matrixSource[r]->setColour (ComboBox::buttonColourId, Colours::blue);
         for (int i = 0; matrixSourceNames[i] != nullptr; i++) {
-            matrixSource[r]->addItem(matrixSourceNames[i], i+1);
+            matrixSource[r]->addItem(matrixSourceNames[i], matrixSourceIds[i] + 1);
         }
         matrixSource[r]->setSelectedId(1);
         matrixSource[r]->addListener(this);
@@ -244,7 +254,7 @@ PanelModulation::PanelModulation ()
         matrixDestination[r]->setJustificationType (Justification::centred);
         matrixDestination[r]->setColour (ComboBox::buttonColourId, Colours::blue);
         for (int i = 0; matrixDestNames[i] != nullptr; i++) {
-            matrixDestination[r]->addItem(matrixDestNames[i], i+1);
+            matrixDestination[r]->addItem(matrixDestNames[i], matrixDestIds[i] + 1);
         }
         matrixDestination[r]->setSelectedId(1);
         matrixDestination[r]->addListener(this);
