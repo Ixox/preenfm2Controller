@@ -72,6 +72,16 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     MidiBuffer* eventsToAdd;
+
+    ScopedPointer<GroupComponent> noteGroupComponent[2];
+    ScopedPointer<Label> noteBeforeLabel[2];
+    ScopedPointer<ComboBox> noteBefore[2];
+    ScopedPointer<Label> noteBreakLabel[2];
+    ScopedPointer<Slider> noteBreak[2];
+    ScopedPointer<Label> noteAfterLabel[2];
+    ScopedPointer<ComboBox> noteAfter[2];
+
+
     //[/UserVariables]
 
     //==============================================================================

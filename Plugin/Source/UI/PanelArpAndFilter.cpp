@@ -296,6 +296,52 @@ PanelArpAndFilter::PanelArpAndFilter ()
 
 
     //[UserPreSize]
+    for (int n=0; n < 2; n++) {
+        addAndMakeVisible (noteGroupComponent[n] = new GroupComponent ("Note group" + String(n), TRANS("Note" + String(n+1)+ " Scaling")));
+        noteGroupComponent[n]->setTextLabelPosition (Justification::centredLeft);
+
+        addAndMakeVisible(noteBeforeLabel[n] = new Label("Note"+ String(n)+" before label ", "Before"));
+        noteBeforeLabel[n]->setJustificationType(Justification::centredTop);
+        addAndMakeVisible(noteBefore[n] = new ComboBox("Note"+ String(n)+" before"));
+        noteBefore[n]->setEditableText (false);
+        noteBefore[n]->setJustificationType (Justification::left);
+        noteBefore[n]->setColour (ComboBox::buttonColourId, Colours::blue);
+        noteBefore[n]->addItem("Flat", 1);
+        noteBefore[n]->addItem("+Linear", 2);
+        noteBefore[n]->addItem("+Linear*8", 3);
+        noteBefore[n]->addItem("+Exp", 4);
+        noteBefore[n]->addItem("-Linear", 5);
+        noteBefore[n]->addItem("-Linear*8", 6);
+        noteBefore[n]->addItem("-Exp", 7);
+        noteBefore[n]->setSelectedId(5);
+        noteBefore[n]->addListener (this);
+
+        addAndMakeVisible(noteBreakLabel[n] = new Label("Note"+ String(n)+" break label ", "Break note"));
+        noteBreakLabel[n]->setJustificationType(Justification::centredTop);
+        addAndMakeVisible(noteBreak[n] = new SliderPfm2("Note"+ String(n)+" break"));
+        noteBreak[n]->setRange (0, 127.0f, 1.0f);
+        noteBreak[n]->setSliderStyle (Slider::RotaryVerticalDrag);
+        noteBreak[n]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
+        noteBreak[n]->setDoubleClickReturnValue(true, 60.0f);
+        noteBreak[n]->setValue(60.0f, dontSendNotification);
+        noteBreak[n]->addListener (this);
+
+        addAndMakeVisible(noteAfterLabel[n] = new Label("Note"+ String(n)+" after label ", "After"));
+        noteAfterLabel[n]->setJustificationType(Justification::centredTop);
+        addAndMakeVisible(noteAfter[n] = new ComboBox("Note"+ String(n)+" after"));
+        noteAfter[n]->setEditableText (false);
+        noteAfter[n]->setJustificationType (Justification::left);
+        noteAfter[n]->setColour (ComboBox::buttonColourId, Colours::blue);
+        noteAfter[n]->addItem("Flat", 1);
+        noteAfter[n]->addItem("+Linear", 2);
+        noteAfter[n]->addItem("+Linear*8", 3);
+        noteAfter[n]->addItem("+Exp", 4);
+        noteAfter[n]->addItem("-Linear", 5);
+        noteAfter[n]->addItem("-Linear*8", 6);
+        noteAfter[n]->addItem("-Exp", 7);
+        noteAfter[n]->setSelectedId(1);
+        noteAfter[n]->addListener (this);
+    }
     //[/UserPreSize]
 
     setSize (900, 700);
@@ -318,6 +364,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
     arpDivisionCombo->setColour (ComboBox::buttonColourId, Colours::blue);
     arpDurationCombo->setColour (ComboBox::buttonColourId, Colours::blue);
     arpLatchCombo->setColour (ComboBox::buttonColourId, Colours::blue);
+
 
 
     //[/Constructor]
@@ -373,7 +420,8 @@ void PanelArpAndFilter::paint (Graphics& g)
 
 void PanelArpAndFilter::resized()
 {
-    arpGroupComponent->setBounds (proportionOfWidth (0.0567f), proportionOfHeight (0.0216f), proportionOfWidth (0.8741f), proportionOfHeight (0.4849f));
+    // 0.05 0.2 0.87 0.35
+    arpGroupComponent->setBounds (proportionOfWidth (0.0567f), proportionOfHeight (0.0216f), proportionOfWidth (0.8741f), proportionOfHeight (0.35f));
     arpBPM->setBounds (proportionOfWidth (0.0761f), proportionOfHeight (0.1871f), proportionOfWidth (0.0857f), proportionOfHeight (0.1122f));
     arpBPMLabel->setBounds (proportionOfWidth (0.0954f), proportionOfHeight (0.1496f), 40, 20);
     arpDirectionLabel->setBounds (proportionOfWidth (0.1895f), proportionOfHeight (0.1496f), 60, 20);
@@ -388,17 +436,39 @@ void PanelArpAndFilter::resized()
     arpDivisionCombo->setBounds (proportionOfWidth (0.5505f), proportionOfHeight (0.2115f), 60, 20);
     arpDurationCombo->setBounds (proportionOfWidth (0.6847f), proportionOfHeight (0.2115f), 60, 20);
     arpLatchCombo->setBounds (proportionOfWidth (0.8174f), proportionOfHeight (0.2115f), 52, 20);
-    filterGroupComponent->setBounds (proportionOfWidth (0.2559f), proportionOfHeight (0.5597f), proportionOfWidth (0.5228f), proportionOfHeight (0.2978f));
-    filterParam1Label->setBounds (proportionOfWidth (0.3555f), proportionOfHeight (0.6676f), 60, 20);
-    filterParam1Slider->setBounds (proportionOfWidth (0.3389f), proportionOfHeight (0.7036f), proportionOfWidth (0.0857f), proportionOfHeight (0.1122f));
-    filterParam2Label->setBounds (proportionOfWidth (0.4869f), proportionOfHeight (0.6676f), 60, 20);
-    filterParam2Slider->setBounds (proportionOfWidth (0.4703f), proportionOfHeight (0.7050f), proportionOfWidth (0.0857f), proportionOfHeight (0.1122f));
-    filterGainLabel->setBounds (proportionOfWidth (0.6183f), proportionOfHeight (0.6676f), 60, 20);
-    filterGainSlider->setBounds (proportionOfWidth (0.5989f), proportionOfHeight (0.7036f), proportionOfWidth (0.0857f), proportionOfHeight (0.1122f));
-    arpClockComboBox->setBounds (proportionOfWidth (0.1439f), proportionOfHeight (0.0820f), 120, 24);
     clockLabel->setBounds (proportionOfWidth (0.0968f), proportionOfHeight (0.0820f), 64, 24);
-    filterComboBox->setBounds (proportionOfWidth (0.3043f), proportionOfHeight (0.5942f), 120, 24);
+    arpClockComboBox->setBounds (proportionOfWidth (0.1439f), proportionOfHeight (0.0820f), 120, 24);
+
+    // 0.05 0.38 0.87 0.25
+    filterGroupComponent->setBounds (proportionOfWidth (0.0567f), proportionOfHeight (0.38), proportionOfWidth (0.8741f), proportionOfHeight (0.25f));
+
+    filterComboBox->setBounds (proportionOfWidth (0.1), proportionOfHeight (0.45f), 120, 24);
+
+    filterParam1Label->setBounds (proportionOfWidth (0.3555f), proportionOfHeight (0.42), 60, 20);
+    filterParam1Slider->setBounds (proportionOfWidth (0.3389f), proportionOfHeight (0.46), proportionOfWidth (0.0857f), proportionOfHeight (0.1122f));
+
+    filterParam2Label->setBounds (proportionOfWidth (0.4869f), proportionOfHeight (0.42), 60, 20);
+    filterParam2Slider->setBounds (proportionOfWidth (0.4703f), proportionOfHeight (0.46), proportionOfWidth (0.0857f), proportionOfHeight (0.1122f));
+
+    filterGainLabel->setBounds (proportionOfWidth (0.6183f), proportionOfHeight (0.42), 60, 20);
+    filterGainSlider->setBounds (proportionOfWidth (0.5989f), proportionOfHeight (0.46), proportionOfWidth (0.0857f), proportionOfHeight (0.1122f));
+
     //[UserResized] Add your own custom resize handling here..
+
+    float h = 0.7f;
+    for (int k = 0; k<2; k++) {
+        // 0.05 0.65 0.47 0.25
+        noteGroupComponent[k]->setBounds (proportionOfWidth (0.03 + .5*k), proportionOfHeight (0.65), proportionOfWidth (0.44), proportionOfHeight (0.25f));
+
+        noteBeforeLabel[k]->setBounds (proportionOfWidth (0.10f + .5*k), proportionOfHeight (h), 80, 20);
+        noteBefore[k]->setBounds (proportionOfWidth (0.10f + .5*k), proportionOfHeight (h + 0.05), 80, 20);
+
+        noteBreakLabel[k]->setBounds (proportionOfWidth (0.22f + .5*k), proportionOfHeight (h), 60, 20);
+        noteBreak[k]->setBounds (proportionOfWidth (0.22f + .5*k), proportionOfHeight (h + 0.03), proportionOfWidth (0.0857f), proportionOfHeight (0.1122f));
+
+        noteAfterLabel[k]->setBounds (proportionOfWidth (0.34f + .5*k), proportionOfHeight (h), 80, 20);
+        noteAfter[k]->setBounds (proportionOfWidth (0.34f + .5*k), proportionOfHeight (h + 0.05), 80, 20);
+    }
     //[/UserResized]
 }
 
@@ -588,6 +658,13 @@ void PanelArpAndFilter::buildParameters() {
     updateSliderParameter(filterParam1Slider);
     updateSliderParameter(filterParam2Slider);
     updateSliderParameter(filterGainSlider);
+
+
+    for (int k = 0; k<2; k++) {
+        updateComboParameter(noteBefore[k]);
+        updateSliderParameter(noteBreak[k]);
+        updateComboParameter(noteAfter[k]);
+    }
 
 }
 

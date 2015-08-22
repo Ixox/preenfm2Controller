@@ -81,6 +81,8 @@ private:
 
     // LFO
     ScopedPointer<TextButton> lfoButton [NUMBER_OF_LFO];
+    ScopedPointer<Label> lfoPhaseLabel;
+    ScopedPointer<Slider> lfoPhase[NUMBER_OF_LFO];
     ScopedPointer<ComboBox> lfoShape[NUMBER_OF_LFO];
     ScopedPointer<ComboBox> lfoExtMidiSync[NUMBER_OF_LFO];
     ScopedPointer<Slider> lfoFrequency[NUMBER_OF_LFO];

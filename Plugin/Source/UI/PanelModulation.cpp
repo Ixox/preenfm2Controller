@@ -30,7 +30,7 @@
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 const char* matrixSourceNames [] = { "None", "lfo 1", "lfo 2", "lfo 3", "Free Env 1", "Free Env 2", "Step Seq 1", "Step Seq 2",
-        "Mod Wheel", "Pit Bend", "After touch",  "Key Velocity", "Key Note1", "Key Note2", "Performance 1  ", "Performance 2", "Performance 3", "Performance 4",
+        "Mod Wheel", "Pit Bend", "After touch",  "Velocity", "Note1", "Note2", "Performance 1  ", "Performance 2", "Performance 3", "Performance 4",
         nullptr
 } ;
 
@@ -103,12 +103,21 @@ PanelModulation::PanelModulation ()
         lfoShape[k]->setJustificationType (Justification::left);
         lfoShape[k]->setColour (ComboBox::buttonColourId, Colours::blue);
         lfoShape[k]->addItem("Sin", 1);
-        lfoShape[k]->addItem("Ramp", 2);
-        lfoShape[k]->addItem("Saw", 3);
+        lfoShape[k]->addItem("Saw", 2);
+        lfoShape[k]->addItem("Triangle", 3);
         lfoShape[k]->addItem("Square", 4);
         lfoShape[k]->addItem("Random", 5);
         lfoShape[k]->setSelectedId(1);
         lfoShape[k]->addListener (this);
+
+        addAndMakeVisible(lfoPhase[k] = new SliderPfm2("LFO"+ String(k+1) + " Phase"));
+        lfoPhase[k]->setRange (0, 1.0f, .01f);
+        lfoPhase[k]->setSliderStyle (Slider::RotaryVerticalDrag);
+        lfoPhase[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
+        lfoPhase[k]->setDoubleClickReturnValue(true, 0.0f);
+        lfoPhase[k]->setValue(0, dontSendNotification);
+        lfoPhase[k]->addListener (this);
+
 
         addAndMakeVisible(lfoExtMidiSync[k] = new ComboBox("LFO"+ String(k+1) + " External Sync"));
         lfoExtMidiSync[k]->setEditableText (false);
@@ -163,13 +172,16 @@ PanelModulation::PanelModulation ()
     }
     lfoButton[0]->setToggleState(true, sendNotification);
 
-    addAndMakeVisible(lfoFrequencyLabel = new Label("LFO freq labe", "Frequency"));
+    addAndMakeVisible(lfoPhaseLabel = new Label("LFO phase label", "Phase"));
+    lfoPhaseLabel->setJustificationType(Justification::centredTop);
+
+    addAndMakeVisible(lfoFrequencyLabel = new Label("LFO freq label", "Frequency"));
     lfoFrequencyLabel->setJustificationType(Justification::centredTop);
 
-    addAndMakeVisible(lfoBiasLabel = new Label("LFO buas labe", "Bias"));
+    addAndMakeVisible(lfoBiasLabel = new Label("LFO bias label", "Bias"));
     lfoBiasLabel->setJustificationType(Justification::centredTop);
 
-    addAndMakeVisible(lfoKSynLabel = new Label("LFO ksyn labe", "Note Sync"));
+    addAndMakeVisible(lfoKSynLabel = new Label("LFO ksyn label", "Note Sync"));
     lfoKSynLabel->setJustificationType(Justification::centredTop);
 
 
@@ -324,15 +336,17 @@ void PanelModulation::resized()
     env2Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.4301f), proportionOfWidth (0.5903f), proportionOfHeight (0.1848f));
     stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6227f), proportionOfWidth (0.5903f), proportionOfHeight (0.3711f));
     //[UserResized] Add your own custom resize handling here..
-    lfoFrequencyLabel->setBounds(proportionOfWidth (0.22f),  proportionOfHeight (0.04f) , 80, 20);
-    lfoBiasLabel->setBounds(proportionOfWidth (0.35f),  proportionOfHeight (0.04f) , 80, 20);
+    lfoPhaseLabel->setBounds(proportionOfWidth (0.21f),  proportionOfHeight (0.06f) , 80, 20);
+    lfoFrequencyLabel->setBounds(proportionOfWidth (0.30f),  proportionOfHeight (0.04f) , 80, 20);
+    lfoBiasLabel->setBounds(proportionOfWidth (0.39f),  proportionOfHeight (0.04f) , 80, 20);
     lfoKSynLabel->setBounds(proportionOfWidth (0.48f),  proportionOfHeight (0.04f) , 80, 20);
     for (int k=0; k<NUMBER_OF_LFO; k++) {
         lfoButton[k]      ->setBounds(proportionOfWidth (0.02f) + 50*k, proportionOfHeight (0.035f) , 50, 20);
-        lfoShape[k]       ->setBounds(proportionOfWidth (0.05f),        proportionOfHeight (0.12f) , 80, 20);
-        lfoExtMidiSync[k] ->setBounds(proportionOfWidth (0.22f) + 10,        proportionOfHeight (0.08f) , 60, 20);
-        lfoFrequency[k]   ->setBounds(proportionOfWidth (0.22f),        proportionOfHeight (0.12f) , 80, 60);
-        lfoBias[k]        ->setBounds(proportionOfWidth (0.35f),        proportionOfHeight (0.06f) , 80, proportionOfHeight (0.16f));
+        lfoShape[k]       ->setBounds(proportionOfWidth (0.07f),        proportionOfHeight (0.12f) , 80, 20);
+        lfoPhase[k]       ->setBounds(proportionOfWidth (0.21f),        proportionOfHeight (0.10f) , 80, 60);
+        lfoExtMidiSync[k] ->setBounds(proportionOfWidth (0.30f) + 10,   proportionOfHeight (0.08f) , 60, 20);
+        lfoFrequency[k]   ->setBounds(proportionOfWidth (0.30f),        proportionOfHeight (0.12f) , 80, 60);
+        lfoBias[k]        ->setBounds(proportionOfWidth (0.39f),        proportionOfHeight (0.06f) , 80, proportionOfHeight (0.16f));
         lfoKsynOnOff[k]   ->setBounds(proportionOfWidth (0.48f) + 15,   proportionOfHeight (0.08f) , 50, 20);
         lfoKSync[k]       ->setBounds(proportionOfWidth (0.48f),        proportionOfHeight (0.12f) , 80, 60);
     }
@@ -377,6 +391,7 @@ void PanelModulation::buttonClicked (Button* buttonThatWasClicked) {
         for (int k = 0 ; k< NUMBER_OF_LFO; k++) {
             if (buttonThatWasClicked == lfoButton[k]) {
                 lfoShape[k]->setVisible(true);
+                lfoPhase[k]->setVisible(true);
                 lfoExtMidiSync[k]->setVisible(true);
                 lfoFrequency[k]->setVisible(true);
                 lfoBias[k]->setVisible(true);
@@ -385,6 +400,7 @@ void PanelModulation::buttonClicked (Button* buttonThatWasClicked) {
 
             } else {
                 lfoShape[k]->setVisible(false);
+                lfoPhase[k]->setVisible(false);
                 lfoExtMidiSync[k]->setVisible(false);
                 lfoFrequency[k]->setVisible(false);
                 lfoBias[k]->setVisible(false);
@@ -426,6 +442,7 @@ void PanelModulation::sliderValueChanged (Slider* sliderThatWasMoved) {
 void PanelModulation::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPluginUI)
 {
     // Update the value if the change comes from the UI
+    //printf("PanelModulation::sliderValueChanged (%u) : %s\n", fromPluginUI ? 1:0, sliderThatWasMoved->getName().toRawUTF8() );
     if (fromPluginUI) {
 		teragon::Parameter * parameterReady = panelParameterMap[sliderThatWasMoved->getName()];
         if (parameterReady != nullptr) {
@@ -518,6 +535,7 @@ void PanelModulation::buildParameters() {
     for (int k = 0; k < NUMBER_OF_LFO; k++) {
         updateComboParameter(lfoShape[k]);
         updateComboParameter(lfoExtMidiSync[k]);
+        updateSliderParameter(lfoPhase[k]);
         updateSliderParameter(lfoFrequency[k]);
         updateSliderParameter(lfoBias[k]);
         updateComboParameter(lfoKsynOnOff[k]);
