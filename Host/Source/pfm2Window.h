@@ -348,6 +348,8 @@ public:
     void buttonClicked (Button*) override
     {
         PopupMenu m;
+        m.addItem (5, TRANS("Quick help"));
+        m.addSeparator();
         m.addItem (1, TRANS("Midi Settings..."));
         m.addSeparator();
         m.addItem (2, TRANS("Save current state..."));
