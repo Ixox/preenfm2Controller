@@ -156,9 +156,9 @@ public:
     {
         DialogWindow::LaunchOptions o;
         o.content.setOwned (new AudioDeviceSelectorComponent (deviceManager,
-                                                              1,2,1,2,
+                                                              0,0,0,0,
                                                               true, true,
-                                                              true, true));
+                                                              true, false));
         o.content->setSize (400, 600);
 
         o.dialogTitle                   = TRANS("Midi Settings");
@@ -213,6 +213,34 @@ public:
             if (data.fromBase64Encoding (settings->getValue ("filterState")) && data.getSize() > 0)
                 processor->setStateInformation (data.getData(), (int) data.getSize());
         }
+    }
+
+    //==============================================================================
+    void quickHelp()
+    {
+
+        AlertWindow::showMessageBoxAsync (AlertWindow::InfoIcon,
+            "Quick Help",
+            "Click on Options > Midi Settings\n"
+            ". Select at least PreenFM in active midi input\n"
+            ". Select at PreenFM in midi output\n"
+            "Close the windows and start playing...\n"
+            "\n"
+            "If it does not work, check your preenfm2 settings : \n"
+            ". Usb Midi : In/Out\n"
+            ". Check midi channels 1, 2, 3 & 4\n"
+            ". Midi thru : No\n"
+            ". Receives : NRPN\n"
+            ". Send : NRPN\n",
+            "Close");
+        /*
+                                                        Component* associatedComponent = nullptr,
+                                                        ModalComponentManager::Callback* callback = nullptr);
+        AlertWindow::showMessageBox (AlertWindow::WarningIcon,
+            TRANS("Error whilst loading"),
+            TRANS("Couldn't read from the specified file!"));
+*/
+
     }
 
     //==============================================================================
@@ -363,6 +391,7 @@ public:
             case 2:  pluginHolder->askUserToSaveState(); break;
             case 3:  pluginHolder->askUserToLoadState(); break;
             case 4:  resetToDefaultState(); break;
+            case 5:  pluginHolder->quickHelp(); break;
             default: break;
         }
     }

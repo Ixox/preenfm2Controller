@@ -297,12 +297,12 @@ PanelArpAndFilter::PanelArpAndFilter ()
 
     //[UserPreSize]
     for (int n=0; n < 2; n++) {
-        addAndMakeVisible (noteGroupComponent[n] = new GroupComponent ("Note group" + String(n), TRANS("Note" + String(n+1)+ " Scaling")));
+        addAndMakeVisible (noteGroupComponent[n] = new GroupComponent ("Note group" + String(n +1), TRANS("Note" + String(n+1)+ " Scaling")));
         noteGroupComponent[n]->setTextLabelPosition (Justification::centredLeft);
 
-        addAndMakeVisible(noteBeforeLabel[n] = new Label("Note"+ String(n)+" before label ", "Before"));
+        addAndMakeVisible(noteBeforeLabel[n] = new Label("Note"+ String(n+1)+" before label ", "Before"));
         noteBeforeLabel[n]->setJustificationType(Justification::centredTop);
-        addAndMakeVisible(noteBefore[n] = new ComboBox("Note"+ String(n)+" before"));
+        addAndMakeVisible(noteBefore[n] = new ComboBox("Note"+ String(n+1)+" before"));
         noteBefore[n]->setEditableText (false);
         noteBefore[n]->setJustificationType (Justification::left);
         noteBefore[n]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -316,9 +316,9 @@ PanelArpAndFilter::PanelArpAndFilter ()
         noteBefore[n]->setSelectedId(5);
         noteBefore[n]->addListener (this);
 
-        addAndMakeVisible(noteBreakLabel[n] = new Label("Note"+ String(n)+" break label ", "Break note"));
+        addAndMakeVisible(noteBreakLabel[n] = new Label("Note"+ String(n+1)+" break label ", "Break note"));
         noteBreakLabel[n]->setJustificationType(Justification::centredTop);
-        addAndMakeVisible(noteBreak[n] = new SliderPfm2("Note"+ String(n)+" break"));
+        addAndMakeVisible(noteBreak[n] = new SliderPfm2("Note"+ String(n+1)+" break"));
         noteBreak[n]->setRange (0, 127.0f, 1.0f);
         noteBreak[n]->setSliderStyle (Slider::RotaryVerticalDrag);
         noteBreak[n]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
@@ -326,9 +326,9 @@ PanelArpAndFilter::PanelArpAndFilter ()
         noteBreak[n]->setValue(60.0f, dontSendNotification);
         noteBreak[n]->addListener (this);
 
-        addAndMakeVisible(noteAfterLabel[n] = new Label("Note"+ String(n)+" after label ", "After"));
+        addAndMakeVisible(noteAfterLabel[n] = new Label("Note"+ String(n+1)+" after label ", "After"));
         noteAfterLabel[n]->setJustificationType(Justification::centredTop);
-        addAndMakeVisible(noteAfter[n] = new ComboBox("Note"+ String(n)+" after"));
+        addAndMakeVisible(noteAfter[n] = new ComboBox("Note"+ String(n+1)+" after"));
         noteAfter[n]->setEditableText (false);
         noteAfter[n]->setJustificationType (Justification::left);
         noteAfter[n]->setColour (ComboBox::buttonColourId, Colours::blue);
