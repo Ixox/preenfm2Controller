@@ -435,7 +435,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 
     for (int n=0; n<2; n++) {
 
-        //    addAndMakeVisible(noteBefore[n] = new ComboBox("Note"+ String(n)+" before"));
+        //    addAndMakeVisible(noteBefore[n] = new ComboBox("Note"+ String(n + 1)+" before"));
         //    noteBefore[n]->setEditableText (false);
         //    noteBefore[n]->setJustificationType (Justification::left);
         //    noteBefore[n]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -449,13 +449,13 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //    noteBefore[n]->setSelectedId(1);
         //    noteBefore[n]->addListener (this);
         nrpmParam = PREENFM2_NRPN_NOTE1_BEFORE + n * 4;
-        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Note"+ String(n)+" before").toRawUTF8(), nrpmParam, 1, 1, 7, 5);
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Note"+ String(n + 1)+" before").toRawUTF8(), nrpmParam, 1, 1, 7, 5);
         newParam->addObserver(this);
         parameterSet.add(newParam);
         nrpmIndex[nrpmParam] = parameterIndex++;
 
 
-        //    addAndMakeVisible(noteBreak[n] = new SliderPfm2("Note"+ String(n)+" break"));
+        //    addAndMakeVisible(noteBreak[n] = new SliderPfm2("Note"+ String(n + 1)+" break"));
         //    noteBreak[n]->setRange (0, 127.0f, 1.0f);
         //    noteBreak[n]->setSliderStyle (Slider::RotaryVerticalDrag);
         //    noteBreak[n]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
@@ -463,12 +463,12 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //    noteBreak[n]->setValue(3.0f, dontSendNotification);
         //    noteBreak[n]->addListener (this);
         nrpmParam = PREENFM2_NRPN_NOTE1_BREAKNOTE + n * 4;
-        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Note"+ String(n)+" break").toRawUTF8(), nrpmParam, 1, 0, 127, 60);
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Note"+ String(n + 1)+" break").toRawUTF8(), nrpmParam, 1, 0, 127, 60);
         newParam->addObserver(this);
         parameterSet.add(newParam);
         nrpmIndex[nrpmParam] = parameterIndex++;
 
-        //    addAndMakeVisible(noteAfter[n] = new ComboBox("Note"+ String(n)+" after"));
+        //    addAndMakeVisible(noteAfter[n] = new ComboBox("Note"+ String(n + 1)+" after"));
         //    noteAfter[n]->setEditableText (false);
         //    noteAfter[n]->setJustificationType (Justification::left);
         //    noteAfter[n]->setColour (ComboBox::buttonColourId, Colours::blue);
@@ -482,7 +482,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //    noteAfter[n]->setSelectedId(1);
         //    noteAfter[n]->addListener (this);
         nrpmParam = PREENFM2_NRPN_NOTE1_AFTER + n * 4;
-        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Note"+ String(n)+" after").toRawUTF8(), nrpmParam, 1, 1, 7, 1);
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Note"+ String(n + 1)+" after").toRawUTF8(), nrpmParam, 1, 1, 7, 1);
         newParam->addObserver(this);
         parameterSet.add(newParam);
         nrpmIndex[nrpmParam] = parameterIndex++;
