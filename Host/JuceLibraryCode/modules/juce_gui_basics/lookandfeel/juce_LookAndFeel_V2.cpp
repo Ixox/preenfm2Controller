@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -69,6 +69,8 @@ LookAndFeel_V2::LookAndFeel_V2()
         TextButton::textColourOffId,                0xff000000,
 
         ToggleButton::textColourId,                 0xff000000,
+        ToggleButton::tickColourId,                 0xff000000,
+        ToggleButton::tickDisabledColourId,         0xff808080,
 
         TextEditor::backgroundColourId,             0xffffffff,
         TextEditor::textColourId,                   0xff000000,
@@ -91,6 +93,8 @@ LookAndFeel_V2::LookAndFeel_V2()
         TreeView::backgroundColourId,               0x00000000,
         TreeView::dragAndDropIndicatorColourId,     0x80ff0000,
         TreeView::selectedItemBackgroundColourId,   0x00000000,
+        TreeView::oddItemsColourId,                 0x00000000,
+        TreeView::evenItemsColourId,                0x00000000,
 
         PopupMenu::backgroundColourId,              0xffffffff,
         PopupMenu::textColourId,                    0xff000000,
@@ -110,6 +114,9 @@ LookAndFeel_V2::LookAndFeel_V2()
         TextPropertyComponent::backgroundColourId,  0xffffffff,
         TextPropertyComponent::textColourId,        0xff000000,
         TextPropertyComponent::outlineColourId,     standardOutlineColour,
+
+        BooleanPropertyComponent::backgroundColourId, 0xffffffff,
+        BooleanPropertyComponent::outlineColourId,  standardOutlineColour,
 
         ListBox::backgroundColourId,                0xffffffff,
         ListBox::outlineColourId,                   standardOutlineColour,
@@ -262,13 +269,12 @@ void LookAndFeel_V2::drawButtonText (Graphics& g, TextButton& button, bool /*isM
     const int fontHeight = roundToInt (font.getHeight() * 0.6f);
     const int leftIndent  = jmin (fontHeight, 2 + cornerSize / (button.isConnectedOnLeft() ? 4 : 2));
     const int rightIndent = jmin (fontHeight, 2 + cornerSize / (button.isConnectedOnRight() ? 4 : 2));
+    const int textWidth = button.getWidth() - leftIndent - rightIndent;
 
-    g.drawFittedText (button.getButtonText(),
-                      leftIndent,
-                      yIndent,
-                      button.getWidth() - leftIndent - rightIndent,
-                      button.getHeight() - yIndent * 2,
-                      Justification::centred, 2);
+    if (textWidth > 0)
+        g.drawFittedText (button.getButtonText(),
+                          leftIndent, yIndent, textWidth, button.getHeight() - yIndent * 2,
+                          Justification::centred, 2);
 }
 
 void LookAndFeel_V2::drawTickBox (Graphics& g, Component& component,
@@ -293,10 +299,11 @@ void LookAndFeel_V2::drawTickBox (Graphics& g, Component& component,
         tick.lineTo (3.0f, 6.0f);
         tick.lineTo (6.0f, 0.0f);
 
-        g.setColour (isEnabled ? Colours::black : Colours::grey);
+        g.setColour (component.findColour (isEnabled ? ToggleButton::tickColourId
+                                                     : ToggleButton::tickDisabledColourId));
 
         const AffineTransform trans (AffineTransform::scale (w / 9.0f, h / 9.0f)
-                                         .translated (x, y));
+                                                     .translated (x, y));
 
         g.strokePath (tick, PathStrokeType (2.5f), trans);
     }
@@ -482,9 +489,28 @@ int LookAndFeel_V2::getAlertBoxWindowFlags()
             | ComponentPeer::windowHasDropShadow;
 }
 
+Array<int> LookAndFeel_V2::getWidthsForTextButtons (AlertWindow&, const Array<TextButton*>& buttons)
+{
+    const int n = buttons.size();
+    Array<int> buttonWidths;
+
+    const int buttonHeight = getAlertWindowButtonHeight();
+
+    for (int i = 0; i < n; ++i)
+        buttonWidths.add (getTextButtonWidthToFitText (*buttons.getReference (i), buttonHeight));
+
+    return buttonWidths;
+}
+
 int LookAndFeel_V2::getAlertWindowButtonHeight()
 {
     return 28;
+}
+
+Font LookAndFeel_V2::getAlertWindowTitleFont()
+{
+    Font messageFont = getAlertWindowMessageFont();
+    return messageFont.withHeight (messageFont.getHeight() * 1.1f).boldened();
 }
 
 Font LookAndFeel_V2::getAlertWindowMessageFont()
@@ -1001,6 +1027,16 @@ void LookAndFeel_V2::drawPopupMenuItem (Graphics& g, const Rectangle<int>& area,
     }
 }
 
+void LookAndFeel_V2::drawPopupMenuSectionHeader (Graphics& g, const Rectangle<int>& area, const String& sectionName)
+{
+    g.setFont (getPopupMenuFont().boldened());
+    g.setColour (findColour (PopupMenu::headerTextColourId));
+
+    g.drawFittedText (sectionName,
+                      area.getX() + 12, area.getY(), area.getWidth() - 16, (int) (area.getHeight() * 0.8f),
+                      Justification::bottomLeft, 1);
+}
+
 //==============================================================================
 int LookAndFeel_V2::getMenuWindowFlags()
 {
@@ -1053,6 +1089,13 @@ void LookAndFeel_V2::drawMenuBarItem (Graphics& g, int width, int height,
     g.setFont (getMenuBarFont (menuBar, itemIndex, itemText));
     g.drawFittedText (itemText, 0, 0, width, height, Justification::centred, 1);
 }
+
+Component* LookAndFeel_V2::getParentComponentForMenuOptions (const PopupMenu::Options& options)
+{
+    return options.getParentComponent();
+}
+
+void LookAndFeel_V2::preparePopupMenuWindow (Component&) {}
 
 //==============================================================================
 void LookAndFeel_V2::fillTextEditorBackground (Graphics& g, int /*width*/, int /*height*/, TextEditor& textEditor)
@@ -1148,7 +1191,7 @@ Font LookAndFeel_V2::getComboBoxFont (ComboBox& box)
 
 Label* LookAndFeel_V2::createComboBoxTextBox (ComboBox&)
 {
-    return new Label (String::empty, String::empty);
+    return new Label (String(), String());
 }
 
 void LookAndFeel_V2::positionComboBoxText (ComboBox& box, Label& label)
@@ -1384,7 +1427,6 @@ void LookAndFeel_V2::drawRotarySlider (Graphics& g, int x, int y, int width, int
             g.fillPath (filledArc);
         }
 
-        if (thickness > 0)
         {
             const float innerRadius = radius * 0.2f;
             Path p;
@@ -1427,13 +1469,13 @@ void LookAndFeel_V2::drawRotarySlider (Graphics& g, int x, int y, int width, int
 
 Button* LookAndFeel_V2::createSliderButton (Slider&, const bool isIncrement)
 {
-    return new TextButton (isIncrement ? "+" : "-", String::empty);
+    return new TextButton (isIncrement ? "+" : "-", String());
 }
 
 class LookAndFeel_V2::SliderLabelComp  : public Label
 {
 public:
-    SliderLabelComp() : Label (String::empty, String::empty) {}
+    SliderLabelComp() : Label (String(), String()) {}
 
     void mouseWheelMove (const MouseEvent&, const MouseWheelDetails&) {}
 };
@@ -1443,24 +1485,20 @@ Label* LookAndFeel_V2::createSliderTextBox (Slider& slider)
     Label* const l = new SliderLabelComp();
 
     l->setJustificationType (Justification::centred);
+    l->setKeyboardType (TextInputTarget::decimalKeyboard);
 
     l->setColour (Label::textColourId, slider.findColour (Slider::textBoxTextColourId));
-
     l->setColour (Label::backgroundColourId,
                   (slider.getSliderStyle() == Slider::LinearBar || slider.getSliderStyle() == Slider::LinearBarVertical)
                             ? Colours::transparentBlack
                             : slider.findColour (Slider::textBoxBackgroundColourId));
     l->setColour (Label::outlineColourId, slider.findColour (Slider::textBoxOutlineColourId));
-
     l->setColour (TextEditor::textColourId, slider.findColour (Slider::textBoxTextColourId));
-
     l->setColour (TextEditor::backgroundColourId,
                   slider.findColour (Slider::textBoxBackgroundColourId)
                         .withAlpha ((slider.getSliderStyle() == Slider::LinearBar || slider.getSliderStyle() == Slider::LinearBarVertical)
                                         ? 0.7f : 1.0f));
-
     l->setColour (TextEditor::outlineColourId, slider.findColour (Slider::textBoxOutlineColourId));
-
     l->setColour (TextEditor::highlightColourId, slider.findColour (Slider::textBoxHighlightColourId));
 
     return l;
@@ -1485,12 +1523,86 @@ int LookAndFeel_V2::getSliderPopupPlacement (Slider&)
 }
 
 //==============================================================================
-void LookAndFeel_V2::getTooltipSize (const String& tipText, int& width, int& height)
+Slider::SliderLayout LookAndFeel_V2::getSliderLayout (Slider& slider)
+{
+    // 1. compute the actually visible textBox size from the slider textBox size and some additional constraints
+
+    int minXSpace = 0;
+    int minYSpace = 0;
+
+    Slider::TextEntryBoxPosition textBoxPos = slider.getTextBoxPosition();
+
+    if (textBoxPos == Slider::TextBoxLeft || textBoxPos == Slider::TextBoxRight)
+        minXSpace = 30;
+    else
+        minYSpace = 15;
+
+    Rectangle<int> localBounds = slider.getLocalBounds();
+
+    const int textBoxWidth = jmax (0, jmin (slider.getTextBoxWidth(),  localBounds.getWidth() - minXSpace));
+    const int textBoxHeight = jmax (0, jmin (slider.getTextBoxHeight(), localBounds.getHeight() - minYSpace));
+
+    Slider::SliderLayout layout;
+
+    // 2. set the textBox bounds
+
+    if (textBoxPos != Slider::NoTextBox)
+    {
+        if (slider.isBar())
+        {
+            layout.textBoxBounds = localBounds;
+        }
+        else
+        {
+            layout.textBoxBounds.setWidth (textBoxWidth);
+            layout.textBoxBounds.setHeight (textBoxHeight);
+
+            if (textBoxPos == Slider::TextBoxLeft)           layout.textBoxBounds.setX (0);
+            else if (textBoxPos == Slider::TextBoxRight)     layout.textBoxBounds.setX (localBounds.getWidth() - textBoxWidth);
+            else /* above or below -> centre horizontally */ layout.textBoxBounds.setX ((localBounds.getWidth() - textBoxWidth) / 2);
+
+            if (textBoxPos == Slider::TextBoxAbove)          layout.textBoxBounds.setY (0);
+            else if (textBoxPos == Slider::TextBoxBelow)     layout.textBoxBounds.setY (localBounds.getHeight() - textBoxHeight);
+            else /* left or right -> centre vertically */    layout.textBoxBounds.setY ((localBounds.getHeight() - textBoxHeight) / 2);
+        }
+    }
+
+    // 3. set the slider bounds
+
+    layout.sliderBounds = localBounds;
+
+    if (slider.isBar())
+    {
+        layout.sliderBounds.reduce (1, 1);   // bar border
+    }
+    else
+    {
+        if (textBoxPos == Slider::TextBoxLeft)       layout.sliderBounds.removeFromLeft (textBoxWidth);
+        else if (textBoxPos == Slider::TextBoxRight) layout.sliderBounds.removeFromRight (textBoxWidth);
+        else if (textBoxPos == Slider::TextBoxAbove) layout.sliderBounds.removeFromTop (textBoxHeight);
+        else if (textBoxPos == Slider::TextBoxBelow) layout.sliderBounds.removeFromBottom (textBoxHeight);
+
+        const int thumbIndent = getSliderThumbRadius (slider);
+
+        if (slider.isHorizontal())    layout.sliderBounds.reduce (thumbIndent, 0);
+        else if (slider.isVertical()) layout.sliderBounds.reduce (0, thumbIndent);
+    }
+
+    return layout;
+}
+
+//==============================================================================
+Rectangle<int> LookAndFeel_V2::getTooltipBounds (const String& tipText, Point<int> screenPos, Rectangle<int> parentArea)
 {
     const TextLayout tl (LookAndFeelHelpers::layoutTooltipText (tipText, Colours::black));
 
-    width  = (int) (tl.getWidth() + 14.0f);
-    height = (int) (tl.getHeight() + 6.0f);
+    const int w = (int) (tl.getWidth() + 14.0f);
+    const int h = (int) (tl.getHeight() + 6.0f);
+
+    return Rectangle<int> (screenPos.x > parentArea.getCentreX() ? screenPos.x - (w + 12) : screenPos.x + 24,
+                           screenPos.y > parentArea.getCentreY() ? screenPos.y - (h + 6)  : screenPos.y + 6,
+                           w, h)
+             .constrainedWithin (parentArea);
 }
 
 void LookAndFeel_V2::drawTooltip (Graphics& g, const String& text, int width, int height)
@@ -1517,7 +1629,7 @@ void LookAndFeel_V2::layoutFilenameComponent (FilenameComponent& filenameComp,
 {
     browseButton->setSize (80, filenameComp.getHeight());
 
-    if (TextButton* const tb = dynamic_cast <TextButton*> (browseButton))
+    if (TextButton* const tb = dynamic_cast<TextButton*> (browseButton))
         tb->changeWidthToFitText();
 
     browseButton->setTopRightPosition (filenameComp.getWidth(), 0);
@@ -1631,6 +1743,9 @@ void LookAndFeel_V2::drawDocumentWindowTitleBar (DocumentWindow& window, Graphic
                                                  int w, int h, int titleSpaceX, int titleSpaceW,
                                                  const Image* icon, bool drawTitleTextOnLeft)
 {
+    if (w * h == 0)
+        return;
+
     const bool isActive = window.isActiveWindow();
 
     g.setGradientFill (ColourGradient (window.getBackgroundColour(),
@@ -2357,6 +2472,10 @@ void LookAndFeel_V2::drawCallOutBoxBackground (CallOutBox& box, Graphics& g,
     g.strokePath (path, PathStrokeType (2.0f));
 }
 
+int LookAndFeel_V2::getCallOutBoxBorderSize (const CallOutBox&)
+{
+    return 20;
+}
 
 //==============================================================================
 AttributedString LookAndFeel_V2::createFileChooserHeaderText (const String& title,
@@ -2483,7 +2602,7 @@ void LookAndFeel_V2::layoutFileBrowserComponent (FileBrowserComponent& browserCo
 
     y += controlsHeight + 4;
 
-    if (Component* const listAsComp = dynamic_cast <Component*> (fileListComponent))
+    if (Component* const listAsComp = dynamic_cast<Component*> (fileListComponent))
     {
         listAsComp->setBounds (x, y, w, browserComp.getHeight() - y - bottomSectionHeight);
         y = listAsComp->getBottom() + 4;
@@ -2492,7 +2611,7 @@ void LookAndFeel_V2::layoutFileBrowserComponent (FileBrowserComponent& browserCo
     filenameBox->setBounds (x + 50, y, w - 50, controlsHeight);
 }
 
-// Pulls a drawable out of compressed valuetree data..
+// Pulls a drawable out of compressed ValueTree data..
 static Drawable* loadDrawableFromData (const void* data, size_t numBytes)
 {
     MemoryInputStream m (data, numBytes, false);

@@ -4,8 +4,8 @@
     project - if you alter its contents, your changes may be overwritten!
 
     There's a section below where you can add your own custom code safely, and the
-    Introjucer will preserve the contents of that block, but the best way to change
-    any of these definitions is by using the Introjucer's project settings.
+    Projucer will preserve the contents of that block, but the best way to change
+    any of these definitions is by using the Projucer's project settings.
 
     Any commented-out settings will assume their default values.
 
@@ -23,20 +23,30 @@
 // [END_USER_CODE_SECTION]
 
 //==============================================================================
-#define JUCE_MODULE_AVAILABLE_juce_audio_basics             1
-#define JUCE_MODULE_AVAILABLE_juce_audio_devices            1
-#define JUCE_MODULE_AVAILABLE_juce_audio_formats            1
-#define JUCE_MODULE_AVAILABLE_juce_audio_plugin_client      1
-#define JUCE_MODULE_AVAILABLE_juce_audio_processors         1
-#define JUCE_MODULE_AVAILABLE_juce_audio_utils              1
-#define JUCE_MODULE_AVAILABLE_juce_core                     1
-#define JUCE_MODULE_AVAILABLE_juce_cryptography             1
-#define JUCE_MODULE_AVAILABLE_juce_data_structures          1
-#define JUCE_MODULE_AVAILABLE_juce_events                   1
-#define JUCE_MODULE_AVAILABLE_juce_graphics                 1
-#define JUCE_MODULE_AVAILABLE_juce_gui_basics               1
-#define JUCE_MODULE_AVAILABLE_juce_gui_extra                1
-#define JUCE_MODULE_AVAILABLE_juce_opengl                   1
+#define JUCE_MODULE_AVAILABLE_juce_audio_basics          1
+#define JUCE_MODULE_AVAILABLE_juce_audio_devices         1
+#define JUCE_MODULE_AVAILABLE_juce_audio_formats         1
+#define JUCE_MODULE_AVAILABLE_juce_audio_processors      1
+#define JUCE_MODULE_AVAILABLE_juce_audio_utils           1
+#define JUCE_MODULE_AVAILABLE_juce_core                  1
+#define JUCE_MODULE_AVAILABLE_juce_cryptography          1
+#define JUCE_MODULE_AVAILABLE_juce_data_structures       1
+#define JUCE_MODULE_AVAILABLE_juce_events                1
+#define JUCE_MODULE_AVAILABLE_juce_graphics              1
+#define JUCE_MODULE_AVAILABLE_juce_gui_basics            1
+#define JUCE_MODULE_AVAILABLE_juce_gui_extra             1
+#define JUCE_MODULE_AVAILABLE_juce_opengl                1
+
+//==============================================================================
+#ifndef    JUCE_STANDALONE_APPLICATION
+ #ifdef JucePlugin_Build_Standalone
+  #define  JUCE_STANDALONE_APPLICATION JucePlugin_Build_Standalone
+ #else
+  #define  JUCE_STANDALONE_APPLICATION 1
+ #endif
+#endif
+
+#define JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED 1
 
 //==============================================================================
 // juce_audio_devices flags:
@@ -47,6 +57,10 @@
 
 #ifndef    JUCE_WASAPI
  //#define JUCE_WASAPI
+#endif
+
+#ifndef    JUCE_WASAPI_EXCLUSIVE
+ //#define JUCE_WASAPI_EXCLUSIVE
 #endif
 
 #ifndef    JUCE_DIRECTSOUND
@@ -63,14 +77,6 @@
 
 #ifndef    JUCE_USE_ANDROID_OPENSLES
  //#define JUCE_USE_ANDROID_OPENSLES
-#endif
-
-#ifndef    JUCE_USE_CDREADER
- //#define JUCE_USE_CDREADER
-#endif
-
-#ifndef    JUCE_USE_CDBURNER
- //#define JUCE_USE_CDBURNER
 #endif
 
 //==============================================================================
@@ -112,6 +118,17 @@
 #endif
 
 //==============================================================================
+// juce_audio_utils flags:
+
+#ifndef    JUCE_USE_CDREADER
+ //#define JUCE_USE_CDREADER
+#endif
+
+#ifndef    JUCE_USE_CDBURNER
+ //#define JUCE_USE_CDBURNER
+#endif
+
+//==============================================================================
 // juce_core flags:
 
 #ifndef    JUCE_FORCE_DEBUG
@@ -132,6 +149,18 @@
 
 #ifndef    JUCE_INCLUDE_ZLIB_CODE
  //#define JUCE_INCLUDE_ZLIB_CODE
+#endif
+
+#ifndef    JUCE_USE_CURL
+ //#define JUCE_USE_CURL
+#endif
+
+#ifndef    JUCE_CATCH_UNHANDLED_EXCEPTIONS
+ //#define JUCE_CATCH_UNHANDLED_EXCEPTIONS
+#endif
+
+#ifndef    JUCE_ALLOW_STATIC_NULL_VARIABLES
+ //#define JUCE_ALLOW_STATIC_NULL_VARIABLES
 #endif
 
 //==============================================================================

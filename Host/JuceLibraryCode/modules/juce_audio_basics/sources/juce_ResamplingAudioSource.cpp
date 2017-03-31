@@ -2,36 +2,42 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2016 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   Permission is granted to use this software under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license/
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   Permission to use, copy, modify, and/or distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH REGARD
+   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+   FITNESS. IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT,
+   OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+   USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+   TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+   OF THIS SOFTWARE.
 
-   ------------------------------------------------------------------------------
+   -----------------------------------------------------------------------------
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   To release a closed-source product which uses other parts of JUCE not
+   licensed under the ISC terms, commercial licenses are available: visit
+   www.juce.com for more information.
 
   ==============================================================================
 */
 
 ResamplingAudioSource::ResamplingAudioSource (AudioSource* const inputSource,
                                               const bool deleteInputWhenDeleted,
-                                              const int numChannels_)
+                                              const int channels)
     : input (inputSource, deleteInputWhenDeleted),
       ratio (1.0),
       lastRatio (1.0),
       bufferPos (0),
       sampsInBuffer (0),
       subSampleOffset (0),
-      numChannels (numChannels_)
+      numChannels (channels)
 {
     jassert (input != nullptr);
     zeromem (coefficients, sizeof (coefficients));
@@ -47,23 +53,29 @@ void ResamplingAudioSource::setResamplingRatio (const double samplesInPerOutputS
     ratio = jmax (0.0, samplesInPerOutputSample);
 }
 
-void ResamplingAudioSource::prepareToPlay (int samplesPerBlockExpected,
-                                           double sampleRate)
+void ResamplingAudioSource::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
 {
     const SpinLock::ScopedLockType sl (ratioLock);
 
-    input->prepareToPlay (samplesPerBlockExpected, sampleRate);
+    const int scaledBlockSize = roundToInt (samplesPerBlockExpected * ratio);
+    input->prepareToPlay (scaledBlockSize, sampleRate * ratio);
 
-    buffer.setSize (numChannels, roundToInt (samplesPerBlockExpected * ratio) + 32);
-    buffer.clear();
-    sampsInBuffer = 0;
-    bufferPos = 0;
-    subSampleOffset = 0.0;
+    buffer.setSize (numChannels, scaledBlockSize + 32);
 
     filterStates.calloc ((size_t) numChannels);
     srcBuffers.calloc ((size_t) numChannels);
     destBuffers.calloc ((size_t) numChannels);
     createLowPass (ratio);
+
+    flushBuffers();
+}
+
+void ResamplingAudioSource::flushBuffers()
+{
+    buffer.clear();
+    bufferPos = 0;
+    sampsInBuffer = 0;
+    subSampleOffset = 0.0;
     resetFilters();
 }
 
@@ -88,7 +100,7 @@ void ResamplingAudioSource::getNextAudioBlock (const AudioSourceChannelInfo& inf
         lastRatio = localRatio;
     }
 
-    const int sampsNeeded = roundToInt (info.numSamples * localRatio) + 2;
+    const int sampsNeeded = roundToInt (info.numSamples * localRatio) + 3;
 
     int bufferSize = buffer.getNumSamples();
 
@@ -133,8 +145,11 @@ void ResamplingAudioSource::getNextAudioBlock (const AudioSourceChannelInfo& inf
     }
 
     int nextPos = (bufferPos + 1) % bufferSize;
+
     for (int m = info.numSamples; --m >= 0;)
     {
+        jassert (sampsInBuffer > 0 && nextPos != endOfBufferPos);
+
         const float alpha = (float) subSampleOffset;
 
         for (int channel = 0; channel < channelsToProcess; ++channel)
@@ -142,8 +157,6 @@ void ResamplingAudioSource::getNextAudioBlock (const AudioSourceChannelInfo& inf
                                         + alpha * (srcBuffers[channel][nextPos] - srcBuffers[channel][bufferPos]);
 
         subSampleOffset += localRatio;
-
-        jassert (sampsInBuffer > 0);
 
         while (subSampleOffset >= 1.0)
         {
@@ -225,7 +238,8 @@ void ResamplingAudioSource::setFilterCoefficients (double c1, double c2, double 
 
 void ResamplingAudioSource::resetFilters()
 {
-    filterStates.clear ((size_t) numChannels);
+    if (filterStates != nullptr)
+        filterStates.clear ((size_t) numChannels);
 }
 
 void ResamplingAudioSource::applyFilter (float* samples, int num, FilterState& fs)

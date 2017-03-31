@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -53,7 +53,8 @@
 
     The call-out will resize and position itself when the content changes size.
 */
-class JUCE_API  CallOutBox    : public Component
+class JUCE_API  CallOutBox    : public Component,
+                                private Timer
 {
 public:
     //==============================================================================
@@ -67,8 +68,8 @@ public:
         @param areaToPointTo        the area that the call-out's arrow should point towards. If
                                     a parentComponent is supplied, then this is relative to that
                                     parent; otherwise, it's a global screen coord.
-        @param parentComponent      if non-zero, this is the component to add the call-out to. If
-                                    this is a nullptr, the call-out will be added to the desktop.
+        @param parentComponent      if not a nullptr, this is the component to add the call-out to.
+                                    If this is a nullptr, the call-out will be added to the desktop.
     */
     CallOutBox (Component& contentComponent,
                 const Rectangle<int>& areaToPointTo,
@@ -111,8 +112,8 @@ public:
         @param areaToPointTo        the area that the call-out's arrow should point towards. If
                                     a parentComponent is supplied, then this is relative to that
                                     parent; otherwise, it's a global screen coord.
-        @param parentComponent      if non-zero, this is the component to add the call-out to. If
-                                    this is a nullptr, the call-out will be added to the desktop.
+        @param parentComponent      if not a nullptr, this is the component to add the call-out to.
+                                    If this is a nullptr, the call-out will be added to the desktop.
     */
     static CallOutBox& launchAsynchronously (Component* contentComponent,
                                              const Rectangle<int>& areaToPointTo,
@@ -123,13 +124,24 @@ public:
     */
     void dismiss();
 
+    /** Determines whether the mouse events for clicks outside the calloutbox are
+        consumed, or allowed to arrive at the other component that they were aimed at.
+
+        By default this is false, so that when you click on something outside the calloutbox,
+        that event will also be sent to the component that was clicked on. If you set it to
+        true, then the first click will always just dismiss the box and not be sent to
+        anything else.
+    */
+    void setDismissalMouseClicksAreAlwaysConsumed (bool shouldAlwaysBeConsumed) noexcept;
+
     //==============================================================================
     /** This abstract base class is implemented by LookAndFeel classes. */
     struct JUCE_API  LookAndFeelMethods
     {
         virtual ~LookAndFeelMethods() {}
 
-        virtual void drawCallOutBoxBackground (CallOutBox&, Graphics&, const Path&, Image& cachedImage) = 0;
+        virtual void drawCallOutBoxBackground (CallOutBox&, Graphics&, const Path&, Image&) = 0;
+        virtual int getCallOutBoxBorderSize (const CallOutBox&) = 0;
     };
 
     //==============================================================================
@@ -160,8 +172,12 @@ private:
     Point<float> targetPoint;
     Rectangle<int> availableArea, targetArea;
     Image background;
+    bool dismissalMouseClicksAreAlwaysConsumed;
+
+    Time creationTime;
 
     void refreshPath();
+    void timerCallback() override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CallOutBox)
 };

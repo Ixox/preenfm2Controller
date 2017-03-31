@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -26,13 +26,14 @@ SliderPropertyComponent::SliderPropertyComponent (const String& name,
                                                   const double rangeMin,
                                                   const double rangeMax,
                                                   const double interval,
-                                                  const double skewFactor)
+                                                  const double skewFactor,
+                                                  bool symmetricSkew)
     : PropertyComponent (name)
 {
     addAndMakeVisible (slider);
 
     slider.setRange (rangeMin, rangeMax, interval);
-    slider.setSkewFactor (skewFactor);
+    slider.setSkewFactor (skewFactor, symmetricSkew);
     slider.setSliderStyle (Slider::LinearBar);
 
     slider.addListener (this);
@@ -43,13 +44,14 @@ SliderPropertyComponent::SliderPropertyComponent (const Value& valueToControl,
                                                   const double rangeMin,
                                                   const double rangeMax,
                                                   const double interval,
-                                                  const double skewFactor)
+                                                  const double skewFactor,
+                                                  bool symmetricSkew)
     : PropertyComponent (name)
 {
     addAndMakeVisible (slider);
 
     slider.setRange (rangeMin, rangeMax, interval);
-    slider.setSkewFactor (skewFactor);
+    slider.setSkewFactor (skewFactor, symmetricSkew);
     slider.setSliderStyle (Slider::LinearBar);
 
     slider.getValueObject().referTo (valueToControl);

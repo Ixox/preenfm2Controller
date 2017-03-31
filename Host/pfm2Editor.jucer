@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="I4cnWy" name="pfm2Editor" projectType="guiapp" version="0.4"
+<JUCERPROJECT id="I4cnWy" name="pfm2Editor" projectType="guiapp" version="0.5"
               bundleIdentifier="com.ixox.pfm2Editor" includeBinaryInAppConfig="1"
-              jucerVersion="3.1.0" defines="" companyName="Xavier Hosxe" companyWebsite="http://www.preenfm.net"
+              jucerVersion="4.3.1" defines="" companyName="Xavier Hosxe" companyWebsite="http://www.preenfm.net"
               companyEmail="preenfm1@gmail.com">
   <MAINGROUP id="c6LJM5" name="pfm2Editor">
     <GROUP id="{4109EA71-F7BE-3C72-D039-241F993FAEB9}" name="Source">

@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -32,13 +32,10 @@ class AllComponentRepainter  : private Timer,
                                private DeletedAtShutdown
 {
 public:
-    AllComponentRepainter() {}
+    AllComponentRepainter()  {}
+    ~AllComponentRepainter() { clearSingletonInstance(); }
 
-    static AllComponentRepainter& getInstance()
-    {
-        static AllComponentRepainter* instance = new AllComponentRepainter();
-        return *instance;
-    }
+    juce_DeclareSingleton (AllComponentRepainter, false)
 
     void trigger()
     {
@@ -51,30 +48,52 @@ private:
     {
         stopTimer();
 
+        Array<Component*> alreadyDone;
+
         for (int i = TopLevelWindow::getNumTopLevelWindows(); --i >= 0;)
             if (Component* c = TopLevelWindow::getTopLevelWindow(i))
-                repaintAndResizeAllComps (c);
+                repaintAndResizeAllComps (c, alreadyDone);
+
+        Desktop& desktop = Desktop::getInstance();
+
+        for (int i = desktop.getNumComponents(); --i >= 0;)
+            if (Component* c = desktop.getComponent(i))
+                repaintAndResizeAllComps (c, alreadyDone);
     }
 
-    static void repaintAndResizeAllComps (Component::SafePointer<Component> c)
+    static void repaintAndResizeAllComps (Component::SafePointer<Component> c,
+                                          Array<Component*>& alreadyDone)
     {
-        if (c->isVisible())
+        if (c->isVisible() && ! alreadyDone.contains (c))
         {
             c->repaint();
             c->resized();
 
             for (int i = c->getNumChildComponents(); --i >= 0;)
-                if (c != nullptr)
-                    if (Component* child = c->getChildComponent(i))
-                        repaintAndResizeAllComps (child);
+            {
+                if (Component* child = c->getChildComponent(i))
+                {
+                    repaintAndResizeAllComps (child, alreadyDone);
+                    alreadyDone.add (child);
+                }
+
+                if (c == nullptr)
+                    break;
+            }
         }
     }
 };
 
+juce_ImplementSingleton (AllComponentRepainter)
+juce_ImplementSingleton (ValueList)
+
 //==============================================================================
 int64 parseInt (String s)
 {
-    s = s.retainCharacters ("0123456789abcdefABCDEFx");
+    s = s.trimStart();
+
+    if (s.startsWithChar ('-'))
+        return -parseInt (s.substring (1));
 
     if (s.startsWith ("0x"))
         return s.substring(2).getHexValue64();
@@ -117,9 +136,12 @@ LivePropertyEditorBase::LivePropertyEditorBase (LiveValueBase& v, CodeDocument& 
 
     name.setFont (13.0f);
     name.setText (v.name, dontSendNotification);
+    valueEditor.setMultiLine (v.isString());
+    valueEditor.setReturnKeyStartsNewLine (v.isString());
     valueEditor.setText (v.getStringValue (wasHex), dontSendNotification);
     valueEditor.addListener (this);
     sourceEditor.setReadOnly (true);
+    sourceEditor.setFont (sourceEditor.getFont().withHeight (13.0f));
     resetButton.addListener (this);
 }
 
@@ -138,11 +160,17 @@ void LivePropertyEditorBase::resized()
     Rectangle<int> top (left.removeFromTop (25));
     resetButton.setBounds (top.removeFromRight (35).reduced (0, 3));
     name.setBounds (top);
-    valueEditor.setBounds (left.removeFromTop (25));
-    left.removeFromTop (2);
 
     if (customComp != nullptr)
+    {
+        valueEditor.setBounds (left.removeFromTop (25));
+        left.removeFromTop (2);
         customComp->setBounds (left);
+    }
+    else
+    {
+        valueEditor.setBounds (left);
+    }
 
     r.removeFromLeft (4);
     sourceEditor.setBounds (r);
@@ -167,7 +195,7 @@ void LivePropertyEditorBase::applyNewValue (const String& s)
     selectOriginalValue();
 
     valueEditor.setText (s, dontSendNotification);
-    AllComponentRepainter::getInstance().trigger();
+    AllComponentRepainter::getInstance()->trigger();
 }
 
 void LivePropertyEditorBase::selectOriginalValue()
@@ -325,14 +353,8 @@ public:
 };
 
 //==============================================================================
-ValueList::ValueList() {}
-ValueList::~ValueList() {}
-
-ValueList& ValueList::getInstance()
-{
-    static ValueList* i = new ValueList();
-    return *i;
-}
+ValueList::ValueList()  {}
+ValueList::~ValueList() { clearSingletonInstance(); }
 
 void ValueList::addValue (LiveValueBase* v)
 {
@@ -373,7 +395,7 @@ struct ColourEditorComp  : public Component,
 
     Colour getColour() const
     {
-        return Colour ((int) parseInt (editor.value.getStringValue (false)));
+        return Colour ((uint32) parseInt (editor.value.getStringValue (false)));
     }
 
     void paint (Graphics& g) override
@@ -412,10 +434,9 @@ Component* createColourEditor (LivePropertyEditorBase& editor)
 }
 
 //==============================================================================
-class SliderComp   : public Component,
-                     private Slider::Listener
+struct SliderComp   : public Component,
+                      private Slider::Listener
 {
-public:
     SliderComp (LivePropertyEditorBase& e, bool useFloat)
         : editor (e), isFloat (useFloat)
     {
@@ -425,7 +446,7 @@ public:
         slider.addListener (this);
     }
 
-    void updateRange()
+    virtual void updateRange()
     {
         double v = isFloat ? parseDouble (editor.value.getStringValue (false))
                            : (double) parseInt (editor.value.getStringValue (false));
@@ -436,30 +457,43 @@ public:
         slider.setValue (v, dontSendNotification);
     }
 
-private:
-    LivePropertyEditorBase& editor;
-    Slider slider;
-    bool isFloat;
-
-    void sliderValueChanged (Slider*)
+    void sliderValueChanged (Slider*) override
     {
         editor.applyNewValue (isFloat ? getAsString ((double) slider.getValue(), editor.wasHex)
                                       : getAsString ((int64)  slider.getValue(), editor.wasHex));
 
     }
 
-    void sliderDragStarted (Slider*)  {}
-    void sliderDragEnded (Slider*)    { updateRange(); }
+    void sliderDragStarted (Slider*) override  {}
+    void sliderDragEnded (Slider*) override    { updateRange(); }
 
-    void resized()
+    void resized() override
     {
         slider.setBounds (getLocalBounds().removeFromTop (25));
     }
+
+    LivePropertyEditorBase& editor;
+    Slider slider;
+    bool isFloat;
 };
 
+//==============================================================================
+struct BoolSliderComp  : public SliderComp
+{
+    BoolSliderComp (LivePropertyEditorBase& e) : SliderComp (e, false) {}
+
+    void updateRange() override
+    {
+        slider.setRange (0.0, 1.0, dontSendNotification);
+        slider.setValue (editor.value.getStringValue (false) == "true", dontSendNotification);
+    }
+
+    void sliderValueChanged (Slider*) override  { editor.applyNewValue (slider.getValue() > 0.5 ? "true" : "false"); }
+};
 
 Component* createIntegerSlider (LivePropertyEditorBase& editor) { return new SliderComp (editor, false); }
 Component* createFloatSlider   (LivePropertyEditorBase& editor) { return new SliderComp (editor, true);  }
+Component* createBoolSlider    (LivePropertyEditorBase& editor) { return new BoolSliderComp (editor); }
 
 }
 

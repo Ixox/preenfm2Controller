@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -21,6 +21,11 @@
 
   ==============================================================================
 */
+
+JUCE_COMCLASS (DWebBrowserEvents2,        "34A715A0-6587-11D0-924A-0020AFC7AC4D")
+JUCE_COMCLASS (IConnectionPointContainer, "B196B284-BAB4-101A-B69C-00AA00341D07")
+JUCE_COMCLASS (IWebBrowser2,              "D30C1661-CDAF-11D0-8A3E-00C04FC9E26E")
+JUCE_COMCLASS (WebBrowser,                "8856F961-340A-11D0-A96B-00C04FD705A2")
 
 class WebBrowserComponent::Pimpl   : public ActiveXControlComponent
 {
@@ -43,17 +48,22 @@ public:
 
     void createBrowser()
     {
-        createControl (&CLSID_WebBrowser);
-        browser = (IWebBrowser2*) queryInterface (&IID_IWebBrowser2);
+        CLSID webCLSID = __uuidof (WebBrowser);
+        createControl (&webCLSID);
+
+    GUID iidWebBrowser2              = __uuidof (IWebBrowser2);
+    GUID iidConnectionPointContainer = __uuidof (IConnectionPointContainer);
+
+        browser = (IWebBrowser2*) queryInterface (&iidWebBrowser2);
 
         if (IConnectionPointContainer* connectionPointContainer
-                = (IConnectionPointContainer*) queryInterface (&IID_IConnectionPointContainer))
+            = (IConnectionPointContainer*) queryInterface (&iidConnectionPointContainer))
         {
-            connectionPointContainer->FindConnectionPoint (DIID_DWebBrowserEvents2, &connectionPoint);
+            connectionPointContainer->FindConnectionPoint (__uuidof (DWebBrowserEvents2), &connectionPoint);
 
             if (connectionPoint != nullptr)
             {
-                WebBrowserComponent* const owner = dynamic_cast <WebBrowserComponent*> (getParentComponent());
+                WebBrowserComponent* const owner = dynamic_cast<WebBrowserComponent*> (getParentComponent());
                 jassert (owner != nullptr);
 
                 EventHandler* handler = new EventHandler (*owner);
@@ -71,8 +81,8 @@ public:
         {
             LPSAFEARRAY sa = nullptr;
 
-            VARIANT flags, frame, postDataVar, headersVar;  // (_variant_t isn't available in all compilers)
-            VariantInit (&flags);
+            VARIANT headerFlags, frame, postDataVar, headersVar;  // (_variant_t isn't available in all compilers)
+            VariantInit (&headerFlags);
             VariantInit (&frame);
             VariantInit (&postDataVar);
             VariantInit (&headersVar);
@@ -108,13 +118,14 @@ public:
                 }
             }
 
-            browser->Navigate ((BSTR) (const OLECHAR*) url.toWideCharPointer(),
-                               &flags, &frame, &postDataVar, &headersVar);
+            BSTR urlBSTR = SysAllocString ((const OLECHAR*) url.toWideCharPointer());
+            browser->Navigate (urlBSTR, &headerFlags, &frame, &postDataVar, &headersVar);
+            SysFreeString (urlBSTR);
 
             if (sa != nullptr)
                 SafeArrayDestroy (sa);
 
-            VariantClear (&flags);
+            VariantClear (&headerFlags);
             VariantClear (&frame);
             VariantClear (&postDataVar);
             VariantClear (&headersVar);
@@ -129,15 +140,10 @@ private:
     DWORD adviseCookie;
 
     //==============================================================================
-    class EventHandler  : public ComBaseClassHelper <IDispatch>,
-                          public ComponentMovementWatcher
+    struct EventHandler  : public ComBaseClassHelper<IDispatch>,
+                           public ComponentMovementWatcher
     {
-    public:
-        EventHandler (WebBrowserComponent& owner_)
-            : ComponentMovementWatcher (&owner_),
-              owner (owner_)
-        {
-        }
+        EventHandler (WebBrowserComponent& w)  : ComponentMovementWatcher (&w), owner (w) {}
 
         JUCE_COMRESULT GetTypeInfoCount (UINT*)                                  { return E_NOTIMPL; }
         JUCE_COMRESULT GetTypeInfo (UINT, LCID, ITypeInfo**)                     { return E_NOTIMPL; }
@@ -153,12 +159,21 @@ private:
                                                                                                     : VARIANT_TRUE;
                 return S_OK;
             }
-            else if (dispIdMember == DISPID_DOCUMENTCOMPLETE)
+
+            if (dispIdMember == 273 /*DISPID_NEWWINDOW3*/)
+            {
+                owner.newWindowAttemptingToLoad (pDispParams->rgvarg[0].bstrVal);
+                *pDispParams->rgvarg[3].pboolVal = VARIANT_TRUE;
+                return S_OK;
+            }
+
+            if (dispIdMember == DISPID_DOCUMENTCOMPLETE)
             {
                 owner.pageFinishedLoading (getStringFromVariant (pDispParams->rgvarg[0].pvarVal));
                 return S_OK;
             }
-            else if (dispIdMember == 263 /*DISPID_WINDOWCLOSING*/)
+
+            if (dispIdMember == 263 /*DISPID_WINDOWCLOSING*/)
             {
                 owner.windowCloseRequest();
 
@@ -226,6 +241,9 @@ void WebBrowserComponent::goToURL (const String& url,
 
     blankPageShown = false;
 
+    if (browser->browser == nullptr)
+        checkWindowAssociation();
+
     browser->goToURL (url, headers, postData);
 }
 
@@ -262,7 +280,10 @@ void WebBrowserComponent::refresh()
 void WebBrowserComponent::paint (Graphics& g)
 {
     if (browser->browser == nullptr)
+    {
         g.fillAll (Colours::white);
+        checkWindowAssociation();
+    }
 }
 
 void WebBrowserComponent::checkWindowAssociation()
@@ -316,4 +337,30 @@ void WebBrowserComponent::resized()
 void WebBrowserComponent::visibilityChanged()
 {
     checkWindowAssociation();
+}
+
+void WebBrowserComponent::focusGained (FocusChangeType)
+{
+    GUID iidOleObject = __uuidof (IOleObject);
+    GUID iidOleWindow = __uuidof (IOleWindow);
+
+    if (IOleObject* oleObject = (IOleObject*) browser->queryInterface (&iidOleObject))
+    {
+        if (IOleWindow* oleWindow = (IOleWindow*) browser->queryInterface (&iidOleWindow))
+        {
+            IOleClientSite* oleClientSite = nullptr;
+
+            if (SUCCEEDED (oleObject->GetClientSite (&oleClientSite)))
+            {
+                HWND hwnd;
+                oleWindow->GetWindow (&hwnd);
+                oleObject->DoVerb (OLEIVERB_UIACTIVATE, nullptr, oleClientSite, 0, hwnd, nullptr);
+                oleClientSite->Release();
+            }
+
+            oleWindow->Release();
+        }
+
+        oleObject->Release();
+    }
 }

@@ -1,27 +1,29 @@
 /*
   ==============================================================================
 
-   This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   This file is part of the JUCE library.
+   Copyright (c) 2016 - ROLI Ltd.
 
-   Permission to use, copy, modify, and/or distribute this software for any purpose with
-   or without fee is hereby granted, provided that the above copyright notice and this
-   permission notice appear in all copies.
+   Permission is granted to use this software under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license/
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
-   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-   DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
-   IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   Permission to use, copy, modify, and/or distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
 
-   ------------------------------------------------------------------------------
+   THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH REGARD
+   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+   FITNESS. IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT,
+   OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+   USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+   TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+   OF THIS SOFTWARE.
 
-   NOTE! This permissive ISC license applies ONLY to files within the juce_core module!
-   All other JUCE modules are covered by a dual GPL/commercial license, so if you are
-   using any other modules, be sure to check that you also comply with their license.
+   -----------------------------------------------------------------------------
 
-   For more details, visit www.juce.com
+   To release a closed-source product which uses other parts of JUCE not
+   licensed under the ISC terms, commercial licenses are available: visit
+   www.juce.com for more information.
 
   ==============================================================================
 */
@@ -50,7 +52,7 @@ inline void deleteAndZero (Type& pointer)                           { delete poi
     a specific number of bytes,
 */
 template <typename Type, typename IntegerType>
-inline Type* addBytesToPointer (Type* pointer, IntegerType bytes) noexcept  { return (Type*) (((char*) pointer) + bytes); }
+inline Type* addBytesToPointer (Type* basePointer, IntegerType bytes) noexcept  { return (Type*) (((char*) basePointer) + bytes); }
 
 /** A handy function which returns the difference between any two pointers, in bytes.
     The address of the second pointer is subtracted from the first, and the difference in bytes is returned.
@@ -62,7 +64,25 @@ inline int getAddressDifference (Type1* pointer1, Type2* pointer2) noexcept  { r
     nullptr if the pointer is null.
 */
 template <class Type>
-inline Type* createCopyIfNotNull (const Type* pointer)     { return pointer != nullptr ? new Type (*pointer) : nullptr; }
+inline Type* createCopyIfNotNull (const Type* objectToCopy) { return objectToCopy != nullptr ? new Type (*objectToCopy) : nullptr; }
+
+//==============================================================================
+/** A handy function to read un-aligned memory without a performance penalty or bus-error. */
+template <typename Type>
+inline Type readUnaligned (const void* srcPtr) noexcept
+{
+    Type value;
+    memcpy (&value, srcPtr, sizeof (Type));
+
+    return value;
+}
+
+/** A handy function to write un-aligned memory without a performance penalty or bus-error. */
+template <typename Type>
+inline void writeUnaligned (void* dstPtr, Type value) noexcept
+{
+    memcpy (dstPtr, &value, sizeof(Type));
+}
 
 //==============================================================================
 #if JUCE_MAC || JUCE_IOS || DOXYGEN

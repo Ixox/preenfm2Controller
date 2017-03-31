@@ -1,27 +1,29 @@
 /*
   ==============================================================================
 
-   This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   This file is part of the JUCE library.
+   Copyright (c) 2016 - ROLI Ltd.
 
-   Permission to use, copy, modify, and/or distribute this software for any purpose with
-   or without fee is hereby granted, provided that the above copyright notice and this
-   permission notice appear in all copies.
+   Permission is granted to use this software under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license/
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
-   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-   DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
-   IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   Permission to use, copy, modify, and/or distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
 
-   ------------------------------------------------------------------------------
+   THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH REGARD
+   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+   FITNESS. IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT,
+   OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+   USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+   TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+   OF THIS SOFTWARE.
 
-   NOTE! This permissive ISC license applies ONLY to files within the juce_core module!
-   All other JUCE modules are covered by a dual GPL/commercial license, so if you are
-   using any other modules, be sure to check that you also comply with their license.
+   -----------------------------------------------------------------------------
 
-   For more details, visit www.juce.com
+   To release a closed-source product which uses other parts of JUCE not
+   licensed under the ISC terms, commercial licenses are available: visit
+   www.juce.com for more information.
 
   ==============================================================================
 */
@@ -77,6 +79,15 @@ namespace zlibNamespace
   #endif
  #else
   #include JUCE_ZLIB_INCLUDE_PATH
+
+  #ifndef z_uInt
+   #ifdef uInt
+    #define z_uInt uInt
+   #else
+    #define z_uInt unsigned int
+   #endif
+  #endif
+
  #endif
 }
 
@@ -90,7 +101,7 @@ namespace zlibNamespace
 class GZIPDecompressorInputStream::GZIPDecompressHelper
 {
 public:
-    GZIPDecompressHelper (const bool dontWrap)
+    GZIPDecompressHelper (Format f)
         : finished (true),
           needsDictionary (false),
           error (true),
@@ -100,7 +111,7 @@ public:
     {
         using namespace zlibNamespace;
         zerostruct (stream);
-        streamIsValid = (inflateInit2 (&stream, dontWrap ? -MAX_WBITS : MAX_WBITS) == Z_OK);
+        streamIsValid = (inflateInit2 (&stream, getBitsForFormat (f)) == Z_OK);
         finished = error = ! streamIsValid;
     }
 
@@ -157,6 +168,19 @@ public:
         return 0;
     }
 
+    static int getBitsForFormat (Format f) noexcept
+    {
+        switch (f)
+        {
+            case zlibFormat:     return  MAX_WBITS;
+            case deflateFormat:  return -MAX_WBITS;
+            case gzipFormat:     return  MAX_WBITS | 16;
+            default:             jassertfalse; break;
+        }
+
+        return MAX_WBITS;
+    }
+
     bool finished, needsDictionary, error, streamIsValid;
 
     enum { gzipDecompBufferSize = 32768 };
@@ -170,32 +194,30 @@ private:
 };
 
 //==============================================================================
-GZIPDecompressorInputStream::GZIPDecompressorInputStream (InputStream* const source,
-                                                          const bool deleteSourceWhenDestroyed,
-                                                          const bool noWrap_,
-                                                          const int64 uncompressedStreamLength_)
+GZIPDecompressorInputStream::GZIPDecompressorInputStream (InputStream* source, bool deleteSourceWhenDestroyed,
+                                                          Format f, int64 uncompressedLength)
   : sourceStream (source, deleteSourceWhenDestroyed),
-    uncompressedStreamLength (uncompressedStreamLength_),
-    noWrap (noWrap_),
+    uncompressedStreamLength (uncompressedLength),
+    format (f),
     isEof (false),
     activeBufferSize (0),
     originalSourcePos (source->getPosition()),
     currentPos (0),
     buffer ((size_t) GZIPDecompressHelper::gzipDecompBufferSize),
-    helper (new GZIPDecompressHelper (noWrap_))
+    helper (new GZIPDecompressHelper (f))
 {
 }
 
 GZIPDecompressorInputStream::GZIPDecompressorInputStream (InputStream& source)
   : sourceStream (&source, false),
     uncompressedStreamLength (-1),
-    noWrap (false),
+    format (zlibFormat),
     isEof (false),
     activeBufferSize (0),
     originalSourcePos (source.getPosition()),
     currentPos (0),
     buffer ((size_t) GZIPDecompressHelper::gzipDecompBufferSize),
-    helper (new GZIPDecompressHelper (false))
+    helper (new GZIPDecompressHelper (zlibFormat))
 {
 }
 
@@ -215,7 +237,7 @@ int GZIPDecompressorInputStream::read (void* destBuffer, int howMany)
     if (howMany > 0 && ! isEof)
     {
         int numRead = 0;
-        uint8* d = static_cast <uint8*> (destBuffer);
+        uint8* d = static_cast<uint8*> (destBuffer);
 
         while (! helper->error)
         {
@@ -278,7 +300,7 @@ bool GZIPDecompressorInputStream::setPosition (int64 newPos)
         isEof = false;
         activeBufferSize = 0;
         currentPos = 0;
-        helper = new GZIPDecompressHelper (noWrap);
+        helper = new GZIPDecompressHelper (format);
 
         sourceStream->setPosition (originalSourcePos);
     }

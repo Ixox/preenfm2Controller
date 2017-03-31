@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -100,7 +100,7 @@ public:
         (This is overridden from Component::setName() to cause a repaint, as
         the name is what gets drawn across the window's title bar).
     */
-    void setName (const String& newName);
+    void setName (const String& newName) override;
 
     /** Sets an icon to show in the title bar, next to the title.
 
@@ -141,9 +141,9 @@ public:
         @param menuBarModel     this specifies a MenuBarModel that should be used to
                                 generate the contents of a menu bar that will be placed
                                 just below the title bar, and just above any content
-                                component. If this value is zero, any existing menu bar
-                                will be removed from the component; if non-zero, one will
-                                be added if it's required.
+                                component. If this value is a nullptr, any existing menu bar
+                                will be removed from the component; if it is not a nullptr,
+                                one will be added if it's required.
         @param menuBarHeight    the height of the menu bar component, if one is needed. Pass a value of zero
                                 or less to use the look-and-feel's default size.
     */
@@ -277,9 +277,9 @@ private:
     //==============================================================================
     int titleBarHeight, menuBarHeight, requiredButtons;
     bool positionTitleBarButtonsOnLeft, drawTitleTextCentred;
-    ScopedPointer <Button> titleBarButtons [3];
+    ScopedPointer<Button> titleBarButtons [3];
     Image titleBarIcon;
-    ScopedPointer <Component> menuBar;
+    ScopedPointer<Component> menuBar;
     MenuBarModel* menuBarModel;
 
     class ButtonListenerProxy;

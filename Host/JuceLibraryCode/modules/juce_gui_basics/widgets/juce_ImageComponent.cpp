@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -73,5 +73,5 @@ RectanglePlacement ImageComponent::getImagePlacement() const
 void ImageComponent::paint (Graphics& g)
 {
     g.setOpacity (1.0f);
-    g.drawImageWithin (image, 0, 0, getWidth(), getHeight(), placement, false);
+    g.drawImage (image, getLocalBounds().toFloat(), placement);
 }

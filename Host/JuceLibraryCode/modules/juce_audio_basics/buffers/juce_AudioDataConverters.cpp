@@ -2,22 +2,28 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2016 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   Permission is granted to use this software under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license/
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   Permission to use, copy, modify, and/or distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH REGARD
+   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+   FITNESS. IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT,
+   OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+   USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+   TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+   OF THIS SOFTWARE.
 
-   ------------------------------------------------------------------------------
+   -----------------------------------------------------------------------------
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   To release a closed-source product which uses other parts of JUCE not
+   licensed under the ISC terms, commercial licenses are available: visit
+   www.juce.com for more information.
 
   ==============================================================================
 */
@@ -25,7 +31,7 @@
 void AudioDataConverters::convertFloatToInt16LE (const float* source, void* dest, int numSamples, const int destBytesPerSample)
 {
     const double maxVal = (double) 0x7fff;
-    char* intData = static_cast <char*> (dest);
+    char* intData = static_cast<char*> (dest);
 
     if (dest != (void*) source || destBytesPerSample <= 4)
     {
@@ -50,7 +56,7 @@ void AudioDataConverters::convertFloatToInt16LE (const float* source, void* dest
 void AudioDataConverters::convertFloatToInt16BE (const float* source, void* dest, int numSamples, const int destBytesPerSample)
 {
     const double maxVal = (double) 0x7fff;
-    char* intData = static_cast <char*> (dest);
+    char* intData = static_cast<char*> (dest);
 
     if (dest != (void*) source || destBytesPerSample <= 4)
     {
@@ -75,7 +81,7 @@ void AudioDataConverters::convertFloatToInt16BE (const float* source, void* dest
 void AudioDataConverters::convertFloatToInt24LE (const float* source, void* dest, int numSamples, const int destBytesPerSample)
 {
     const double maxVal = (double) 0x7fffff;
-    char* intData = static_cast <char*> (dest);
+    char* intData = static_cast<char*> (dest);
 
     if (dest != (void*) source || destBytesPerSample <= 4)
     {
@@ -100,7 +106,7 @@ void AudioDataConverters::convertFloatToInt24LE (const float* source, void* dest
 void AudioDataConverters::convertFloatToInt24BE (const float* source, void* dest, int numSamples, const int destBytesPerSample)
 {
     const double maxVal = (double) 0x7fffff;
-    char* intData = static_cast <char*> (dest);
+    char* intData = static_cast<char*> (dest);
 
     if (dest != (void*) source || destBytesPerSample <= 4)
     {
@@ -125,7 +131,7 @@ void AudioDataConverters::convertFloatToInt24BE (const float* source, void* dest
 void AudioDataConverters::convertFloatToInt32LE (const float* source, void* dest, int numSamples, const int destBytesPerSample)
 {
     const double maxVal = (double) 0x7fffffff;
-    char* intData = static_cast <char*> (dest);
+    char* intData = static_cast<char*> (dest);
 
     if (dest != (void*) source || destBytesPerSample <= 4)
     {
@@ -150,7 +156,7 @@ void AudioDataConverters::convertFloatToInt32LE (const float* source, void* dest
 void AudioDataConverters::convertFloatToInt32BE (const float* source, void* dest, int numSamples, const int destBytesPerSample)
 {
     const double maxVal = (double) 0x7fffffff;
-    char* intData = static_cast <char*> (dest);
+    char* intData = static_cast<char*> (dest);
 
     if (dest != (void*) source || destBytesPerSample <= 4)
     {
@@ -176,7 +182,7 @@ void AudioDataConverters::convertFloatToFloat32LE (const float* source, void* de
 {
     jassert (dest != (void*) source || destBytesPerSample <= 4); // This op can't be performed on in-place data!
 
-    char* d = static_cast <char*> (dest);
+    char* d = static_cast<char*> (dest);
 
     for (int i = 0; i < numSamples; ++i)
     {
@@ -194,7 +200,7 @@ void AudioDataConverters::convertFloatToFloat32BE (const float* source, void* de
 {
     jassert (dest != (void*) source || destBytesPerSample <= 4); // This op can't be performed on in-place data!
 
-    char* d = static_cast <char*> (dest);
+    char* d = static_cast<char*> (dest);
 
     for (int i = 0; i < numSamples; ++i)
     {
@@ -212,7 +218,7 @@ void AudioDataConverters::convertFloatToFloat32BE (const float* source, void* de
 void AudioDataConverters::convertInt16LEToFloat (const void* const source, float* const dest, int numSamples, const int srcBytesPerSample)
 {
     const float scale = 1.0f / 0x7fff;
-    const char* intData = static_cast <const char*> (source);
+    const char* intData = static_cast<const char*> (source);
 
     if (source != (void*) dest || srcBytesPerSample >= 4)
     {
@@ -237,7 +243,7 @@ void AudioDataConverters::convertInt16LEToFloat (const void* const source, float
 void AudioDataConverters::convertInt16BEToFloat (const void* const source, float* const dest, int numSamples, const int srcBytesPerSample)
 {
     const float scale = 1.0f / 0x7fff;
-    const char* intData = static_cast <const char*> (source);
+    const char* intData = static_cast<const char*> (source);
 
     if (source != (void*) dest || srcBytesPerSample >= 4)
     {
@@ -262,7 +268,7 @@ void AudioDataConverters::convertInt16BEToFloat (const void* const source, float
 void AudioDataConverters::convertInt24LEToFloat (const void* const source, float* const dest, int numSamples, const int srcBytesPerSample)
 {
     const float scale = 1.0f / 0x7fffff;
-    const char* intData = static_cast <const char*> (source);
+    const char* intData = static_cast<const char*> (source);
 
     if (source != (void*) dest || srcBytesPerSample >= 4)
     {
@@ -287,7 +293,7 @@ void AudioDataConverters::convertInt24LEToFloat (const void* const source, float
 void AudioDataConverters::convertInt24BEToFloat (const void* const source, float* const dest, int numSamples, const int srcBytesPerSample)
 {
     const float scale = 1.0f / 0x7fffff;
-    const char* intData = static_cast <const char*> (source);
+    const char* intData = static_cast<const char*> (source);
 
     if (source != (void*) dest || srcBytesPerSample >= 4)
     {
@@ -312,7 +318,7 @@ void AudioDataConverters::convertInt24BEToFloat (const void* const source, float
 void AudioDataConverters::convertInt32LEToFloat (const void* const source, float* const dest, int numSamples, const int srcBytesPerSample)
 {
     const float scale = 1.0f / 0x7fffffff;
-    const char* intData = static_cast <const char*> (source);
+    const char* intData = static_cast<const char*> (source);
 
     if (source != (void*) dest || srcBytesPerSample >= 4)
     {
@@ -337,7 +343,7 @@ void AudioDataConverters::convertInt32LEToFloat (const void* const source, float
 void AudioDataConverters::convertInt32BEToFloat (const void* const source, float* const dest, int numSamples, const int srcBytesPerSample)
 {
     const float scale = 1.0f / 0x7fffffff;
-    const char* intData = static_cast <const char*> (source);
+    const char* intData = static_cast<const char*> (source);
 
     if (source != (void*) dest || srcBytesPerSample >= 4)
     {
@@ -361,7 +367,7 @@ void AudioDataConverters::convertInt32BEToFloat (const void* const source, float
 
 void AudioDataConverters::convertFloat32LEToFloat (const void* const source, float* const dest, int numSamples, const int srcBytesPerSample)
 {
-    const char* s = static_cast <const char*> (source);
+    const char* s = static_cast<const char*> (source);
 
     for (int i = 0; i < numSamples; ++i)
     {
@@ -378,7 +384,7 @@ void AudioDataConverters::convertFloat32LEToFloat (const void* const source, flo
 
 void AudioDataConverters::convertFloat32BEToFloat (const void* const source, float* const dest, int numSamples, const int srcBytesPerSample)
 {
-    const char* s = static_cast <const char*> (source);
+    const char* s = static_cast<const char*> (source);
 
     for (int i = 0; i < numSamples; ++i)
     {
@@ -579,7 +585,7 @@ public:
         }
     };
 
-    void runTest()
+    void runTest() override
     {
         Random r = getRandom();
         beginTest ("Round-trip conversion: Int8");

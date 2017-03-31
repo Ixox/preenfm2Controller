@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -187,10 +187,12 @@ void DropShadower::updateShadows()
             WeakReference<Component> sw (shadowWindows[i]);
 
             if (sw != nullptr)
+            {
                 sw->setAlwaysOnTop (owner->isAlwaysOnTop());
 
-            if (sw != nullptr)
-            {
+                if (sw == nullptr)
+                    return;
+
                 switch (i)
                 {
                     case 0: sw->setBounds (x - shadowEdge, y, shadowEdge, h); break;
@@ -199,13 +201,12 @@ void DropShadower::updateShadows()
                     case 3: sw->setBounds (x, owner->getBottom(), w, shadowEdge); break;
                     default: break;
                 }
-            }
 
-            if (sw != nullptr)
+                if (sw == nullptr)
+                    return;
+
                 sw->toBehind (i == 3 ? owner : shadowWindows.getUnchecked (i + 1));
-
-            if (sw == nullptr)
-                return;
+            }
         }
     }
     else

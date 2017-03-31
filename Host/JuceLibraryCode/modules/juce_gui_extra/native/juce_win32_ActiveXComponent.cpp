@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -23,6 +23,24 @@
 */
 
 extern int64 getMouseEventTime();
+
+#if JUCE_MINGW
+ #define JUCE_COMCLASS(name, guid) \
+    template<> struct UUIDGetter<::name>   { static CLSID get() { return uuidFromString (guid); } };
+
+ #ifdef __uuidof
+  #undef __uuidof
+ #endif
+
+ #define __uuidof(cls) UUIDGetter<::cls>::get()
+
+#else
+ #define JUCE_COMCLASS(name, guid)
+#endif
+
+JUCE_COMCLASS (IOleObject,                "00000112-0000-0000-C000-000000000046")
+JUCE_COMCLASS (IOleWindow,                "00000114-0000-0000-C000-000000000046")
+JUCE_COMCLASS (IOleInPlaceSite,           "00000119-0000-0000-C000-000000000046")
 
 namespace ActiveXHelpers
 {
@@ -133,10 +151,10 @@ namespace ActiveXHelpers
 
         JUCE_COMRESULT QueryInterface (REFIID type, void** result)
         {
-            if (type == IID_IOleInPlaceSite)
+            if (type == __uuidof (IOleInPlaceSite))
             {
                 inplaceSite->AddRef();
-                *result = static_cast <IOleInPlaceSite*> (inplaceSite);
+                *result = static_cast<IOleInPlaceSite*> (inplaceSite);
                 return S_OK;
             }
 
@@ -160,7 +178,7 @@ namespace ActiveXHelpers
     HWND getHWND (const ActiveXControlComponent* const component)
     {
         HWND hwnd = 0;
-        const IID iid = IID_IOleWindow;
+        const IID iid = __uuidof(IOleWindow);
 
         if (IOleWindow* const window = (IOleWindow*) component->queryInterface (&iid))
         {
@@ -189,6 +207,7 @@ namespace ActiveXHelpers
                 peer->handleMouseEvent (0, Point<int> (GET_X_LPARAM (lParam) + activeXRect.left - peerRect.left,
                                                        GET_Y_LPARAM (lParam) + activeXRect.top  - peerRect.top).toFloat(),
                                         ModifierKeys::getCurrentModifiersRealtime(),
+                                        MouseInputSource::invalidPressure,
                                         getMouseEventTime());
                 break;
 
@@ -225,10 +244,10 @@ public:
         storage->Release();
     }
 
-    void setControlBounds (const Rectangle<int>& bounds) const
+    void setControlBounds (const Rectangle<int>& newBounds) const
     {
         if (controlHWND != 0)
-            MoveWindow (controlHWND, bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), TRUE);
+            MoveWindow (controlHWND, newBounds.getX(), newBounds.getY(), newBounds.getWidth(), newBounds.getHeight(), TRUE);
     }
 
     void setControlVisible (bool shouldBeVisible) const
@@ -332,14 +351,14 @@ bool ActiveXControlComponent::createControl (const void* controlIID)
 
     if (ComponentPeer* const peer = getPeer())
     {
-        const Rectangle<int> bounds (peer->getAreaCoveredBy (*this));
+        const Rectangle<int> controlBounds (peer->getAreaCoveredBy (*this));
 
         HWND hwnd = (HWND) peer->getNativeHandle();
 
         ScopedPointer<Pimpl> newControl (new Pimpl (hwnd, *this));
 
         HRESULT hr;
-        if ((hr = OleCreate (*(const IID*) controlIID, IID_IOleObject, 1 /*OLERENDER_DRAW*/, 0,
+        if ((hr = OleCreate (*(const IID*) controlIID, __uuidof (IOleObject), 1 /*OLERENDER_DRAW*/, 0,
                              newControl->clientSite, newControl->storage,
                              (void**) &(newControl->control))) == S_OK)
         {
@@ -348,10 +367,10 @@ bool ActiveXControlComponent::createControl (const void* controlIID)
             if (OleSetContainedObject (newControl->control, TRUE) == S_OK)
             {
                 RECT rect;
-                rect.left   = bounds.getX();
-                rect.top    = bounds.getY();
-                rect.right  = bounds.getRight();
-                rect.bottom = bounds.getBottom();
+                rect.left   = controlBounds.getX();
+                rect.top    = controlBounds.getY();
+                rect.right  = controlBounds.getRight();
+                rect.bottom = controlBounds.getBottom();
 
                 if (newControl->control->DoVerb (OLEIVERB_SHOW, 0, newControl->clientSite, 0, hwnd, &rect) == S_OK)
                 {
@@ -360,7 +379,7 @@ bool ActiveXControlComponent::createControl (const void* controlIID)
 
                     if (control->controlHWND != 0)
                     {
-                        control->setControlBounds (bounds);
+                        control->setControlBounds (controlBounds);
 
                         control->originalWndProc = (WNDPROC) GetWindowLongPtr ((HWND) control->controlHWND, GWLP_WNDPROC);
                         SetWindowLongPtr ((HWND) control->controlHWND, GWLP_WNDPROC, (LONG_PTR) Pimpl::activeXHookWndProc);

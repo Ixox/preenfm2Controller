@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -27,7 +27,7 @@ Image juce_createIconForFile (const File& file);
 
 //==============================================================================
 FileListComponent::FileListComponent (DirectoryContentsList& listToShow)
-    : ListBox (String::empty, nullptr),
+    : ListBox (String(), nullptr),
       DirectoryContentsDisplayComponent (listToShow)
 {
     setModel (this);
@@ -153,13 +153,13 @@ public:
             file = newFile;
             fileSize = newFileSize;
             modTime = newModTime;
-            icon = Image::null;
+            icon = Image();
             isDirectory = fileInfo != nullptr && fileInfo->isDirectory;
 
             repaint();
         }
 
-        if (file != File::nonexistent && icon.isNull() && ! isDirectory)
+        if (file != File() && icon.isNull() && ! isDirectory)
         {
             updateIcon (true);
 

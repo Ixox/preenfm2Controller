@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -67,7 +67,11 @@ public:
 
         /** The suffix to use for your properties file.
             It doesn't really matter what this is - you may want to use ".settings" or
-            ".properties" or something.
+            ".properties" or something. If the suffix includes the prefixing dot (for example
+            ".settings") then the suffix of applicationName will be replaced with your suffix
+            ("MyApp.exe" -> "MyApp.settings"). If your filenameSuffix does NOT include the dot,
+            then the suffix will be appended to the applicationName ("MyApp.exe" ->
+            "MyApp.exe.settings").
         */
         String filenameSuffix;
 
@@ -223,7 +227,7 @@ public:
 
 protected:
     /** @internal */
-    virtual void propertyChanged();
+    void propertyChanged() override;
 
 private:
     //==============================================================================

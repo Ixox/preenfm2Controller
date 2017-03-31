@@ -4,14 +4,20 @@ Project("{C5008889-0644-E471-78F6-961117F91C3A}") = "pfm2Editor", "pfm2Editor.vc
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Win32 = Debug|Win32
-		Release|Win32 = Release|Win32
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+		Release 32|Win32 = Release 32|Win32
+		Debug 32|Win32 = Debug 32|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5B598E3A-82FF-8239-80E1-DC47C2A37C6A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{5B598E3A-82FF-8239-80E1-DC47C2A37C6A}.Debug|Win32.Build.0 = Debug|Win32
-		{5B598E3A-82FF-8239-80E1-DC47C2A37C6A}.Release|Win32.ActiveCfg = Release|Win32
-		{5B598E3A-82FF-8239-80E1-DC47C2A37C6A}.Release|Win32.Build.0 = Release|Win32
+		{5B598E3A-82FF-8239-80E1-DC47C2A37C6A}.Debug|x64.ActiveCfg = Debug|x64
+		{5B598E3A-82FF-8239-80E1-DC47C2A37C6A}.Debug|x64.Build.0 = Debug|x64
+		{5B598E3A-82FF-8239-80E1-DC47C2A37C6A}.Release|x64.ActiveCfg = Release|x64
+		{5B598E3A-82FF-8239-80E1-DC47C2A37C6A}.Release|x64.Build.0 = Release|x64
+		{5B598E3A-82FF-8239-80E1-DC47C2A37C6A}.Release 32|Win32.ActiveCfg = Release 32|Win32
+		{5B598E3A-82FF-8239-80E1-DC47C2A37C6A}.Release 32|Win32.Build.0 = Release 32|Win32
+		{5B598E3A-82FF-8239-80E1-DC47C2A37C6A}.Debug 32|Win32.ActiveCfg = Debug 32|Win32
+		{5B598E3A-82FF-8239-80E1-DC47C2A37C6A}.Debug 32|Win32.Build.0 = Debug 32|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

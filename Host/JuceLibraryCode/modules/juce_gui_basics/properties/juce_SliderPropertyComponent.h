@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -48,7 +48,8 @@ protected:
                              double rangeMin,
                              double rangeMax,
                              double interval,
-                             double skewFactor = 1.0);
+                             double skewFactor = 1.0,
+                             bool symmetricSkew = false);
 
 public:
     //==============================================================================
@@ -58,13 +59,18 @@ public:
 
         If you need to customise the slider in other ways, your constructor can
         access the slider member variable and change it directly.
+
+        Note that if you call this constructor then you must use the Value to interact with
+        the value, and you can't override the class with your own setValue or getValue methods.
+        If you want to use those methods, call the other constructor instead.
     */
     SliderPropertyComponent (const Value& valueToControl,
                              const String& propertyName,
                              double rangeMin,
                              double rangeMax,
                              double interval,
-                             double skewFactor = 1.0);
+                             double skewFactor = 1.0,
+                             bool symmetricSkew = false);
 
     /** Destructor. */
     ~SliderPropertyComponent();

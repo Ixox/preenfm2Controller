@@ -1,18 +1,18 @@
 /*
   ==============================================================================
 
-  This is an automatically generated GUI class created by the Introjucer!
+  This is an automatically generated GUI class created by the Projucer!
 
   Be careful when adding custom code to these files, as only the code within
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.1.0
+  Created with Projucer version: 4.3.1
 
   ------------------------------------------------------------------------------
 
-  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright 2004-13 by Raw Material Software Ltd.
+  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright (c) 2015 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -34,11 +34,14 @@
 //==============================================================================
 MainTabs::MainTabs ()
 {
+    //[Constructor_pre] You can add your own custom stuff here..
+    //[/Constructor_pre]
+
     addAndMakeVisible (tabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtTop));
     tabbedComponent->setTabBarDepth (30);
     tabbedComponent->addTab (TRANS("Engine"), Colour (0xffe5f9ff), new PanelEngine(), true);
     tabbedComponent->addTab (TRANS("Modulation"), Colour (0xffdeffe4), new PanelModulation(), true);
-    tabbedComponent->addTab (TRANS("Other"), Colour (0xfffffcc4), new PanelArpAndFilter(), true);
+    tabbedComponent->addTab (TRANS("Arp & Filter"), Colour (0xfffffcc4), new PanelArpAndFilter(), true);
     tabbedComponent->setCurrentTabIndex (0);
 
     addAndMakeVisible (midiInputLabel = new Label ("midi input label",
@@ -127,7 +130,7 @@ MainTabs::MainTabs ()
     versionLabel->setText(String("v") + ProjectInfo::versionString, dontSendNotification);
     //[/UserPreSize]
 
-    setSize (900, 710);
+    setSize (1024, 600);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -174,7 +177,10 @@ void MainTabs::paint (Graphics& g)
 
 void MainTabs::resized()
 {
-    tabbedComponent->setBounds (proportionOfWidth (0.0098f), proportionOfHeight (0.0247f), proportionOfWidth (0.9771f), proportionOfHeight (0.9694f));
+    //[UserPreResize] Add your own custom resize code here..
+    //[/UserPreResize]
+
+    tabbedComponent->setBounds (proportionOfWidth (0.0093f), proportionOfHeight (0.0252f), proportionOfWidth (0.9781f), proportionOfHeight (0.9696f));
     midiInputLabel->setBounds (16, 0, 48, 16);
     midiInputLabel2->setBounds (80, 0, 48, 16);
     pullButton->setBounds (getWidth() - 108, 8, 55, 24);
@@ -340,9 +346,9 @@ void MainTabs::setMidiChannel(int newMidiChannel) {
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA
@@ -350,10 +356,10 @@ BEGIN_JUCER_METADATA
 <JUCER_COMPONENT documentType="Component" className="MainTabs" componentName=""
                  parentClasses="public Component" constructorParams="" variableInitialisers=""
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="0" initialWidth="900" initialHeight="710">
+                 fixedSize="0" initialWidth="1024" initialHeight="600">
   <BACKGROUND backgroundColour="fff0f8ff"/>
   <TABBEDCOMPONENT name="new tabbed component" id="f175981f6c34a740" memberName="tabbedComponent"
-                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="0.983% 2.471% 97.707% 96.941%"
+                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="0.925% 2.518% 97.813% 96.957%"
                    orientation="top" tabBarDepth="30" initialTab="0">
     <TAB name="Engine" colour="ffe5f9ff" useJucerComp="0" contentClassName="PanelEngine"
          constructorParams="" jucerComponentFile=""/>

@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -84,6 +84,7 @@ Button::Button (const String& name)
     connectedEdgeFlags (0),
     commandID(),
     buttonState (buttonNormal),
+    lastStatePainted (buttonNormal),
     lastToggleState (false),
     clickTogglesState (false),
     needsToRelease (false),
@@ -125,11 +126,12 @@ void Button::setTooltip (const String& newTooltip)
     generateTooltip = false;
 }
 
-String Button::getTooltip()
+void Button::updateAutomaticTooltip (const ApplicationCommandInfo& info)
 {
-    if (generateTooltip && commandManagerToUse != nullptr && commandID != 0)
+    if (generateTooltip && commandManagerToUse != nullptr)
     {
-        String tt (commandManagerToUse->getDescriptionOfCommand (commandID));
+        String tt (info.description.isNotEmpty() ? info.description
+                                                 : info.shortName);
 
         Array<KeyPress> keyPresses (commandManagerToUse->getKeyMappings()->getKeyPressesAssignedToCommand (commandID));
 
@@ -145,10 +147,8 @@ String Button::getTooltip()
                 tt << key << ']';
         }
 
-        return tt;
+        SettableTooltipClient::setTooltip (tt);
     }
-
-    return SettableTooltipClient::getTooltip();
 }
 
 void Button::setConnectedEdges (const int newFlags)
@@ -175,8 +175,15 @@ void Button::setToggleState (const bool shouldBeOn, const NotificationType notif
                 return;
         }
 
-        if (getToggleState() != shouldBeOn)  // this test means that if the value is void rather than explicitly set to
-            isOn = shouldBeOn;               // false, it won't be changed unless the required value is true.
+        // This test is done so that if the value is void rather than explicitly set to
+        // false, the value won't be changed unless the required value is true.
+        if (getToggleState() != shouldBeOn)
+        {
+            isOn = shouldBeOn;
+
+            if (deletionWatcher == nullptr)
+                return;
+        }
 
         lastToggleState = shouldBeOn;
         repaint();
@@ -245,7 +252,7 @@ void Button::turnOffOtherButtonsInGroup (const NotificationType notification)
 
                 if (c != this)
                 {
-                    if (Button* const b = dynamic_cast <Button*> (c))
+                    if (Button* const b = dynamic_cast<Button*> (c))
                     {
                         if (b->getRadioGroupId() == radioGroupId)
                         {
@@ -431,6 +438,7 @@ void Button::paint (Graphics& g)
     }
 
     paintButton (g, isOver(), isDown());
+    lastStatePainted = buttonState;
 }
 
 //==============================================================================
@@ -455,19 +463,32 @@ void Button::mouseUp (const MouseEvent& e)
 {
     const bool wasDown = isDown();
     const bool wasOver = isOver();
-    updateState (isMouseOver(), false);
+    updateState (isMouseOrTouchOver (e), false);
 
     if (wasDown && wasOver && ! triggerOnMouseDown)
+    {
+        if (lastStatePainted != buttonDown)
+            flashButtonState();
+
         internalClickCallback (e.mods);
+    }
 }
 
-void Button::mouseDrag (const MouseEvent&)
+void Button::mouseDrag (const MouseEvent& e)
 {
     const ButtonState oldState = buttonState;
-    updateState (isMouseOver(), true);
+    updateState (isMouseOrTouchOver (e), true);
 
     if (autoRepeatDelay >= 0 && buttonState != oldState && isDown())
         callbackHelper->startTimer (autoRepeatSpeed);
+}
+
+bool Button::isMouseOrTouchOver (const MouseEvent& e)
+{
+    if (e.source.isTouch())
+        return getLocalBounds().toFloat().contains (e.position);
+
+    return isMouseOver();
 }
 
 void Button::focusGained (FocusChangeType)
@@ -542,6 +563,7 @@ void Button::applicationCommandListChangeCallback()
 
         if (commandManagerToUse->getTargetForCommand (commandID, info) != nullptr)
         {
+            updateAutomaticTooltip (info);
             setEnabled ((info.flags & ApplicationCommandInfo::isDisabled) == 0);
             setToggleState ((info.flags & ApplicationCommandInfo::isTicked) != 0, dontSendNotification);
         }

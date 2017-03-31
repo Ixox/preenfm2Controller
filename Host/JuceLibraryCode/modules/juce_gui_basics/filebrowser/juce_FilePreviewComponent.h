@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -51,7 +51,7 @@ public:
     /** Called to indicate that the user's currently selected file has changed.
 
         @param newSelectedFile  the newly selected file or directory, which may be
-                                File::nonexistent if none is selected.
+                                a defualt File() object if none is selected.
     */
     virtual void selectedFileChanged (const File& newSelectedFile) = 0;
 

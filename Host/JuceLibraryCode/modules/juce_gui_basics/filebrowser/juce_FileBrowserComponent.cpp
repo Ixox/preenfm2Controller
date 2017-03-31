@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -26,13 +26,14 @@ FileBrowserComponent::FileBrowserComponent (int flags_,
                                             const File& initialFileOrDirectory,
                                             const FileFilter* fileFilter_,
                                             FilePreviewComponent* previewComp_)
-   : FileFilter (String::empty),
+   : FileFilter (String()),
      fileFilter (fileFilter_),
      flags (flags_),
      previewComp (previewComp_),
      currentPathBox ("path"),
      fileLabel ("f", TRANS ("file:")),
-     thread ("Juce FileBrowser")
+     thread ("Juce FileBrowser"),
+     wasProcessActive (true)
 {
     // You need to specify one or other of the open/save flags..
     jassert ((flags & (saveMode | openMode)) != 0);
@@ -43,7 +44,7 @@ FileBrowserComponent::FileBrowserComponent (int flags_,
 
     String filename;
 
-    if (initialFileOrDirectory == File::nonexistent)
+    if (initialFileOrDirectory == File())
     {
         currentRoot = File::getCurrentWorkingDirectory();
     }
@@ -109,6 +110,8 @@ FileBrowserComponent::FileBrowserComponent (int flags_,
     setRoot (currentRoot);
 
     thread.startThread (4);
+
+    startTimer (2000);
 }
 
 FileBrowserComponent::~FileBrowserComponent()
@@ -178,7 +181,7 @@ void FileBrowserComponent::deselectAllFiles()
 bool FileBrowserComponent::isFileSuitable (const File& file) const
 {
     return (flags & canSelectFiles) != 0
-            && (fileFilter == nullptr || fileFilter->isFileSuitable (file));
+             && (fileFilter == nullptr || fileFilter->isFileSuitable (file));
 }
 
 bool FileBrowserComponent::isDirectorySuitable (const File&) const
@@ -190,10 +193,10 @@ bool FileBrowserComponent::isFileOrDirSuitable (const File& f) const
 {
     if (f.isDirectory())
         return (flags & canSelectDirectories) != 0
-                && (fileFilter == nullptr || fileFilter->isDirectorySuitable (f));
+                 && (fileFilter == nullptr || fileFilter->isDirectorySuitable (f));
 
     return (flags & canSelectFiles) != 0 && f.exists()
-            && (fileFilter == nullptr || fileFilter->isFileSuitable (f));
+             && (fileFilter == nullptr || fileFilter->isFileSuitable (f));
 }
 
 //==============================================================================
@@ -239,6 +242,9 @@ void FileBrowserComponent::setRoot (const File& newRootDirectory)
 
     currentRoot = newRootDirectory;
     fileList->setDirectory (currentRoot, true, true);
+
+    if (FileTreeComponent* tree = dynamic_cast<FileTreeComponent*> (fileListComponent.get()))
+        tree->refresh();
 
     String currentRootName (currentRoot.getFullPathName());
     if (currentRootName.isEmpty())
@@ -384,8 +390,8 @@ void FileBrowserComponent::fileDoubleClicked (const File& f)
     {
         setRoot (f);
 
-        if ((flags & canSelectDirectories) != 0)
-            filenameBox.setText (String::empty);
+        if ((flags & canSelectDirectories) != 0 && (flags & doNotClearFileNameOnRootChange) == 0)
+            filenameBox.setText (String());
     }
     else
     {
@@ -398,8 +404,6 @@ void FileBrowserComponent::browserRootChanged (const File&) {}
 
 bool FileBrowserComponent::keyPressed (const KeyPress& key)
 {
-    (void) key;
-
    #if JUCE_LINUX || JUCE_WINDOWS
     if (key.getModifiers().isCommandDown()
          && (key.getKeyCode() == 'H' || key.getKeyCode() == 'h'))
@@ -410,6 +414,7 @@ bool FileBrowserComponent::keyPressed (const KeyPress& key)
     }
    #endif
 
+    ignoreUnused (key);
     return false;
 }
 
@@ -429,7 +434,9 @@ void FileBrowserComponent::textEditorReturnKeyPressed (TextEditor&)
         {
             setRoot (f);
             chosenFiles.clear();
-            filenameBox.setText (String::empty);
+
+            if ((flags & doNotClearFileNameOnRootChange) == 0)
+                filenameBox.setText (String());
         }
         else
         {
@@ -528,8 +535,8 @@ void FileBrowserComponent::getDefaultRoots (StringArray& rootNames, StringArray&
         rootNames.add (name);
     }
 
-    rootPaths.add (String::empty);
-    rootNames.add (String::empty);
+    rootPaths.add (String());
+    rootNames.add (String());
 
     rootPaths.add (File::getSpecialLocation (File::userDocumentsDirectory).getFullPathName());
     rootNames.add (TRANS("Documents"));
@@ -552,10 +559,10 @@ void FileBrowserComponent::getDefaultRoots (StringArray& rootNames, StringArray&
     rootPaths.add (File::getSpecialLocation (File::userDesktopDirectory).getFullPathName());
     rootNames.add (TRANS("Desktop"));
 
-    rootPaths.add (String::empty);
-    rootNames.add (String::empty);
+    rootPaths.add (String());
+    rootNames.add (String());
 
-    Array <File> volumes;
+    Array<File> volumes;
     File vol ("/Volumes");
     vol.findChildFiles (volumes, File::findDirectories, false);
 
@@ -583,4 +590,17 @@ void FileBrowserComponent::getDefaultRoots (StringArray& rootNames, StringArray&
 void FileBrowserComponent::getRoots (StringArray& rootNames, StringArray& rootPaths)
 {
     getDefaultRoots (rootNames, rootPaths);
+}
+
+void FileBrowserComponent::timerCallback()
+{
+    const bool isProcessActive = Process::isForegroundProcess();
+
+    if (wasProcessActive != isProcessActive)
+    {
+        wasProcessActive = isProcessActive;
+
+        if (isProcessActive && fileList != nullptr)
+            refresh();
+    }
 }

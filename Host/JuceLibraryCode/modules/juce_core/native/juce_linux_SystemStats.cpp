@@ -1,27 +1,29 @@
 /*
   ==============================================================================
 
-   This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   This file is part of the JUCE library.
+   Copyright (c) 2016 - ROLI Ltd.
 
-   Permission to use, copy, modify, and/or distribute this software for any purpose with
-   or without fee is hereby granted, provided that the above copyright notice and this
-   permission notice appear in all copies.
+   Permission is granted to use this software under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license/
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
-   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-   DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
-   IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   Permission to use, copy, modify, and/or distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
 
-   ------------------------------------------------------------------------------
+   THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH REGARD
+   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+   FITNESS. IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT,
+   OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+   USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+   TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+   OF THIS SOFTWARE.
 
-   NOTE! This permissive ISC license applies ONLY to files within the juce_core module!
-   All other JUCE modules are covered by a dual GPL/commercial license, so if you are
-   using any other modules, be sure to check that you also comply with their license.
+   -----------------------------------------------------------------------------
 
-   For more details, visit www.juce.com
+   To release a closed-source product which uses other parts of JUCE not
+   licensed under the ISC terms, commercial licenses are available: visit
+   www.juce.com for more information.
 
   ==============================================================================
 */
@@ -55,16 +57,21 @@ bool SystemStats::isOperatingSystem64Bit()
 //==============================================================================
 namespace LinuxStatsHelpers
 {
-    String getCpuInfo (const char* const key)
+    String getConfigFileValue (const char* file, const char* const key)
     {
         StringArray lines;
-        File ("/proc/cpuinfo").readLines (lines);
+        File (file).readLines (lines);
 
         for (int i = lines.size(); --i >= 0;) // (NB - it's important that this runs in reverse order)
             if (lines[i].upToFirstOccurrenceOf (":", false, false).trim().equalsIgnoreCase (key))
                 return lines[i].fromFirstOccurrenceOf (":", false, false).trim();
 
         return String();
+    }
+
+    String getCpuInfo (const char* key)
+    {
+        return getConfigFileValue ("/proc/cpuinfo", key);
     }
 }
 
@@ -93,14 +100,14 @@ int SystemStats::getMemorySizeInMegabytes()
     struct sysinfo sysi;
 
     if (sysinfo (&sysi) == 0)
-        return sysi.totalram * sysi.mem_unit / (1024 * 1024);
+        return (int) (sysi.totalram * sysi.mem_unit / (1024 * 1024));
 
     return 0;
 }
 
 int SystemStats::getPageSize()
 {
-    return sysconf (_SC_PAGESIZE);
+    return (int) sysconf (_SC_PAGESIZE);
 }
 
 //==============================================================================
@@ -150,6 +157,11 @@ void CPUInformation::initialise() noexcept
     hasSSE2  = flags.contains ("sse2");
     hasSSE3  = flags.contains ("sse3");
     has3DNow = flags.contains ("3dnow");
+    hasSSSE3 = flags.contains ("ssse3");
+    hasSSE41 = flags.contains ("sse4_1");
+    hasSSE42 = flags.contains ("sse4_2");
+    hasAVX   = flags.contains ("avx");
+    hasAVX2  = flags.contains ("avx2");
 
     numCpus = LinuxStatsHelpers::getCpuInfo ("processor").getIntValue() + 1;
 }
@@ -160,7 +172,7 @@ uint32 juce_millisecondsSinceStartup() noexcept
     timespec t;
     clock_gettime (CLOCK_MONOTONIC, &t);
 
-    return t.tv_sec * 1000 + t.tv_nsec / 1000000;
+    return (uint32) (t.tv_sec * 1000 + t.tv_nsec / 1000000);
 }
 
 int64 Time::getHighResolutionTicks() noexcept
@@ -188,4 +200,14 @@ bool Time::setSystemTimeToThisTime() const
     t.tv_usec = (millisSinceEpoch - t.tv_sec * 1000) * 1000;
 
     return settimeofday (&t, 0) == 0;
+}
+
+JUCE_API bool JUCE_CALLTYPE juce_isRunningUnderDebugger() noexcept
+{
+   #if JUCE_BSD
+    return false;
+   #else
+    return LinuxStatsHelpers::getConfigFileValue ("/proc/self/status", "TracerPid")
+             .getIntValue() > 0;
+   #endif
 }

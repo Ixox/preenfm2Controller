@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -26,8 +26,8 @@ FileSearchPathListComponent::FileSearchPathListComponent()
     : addButton ("+"),
       removeButton ("-"),
       changeButton (TRANS ("change...")),
-      upButton (String::empty, DrawableButton::ImageOnButtonBackground),
-      downButton (String::empty, DrawableButton::ImageOnButtonBackground)
+      upButton (String(), DrawableButton::ImageOnButtonBackground),
+      downButton (String(), DrawableButton::ImageOnButtonBackground)
 {
     listBox.setModel (this);
     addAndMakeVisible (listBox);
@@ -152,6 +152,8 @@ void FileSearchPathListComponent::returnKeyPressed (int row)
         path.add (chooser.getResult(), row);
         changed();
     }
+   #else
+    ignoreUnused (row);
    #endif
 }
 
@@ -220,10 +222,10 @@ void FileSearchPathListComponent::buttonClicked (Button* button)
     {
         File start (defaultBrowseTarget);
 
-        if (start == File::nonexistent)
+        if (start == File())
             start = path [0];
 
-        if (start == File::nonexistent)
+        if (start == File())
             start = File::getCurrentWorkingDirectory();
 
        #if JUCE_MODAL_LOOPS_PERMITTED

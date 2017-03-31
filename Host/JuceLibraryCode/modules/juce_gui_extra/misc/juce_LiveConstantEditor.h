@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -52,8 +52,9 @@ namespace LiveConstantEditor
     inline void setFromString (uint64& v,         const String& s)    { v = (uint64)         parseInt (s); }
     inline void setFromString (double& v,         const String& s)    { v = parseDouble (s); }
     inline void setFromString (float& v,          const String& s)    { v = (float) parseDouble (s); }
+    inline void setFromString (bool& v,           const String& s)    { v = (s == "true"); }
     inline void setFromString (String& v,         const String& s)    { v = s; }
-    inline void setFromString (Colour& v,         const String& s)    { v = Colour ((int) parseInt (s)); }
+    inline void setFromString (Colour& v,         const String& s)    { v = Colour ((uint32) parseInt (s)); }
 
     template <typename Type>
     inline String getAsString (const Type& v, bool)              { return String (v); }
@@ -63,14 +64,18 @@ namespace LiveConstantEditor
     inline String getAsString (unsigned short v, bool preferHex) { return intToString ((int) v, preferHex); }
     inline String getAsString (int v, bool preferHex)            { return intToString ((int) v, preferHex); }
     inline String getAsString (unsigned int v, bool preferHex)   { return intToString ((int) v, preferHex); }
+    inline String getAsString (bool v, bool)                     { return v ? "true" : "false"; }
     inline String getAsString (int64 v, bool preferHex)          { return intToString ((int64) v, preferHex); }
     inline String getAsString (uint64 v, bool preferHex)         { return intToString ((int64) v, preferHex); }
     inline String getAsString (Colour v, bool)                   { return intToString ((int) v.getARGB(), true); }
 
+    template <typename Type>    struct isStringType              { enum { value = 0 }; };
+    template <>                 struct isStringType<String>      { enum { value = 1 }; };
+
     template <typename Type>
     inline String getAsCode (Type& v, bool preferHex)       { return getAsString (v, preferHex); }
     inline String getAsCode (Colour v, bool)                { return "Colour (0x" + String::toHexString ((int) v.getARGB()).paddedLeft ('0', 8) + ")"; }
-    inline String getAsCode (const String& v, bool)         { return "\"" + v + "\""; }
+    inline String getAsCode (const String& v, bool)         { return CppTokeniserFunctions::addEscapeChars(v).quoted(); }
     inline String getAsCode (const char* v, bool)           { return getAsCode (String (v), false); }
 
     template <typename Type>
@@ -90,6 +95,7 @@ namespace LiveConstantEditor
         virtual String getCodeValue (bool preferHex) const = 0;
         virtual void setStringValue (const String&) = 0;
         virtual String getOriginalStringValue (bool preferHex) const = 0;
+        virtual bool isString() const = 0;
 
         String name, sourceFile;
         int sourceLine;
@@ -131,6 +137,7 @@ namespace LiveConstantEditor
     Component* createColourEditor (LivePropertyEditorBase&);
     Component* createIntegerSlider (LivePropertyEditorBase&);
     Component* createFloatSlider (LivePropertyEditorBase&);
+    Component* createBoolSlider (LivePropertyEditorBase&);
 
     template <typename Type> struct CustomEditor    { static Component* create (LivePropertyEditorBase&)   { return nullptr; } };
     template<> struct CustomEditor<char>            { static Component* create (LivePropertyEditorBase& e) { return createIntegerSlider (e); } };
@@ -144,6 +151,7 @@ namespace LiveConstantEditor
     template<> struct CustomEditor<float>           { static Component* create (LivePropertyEditorBase& e) { return createFloatSlider (e); } };
     template<> struct CustomEditor<double>          { static Component* create (LivePropertyEditorBase& e) { return createFloatSlider (e); } };
     template<> struct CustomEditor<Colour>          { static Component* create (LivePropertyEditorBase& e) { return createColourEditor (e); } };
+    template<> struct CustomEditor<bool>            { static Component* create (LivePropertyEditorBase& e) { return createBoolSlider (e); } };
 
     template <typename Type>
     struct LivePropertyEditor  : public LivePropertyEditorBase
@@ -175,6 +183,7 @@ namespace LiveConstantEditor
         String getCodeValue (bool preferHex) const override             { return getAsCode (value, preferHex); }
         String getOriginalStringValue (bool preferHex) const override   { return getAsString (originalValue, preferHex); }
         void setStringValue (const String& s) override                  { setFromString (value, s); }
+        bool isString() const override                                  { return isStringType<Type>::value; }
 
         Type value, originalValue;
 
@@ -189,7 +198,7 @@ namespace LiveConstantEditor
         ValueList();
         ~ValueList();
 
-        static ValueList& getInstance();
+        juce_DeclareSingleton (ValueList, false)
 
         template <typename Type>
         LiveValue<Type>& getValue (const char* file, int line, const Type& initialValue)
@@ -228,7 +237,7 @@ namespace LiveConstantEditor
     template <typename Type>
     inline LiveValue<Type>& getValue (const char* file, int line, const Type& initialValue)
     {
-        return ValueList::getInstance().getValue (file, line, initialValue);
+        return ValueList::getInstance()->getValue (file, line, initialValue);
     }
 
     inline LiveValue<String>& getValue (const char* file, int line, const char* initialValue)

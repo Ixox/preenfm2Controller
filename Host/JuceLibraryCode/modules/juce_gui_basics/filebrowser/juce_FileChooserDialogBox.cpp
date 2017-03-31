@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -238,7 +238,7 @@ void FileChooserDialogBox::createNewFolder()
                                            TRANS("Please enter the name for the folder"),
                                            AlertWindow::NoIcon, this);
 
-        aw->addTextEditor ("Folder Name", String::empty, String::empty, false);
+        aw->addTextEditor ("Folder Name", String(), String(), false);
         aw->addButton (TRANS("Create Folder"), 1, KeyPress (KeyPress::returnKey));
         aw->addButton (TRANS("Cancel"),        0, KeyPress (KeyPress::escapeKey));
 

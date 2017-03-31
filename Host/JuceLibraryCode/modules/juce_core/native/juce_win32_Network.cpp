@@ -1,27 +1,29 @@
 /*
   ==============================================================================
 
-   This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   This file is part of the JUCE library.
+   Copyright (c) 2016 - ROLI Ltd.
 
-   Permission to use, copy, modify, and/or distribute this software for any purpose with
-   or without fee is hereby granted, provided that the above copyright notice and this
-   permission notice appear in all copies.
+   Permission is granted to use this software under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license/
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
-   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-   DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
-   IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   Permission to use, copy, modify, and/or distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
 
-   ------------------------------------------------------------------------------
+   THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH REGARD
+   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+   FITNESS. IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT,
+   OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+   USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+   TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+   OF THIS SOFTWARE.
 
-   NOTE! This permissive ISC license applies ONLY to files within the juce_core module!
-   All other JUCE modules are covered by a dual GPL/commercial license, so if you are
-   using any other modules, be sure to check that you also comply with their license.
+   -----------------------------------------------------------------------------
 
-   For more details, visit www.juce.com
+   To release a closed-source product which uses other parts of JUCE not
+   licensed under the ISC terms, commercial licenses are available: visit
+   www.juce.com for more information.
 
   ==============================================================================
 */
@@ -35,23 +37,53 @@
 #endif
 
 //==============================================================================
-class WebInputStream  : public InputStream
+class WebInputStream::Pimpl
 {
 public:
-    WebInputStream (const String& address_, bool isPost_, const MemoryBlock& postData_,
-                    URL::OpenStreamProgressCallback* progressCallback, void* progressCallbackContext,
-                    const String& headers_, int timeOutMs_, StringPairArray* responseHeaders)
-      : statusCode (0), connection (0), request (0),
-        address (address_), headers (headers_), postData (postData_), position (0),
-        finished (false), isPost (isPost_), timeOutMs (timeOutMs_)
-    {
-        createConnection (progressCallback, progressCallbackContext);
+    Pimpl (WebInputStream& pimplOwner, const URL& urlToCopy, bool shouldBePost)
+        : statusCode (0), owner (pimplOwner), url (urlToCopy), connection (0), request (0),
+          position (0), finished (false), isPost (shouldBePost), timeOutMs (0),
+          httpRequestCmd (isPost ? "POST" : "GET"), numRedirectsToFollow (5)
+    {}
 
-        if (! isError())
+    ~Pimpl()
+    {
+        close();
+    }
+
+    //==============================================================================
+    // WebInputStream methods
+    void withExtraHeaders (const String& extraHeaders)
+    {
+        if (! headers.endsWithChar ('\n') && headers.isNotEmpty())
+            headers << "\r\n";
+
+        headers << extraHeaders;
+
+        if (! headers.endsWithChar ('\n') && headers.isNotEmpty())
+            headers << "\r\n";
+    }
+
+    void withCustomRequestCommand (const String& customRequestCommand)    { httpRequestCmd = customRequestCommand; }
+    void withConnectionTimeout (int timeoutInMs)                          { timeOutMs = timeoutInMs; }
+    void withNumRedirectsToFollow (int maxRedirectsToFollow)              { numRedirectsToFollow = maxRedirectsToFollow; }
+    StringPairArray getRequestHeaders() const                             { return WebInputStream::parseHttpHeaders (headers); }
+    StringPairArray getResponseHeaders() const                            { return responseHeaders; }
+    int getStatusCode() const                                             { return statusCode; }
+
+    //==============================================================================
+    bool connect (WebInputStream::Listener* listener)
+    {
+        String address = url.toString (! isPost);
+
+        while (numRedirectsToFollow-- >= 0)
         {
-            if (responseHeaders != nullptr)
+            createConnection (address, listener);
+
+            if (! isError())
             {
                 DWORD bufferSizeBytes = 4096;
+                StringPairArray dataHeaders;
 
                 for (;;)
                 {
@@ -65,35 +97,62 @@ public:
                         for (int i = 0; i < headersArray.size(); ++i)
                         {
                             const String& header = headersArray[i];
-                            const String key (header.upToFirstOccurrenceOf (": ", false, false));
+                            const String key   (header.upToFirstOccurrenceOf (": ", false, false));
                             const String value (header.fromFirstOccurrenceOf (": ", false, false));
-                            const String previousValue ((*responseHeaders) [key]);
-
-                            responseHeaders->set (key, previousValue.isEmpty() ? value : (previousValue + "," + value));
+                            const String previousValue (dataHeaders[key]);
+                            dataHeaders.set (key, previousValue.isEmpty() ? value : (previousValue + "," + value));
                         }
 
                         break;
                     }
 
                     if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
-                        break;
+                        return false;
+
+                    bufferSizeBytes += 4096;
                 }
+
+                DWORD status = 0;
+                DWORD statusSize = sizeof (status);
+
+                if (HttpQueryInfo (request, HTTP_QUERY_STATUS_CODE | HTTP_QUERY_FLAG_NUMBER, &status, &statusSize, 0))
+                {
+                    statusCode = (int) status;
+
+                    if (numRedirectsToFollow >= 0
+                         && (statusCode == 301 || statusCode == 302 || statusCode == 303 || statusCode == 307))
+                    {
+                        String newLocation (dataHeaders["Location"]);
+
+                        // Check whether location is a relative URI - this is an incomplete test for relative path,
+                        // but we'll use it for now (valid protocols for this implementation are http, https & ftp)
+                        if (! (newLocation.startsWithIgnoreCase ("http://")
+                                || newLocation.startsWithIgnoreCase ("https://")
+                                || newLocation.startsWithIgnoreCase ("ftp://")))
+                        {
+                            if (newLocation.startsWithChar ('/'))
+                                newLocation = URL (address).withNewSubPath (newLocation).toString (true);
+                            else
+                                newLocation = address + "/" + newLocation;
+                        }
+
+                        if (newLocation.isNotEmpty() && newLocation != address)
+                        {
+                            address = newLocation;
+                            continue;
+                        }
+                    }
+                }
+
+                responseHeaders.addArray (dataHeaders);
             }
 
-            DWORD status = 0;
-            DWORD statusSize = sizeof (status);
-
-            if (HttpQueryInfo (request, HTTP_QUERY_STATUS_CODE | HTTP_QUERY_FLAG_NUMBER, &status, &statusSize, 0))
-                statusCode = (int) status;
+            break;
         }
+
+        return (request != 0);
     }
 
-    ~WebInputStream()
-    {
-        close();
-    }
-
-    //==============================================================================
     bool isError() const        { return request == 0; }
     bool isExhausted()          { return finished; }
     int64 getPosition()         { return position; }
@@ -128,6 +187,11 @@ public:
         return (int) bytesRead;
     }
 
+    void cancel()
+    {
+        close();
+    }
+
     bool setPosition (int64 wantedPos)
     {
         if (isError())
@@ -142,13 +206,14 @@ public:
                 return true;
 
             if (wantedPos < position)
-            {
-                close();
-                position = 0;
-                createConnection (0, 0);
-            }
+                return false;
 
-            skipNextBytes (wantedPos - position);
+            int64 numBytesToSkip = wantedPos - position;
+            const int skipBufferSize = (int) jmin (numBytesToSkip, (int64) 16384);
+            HeapBlock<char> temp ((size_t) skipBufferSize);
+
+            while (numBytesToSkip > 0 && ! isExhausted())
+                numBytesToSkip -= read (temp, (int) jmin (numBytesToSkip, (int64) skipBufferSize));
         }
 
         return true;
@@ -158,21 +223,26 @@ public:
 
 private:
     //==============================================================================
+    WebInputStream& owner;
+    const URL url;
     HINTERNET connection, request;
-    String address, headers;
+    String headers;
     MemoryBlock postData;
     int64 position;
     bool finished;
     const bool isPost;
     int timeOutMs;
+    String httpRequestCmd;
+    int numRedirectsToFollow;
+    StringPairArray responseHeaders;
 
     void close()
     {
-        if (request != 0)
-        {
-            InternetCloseHandle (request);
-            request = 0;
-        }
+        HINTERNET requestCopy = request;
+
+        request = 0;
+        if (requestCopy != 0)
+            InternetCloseHandle (requestCopy);
 
         if (connection != 0)
         {
@@ -181,8 +251,7 @@ private:
         }
     }
 
-    void createConnection (URL::OpenStreamProgressCallback* progressCallback,
-                           void* progressCallbackContext)
+    void createConnection (const String& address, WebInputStream::Listener* listener)
     {
         static HINTERNET sessionHandle = InternetOpen (_T("juce"), INTERNET_OPEN_TYPE_PRECONFIG, 0, 0, 0);
 
@@ -209,14 +278,17 @@ private:
             uc.lpszPassword = password;
             uc.dwPasswordLength = passwordNumChars;
 
+            if (isPost)
+                WebInputStream::createHeadersAndPostData (url, headers, postData);
+
             if (InternetCrackUrl (address.toWideCharPointer(), 0, 0, &uc))
-                openConnection (uc, sessionHandle, progressCallback, progressCallbackContext);
+                openConnection (uc, sessionHandle, address, listener);
         }
     }
 
     void openConnection (URL_COMPONENTS& uc, HINTERNET sessionHandle,
-                         URL::OpenStreamProgressCallback* progressCallback,
-                         void* progressCallbackContext)
+                         const String& address,
+                         WebInputStream::Listener* listener)
     {
         int disable = 1;
         InternetSetOption (sessionHandle, INTERNET_OPTION_DISABLE_AUTODIAL, &disable, sizeof (disable));
@@ -245,7 +317,7 @@ private:
                 request = FtpOpenFile (connection, uc.lpszUrlPath, GENERIC_READ,
                                        FTP_TRANSFER_TYPE_BINARY | INTERNET_FLAG_NEED_FILE, 0);
             else
-                openHTTPConnection (uc, progressCallback, progressCallbackContext);
+                openHTTPConnection (uc, address, listener);
         }
     }
 
@@ -254,22 +326,24 @@ private:
         InternetSetOption (sessionHandle, option, &timeOutMs, sizeof (timeOutMs));
     }
 
-    void openHTTPConnection (URL_COMPONENTS& uc, URL::OpenStreamProgressCallback* progressCallback,
-                             void* progressCallbackContext)
+    void openHTTPConnection (URL_COMPONENTS& uc, const String& address, WebInputStream::Listener* listener)
     {
         const TCHAR* mimeTypes[] = { _T("*/*"), nullptr };
 
-        DWORD flags = INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_COOKIES;
+        DWORD flags = INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_COOKIES
+                        | INTERNET_FLAG_NO_AUTO_REDIRECT | SECURITY_SET_MASK;
 
         if (address.startsWithIgnoreCase ("https:"))
             flags |= INTERNET_FLAG_SECURE;  // (this flag only seems necessary if the OS is running IE6 -
                                             //  IE7 seems to automatically work out when it's https)
 
-        request = HttpOpenRequest (connection, isPost ? _T("POST") : _T("GET"),
+        request = HttpOpenRequest (connection, httpRequestCmd.toWideCharPointer(),
                                    uc.lpszUrlPath, 0, 0, mimeTypes, flags, 0);
 
         if (request != 0)
         {
+            setSecurityFlags();
+
             INTERNET_BUFFERS buffers = { 0 };
             buffers.dwStructSize = sizeof (INTERNET_BUFFERS);
             buffers.lpcszHeader = headers.toWideCharPointer();
@@ -303,8 +377,8 @@ private:
 
                     bytesSent += bytesDone;
 
-                    if (progressCallback != nullptr
-                          && ! progressCallback (progressCallbackContext, bytesSent, (int) postData.getSize()))
+                    if (listener != nullptr
+                          && ! listener->postDataSendProgress (owner, bytesSent, (int) postData.getSize()))
                         break;
                 }
             }
@@ -313,7 +387,15 @@ private:
         close();
     }
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WebInputStream)
+    void setSecurityFlags()
+    {
+        DWORD dwFlags = 0, dwBuffLen = sizeof (DWORD);
+        InternetQueryOption (request, INTERNET_OPTION_SECURITY_FLAGS, &dwFlags, &dwBuffLen);
+        dwFlags |= SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_SET_MASK;
+        InternetSetOption (request, INTERNET_OPTION_SECURITY_FLAGS, &dwFlags, sizeof (dwFlags));
+    }
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Pimpl)
 };
 
 
@@ -459,7 +541,7 @@ bool JUCE_CALLTYPE Process::openEmailWithAttachments (const String& targetEmailA
     message.nRecipCount = 1;
     message.lpRecips = &recip;
 
-    HeapBlock <MapiFileDesc> files;
+    HeapBlock<MapiFileDesc> files;
     files.calloc ((size_t) filesToAttach.size());
 
     message.nFileCount = (ULONG) filesToAttach.size();
@@ -472,4 +554,9 @@ bool JUCE_CALLTYPE Process::openEmailWithAttachments (const String& targetEmailA
     }
 
     return mapiSendMail (0, 0, &message, MAPI_DIALOG | MAPI_LOGON_UI, 0) == SUCCESS_SUCCESS;
+}
+
+URL::DownloadTask* URL::downloadToFile (const File& targetLocation, String extraHeaders, DownloadTask::Listener* listener)
+{
+    return URL::DownloadTask::createFallbackDownloader (*this, targetLocation, extraHeaders, listener);
 }

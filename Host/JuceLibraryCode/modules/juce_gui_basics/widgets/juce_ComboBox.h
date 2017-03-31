@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -57,13 +57,13 @@ public:
 
         @param componentName    the name to set for the component (see Component::setName())
     */
-    explicit ComboBox (const String& componentName = String::empty);
+    explicit ComboBox (const String& componentName = String());
 
     /** Destructor. */
-    ~ComboBox();
+    virtual ~ComboBox();
 
     //==============================================================================
-    /** Sets whether the test in the combo-box is editable.
+    /** Sets whether the text in the combo-box is editable.
 
         The default state for a new ComboBox is non-editable, and can only be changed
         by choosing from the drop-down list.
@@ -94,7 +94,7 @@ public:
         @param newItemId        an associated ID number that can be set or retrieved - see
                                 getSelectedId() and setSelectedId(). Note that this value can not
                                 be 0!
-        @see setItemEnabled, addSeparator, addSectionHeading, removeItem, getNumItems, getItemText, getItemId
+        @see setItemEnabled, addSeparator, addSectionHeading, getNumItems, getItemText, getItemId
     */
     void addItem (const String& newItemText, int newItemId);
 
@@ -142,7 +142,7 @@ public:
         If this call causes the content to be cleared, and a change-message
         will be broadcast according to the notification parameter.
 
-        @see addItem, removeItem, getNumItems
+        @see addItem, getNumItems
     */
     void clear (NotificationType notification = sendNotificationAsync);
 
@@ -263,6 +263,17 @@ public:
     */
     virtual void showPopup();
 
+    /** Hides the combo box's popup list, if it's currently visible. */
+    void hidePopup();
+
+    /** Returns true if the popup menu is currently being shown. */
+    bool isPopupActive() const noexcept                 { return menuActive; }
+
+    /** Returns the PopupMenu object associated with the ComboBox.
+        Can be useful for adding sub-menus to the ComboBox standard PopupMenu
+    */
+    PopupMenu* getRootMenu() { return &currentMenu; }
+
     //==============================================================================
     /**
         A class for receiving events from a ComboBox.
@@ -329,7 +340,7 @@ public:
         These constants can be used either via the Component::setColour(), or LookAndFeel::setColour()
         methods.
 
-        To change the colours of the menu that pops up
+        To change the colours of the menu that pops up, you can set the colour IDs in PopupMenu::ColourIDs.
 
         @see Component::setColour, Component::findColour, LookAndFeel::setColour, LookAndFeel::findColour
     */
@@ -407,32 +418,29 @@ public:
 
 private:
     //==============================================================================
-    struct ItemInfo
+    enum EditableState
     {
-        ItemInfo (const String&, int itemId, bool isEnabled, bool isHeading);
-        bool isSeparator() const noexcept;
-        bool isRealItem() const noexcept;
-
-        String name;
-        int itemId;
-        bool isEnabled : 1, isHeading : 1;
+        editableUnknown,
+        labelIsNotEditable,
+        labelIsEditable
     };
 
-    OwnedArray <ItemInfo> items;
+    PopupMenu currentMenu;
     Value currentId;
     int lastCurrentId;
-    bool isButtonDown, separatorPending, menuActive, scrollWheelEnabled;
+    bool isButtonDown, menuActive, scrollWheelEnabled;
     float mouseWheelAccumulator;
-    ListenerList <Listener> listeners;
+    ListenerList<Listener> listeners;
     ScopedPointer<Label> label;
     String textWhenNothingSelected, noChoicesMessage;
+    EditableState labelEditableState;
 
-    ItemInfo* getItemForId (int) const noexcept;
-    ItemInfo* getItemForIndex (int) const noexcept;
+    PopupMenu::Item* getItemForId (int) const noexcept;
+    PopupMenu::Item* getItemForIndex (int) const noexcept;
     bool selectIfEnabled (int index);
     bool nudgeSelectedItem (int delta);
     void sendChange (NotificationType);
-    static void popupMenuFinishedCallback (int, ComboBox*);
+    void showPopupIfNotActive();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ComboBox)
 };

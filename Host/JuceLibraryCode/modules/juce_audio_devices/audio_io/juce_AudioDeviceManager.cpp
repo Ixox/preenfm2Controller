@@ -2,22 +2,28 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2016 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   Permission is granted to use this software under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license/
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   Permission to use, copy, modify, and/or distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH REGARD
+   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+   FITNESS. IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT,
+   OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+   USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+   TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+   OF THIS SOFTWARE.
 
-   ------------------------------------------------------------------------------
+   -----------------------------------------------------------------------------
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   To release a closed-source product which uses other parts of JUCE not
+   licensed under the ISC terms, commercial licenses are available: visit
+   www.juce.com for more information.
 
   ==============================================================================
 */
@@ -86,14 +92,11 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CallbackHandler)
 };
 
-
 //==============================================================================
 AudioDeviceManager::AudioDeviceManager()
     : numInputChansNeeded (0),
       numOutputChansNeeded (2),
       listNeedsScanning (true),
-      useInputNames (false),
-      inputLevel (0),
       testSoundPosition (0),
       cpuUsageMs (0),
       timeToCpuScale (0)
@@ -106,7 +109,6 @@ AudioDeviceManager::~AudioDeviceManager()
     currentAudioDevice = nullptr;
     defaultMidiOutput = nullptr;
 }
-
 
 //==============================================================================
 void AudioDeviceManager::createDeviceTypesIfNeeded()
@@ -154,7 +156,8 @@ static void addIfNotNull (OwnedArray<AudioIODeviceType>& list, AudioIODeviceType
 
 void AudioDeviceManager::createAudioDeviceTypes (OwnedArray<AudioIODeviceType>& list)
 {
-    addIfNotNull (list, AudioIODeviceType::createAudioIODeviceType_WASAPI());
+    addIfNotNull (list, AudioIODeviceType::createAudioIODeviceType_WASAPI (false));
+    addIfNotNull (list, AudioIODeviceType::createAudioIODeviceType_WASAPI (true));
     addIfNotNull (list, AudioIODeviceType::createAudioIODeviceType_DirectSound());
     addIfNotNull (list, AudioIODeviceType::createAudioIODeviceType_ASIO());
     addIfNotNull (list, AudioIODeviceType::createAudioIODeviceType_CoreAudio());
@@ -175,6 +178,17 @@ void AudioDeviceManager::addAudioDeviceType (AudioIODeviceType* newDeviceType)
 
         newDeviceType->addListener (callbackHandler);
     }
+}
+
+static bool deviceListContains (AudioIODeviceType* type, bool isInput, const String& name)
+{
+    StringArray devices (type->getDeviceNames (isInput));
+
+    for (int i = devices.size(); --i >= 0;)
+        if (devices[i].trim().equalsIgnoreCase (name.trim()))
+            return true;
+
+    return false;
 }
 
 //==============================================================================
@@ -274,8 +288,8 @@ String AudioDeviceManager::initialiseFromXML (const XmlElement& xml,
             currentDeviceType = availableDeviceTypes.getUnchecked(0)->getTypeName();
     }
 
-    setup.bufferSize = xml.getIntAttribute ("audioDeviceBufferSize");
-    setup.sampleRate = xml.getDoubleAttribute ("audioDeviceRate");
+    setup.bufferSize = xml.getIntAttribute ("audioDeviceBufferSize", setup.bufferSize);
+    setup.sampleRate = xml.getDoubleAttribute ("audioDeviceRate", setup.sampleRate);
 
     setup.inputChannels .parseString (xml.getStringAttribute ("audioDeviceInChans",  "11"), 2);
     setup.outputChannels.parseString (xml.getStringAttribute ("audioDeviceOutChans", "11"), 2);
@@ -363,8 +377,8 @@ AudioIODeviceType* AudioDeviceManager::findType (const String& inputName, const 
     {
         AudioIODeviceType* const type = availableDeviceTypes.getUnchecked(i);
 
-        if ((inputName.isNotEmpty() && type->getDeviceNames (true).contains (inputName, true))
-            || (outputName.isNotEmpty() && type->getDeviceNames (false).contains (outputName, true)))
+        if ((inputName.isNotEmpty() && deviceListContains (type, true, inputName))
+             || (outputName.isNotEmpty() && deviceListContains (type, false, outputName)))
         {
             return type;
         }
@@ -373,7 +387,7 @@ AudioIODeviceType* AudioDeviceManager::findType (const String& inputName, const 
     return nullptr;
 }
 
-void AudioDeviceManager::getAudioDeviceSetup (AudioDeviceSetup& setup)
+void AudioDeviceManager::getAudioDeviceSetup (AudioDeviceSetup& setup) const
 {
     setup = currentSetup;
 }
@@ -458,17 +472,11 @@ String AudioDeviceManager::setAudioDeviceSetup (const AudioDeviceSetup& newSetup
         deleteCurrentDevice();
         scanDevicesIfNeeded();
 
-        if (newOutputDeviceName.isNotEmpty()
-             && ! type->getDeviceNames (false).contains (newOutputDeviceName))
-        {
+        if (newOutputDeviceName.isNotEmpty() && ! deviceListContains (type, false, newOutputDeviceName))
             return "No such device: " + newOutputDeviceName;
-        }
 
-        if (newInputDeviceName.isNotEmpty()
-             && ! type->getDeviceNames (true).contains (newInputDeviceName))
-        {
+        if (newInputDeviceName.isNotEmpty() && ! deviceListContains (type, true, newInputDeviceName))
             return "No such device: " + newInputDeviceName;
-        }
 
         currentAudioDevice = type->createDevice (newOutputDeviceName, newInputDeviceName);
 
@@ -545,6 +553,11 @@ double AudioDeviceManager::chooseBestSampleRate (double rate) const
     jassert (currentAudioDevice != nullptr);
 
     const Array<double> rates (currentAudioDevice->getAvailableSampleRates());
+
+    if (rate > 0 && rates.contains (rate))
+        return rate;
+
+    rate = currentAudioDevice->getCurrentSampleRate();
 
     if (rate > 0 && rates.contains (rate))
         return rate;
@@ -692,31 +705,8 @@ void AudioDeviceManager::audioDeviceIOCallbackInt (const float** inputChannelDat
 {
     const ScopedLock sl (audioCallbackLock);
 
-    if (inputLevelMeasurementEnabledCount.get() > 0 && numInputChannels > 0)
-    {
-        for (int j = 0; j < numSamples; ++j)
-        {
-            float s = 0;
-
-            for (int i = 0; i < numInputChannels; ++i)
-                s += std::abs (inputChannelData[i][j]);
-
-            s /= numInputChannels;
-
-            const double decayFactor = 0.99992;
-
-            if (s > inputLevel)
-                inputLevel = s;
-            else if (inputLevel > 0.001f)
-                inputLevel *= decayFactor;
-            else
-                inputLevel = 0;
-        }
-    }
-    else
-    {
-        inputLevel = 0;
-    }
+    inputLevelMeter.updateLevel (inputChannelData, numInputChannels, numSamples);
+    outputLevelMeter.updateLevel (const_cast<const float**> (outputChannelData), numOutputChannels, numSamples);
 
     if (callbacks.size() > 0)
     {
@@ -934,6 +924,49 @@ void AudioDeviceManager::setDefaultMidiOutput (const String& deviceName)
 }
 
 //==============================================================================
+AudioDeviceManager::LevelMeter::LevelMeter() noexcept : level() {}
+
+void AudioDeviceManager::LevelMeter::updateLevel (const float* const* channelData, int numChannels, int numSamples) noexcept
+{
+    if (enabled.get() != 0 && numChannels > 0)
+    {
+        for (int j = 0; j < numSamples; ++j)
+        {
+            float s = 0;
+
+            for (int i = 0; i < numChannels; ++i)
+                s += std::abs (channelData[i][j]);
+
+            s /= numChannels;
+
+            const double decayFactor = 0.99992;
+
+            if (s > level)
+                level = s;
+            else if (level > 0.001f)
+                level *= decayFactor;
+            else
+                level = 0;
+        }
+    }
+    else
+    {
+        level = 0;
+    }
+}
+
+void AudioDeviceManager::LevelMeter::setEnabled (bool shouldBeEnabled) noexcept
+{
+    enabled.set (shouldBeEnabled ? 1 : 0);
+    level = 0;
+}
+
+double AudioDeviceManager::LevelMeter::getCurrentLevel() const noexcept
+{
+    jassert (enabled.get() != 0); // you need to call setEnabled (true) before using this!
+    return level;
+}
+
 void AudioDeviceManager::playTestSound()
 {
     { // cunningly nested to swap, unlock and delete in that order.
@@ -970,18 +1003,8 @@ void AudioDeviceManager::playTestSound()
     }
 }
 
-void AudioDeviceManager::enableInputLevelMeasurement (const bool enableMeasurement)
-{
-    if (enableMeasurement)
-        ++inputLevelMeasurementEnabledCount;
-    else
-        --inputLevelMeasurementEnabledCount;
+double AudioDeviceManager::getCurrentInputLevel() const noexcept    { return inputLevelMeter.getCurrentLevel(); }
+double AudioDeviceManager::getCurrentOutputLevel() const noexcept   { return outputLevelMeter.getCurrentLevel(); }
 
-    inputLevel = 0;
-}
-
-double AudioDeviceManager::getCurrentInputLevel() const
-{
-    jassert (inputLevelMeasurementEnabledCount.get() > 0); // you need to call enableInputLevelMeasurement() before using this!
-    return inputLevel;
-}
+void AudioDeviceManager::enableInputLevelMeasurement  (bool enable) noexcept  { inputLevelMeter.setEnabled (enable); }
+void AudioDeviceManager::enableOutputLevelMeasurement (bool enable) noexcept  { outputLevelMeter.setEnabled (enable); }

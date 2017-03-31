@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -29,14 +29,15 @@ class Toolbar::Spacer  : public ToolbarItemComponent
 {
 public:
     Spacer (const int itemId_, const float fixedSize_, const bool drawBar_)
-        : ToolbarItemComponent (itemId_, String::empty, false),
+        : ToolbarItemComponent (itemId_, String(), false),
           fixedSize (fixedSize_),
           drawBar (drawBar_)
     {
+        setWantsKeyboardFocus (false);
     }
 
     bool getToolbarItemSizes (int toolbarThickness, bool /*isToolbarVertical*/,
-                              int& preferredSize, int& minSize, int& maxSize)
+                              int& preferredSize, int& minSize, int& maxSize) override
     {
         if (fixedSize <= 0)
         {
@@ -158,7 +159,7 @@ public:
         {
             ToolbarItemComponent* const tc = bar.items.getUnchecked(i);
 
-            if (dynamic_cast <Spacer*> (tc) == nullptr && ! tc->isVisible())
+            if (dynamic_cast<Spacer*> (tc) == nullptr && ! tc->isVisible())
             {
                 oldIndexes.insert (0, i);
                 addAndMakeVisible (tc, 0);
@@ -174,10 +175,10 @@ public:
         {
             for (int i = 0; i < getNumChildComponents(); ++i)
             {
-                if (ToolbarItemComponent* const tc = dynamic_cast <ToolbarItemComponent*> (getChildComponent (i)))
+                if (ToolbarItemComponent* const tc = dynamic_cast<ToolbarItemComponent*> (getChildComponent (i)))
                 {
                     tc->setVisible (false);
-                    const int index = oldIndexes.remove (i);
+                    const int index = oldIndexes.removeAndReturn (i);
                     owner->addChildComponent (tc, index);
                     --i;
                 }
@@ -196,7 +197,7 @@ public:
 
         for (int i = 0; i < getNumChildComponents(); ++i)
         {
-            if (ToolbarItemComponent* const tc = dynamic_cast <ToolbarItemComponent*> (getChildComponent (i)))
+            if (ToolbarItemComponent* const tc = dynamic_cast<ToolbarItemComponent*> (getChildComponent (i)))
             {
                 int preferredSize = 1, minSize = 1, maxSize = 1;
 
@@ -219,7 +220,7 @@ public:
         setSize (maxX + 8, y + height + 8);
     }
 
-    void getIdealSize (int& idealWidth, int& idealHeight)
+    void getIdealSize (int& idealWidth, int& idealHeight) override
     {
         idealWidth = getWidth();
         idealHeight = getHeight();
@@ -455,7 +456,7 @@ void Toolbar::updateAllItemPositions (const bool animate)
 
             tc->setStyle (toolbarStyle);
 
-            Spacer* const spacer = dynamic_cast <Spacer*> (tc);
+            Spacer* const spacer = dynamic_cast<Spacer*> (tc);
 
             int preferredSize = 1, minSize = 1, maxSize = 1;
 
@@ -555,7 +556,7 @@ bool Toolbar::isInterestedInDragSource (const SourceDetails& dragSourceDetails)
 
 void Toolbar::itemDragMove (const SourceDetails& dragSourceDetails)
 {
-    if (ToolbarItemComponent* const tc = dynamic_cast <ToolbarItemComponent*> (dragSourceDetails.sourceComponent.get()))
+    if (ToolbarItemComponent* const tc = dynamic_cast<ToolbarItemComponent*> (dragSourceDetails.sourceComponent.get()))
     {
         if (! items.contains (tc))
         {
@@ -591,8 +592,8 @@ void Toolbar::itemDragMove (const SourceDetails& dragSourceDetails)
             {
                 const Rectangle<int> previousPos (animator.getComponentDestination (prev));
 
-                if (abs (dragObjectLeft - (vertical ? previousPos.getY() : previousPos.getX())
-                      < abs (dragObjectRight - (vertical ? current.getBottom() : current.getRight()))))
+                if (std::abs (dragObjectLeft - (vertical ? previousPos.getY() : previousPos.getX()))
+                     < std::abs (dragObjectRight - (vertical ? current.getBottom() : current.getRight())))
                 {
                     newIndex = getIndexOfChildComponent (prev);
                 }
@@ -602,8 +603,8 @@ void Toolbar::itemDragMove (const SourceDetails& dragSourceDetails)
             {
                 const Rectangle<int> nextPos (animator.getComponentDestination (next));
 
-                if (abs (dragObjectLeft - (vertical ? current.getY() : current.getX())
-                     > abs (dragObjectRight - (vertical ? nextPos.getBottom() : nextPos.getRight()))))
+                if (std::abs (dragObjectLeft - (vertical ? current.getY() : current.getX()))
+                     > std::abs (dragObjectRight - (vertical ? nextPos.getBottom() : nextPos.getRight())))
                 {
                     newIndex = getIndexOfChildComponent (next) + 1;
                 }
@@ -623,7 +624,7 @@ void Toolbar::itemDragMove (const SourceDetails& dragSourceDetails)
 
 void Toolbar::itemDragExit (const SourceDetails& dragSourceDetails)
 {
-    if (ToolbarItemComponent* const tc = dynamic_cast <ToolbarItemComponent*> (dragSourceDetails.sourceComponent.get()))
+    if (ToolbarItemComponent* const tc = dynamic_cast<ToolbarItemComponent*> (dragSourceDetails.sourceComponent.get()))
     {
         if (isParentOf (tc))
         {
@@ -636,7 +637,7 @@ void Toolbar::itemDragExit (const SourceDetails& dragSourceDetails)
 
 void Toolbar::itemDropped (const SourceDetails& dragSourceDetails)
 {
-    if (ToolbarItemComponent* const tc = dynamic_cast <ToolbarItemComponent*> (dragSourceDetails.sourceComponent.get()))
+    if (ToolbarItemComponent* const tc = dynamic_cast<ToolbarItemComponent*> (dragSourceDetails.sourceComponent.get()))
         tc->setState (Button::buttonNormal);
 }
 
@@ -669,7 +670,7 @@ public:
     bool canModalEventBeSentToComponent (const Component* comp) override
     {
         return toolbar.isParentOf (comp)
-                 || dynamic_cast <const ToolbarItemComponent::ItemDragAndDropOverlayComponent*> (comp) != nullptr;
+                 || dynamic_cast<const ToolbarItemComponent::ItemDragAndDropOverlayComponent*> (comp) != nullptr;
     }
 
     void positionNearBar()
@@ -708,9 +709,9 @@ private:
     public:
         CustomiserPanel (ToolbarItemFactory& tbf, Toolbar& bar, int optionFlags)
           : factory (tbf), toolbar (bar), palette (tbf, bar),
-            instructions (String::empty, TRANS ("You can drag the items above and drop them onto a toolbar to add them.")
-                                          + "\n\n"
-                                          + TRANS ("Items on the toolbar can also be dragged around to change their order, or dragged off the edge to delete them.")),
+            instructions (String(), TRANS ("You can drag the items above and drop them onto a toolbar to add them.")
+                                      + "\n\n"
+                                      + TRANS ("Items on the toolbar can also be dragged around to change their order, or dragged off the edge to delete them.")),
             defaultButton (TRANS ("Restore to default set of items"))
         {
             addAndMakeVisible (palette);

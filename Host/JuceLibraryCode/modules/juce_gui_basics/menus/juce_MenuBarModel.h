@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -80,8 +80,7 @@ public:
         virtual ~Listener() {}
 
         //==============================================================================
-        /** This callback is made when items are changed in the menu bar model.
-        */
+        /** This callback is made when items are changed in the menu bar model. */
         virtual void menuBarItemsChanged (MenuBarModel* menuBarModel) = 0;
 
         /** This callback is made when an application command is invoked that
@@ -89,6 +88,10 @@ public:
         */
         virtual void menuCommandInvoked (MenuBarModel* menuBarModel,
                                          const ApplicationCommandTarget::InvocationInfo& info) = 0;
+
+        /** Called when the menu bar is first activated or when the user finished interacting
+            with the menu bar. */
+        virtual void menuBarActivated (MenuBarModel* menuBarModel, bool isActive);
     };
 
     /** Registers a listener for callbacks when the menu items in this model change.
@@ -101,7 +104,6 @@ public:
     void addListener (Listener* listenerToAdd) noexcept;
 
     /** Removes a listener.
-
         @see addListener
     */
     void removeListener (Listener* listenerToRemove) noexcept;
@@ -128,12 +130,18 @@ public:
     virtual void menuItemSelected (int menuItemID,
                                    int topLevelMenuIndex) = 0;
 
+    /** This is called when the user starts/stops navigating the maenu bar.
+
+        @param isActive              true when the user starts navigating the menu bar
+    */
+    virtual void menuBarActivated (bool isActive);
+
     //==============================================================================
    #if JUCE_MAC || DOXYGEN
-    /** MAC ONLY - Sets the model that is currently being shown as the main
+    /** OSX ONLY - Sets the model that is currently being shown as the main
         menu bar at the top of the screen on the Mac.
 
-        You can pass 0 to stop the current model being displayed. Be careful
+        You can pass nullptr to stop the current model being displayed. Be careful
         not to delete a model while it is being used.
 
         An optional extra menu can be specified, containing items to add to the top of
@@ -149,14 +157,14 @@ public:
     */
     static void setMacMainMenu (MenuBarModel* newMenuBarModel,
                                 const PopupMenu* extraAppleMenuItems = nullptr,
-                                const String& recentItemsMenuName = String::empty);
+                                const String& recentItemsMenuName = String());
 
-    /** MAC ONLY - Returns the menu model that is currently being shown as
+    /** OSX ONLY - Returns the menu model that is currently being shown as
         the main menu bar.
     */
     static MenuBarModel* getMacMainMenu();
 
-    /** MAC ONLY - Returns the menu that was last passed as the extraAppleMenuItems
+    /** OSX ONLY - Returns the menu that was last passed as the extraAppleMenuItems
         argument to setMacMainMenu(), or nullptr if none was specified.
     */
     static const PopupMenu* getMacExtraAppleItemsMenu();
@@ -164,15 +172,16 @@ public:
 
     //==============================================================================
     /** @internal */
-    void applicationCommandInvoked (const ApplicationCommandTarget::InvocationInfo& info) override;
+    void applicationCommandInvoked (const ApplicationCommandTarget::InvocationInfo&) override;
     /** @internal */
     void applicationCommandListChanged() override;
     /** @internal */
     void handleAsyncUpdate() override;
-
+    /** @internal */
+    void handleMenuBarActivate (bool isActive);
 private:
     ApplicationCommandManager* manager;
-    ListenerList <Listener> listeners;
+    ListenerList<Listener> listeners;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MenuBarModel)
 };

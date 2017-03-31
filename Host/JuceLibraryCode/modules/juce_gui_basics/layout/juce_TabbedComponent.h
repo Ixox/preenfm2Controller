@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -115,6 +115,11 @@ public:
 
     /** Gets rid of one of the tabs. */
     void removeTab (int tabIndex);
+
+    /** Moves a tab to a new index in the list.
+        Pass -1 as the index to move it to the end of the list.
+    */
+    void moveTab (int currentIndex, int newIndex, bool animate = false);
 
     /** Returns the number of tabs in the bar. */
     int getNumTabs() const;

@@ -2,22 +2,28 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2016 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   Permission is granted to use this software under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license/
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   Permission to use, copy, modify, and/or distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH REGARD
+   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+   FITNESS. IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT,
+   OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+   USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+   TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+   OF THIS SOFTWARE.
 
-   ------------------------------------------------------------------------------
+   -----------------------------------------------------------------------------
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   To release a closed-source product which uses other parts of JUCE not
+   licensed under the ISC terms, commercial licenses are available: visit
+   www.juce.com for more information.
 
   ==============================================================================
 */
@@ -186,9 +192,10 @@ public:
 
         /** Retrieves a copy of the next event from the buffer.
 
-            @param result   on return, this will be the message (the MidiMessage's timestamp
-                            is not set)
-            @param samplePosition   on return, this will be the position of the event
+            @param result   on return, this will be the message. The MidiMessage's timestamp
+                            is set to the same value as samplePosition.
+            @param samplePosition   on return, this will be the position of the event, as a
+                            sample index in the buffer
             @returns        true if an event was found, or false if the iterator has reached
                             the end of the buffer
         */
@@ -203,7 +210,8 @@ public:
                                 temporarily until the MidiBuffer is altered.
             @param numBytesOfMidiData   on return, this is the number of bytes of data used by the
                                         midi message
-            @param samplePosition   on return, this will be the position of the event
+            @param samplePosition   on return, this will be the position of the event, as a
+                                    sample index in the buffer
             @returns        true if an event was found, or false if the iterator has reached
                             the end of the buffer
         */

@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -89,7 +89,7 @@ ModalComponentManager::~ModalComponentManager()
     clearSingletonInstance();
 }
 
-juce_ImplementSingleton_SingleThreaded (ModalComponentManager);
+juce_ImplementSingleton_SingleThreaded (ModalComponentManager)
 
 
 //==============================================================================
@@ -245,13 +245,14 @@ bool ModalComponentManager::cancelAllModalComponents()
     return numModal > 0;
 }
 
+//==============================================================================
 #if JUCE_MODAL_LOOPS_PERMITTED
 class ModalComponentManager::ReturnValueRetriever     : public ModalComponentManager::Callback
 {
 public:
     ReturnValueRetriever (int& v, bool& done) : value (v), finished (done) {}
 
-    void modalStateFinished (int returnValue)
+    void modalStateFinished (int returnValue) override
     {
         finished = true;
         value = returnValue;
@@ -290,5 +291,23 @@ int ModalComponentManager::runEventLoopForCurrentComponent()
     }
 
     return returnValue;
+}
+#endif
+
+//==============================================================================
+#if JUCE_COMPILER_SUPPORTS_LAMBDAS
+struct LambdaCallback  : public ModalComponentManager::Callback
+{
+    LambdaCallback (std::function<void(int)> fn) noexcept : function (fn) {}
+    void modalStateFinished (int result) override  { function (result); }
+
+    std::function<void(int)> function;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LambdaCallback)
+};
+
+ModalComponentManager::Callback* ModalCallbackFunction::create (std::function<void(int)> f)
+{
+    return new LambdaCallback (f);
 }
 #endif

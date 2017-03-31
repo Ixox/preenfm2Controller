@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -57,9 +57,9 @@ public:
         Remember that when the target component is resized, it'll need to move and
         resize this component to keep it in place, as this won't happen automatically.
 
-        If the constrainer parameter is non-zero, then this object will be used to enforce
-        limits on the size and position that the component can be stretched to. Make sure
-        that the constrainer isn't deleted while still in use by this object.
+        If the constrainer parameter is not a nullptr, then this object will be used to
+        enforce limits on the size and position that the component can be stretched to.
+        Make sure that the constrainer isn't deleted while still in use by this object.
 
         @see ComponentBoundsConstrainer
     */

@@ -2,22 +2,28 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2016 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   Permission is granted to use this software under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license/
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   Permission to use, copy, modify, and/or distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH REGARD
+   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+   FITNESS. IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT,
+   OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+   USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+   TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+   OF THIS SOFTWARE.
 
-   ------------------------------------------------------------------------------
+   -----------------------------------------------------------------------------
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   To release a closed-source product which uses other parts of JUCE not
+   licensed under the ISC terms, commercial licenses are available: visit
+   www.juce.com for more information.
 
   ==============================================================================
 */
@@ -64,10 +70,16 @@ public:
         The commandLineUniqueID should be a short alphanumeric identifier (no spaces!)
         that matches the string passed to ChildProcessMaster::launchSlaveProcess().
 
+        The timeoutMs parameter lets you specify how long the child process is allowed
+        to run without receiving a ping from the master before the master is considered to
+        have died, and handleConnectionLost() will be called. Passing <= 0 for this timeout
+        makes it use a default value.
+
         Returns true if the command-line matches and the connection is made successfully.
     */
     bool initialiseFromCommandLine (const String& commandLine,
-                                    const String& commandLineUniqueID);
+                                    const String& commandLineUniqueID,
+                                    int timeoutMs = 0);
 
     //==============================================================================
     /** This will be called to deliver messages from the master process.
@@ -141,11 +153,18 @@ public:
         that gets launched must respond by calling ChildProcessSlave::initialiseFromCommandLine()
         in its startup code, and must use a matching ID to commandLineUniqueID.
 
+        The timeoutMs parameter lets you specify how long the child process is allowed
+        to go without sending a ping before it is considered to have died and
+        handleConnectionLost() will be called. Passing <= 0 for this timeout makes
+        it use a default value.
+
         If this all works, the method returns true, and you can begin sending and
         receiving messages with the slave process.
     */
     bool launchSlaveProcess (const File& executableToLaunch,
-                             const String& commandLineUniqueID);
+                             const String& commandLineUniqueID,
+                             int timeoutMs = 0,
+                             int streamFlags = ChildProcess::wantStdOut | ChildProcess::wantStdErr);
 
     /** This will be called to deliver a message from the slave process.
         The call will probably be made on a background thread, so be careful with your thread-safety!
