@@ -33,6 +33,8 @@ preenfmLookAndFeel::preenfmLookAndFeel() : LookAndFeel_V3() {
 //    Font* myNewFont = 0;
     juce::MemoryInputStream fontStream (exoFont::exofont, exoFont::exofontSize, true);
     exoFont = new CustomTypeface (fontStream);
+
+	setUsingNativeAlertWindows(true);
 //    myNewFont = new Font (*typeFace);
   //  myNewFont->setHeight (10.0f);
 //    delete typeFace;

@@ -156,12 +156,12 @@ public:
     {
         DialogWindow::LaunchOptions o;
         o.content.setOwned (new AudioDeviceSelectorComponent (deviceManager,
-                                                              0,0,0,0,
+                                                              0,0,2,2,
                                                               true, true,
                                                               true, false));
         o.content->setSize (400, 600);
 
-        o.dialogTitle                   = TRANS("Midi Settings");
+        o.dialogTitle                   = TRANS("Settings");
         o.dialogBackgroundColour        = Colour (0xfff0f0f0);
         o.escapeKeyTriggersCloseButton  = true;
         o.useNativeTitleBar             = false;
@@ -219,27 +219,21 @@ public:
     void quickHelp()
     {
 
-        AlertWindow::showMessageBoxAsync (AlertWindow::InfoIcon,
-            "Quick Help",
-            "Click on Options > Midi Settings\n"
-            ". Select at least PreenFM in active midi input\n"
-            ". Select at PreenFM in midi output\n"
-            "Close the windows and start playing...\n"
-            "\n"
-            "If it does not work, check your preenfm2 settings : \n"
-            ". Usb Midi : In/Out\n"
-            ". Check midi channels 1, 2, 3 & 4\n"
-            ". Midi thru : No\n"
-            ". Receives : NRPN\n"
-            ". Send : NRPN\n",
+        AlertWindow::showMessageBox(AlertWindow::InfoIcon,
+            "Quick Configuration Help",
+            "Click on Options > Midi Settings\r\n"
+			". Select any working audio output\r\n"
+            ". Select at least PreenFM in active midi input\r\n"
+            ". Select PreenFM in midi output\r\n"
+            "Close the windows and start playing...\r\n"
+            "\r\n"
+            "If it does not work, check your preenfm2 settings : \r\n"
+            ". Usb Midi : In/Out\r\n"
+            ". Check midi channels 1, 2, 3 & 4\r\n"
+            ". Midi thru : No\r\n"
+            ". Receives : NRPN\r\n"
+            ". Send : NRPN\r\n",			
             "Close");
-        /*
-                                                        Component* associatedComponent = nullptr,
-                                                        ModalComponentManager::Callback* callback = nullptr);
-        AlertWindow::showMessageBox (AlertWindow::WarningIcon,
-            TRANS("Error whilst loading"),
-            TRANS("Couldn't read from the specified file!"));
-*/
 
     }
 
@@ -376,12 +370,12 @@ public:
     void buttonClicked (Button*) override
     {
         PopupMenu m;
-        m.addItem (5, TRANS("Quick help"));
+        m.addItem (5, TRANS("Quick Help"));
         m.addSeparator();
-        m.addItem (1, TRANS("Midi Settings..."));
+        m.addItem (1, TRANS("Midi Settings"));
         m.addSeparator();
-        m.addItem (2, TRANS("Save current state..."));
-        m.addItem (3, TRANS("Load a saved state..."));
+        m.addItem (2, TRANS("Save current state"));
+        m.addItem (3, TRANS("Load a saved state"));
         m.addSeparator();
         m.addItem (4, TRANS("Reset to default state"));
 
