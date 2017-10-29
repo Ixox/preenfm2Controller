@@ -2,29 +2,30 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   By using JUCE, you agree to the terms of both the JUCE 5 End-User License
+   Agreement and JUCE 5 Privacy Policy (both updated and effective as of the
+   27th April 2017).
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   End User License Agreement: www.juce.com/juce-5-licence
+   Privacy Policy: www.juce.com/juce-5-privacy-policy
 
-   ------------------------------------------------------------------------------
+   Or: You may also use this code under the terms of the GPL v3 (see
+   www.gnu.org/licenses).
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
-#ifndef JUCE_LISTBOX_H_INCLUDED
-#define JUCE_LISTBOX_H_INCLUDED
-
+namespace juce
+{
 
 //==============================================================================
 /**
@@ -45,7 +46,10 @@ public:
     */
     virtual int getNumRows() = 0;
 
-    /** This method must be implemented to draw a row of the list. */
+    /** This method must be implemented to draw a row of the list.
+        Note that the rowNumber value may be greater than the number of rows in your
+        list, so be careful that you don't assume it's less than getNumRows().
+    */
     virtual void paintListBoxItem (int rowNumber,
                                    Graphics& g,
                                    int width, int height,
@@ -57,7 +61,7 @@ public:
         and handle mouse clicks with listBoxItemClicked().
 
         This method will be called whenever a custom component might need to be updated - e.g.
-        when the table is changed, or TableListBox::updateContent() is called.
+        when the list is changed, or ListBox::updateContent() is called.
 
         If you don't need a custom component for the specified row, then return nullptr.
         (Bear in mind that even if you're not creating a new component, you may still need to
@@ -84,18 +88,18 @@ public:
     /** This can be overridden to react to the user clicking on a row.
         @see listBoxItemDoubleClicked
     */
-    virtual void listBoxItemClicked (int row, const MouseEvent& e);
+    virtual void listBoxItemClicked (int row, const MouseEvent&);
 
     /** This can be overridden to react to the user double-clicking on a row.
         @see listBoxItemClicked
     */
-    virtual void listBoxItemDoubleClicked (int row, const MouseEvent& e);
+    virtual void listBoxItemDoubleClicked (int row, const MouseEvent&);
 
     /** This can be overridden to react to the user clicking on a part of the list where
         there are no rows.
         @see listBoxItemClicked
     */
-    virtual void backgroundClicked();
+    virtual void backgroundClicked (const MouseEvent&);
 
     /** Override this to be informed when rows are selected or deselected.
 
@@ -143,7 +147,7 @@ public:
 
         @see DragAndDropContainer::startDragging
     */
-    virtual var getDragSourceDescription (const SparseSet<int>& currentlySelectedRows);
+    virtual var getDragSourceDescription (const SparseSet<int>& rowsToDescribe);
 
     /** You can override this to provide tool tips for specific rows.
         @see TooltipClient
@@ -152,6 +156,12 @@ public:
 
     /** You can override this to return a custom mouse cursor for each row. */
     virtual MouseCursor getMouseCursorForRow (int row);
+
+private:
+   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+    // This method's signature has changed to take a MouseEvent parameter - please update your code!
+    JUCE_DEPRECATED_WITH_BODY (virtual int backgroundClicked(), { return 0; })
+   #endif
 };
 
 
@@ -175,7 +185,7 @@ public:
         The model pointer passed-in can be null, in which case you can set it later
         with setModel().
     */
-    ListBox (const String& componentName = String::empty,
+    ListBox (const String& componentName = String(),
              ListBoxModel* model = nullptr);
 
     /** Destructor. */
@@ -210,7 +220,21 @@ public:
         clicked and to get it to do the appropriate selection based on whether
         the ctrl/shift keys are held down.
     */
-    void setMultipleSelectionEnabled (bool shouldBeEnabled);
+    void setMultipleSelectionEnabled (bool shouldBeEnabled) noexcept;
+
+    /** If enabled, this makes the listbox flip the selection status of
+        each row that the user clicks, without affecting other selected rows.
+
+        (This only has an effect if multiple selection is also enabled).
+        If not enabled, you can still get the same row-flipping behaviour by holding
+        down CMD or CTRL when clicking.
+    */
+    void setClickingTogglesRowSelection (bool flipRowSelection) noexcept;
+
+    /** Sets whether a row should be selected when the mouse is pressed or released.
+        By default this is true, but you may want to turn it off.
+    */
+    void setRowSelectedOnMouseDown (bool isSelectedOnMouseDown) noexcept;
 
     /** Makes the list react to mouse moves by selecting the row that the mouse if over.
 
@@ -242,11 +266,15 @@ public:
         This will add these rows to the current selection, so you might need to
         clear the current selection first with deselectAllRows()
 
-        @param firstRow     the first row to select (inclusive)
-        @param lastRow      the last row to select (inclusive)
+        @param firstRow                       the first row to select (inclusive)
+        @param lastRow                        the last row to select (inclusive)
+        @param dontScrollToShowThisRange      if true, the list's position won't change; if false and
+                                              the selected range is off-screen, it'll scroll to make
+                                              sure that the range of rows is on-screen
     */
     void selectRangeOfRows (int firstRow,
-                            int lastRow);
+                            int lastRow,
+                            bool dontScrollToShowThisRange = false);
 
     /** Deselects a row.
         If it's not currently selected, this will do nothing.
@@ -393,7 +421,7 @@ public:
         The component returned will have been created using createRowComponent().
 
         If the component for this row is off-screen or if the row is out-of-range,
-        this will return 0.
+        this will return nullptr.
 
         @see getRowContainingPosition
     */
@@ -453,7 +481,6 @@ public:
     void setOutlineThickness (int outlineThickness);
 
     /** Returns the thickness of outline that will be drawn around the listbox.
-
         @see setOutlineColour
     */
     int getOutlineThickness() const noexcept            { return outlineThickness; }
@@ -468,6 +495,9 @@ public:
         different component, or when the listbox is deleted.
     */
     void setHeaderComponent (Component* newHeaderComponent);
+
+    /** Returns whatever header component was set with setHeaderComponent(). */
+    Component* getHeaderComponent() const noexcept      { return headerComponent; }
 
     /** Changes the width of the rows in the list.
 
@@ -493,8 +523,8 @@ public:
     */
     void repaintRow (int rowNumber) noexcept;
 
-    /** This fairly obscure method creates an image that just shows the currently
-        selected row components.
+    /** This fairly obscure method creates an image that shows the row components specified
+        in rows (for example, these could be the currently selected row components).
 
         It's a handy method for doing drag-and-drop, as it can be passed to the
         DragAndDropContainer for use as the drag image.
@@ -505,7 +535,7 @@ public:
 
         @see Component::createComponentSnapshot
     */
-    virtual Image createSnapshotOfSelectedRows (int& x, int& y);
+    virtual Image createSnapshotOfRows (const SparseSet<int>& rows, int& x, int& y);
 
     /** Returns the viewport that this ListBox uses.
 
@@ -534,7 +564,10 @@ public:
     /** @internal */
     void colourChanged() override;
     /** @internal */
-    void startDragAndDrop (const MouseEvent&, const var& dragDescription, bool allowDraggingToOtherWindows);
+    void parentHierarchyChanged() override;
+    /** @internal */
+    void startDragAndDrop (const MouseEvent&, const SparseSet<int>& rowsToDrag,
+                           const var& dragDescription, bool allowDraggingToOtherWindows);
 
 private:
     //==============================================================================
@@ -546,11 +579,11 @@ private:
     ScopedPointer<ListViewport> viewport;
     ScopedPointer<Component> headerComponent;
     ScopedPointer<MouseListener> mouseMoveSelector;
-    int totalItems, rowHeight, minimumRowWidth;
-    int outlineThickness;
-    int lastRowSelected;
-    bool multipleSelection, hasDoneInitialUpdate;
     SparseSet<int> selected;
+    int totalItems = 0, rowHeight = 22, minimumRowWidth = 0;
+    int outlineThickness = 0;
+    int lastRowSelected = -1;
+    bool multipleSelection = false, alwaysFlipSelection = false, hasDoneInitialUpdate = false, selectOnMouseDown = true;
 
     void selectRowInternal (int rowNumber, bool dontScrollToShowThisRow,
                             bool deselectOthersFirst, bool isMouseClick);
@@ -558,10 +591,12 @@ private:
    #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // This method's bool parameter has changed: see the new method signature.
     JUCE_DEPRECATED (void setSelectedRows (const SparseSet<int>&, bool));
+    // This method has been replaced by the more flexible method createSnapshotOfRows.
+    // Please call createSnapshotOfRows (getSelectedRows(), x, y) to get the same behaviour.
+    JUCE_DEPRECATED (virtual void createSnapshotOfSelectedRows (int&, int&)) {}
    #endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ListBox)
 };
 
-
-#endif   // JUCE_LISTBOX_H_INCLUDED
+} // namespace juce

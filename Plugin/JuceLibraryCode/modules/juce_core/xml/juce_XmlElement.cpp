@@ -1,30 +1,58 @@
 /*
   ==============================================================================
 
-   This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   This file is part of the JUCE library.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission to use, copy, modify, and/or distribute this software for any purpose with
-   or without fee is hereby granted, provided that the above copyright notice and this
-   permission notice appear in all copies.
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
-   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-   DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
-   IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   The code included in this file is provided under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license. Permission
+   To use, copy, modify, and/or distribute this software for any purpose with or
+   without fee is hereby granted provided that the above copyright notice and
+   this permission notice appear in all copies.
 
-   ------------------------------------------------------------------------------
-
-   NOTE! This permissive ISC license applies ONLY to files within the juce_core module!
-   All other JUCE modules are covered by a dual GPL/commercial license, so if you are
-   using any other modules, be sure to check that you also comply with their license.
-
-   For more details, visit www.juce.com
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
+
+namespace juce
+{
+
+inline static bool isValidXmlNameStartCharacter (juce_wchar character) noexcept
+{
+    return character == ':'
+        || character == '_'
+        || (character >= 'a'     && character <= 'z')
+        || (character >= 'A'     && character <= 'Z')
+        || (character >= 0xc0    && character <= 0xd6)
+        || (character >= 0xd8    && character <= 0xf6)
+        || (character >= 0xf8    && character <= 0x2ff)
+        || (character >= 0x370   && character <= 0x37d)
+        || (character >= 0x37f   && character <= 0x1fff)
+        || (character >= 0x200c  && character <= 0x200d)
+        || (character >= 0x2070  && character <= 0x218f)
+        || (character >= 0x2c00  && character <= 0x2fef)
+        || (character >= 0x3001  && character <= 0xd7ff)
+        || (character >= 0xf900  && character <= 0xfdcf)
+        || (character >= 0xfdf0  && character <= 0xfffd)
+        || (character >= 0x10000 && character <= 0xeffff);
+}
+
+inline static bool isValidXmlNameBodyCharacter (juce_wchar character) noexcept
+{
+    return isValidXmlNameStartCharacter (character)
+        || character == '-'
+        || character == '.'
+        || character == 0xb7
+        || (character >= '0'    && character <= '9')
+        || (character >= 0x300  && character <= 0x036f)
+        || (character >= 0x203f && character <= 0x2040);
+}
 
 XmlElement::XmlAttributeNode::XmlAttributeNode (const XmlAttributeNode& other) noexcept
     : name (other.name),
@@ -32,30 +60,47 @@ XmlElement::XmlAttributeNode::XmlAttributeNode (const XmlAttributeNode& other) n
 {
 }
 
-XmlElement::XmlAttributeNode::XmlAttributeNode (const String& n, const String& v) noexcept
+XmlElement::XmlAttributeNode::XmlAttributeNode (const Identifier& n, const String& v) noexcept
     : name (n), value (v)
 {
-   #if JUCE_DEBUG
-    // this checks whether the attribute name string contains any illegal characters..
-    for (String::CharPointerType t (name.getCharPointer()); ! t.isEmpty(); ++t)
-        jassert (t.isLetterOrDigit() || *t == '_' || *t == '-' || *t == ':');
-   #endif
+    jassert (isValidXmlName (name));
 }
 
-bool XmlElement::XmlAttributeNode::hasName (StringRef nameToMatch) const noexcept
+XmlElement::XmlAttributeNode::XmlAttributeNode (String::CharPointerType nameStart, String::CharPointerType nameEnd)
+    : name (nameStart, nameEnd)
 {
-    return name.equalsIgnoreCase (nameToMatch);
+    jassert (isValidXmlName (name));
 }
 
 //==============================================================================
-XmlElement::XmlElement (const String& tag) noexcept
-    : tagName (tag)
+XmlElement::XmlElement (const String& tag)
+    : tagName (StringPool::getGlobalPool().getPooledString (tag))
 {
-    // the tag name mustn't be empty, or it'll look like a text element!
-    jassert (tag.containsNonWhitespaceChars())
+    jassert (isValidXmlName (tagName));
+}
 
-    // The tag can't contain spaces or other characters that would create invalid XML!
-    jassert (! tag.containsAnyOf (" <>/&(){}"));
+XmlElement::XmlElement (const char* tag)
+    : tagName (StringPool::getGlobalPool().getPooledString (tag))
+{
+    jassert (isValidXmlName (tagName));
+}
+
+XmlElement::XmlElement (StringRef tag)
+    : tagName (StringPool::getGlobalPool().getPooledString (tag))
+{
+    jassert (isValidXmlName (tagName));
+}
+
+XmlElement::XmlElement (const Identifier& tag)
+    : tagName (tag.toString())
+{
+    jassert (isValidXmlName (tagName));
+}
+
+XmlElement::XmlElement (String::CharPointerType tagNameStart, String::CharPointerType tagNameEnd)
+    : tagName (StringPool::getGlobalPool().getPooledString (tagNameStart, tagNameEnd))
+{
+    jassert (isValidXmlName (tagName));
 }
 
 XmlElement::XmlElement (int /*dummy*/) noexcept
@@ -81,7 +126,6 @@ XmlElement& XmlElement::operator= (const XmlElement& other)
     return *this;
 }
 
-#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 XmlElement::XmlElement (XmlElement&& other) noexcept
     : nextListItem      (static_cast<LinkedListPointer<XmlElement>&&> (other.nextListItem)),
       firstChildElement (static_cast<LinkedListPointer<XmlElement>&&> (other.firstChildElement)),
@@ -104,7 +148,6 @@ XmlElement& XmlElement::operator= (XmlElement&& other) noexcept
 
     return *this;
 }
-#endif
 
 void XmlElement::copyChildrenAndAttributesFrom (const XmlElement& other)
 {
@@ -356,6 +399,11 @@ bool XmlElement::writeToFile (const File& file,
             return false;
 
         writeToStream (out, dtdToUse, false, true, encodingType, lineWrapLength);
+
+        out.flush(); // (called explicitly to force an fsync on posix)
+
+        if (out.getStatus().failed())
+            return false;
     }
 
     return tempFile.overwriteTargetFileWithTemporary();
@@ -404,12 +452,22 @@ int XmlElement::getNumAttributes() const noexcept
     return attributes.size();
 }
 
+static const String& getEmptyStringRef() noexcept
+{
+   #if JUCE_ALLOW_STATIC_NULL_VARIABLES
+    return String::empty;
+   #else
+    static String empty;
+    return empty;
+   #endif
+}
+
 const String& XmlElement::getAttributeName (const int index) const noexcept
 {
     if (const XmlAttributeNode* const att = attributes [index])
-        return att->name;
+        return att->name.toString();
 
-    return String::empty;
+    return getEmptyStringRef();
 }
 
 const String& XmlElement::getAttributeValue (const int index) const noexcept
@@ -417,13 +475,13 @@ const String& XmlElement::getAttributeValue (const int index) const noexcept
     if (const XmlAttributeNode* const att = attributes [index])
         return att->value;
 
-    return String::empty;
+    return getEmptyStringRef();
 }
 
 XmlElement::XmlAttributeNode* XmlElement::getAttribute (StringRef attributeName) const noexcept
 {
     for (XmlAttributeNode* att = attributes; att != nullptr; att = att->nextListItem)
-        if (att->hasName (attributeName))
+        if (att->name == attributeName)
             return att;
 
     return nullptr;
@@ -440,7 +498,7 @@ const String& XmlElement::getStringAttribute (StringRef attributeName) const noe
     if (const XmlAttributeNode* att = getAttribute (attributeName))
         return att->value;
 
-    return String::empty;
+    return getEmptyStringRef();
 }
 
 String XmlElement::getStringAttribute (StringRef attributeName, const String& defaultReturnValue) const
@@ -495,7 +553,7 @@ bool XmlElement::compareAttribute (StringRef attributeName,
 }
 
 //==============================================================================
-void XmlElement::setAttribute (const String& attributeName, const String& value)
+void XmlElement::setAttribute (const Identifier& attributeName, const String& value)
 {
     if (attributes == nullptr)
     {
@@ -505,7 +563,7 @@ void XmlElement::setAttribute (const String& attributeName, const String& value)
     {
         for (XmlAttributeNode* att = attributes; ; att = att->nextListItem)
         {
-            if (att->hasName (attributeName))
+            if (att->name == attributeName)
             {
                 att->value = value;
                 break;
@@ -520,23 +578,23 @@ void XmlElement::setAttribute (const String& attributeName, const String& value)
     }
 }
 
-void XmlElement::setAttribute (const String& attributeName, const int number)
+void XmlElement::setAttribute (const Identifier& attributeName, const int number)
 {
     setAttribute (attributeName, String (number));
 }
 
-void XmlElement::setAttribute (const String& attributeName, const double number)
+void XmlElement::setAttribute (const Identifier& attributeName, const double number)
 {
     setAttribute (attributeName, String (number, 20));
 }
 
-void XmlElement::removeAttribute (const String& attributeName) noexcept
+void XmlElement::removeAttribute (const Identifier& attributeName) noexcept
 {
     for (LinkedListPointer<XmlAttributeNode>* att = &attributes;
          att->get() != nullptr;
          att = &(att->get()->nextListItem))
     {
-        if (att->get()->hasName (attributeName))
+        if (att->get()->name == attributeName)
         {
             delete att->removeNext();
             break;
@@ -615,7 +673,7 @@ void XmlElement::prependChildElement (XmlElement* newNode) noexcept
     }
 }
 
-XmlElement* XmlElement::createNewChildElement (const String& childTagName)
+XmlElement* XmlElement::createNewChildElement (StringRef childTagName)
 {
     XmlElement* const newElement = new XmlElement (childTagName);
     addChildElement (newElement);
@@ -683,7 +741,7 @@ bool XmlElement::isEquivalentTo (const XmlElement* const other,
             {
                 if (thisAtt == nullptr || otherAtt == nullptr)
                 {
-                    if (thisAtt == otherAtt) // both 0, so it's a match
+                    if (thisAtt == otherAtt) // both nullptr, so it's a match
                         break;
 
                     return false;
@@ -838,6 +896,21 @@ XmlElement* XmlElement::createTextElement (const String& text)
     return e;
 }
 
+bool XmlElement::isValidXmlName (StringRef text) noexcept
+{
+    if (text.isEmpty() || ! isValidXmlNameStartCharacter (text.text.getAndAdvance()))
+        return false;
+
+    for (;;)
+    {
+        if (text.isEmpty())
+            return true;
+
+        if (! isValidXmlNameBodyCharacter (text.text.getAndAdvance()))
+            return false;
+    }
+}
+
 void XmlElement::addTextElement (const String& text)
 {
     addChildElement (createTextElement (text));
@@ -855,3 +928,5 @@ void XmlElement::deleteAllTextElements() noexcept
         child = next;
     }
 }
+
+} // namespace juce

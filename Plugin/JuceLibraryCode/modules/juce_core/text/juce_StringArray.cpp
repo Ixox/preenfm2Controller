@@ -1,30 +1,27 @@
 /*
   ==============================================================================
 
-   This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   This file is part of the JUCE library.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission to use, copy, modify, and/or distribute this software for any purpose with
-   or without fee is hereby granted, provided that the above copyright notice and this
-   permission notice appear in all copies.
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
-   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-   DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
-   IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   The code included in this file is provided under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license. Permission
+   To use, copy, modify, and/or distribute this software for any purpose with or
+   without fee is hereby granted provided that the above copyright notice and
+   this permission notice appear in all copies.
 
-   ------------------------------------------------------------------------------
-
-   NOTE! This permissive ISC license applies ONLY to files within the juce_core module!
-   All other JUCE modules are covered by a dual GPL/commercial license, so if you are
-   using any other modules, be sure to check that you also comply with their license.
-
-   For more details, visit www.juce.com
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
+
+namespace juce
+{
 
 StringArray::StringArray() noexcept
 {
@@ -35,12 +32,10 @@ StringArray::StringArray (const StringArray& other)
 {
 }
 
-#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 StringArray::StringArray (StringArray&& other) noexcept
-    : strings (static_cast <Array <String>&&> (other.strings))
+    : strings (static_cast<Array <String>&&> (other.strings))
 {
 }
-#endif
 
 StringArray::StringArray (const String& firstValue)
 {
@@ -78,11 +73,16 @@ StringArray& StringArray::operator= (const StringArray& other)
     return *this;
 }
 
-#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 StringArray& StringArray::operator= (StringArray&& other) noexcept
 {
-    strings = static_cast <Array<String>&&> (other.strings);
+    strings = static_cast<Array<String>&&> (other.strings);
     return *this;
+}
+
+#if JUCE_COMPILER_SUPPORTS_INITIALIZER_LISTS
+StringArray::StringArray (const std::initializer_list<const char*>& stringList)
+{
+    strings.addArray (stringList);
 }
 #endif
 
@@ -120,7 +120,12 @@ const String& StringArray::operator[] (const int index) const noexcept
     if (isPositiveAndBelow (index, strings.size()))
         return strings.getReference (index);
 
+   #if JUCE_ALLOW_STATIC_NULL_VARIABLES
     return String::empty;
+   #else
+    static String empty;
+    return empty;
+   #endif
 }
 
 String& StringArray::getReference (const int index) noexcept
@@ -133,22 +138,23 @@ void StringArray::add (const String& newString)
     strings.add (newString);
 }
 
-#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 void StringArray::add (String&& stringToAdd)
 {
     strings.add (static_cast<String&&> (stringToAdd));
 }
-#endif
 
 void StringArray::insert (const int index, const String& newString)
 {
     strings.insert (index, newString);
 }
 
-void StringArray::addIfNotAlreadyThere (const String& newString, const bool ignoreCase)
+bool StringArray::addIfNotAlreadyThere (const String& newString, const bool ignoreCase)
 {
-    if (! contains (newString, ignoreCase))
-        add (newString);
+    if (contains (newString, ignoreCase))
+        return false;
+
+    add (newString);
+    return true;
 }
 
 void StringArray::addArray (const StringArray& otherArray, int startIndex, int numElementsToAdd)
@@ -164,6 +170,12 @@ void StringArray::addArray (const StringArray& otherArray, int startIndex, int n
 
     while (--numElementsToAdd >= 0)
         strings.add (otherArray.strings.getReference (startIndex++));
+}
+
+void StringArray::mergeArray (const StringArray& otherArray, const bool ignoreCase)
+{
+    for (int i = 0; i < otherArray.size(); ++i)
+        addIfNotAlreadyThere (otherArray[i], ignoreCase);
 }
 
 void StringArray::set (const int index, const String& newString)
@@ -197,6 +209,11 @@ int StringArray::indexOf (StringRef stringToLookFor, const bool ignoreCase, int 
     }
 
     return -1;
+}
+
+void StringArray::move (const int currentIndex, const int newIndex) noexcept
+{
+    strings.move (currentIndex, newIndex);
 }
 
 //==============================================================================
@@ -255,12 +272,17 @@ void StringArray::trim()
 //==============================================================================
 struct InternalStringArrayComparator_CaseSensitive
 {
-    static int compareElements (String& first, String& second)      { return first.compare (second); }
+    static int compareElements (String& s1, String& s2) noexcept    { return s1.compare (s2); }
 };
 
 struct InternalStringArrayComparator_CaseInsensitive
 {
-    static int compareElements (String& first, String& second)      { return first.compareIgnoreCase (second); }
+    static int compareElements (String& s1, String& s2) noexcept    { return s1.compareIgnoreCase (s2); }
+};
+
+struct InternalStringArrayComparator_Natural
+{
+    static int compareElements (String& s1, String& s2) noexcept    { return s1.compareNatural (s2); }
 };
 
 void StringArray::sort (const bool ignoreCase)
@@ -277,11 +299,11 @@ void StringArray::sort (const bool ignoreCase)
     }
 }
 
-void StringArray::move (const int currentIndex, int newIndex) noexcept
+void StringArray::sortNatural()
 {
-    strings.move (currentIndex, newIndex);
+    InternalStringArrayComparator_Natural comp;
+    strings.sort (comp);
 }
-
 
 //==============================================================================
 String StringArray::joinIntoString (StringRef separator, int start, int numberToJoin) const
@@ -293,7 +315,7 @@ String StringArray::joinIntoString (StringRef separator, int start, int numberTo
         start = 0;
 
     if (start >= last)
-        return String();
+        return {};
 
     if (start == last - 1)
         return strings.getReference (start);
@@ -307,7 +329,7 @@ String StringArray::joinIntoString (StringRef separator, int start, int numberTo
     String result;
     result.preallocateBytes (bytesNeeded);
 
-    String::CharPointerType dest (result.getCharPointer());
+    auto dest = result.getCharPointer();
 
     while (start < last)
     {
@@ -473,3 +495,5 @@ void StringArray::minimiseStorageOverheads()
 {
     strings.minimiseStorageOverheads();
 }
+
+} // namespace juce

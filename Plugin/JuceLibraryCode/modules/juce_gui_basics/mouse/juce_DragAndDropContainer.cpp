@@ -2,25 +2,30 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   By using JUCE, you agree to the terms of both the JUCE 5 End-User License
+   Agreement and JUCE 5 Privacy Policy (both updated and effective as of the
+   27th April 2017).
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   End User License Agreement: www.juce.com/juce-5-licence
+   Privacy Policy: www.juce.com/juce-5-privacy-policy
 
-   ------------------------------------------------------------------------------
+   Or: You may also use this code under the terms of the GPL v3 (see
+   www.gnu.org/licenses).
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
+
+namespace juce
+{
 
 bool juce_performDragDropFiles (const StringArray&, const bool copyFiles, bool& shouldStop);
 bool juce_performDragDropText (const String&, bool& shouldStop);
@@ -40,10 +45,9 @@ public:
         : sourceDetails (desc, sourceComponent, Point<int>()),
           image (im), owner (ddc),
           mouseDragSource (mouseSource),
-          imageOffset (offset),
-          hasCheckedForExternalDrag (false)
+          imageOffset (offset)
     {
-        setSize (im.getWidth(), im.getHeight());
+        updateSize();
 
         if (mouseDragSource == nullptr)
             mouseDragSource = sourceComponent;
@@ -69,6 +73,8 @@ public:
                 if (current->isInterestedInDragSource (sourceDetails))
                     current->itemDragExit (sourceDetails);
         }
+
+        owner.dragOperationEnded (sourceDetails);
     }
 
     void paint (Graphics& g) override
@@ -158,20 +164,27 @@ public:
         forceMouseCursorUpdate();
     }
 
+    void updateImage (const Image& newImage)
+    {
+        image = newImage;
+        updateSize();
+        repaint();
+    }
+
     void timerCallback() override
     {
         forceMouseCursorUpdate();
 
         if (sourceDetails.sourceComponent == nullptr)
         {
-            delete this;
+            deleteSelf();
         }
         else if (! isMouseButtonDownAnywhere())
         {
             if (mouseDragSource != nullptr)
                 mouseDragSource->removeMouseListener (this);
 
-            delete this;
+            deleteSelf();
         }
     }
 
@@ -180,7 +193,7 @@ public:
         if (key == KeyPress::escapeKey)
         {
             dismissWithAnimation (true);
-            delete this;
+            deleteSelf();
             return true;
         }
 
@@ -202,8 +215,13 @@ private:
     DragAndDropContainer& owner;
     WeakReference<Component> mouseDragSource, currentlyOverComp;
     const Point<int> imageOffset;
-    bool hasCheckedForExternalDrag;
+    bool hasCheckedForExternalDrag = false;
     Time lastTimeOverTarget;
+
+    void updateSize()
+    {
+        setSize (image.getWidth(), image.getHeight());
+    }
 
     void forceMouseCursorUpdate()
     {
@@ -212,7 +230,22 @@ private:
 
     DragAndDropTarget* getCurrentlyOver() const noexcept
     {
-        return dynamic_cast <DragAndDropTarget*> (currentlyOverComp.get());
+        return dynamic_cast<DragAndDropTarget*> (currentlyOverComp.get());
+    }
+
+    static Component* findDesktopComponentBelow (Point<int> screenPos)
+    {
+        Desktop& desktop = Desktop::getInstance();
+
+        for (int i = desktop.getNumComponents(); --i >= 0;)
+        {
+            Component* c = desktop.getComponent(i);
+
+            if (Component* hit = c->getComponentAt (c->getLocalPoint (nullptr, screenPos)))
+                return hit;
+        }
+
+        return nullptr;
     }
 
     DragAndDropTarget* findTarget (Point<int> screenPos, Point<int>& relativePos,
@@ -221,7 +254,7 @@ private:
         Component* hit = getParentComponent();
 
         if (hit == nullptr)
-            hit = Desktop::getInstance().findComponentAt (screenPos);
+            hit = findDesktopComponentBelow (screenPos);
         else
             hit = hit->getComponentAt (hit->getLocalPoint (nullptr, screenPos));
 
@@ -231,7 +264,7 @@ private:
 
         while (hit != nullptr)
         {
-            if (DragAndDropTarget* const ddt = dynamic_cast <DragAndDropTarget*> (hit))
+            if (DragAndDropTarget* const ddt = dynamic_cast<DragAndDropTarget*> (hit))
             {
                 if (ddt->isInterestedInDragSource (details))
                 {
@@ -265,22 +298,6 @@ private:
                 target->itemDragMove (details);
     }
 
-    struct ExternalDragAndDropMessage  : public CallbackMessage
-    {
-        ExternalDragAndDropMessage (const StringArray& f, bool canMove)
-            : files (f), canMoveFiles (canMove)
-        {}
-
-        void messageCallback() override
-        {
-            DragAndDropContainer::performExternalDragDropOfFiles (files, canMoveFiles);
-        }
-
-    private:
-        StringArray files;
-        bool canMoveFiles;
-    };
-
     void checkForExternalDrag (DragAndDropTarget::SourceDetails& details, Point<int> screenPos)
     {
         if (! hasCheckedForExternalDrag)
@@ -288,18 +305,35 @@ private:
             if (Desktop::getInstance().findComponentAt (screenPos) == nullptr)
             {
                 hasCheckedForExternalDrag = true;
-                StringArray files;
-                bool canMoveFiles = false;
 
-                if (owner.shouldDropFilesWhenDraggedExternally (details, files, canMoveFiles)
-                      && files.size() > 0
-                      && ModifierKeys::getCurrentModifiersRealtime().isAnyMouseButtonDown())
+                if (ModifierKeys::getCurrentModifiersRealtime().isAnyMouseButtonDown())
                 {
-                    (new ExternalDragAndDropMessage (files, canMoveFiles))->post();
-                    delete this;
+                    StringArray files;
+                    bool canMoveFiles = false;
+
+                    if (owner.shouldDropFilesWhenDraggedExternally (details, files, canMoveFiles) && ! files.isEmpty())
+                    {
+                        MessageManager::callAsync ([=]()  { DragAndDropContainer::performExternalDragDropOfFiles (files, canMoveFiles); });
+                        deleteSelf();
+                        return;
+                    }
+
+                    String text;
+
+                    if (owner.shouldDropTextWhenDraggedExternally (details, text) && text.isNotEmpty())
+                    {
+                        MessageManager::callAsync ([=]()  { DragAndDropContainer::performExternalDragDropOfText (text); });
+                        deleteSelf();
+                        return;
+                    }
                 }
             }
         }
+    }
+
+    void deleteSelf()
+    {
+        delete this;
     }
 
     void dismissWithAnimation (const bool shouldSnapBack)
@@ -353,7 +387,7 @@ void DragAndDropContainer::startDragging (const var& sourceDescription,
             return;
         }
 
-        const Point<int> lastMouseDown (draggingSource->getLastMouseDownPosition());
+        const Point<int> lastMouseDown (draggingSource->getLastMouseDownPosition().roundToInt());
         Point<int> imageOffset;
 
         if (dragImage.isNull())
@@ -383,7 +417,7 @@ void DragAndDropContainer::startDragging (const var& sourceDescription,
                     {
                         const float alpha = (distance > hi) ? 0
                                                             : (hi - distance) / (float) (hi - lo)
-                                                               + random.nextFloat() * 0.008f;
+                                                                + random.nextFloat() * 0.008f;
 
                         dragImage.multiplyAlphaAt (x, y, alpha);
                     }
@@ -414,7 +448,7 @@ void DragAndDropContainer::startDragging (const var& sourceDescription,
         }
         else
         {
-            if (Component* const thisComp = dynamic_cast <Component*> (this))
+            if (Component* const thisComp = dynamic_cast<Component*> (this))
             {
                 thisComp->addChildComponent (dragImageComponent);
             }
@@ -425,8 +459,7 @@ void DragAndDropContainer::startDragging (const var& sourceDescription,
             }
         }
 
-        static_cast <DragImageComponent*> (dragImageComponent.get())->updateLocation (false, lastMouseDown);
-        dragImageComponent->setVisible (true);
+        static_cast<DragImageComponent*> (dragImageComponent.get())->updateLocation (false, lastMouseDown);
         dragImageComponent->enterModalState();
 
        #if JUCE_WINDOWS
@@ -435,6 +468,8 @@ void DragAndDropContainer::startDragging (const var& sourceDescription,
         if (ComponentPeer* const peer = dragImageComponent->getPeer())
             peer->performAnyPendingRepaintsNow();
        #endif
+
+        dragOperationStarted (dragImageComponent->sourceDetails);
     }
 }
 
@@ -449,6 +484,12 @@ var DragAndDropContainer::getCurrentDragDescription() const
                                          : var();
 }
 
+void DragAndDropContainer::setCurrentDragImage (const Image& newImage)
+{
+    if (dragImageComponent != nullptr)
+        dragImageComponent->updateImage (newImage);
+}
+
 DragAndDropContainer* DragAndDropContainer::findParentDragContainerFor (Component* c)
 {
     return c != nullptr ? c->findParentComponentOfClass<DragAndDropContainer>() : nullptr;
@@ -458,6 +499,14 @@ bool DragAndDropContainer::shouldDropFilesWhenDraggedExternally (const DragAndDr
 {
     return false;
 }
+
+bool DragAndDropContainer::shouldDropTextWhenDraggedExternally (const DragAndDropTarget::SourceDetails&, String&)
+{
+    return false;
+}
+
+void DragAndDropContainer::dragOperationStarted (const DragAndDropTarget::SourceDetails&)  {}
+void DragAndDropContainer::dragOperationEnded (const DragAndDropTarget::SourceDetails&)    {}
 
 //==============================================================================
 DragAndDropTarget::SourceDetails::SourceDetails (const var& desc, Component* comp, Point<int> pos) noexcept
@@ -480,3 +529,5 @@ void FileDragAndDropTarget::fileDragExit  (const StringArray&)            {}
 void TextDragAndDropTarget::textDragEnter (const String&, int, int)  {}
 void TextDragAndDropTarget::textDragMove  (const String&, int, int)  {}
 void TextDragAndDropTarget::textDragExit  (const String&)            {}
+
+} // namespace juce

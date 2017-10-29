@@ -2,31 +2,36 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   By using JUCE, you agree to the terms of both the JUCE 5 End-User License
+   Agreement and JUCE 5 Privacy Policy (both updated and effective as of the
+   27th April 2017).
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   End User License Agreement: www.juce.com/juce-5-licence
+   Privacy Policy: www.juce.com/juce-5-privacy-policy
 
-   ------------------------------------------------------------------------------
+   Or: You may also use this code under the terms of the GPL v3 (see
+   www.gnu.org/licenses).
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
+namespace juce
+{
+
 /*
     IMPORTANT DISCLAIMER: By choosing to enable the JUCE_USE_MP3AUDIOFORMAT flag and
     to compile this MP3 code into your software, you do so AT YOUR OWN RISK! By doing so,
-    you are agreeing that Raw Material Software is in no way responsible for any patent,
-    copyright, or other legal issues that you may suffer as a result.
+    you are agreeing that ROLI Ltd. is in no way responsible for any patent, copyright,
+    or other legal issues that you may suffer as a result.
 
     The code in juce_MP3AudioFormat.cpp is NOT guaranteed to be free from infringements of 3rd-party
     intellectual property. If you wish to use it, please seek your own independent advice about the
@@ -426,9 +431,8 @@ struct VBRTagData
 
         if (flags & 4)
         {
-            if (toc != nullptr)
-                for (int i = 0; i < 100; ++i)
-                    toc[i] = data[i];
+            for (int i = 0; i < 100; ++i)
+                toc[i] = data[i];
 
             data += 100;
         }
@@ -607,7 +611,7 @@ private:
             float* costab = cosTables[i];
 
             for (int k = 0; k < kr; ++k)
-                costab[k] = (float) (1.0 / (2.0 * cos (double_Pi * (k * 2 + 1) / divv)));
+                costab[k] = (float) (1.0 / (2.0 * std::cos (double_Pi * (k * 2 + 1) / divv)));
         }
 
         for (i = 0, j = 0; i < 256; ++i, ++j, table += 32)
@@ -692,23 +696,23 @@ private:
 
         for (i = 0; i < 18; ++i)
         {
-            win[0][i] = win[1][i] = (float) (0.5 * sin (double_Pi / 72.0 * (2 * i + 1)) / cos (double_Pi * (2 * i + 19) / 72.0));
-            win[0][i + 18] = win[3][i + 18] = (float) (0.5 * sin (double_Pi / 72.0 * (2 * (i + 18) + 1)) / cos (double_Pi * (2 * (i + 18) + 19) / 72.0));
+            win[0][i]      = win[1][i]      = (float) (0.5 * std::sin (double_Pi / 72.0 * (2 * i + 1))        / std::cos (double_Pi * (2 * i + 19)        / 72.0));
+            win[0][i + 18] = win[3][i + 18] = (float) (0.5 * std::sin (double_Pi / 72.0 * (2 * (i + 18) + 1)) / std::cos (double_Pi * (2 * (i + 18) + 19) / 72.0));
         }
 
-        const double piOver72 = double_Pi;
+        const double piOver72 = double_Pi / 72.0;
 
         for (i = 0; i < 6; ++i)
         {
-            win[1][i + 18] = (float) (0.5 / cos (piOver72 * (2 * (i + 18) + 19)));
-            win[3][i + 12] = (float) (0.5 / cos (piOver72 * (2 * (i + 12) + 19)));
-            win[1][i + 24] = (float) (0.5 * sin (double_Pi / 24.0 * (2 * i + 13)) / cos (piOver72 * (2 * (i + 24) + 19)));
+            win[1][i + 18] = (float) (0.5 / std::cos (piOver72 * (2 * (i + 18) + 19)));
+            win[3][i + 12] = (float) (0.5 / std::cos (piOver72 * (2 * (i + 12) + 19)));
+            win[1][i + 24] = (float) (0.5 * std::sin (double_Pi / 24.0 * (2 * i + 13)) / std::cos (piOver72 * (2 * (i + 24) + 19)));
             win[1][i + 30] = win[3][i] = 0;
-            win[3][i + 6]  = (float) (0.5 * sin (double_Pi / 24.0 * (2 * i + 1)) / cos (piOver72 * (2 * (i + 6) + 19)));
+            win[3][i + 6]  = (float) (0.5 * std::sin (double_Pi / 24.0 * (2 * i + 1)) / std::cos (piOver72 * (2 * (i + 6) + 19)));
         }
 
         for (i = 0; i < 12; ++i)
-            win[2][i] = (float) (0.5 * sin (double_Pi / 24.0 * (2 * i + 1)) / cos (double_Pi * (2 * i + 7) / 24.0));
+            win[2][i] = (float) (0.5 * std::sin (double_Pi / 24.0 * (2 * i + 1)) / std::cos (double_Pi * (2 * i + 7) / 24.0));
 
         for (j = 0; j < 4; ++j)
         {
@@ -721,7 +725,7 @@ private:
 
         for (i = 0; i < 16; ++i)
         {
-            const double t = tan (i * double_Pi / 12.0);
+            const double t = std::tan (i * double_Pi / 12.0);
             tan1_1[i] = (float) (t / (1.0 + t));
             tan2_1[i] = (float) (1.0 / (1.0 + t));
             tan1_2[i] = (float) (sqrt2 * t / (1.0 + t));
@@ -1614,7 +1618,7 @@ private:
         headerParsed = sideParsed = dataParsed = isFreeFormat = wasFreeFormat = false;
         lastFrameSize = -1;
         needToSyncBitStream = true;
-        frameSize = sideInfoSize = dataSize = frameSize = bitIndex = 0;
+        frameSize = sideInfoSize = dataSize = bitIndex = 0;
         lastFrameSizeNoPadding = bufferSpaceIndex = 0;
         bufferPointer = bufferSpace[bufferSpaceIndex] + 512;
         synthBo = 1;
@@ -2021,7 +2025,7 @@ private:
             for (int i = 0; i < jsbound; ++i)
             {
                 const int16 step = allocTable->bits;
-                allocTable += (1 << step);
+                allocTable += (static_cast<intptr_t> (1) << step);
                 si.allocation[i][0] = getBitsUint8 (step);
                 si.allocation[i][1] = getBitsUint8 (step);
             }
@@ -2030,7 +2034,7 @@ private:
             {
                 const int16 step = allocTable->bits;
                 const uint8 b0 = getBitsUint8 (step);
-                allocTable += (1 << step);
+                allocTable += (static_cast<intptr_t> (1) << step);
                 si.allocation[i][0] = b0;
                 si.allocation[i][1] = b0;
             }
@@ -2046,7 +2050,7 @@ private:
             for (int i = 0; i < sblimit; ++i)
             {
                 const int16 step = allocTable->bits;
-                allocTable += (1 << step);
+                allocTable += (static_cast<intptr_t> (1) << step);
                 si.allocation[i][0] = getBitsUint8 (step);
             }
 
@@ -2132,7 +2136,7 @@ private:
                 }
             }
 
-            allocTable += (1 << step);
+            allocTable += (static_cast<intptr_t> (1) << step);
         }
 
         for (int i = jsbound; i < frame.layer2SubBandLimit; ++i)
@@ -2183,7 +2187,7 @@ private:
                 fraction[0][0][i] = fraction[0][1][i] = fraction[0][2][i] = 0;
                 fraction[1][0][i] = fraction[1][1][i] = fraction[1][2][i] = 0;
             }
-            allocTable += (1 << step);
+            allocTable += (static_cast<intptr_t> (1) << step);
         }
 
         for (int ch = 0; ch < frame.numChannels; ++ch)
@@ -3021,7 +3025,7 @@ public:
             }
 
             const int numToCopy = jmin (decodedEnd - decodedStart, numSamples);
-            float* const* const dst = reinterpret_cast <float**> (destSamples);
+            float* const* const dst = reinterpret_cast<float**> (destSamples);
             memcpy (dst[0] + startOffsetInDestBuffer, decoded0 + decodedStart, sizeof (float) * (size_t) numToCopy);
 
             if (numDestChannels > 1 && dst[1] != nullptr)
@@ -3132,12 +3136,12 @@ private:
 MP3AudioFormat::MP3AudioFormat()  : AudioFormat (MP3Decoder::mp3FormatName, ".mp3") {}
 MP3AudioFormat::~MP3AudioFormat() {}
 
-Array<int> MP3AudioFormat::getPossibleSampleRates() { return Array<int>(); }
-Array<int> MP3AudioFormat::getPossibleBitDepths()   { return Array<int>(); }
+Array<int> MP3AudioFormat::getPossibleSampleRates() { return {}; }
+Array<int> MP3AudioFormat::getPossibleBitDepths()   { return {}; }
 bool MP3AudioFormat::canDoStereo()                  { return true; }
 bool MP3AudioFormat::canDoMono()                    { return true; }
 bool MP3AudioFormat::isCompressed()                 { return true; }
-StringArray MP3AudioFormat::getQualityOptions()     { return StringArray(); }
+StringArray MP3AudioFormat::getQualityOptions()     { return {}; }
 
 AudioFormatReader* MP3AudioFormat::createReaderFor (InputStream* sourceStream, const bool deleteStreamIfOpeningFails)
 {
@@ -3160,3 +3164,5 @@ AudioFormatWriter* MP3AudioFormat::createWriterFor (OutputStream*, double /*samp
 }
 
 #endif
+
+} // namespace juce

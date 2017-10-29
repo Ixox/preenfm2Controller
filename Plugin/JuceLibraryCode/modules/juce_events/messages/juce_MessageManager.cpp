@@ -2,31 +2,29 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   The code included in this file is provided under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license. Permission
+   To use, copy, modify, and/or distribute this software for any purpose with or
+   without fee is hereby granted provided that the above copyright notice and
+   this permission notice appear in all copies.
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
-   ------------------------------------------------------------------------------
-
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
+namespace juce
+{
+
 MessageManager::MessageManager() noexcept
-  : quitMessagePosted (false),
-    quitMessageReceived (false),
-    messageThreadId (Thread::getCurrentThreadId()),
-    threadWithLock (0)
+  : messageThreadId (Thread::getCurrentThreadId())
 {
     if (JUCEApplicationBase::isStandaloneApp())
         Thread::setCurrentThreadName ("Juce Message Thread");
@@ -66,21 +64,21 @@ void MessageManager::deleteInstance()
 }
 
 //==============================================================================
-void MessageManager::MessageBase::post()
+bool MessageManager::MessageBase::post()
 {
-    MessageManager* const mm = MessageManager::instance;
+    auto* mm = MessageManager::instance;
 
     if (mm == nullptr || mm->quitMessagePosted || ! postMessageToSystemQueue (this))
+    {
         Ptr deleter (this); // (this will delete messages that were just created with a 0 ref count)
+        return false;
+    }
+
+    return true;
 }
 
 //==============================================================================
 #if JUCE_MODAL_LOOPS_PERMITTED && ! (JUCE_MAC || JUCE_IOS)
-void MessageManager::runDispatchLoop()
-{
-    runDispatchLoopUntil (-1);
-}
-
 bool MessageManager::runDispatchLoopUntil (int millisecondsToRunFor)
 {
     jassert (isThisTheMessageThread()); // must only be called by the message thread
@@ -102,7 +100,9 @@ bool MessageManager::runDispatchLoopUntil (int millisecondsToRunFor)
 
     return ! quitMessageReceived;
 }
+#endif
 
+#if ! (JUCE_MAC || JUCE_IOS || JUCE_ANDROID)
 class MessageManager::QuitMessage   : public MessageManager::MessageBase
 {
 public:
@@ -110,12 +110,27 @@ public:
 
     void messageCallback() override
     {
-        if (MessageManager* const mm = MessageManager::instance)
+        if (auto* mm = MessageManager::instance)
             mm->quitMessageReceived = true;
     }
 
     JUCE_DECLARE_NON_COPYABLE (QuitMessage)
 };
+
+void MessageManager::runDispatchLoop()
+{
+    jassert (isThisTheMessageThread()); // must only be called by the message thread
+
+    while (! quitMessageReceived)
+    {
+        JUCE_TRY
+        {
+            if (! dispatchNextMessageOnSystemQueue (false))
+                Thread::sleep (1);
+        }
+        JUCE_CATCH_EXCEPTION
+    }
+}
 
 void MessageManager::stopDispatchLoop()
 {
@@ -130,7 +145,7 @@ class AsyncFunctionCallback   : public MessageManager::MessageBase
 {
 public:
     AsyncFunctionCallback (MessageCallbackFunction* const f, void* const param)
-        : result (nullptr), func (f), parameter (param)
+        : func (f), parameter (param)
     {}
 
     void messageCallback() override
@@ -140,7 +155,7 @@ public:
     }
 
     WaitableEvent finished;
-    void* volatile result;
+    void* volatile result = nullptr;
 
 private:
     MessageCallbackFunction* const func;
@@ -158,9 +173,15 @@ void* MessageManager::callFunctionOnMessageThread (MessageCallbackFunction* cons
     jassert (! currentThreadHasLockedMessageManager());
 
     const ReferenceCountedObjectPtr<AsyncFunctionCallback> message (new AsyncFunctionCallback (func, parameter));
-    message->post();
-    message->finished.wait();
-    return message->result;
+
+    if (message->post())
+    {
+        message->finished.wait();
+        return message->result;
+    }
+
+    jassertfalse; // the OS message queue failed to send the message!
+    return nullptr;
 }
 
 //==============================================================================
@@ -239,18 +260,26 @@ public:
 
 //==============================================================================
 MessageManagerLock::MessageManagerLock (Thread* const threadToCheck)
-    : blockingMessage(), locked (attemptLock (threadToCheck, nullptr))
+    : blockingMessage(), checker (threadToCheck, nullptr),
+      locked (attemptLock (threadToCheck != nullptr ? &checker : nullptr))
 {
 }
 
 MessageManagerLock::MessageManagerLock (ThreadPoolJob* const jobToCheckForExitSignal)
-    : blockingMessage(), locked (attemptLock (nullptr, jobToCheckForExitSignal))
+    : blockingMessage(), checker (nullptr, jobToCheckForExitSignal),
+      locked (attemptLock (jobToCheckForExitSignal != nullptr ? &checker : nullptr))
 {
 }
 
-bool MessageManagerLock::attemptLock (Thread* const threadToCheck, ThreadPoolJob* const job)
+MessageManagerLock::MessageManagerLock (BailOutChecker& bailOutChecker)
+    : blockingMessage(), checker (nullptr, nullptr),
+      locked (attemptLock (&bailOutChecker))
 {
-    MessageManager* const mm = MessageManager::instance;
+}
+
+bool MessageManagerLock::attemptLock (BailOutChecker* bailOutChecker)
+{
+    auto* mm = MessageManager::instance;
 
     if (mm == nullptr)
         return false;
@@ -258,7 +287,7 @@ bool MessageManagerLock::attemptLock (Thread* const threadToCheck, ThreadPoolJob
     if (mm->currentThreadHasLockedMessageManager())
         return true;
 
-    if (threadToCheck == nullptr && job == nullptr)
+    if (bailOutChecker == nullptr)
     {
         mm->lockingLock.enter();
     }
@@ -266,8 +295,7 @@ bool MessageManagerLock::attemptLock (Thread* const threadToCheck, ThreadPoolJob
     {
         while (! mm->lockingLock.tryEnter())
         {
-            if ((threadToCheck != nullptr && threadToCheck->threadShouldExit())
-                  || (job != nullptr && job->shouldExit()))
+            if (bailOutChecker->shouldAbortAcquiringLock())
                 return false;
 
             Thread::yield();
@@ -275,12 +303,16 @@ bool MessageManagerLock::attemptLock (Thread* const threadToCheck, ThreadPoolJob
     }
 
     blockingMessage = new BlockingMessage();
-    blockingMessage->post();
+
+    if (! blockingMessage->post())
+    {
+        blockingMessage = nullptr;
+        return false;
+    }
 
     while (! blockingMessage->lockedEvent.wait (20))
     {
-        if ((threadToCheck != nullptr && threadToCheck->threadShouldExit())
-              || (job != nullptr && job->shouldExit()))
+        if (bailOutChecker != nullptr && bailOutChecker->shouldAbortAcquiringLock())
         {
             blockingMessage->releaseEvent.signal();
             blockingMessage = nullptr;
@@ -299,7 +331,7 @@ MessageManagerLock::~MessageManagerLock() noexcept
 {
     if (blockingMessage != nullptr)
     {
-        MessageManager* const mm = MessageManager::instance;
+        auto* mm = MessageManager::instance;
 
         jassert (mm == nullptr || mm->currentThreadHasLockedMessageManager());
 
@@ -312,6 +344,19 @@ MessageManagerLock::~MessageManagerLock() noexcept
             mm->lockingLock.exit();
         }
     }
+}
+
+//==============================================================================
+MessageManagerLock::ThreadChecker::ThreadChecker (Thread* const threadToUse,
+                                                  ThreadPoolJob* const threadJobToUse)
+    : threadToCheck (threadToUse), job (threadJobToUse)
+{
+}
+
+bool MessageManagerLock::ThreadChecker::shouldAbortAcquiringLock()
+{
+    return (threadToCheck != nullptr && threadToCheck->threadShouldExit())
+        || (job           != nullptr && job->shouldExit());
 }
 
 //==============================================================================
@@ -334,5 +379,9 @@ JUCE_API void JUCE_CALLTYPE shutdownJuce_GUI()
     }
 }
 
-ScopedJuceInitialiser_GUI::ScopedJuceInitialiser_GUI()  { initialiseJuce_GUI(); }
-ScopedJuceInitialiser_GUI::~ScopedJuceInitialiser_GUI() { shutdownJuce_GUI(); }
+static int numScopedInitInstances = 0;
+
+ScopedJuceInitialiser_GUI::ScopedJuceInitialiser_GUI()  { if (numScopedInitInstances++ == 0) initialiseJuce_GUI(); }
+ScopedJuceInitialiser_GUI::~ScopedJuceInitialiser_GUI() { if (--numScopedInitInstances == 0) shutdownJuce_GUI(); }
+
+} // namespace juce

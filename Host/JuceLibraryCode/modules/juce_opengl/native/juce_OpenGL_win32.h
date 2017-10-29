@@ -2,27 +2,32 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   By using JUCE, you agree to the terms of both the JUCE 5 End-User License
+   Agreement and JUCE 5 Privacy Policy (both updated and effective as of the
+   27th April 2017).
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   End User License Agreement: www.juce.com/juce-5-licence
+   Privacy Policy: www.juce.com/juce-5-privacy-policy
 
-   ------------------------------------------------------------------------------
+   Or: You may also use this code under the terms of the GPL v3 (see
+   www.gnu.org/licenses).
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
-extern ComponentPeer* createNonRepaintingEmbeddedWindowsPeer (Component*, void* parent);
+namespace juce
+{
+
+extern ComponentPeer* createNonRepaintingEmbeddedWindowsPeer (Component&, void* parent);
 
 //==============================================================================
 class OpenGLContext::NativeContext
@@ -34,12 +39,14 @@ public:
                    bool /*useMultisampling*/,
                    OpenGLVersion)
     {
+        dummyComponent = new DummyComponent (*this);
         createNativeWindow (component);
 
         PIXELFORMATDESCRIPTOR pfd;
         initialisePixelFormatDescriptor (pfd, pixelFormat);
 
-        const int pixFormat = ChoosePixelFormat (dc, &pfd);
+        auto pixFormat = ChoosePixelFormat (dc, &pfd);
+
         if (pixFormat != 0)
             SetPixelFormat (dc, pixFormat, &pfd);
 
@@ -50,7 +57,7 @@ public:
             makeActive();
             initialiseGLExtensions();
 
-            const int wglFormat = wglChoosePixelFormatExtension (pixelFormat);
+            auto wglFormat = wglChoosePixelFormatExtension (pixelFormat);
             deactivateCurrentContext();
 
             if (wglFormat != pixFormat && wglFormat != 0)
@@ -82,8 +89,8 @@ public:
         releaseDC();
     }
 
-    void initialiseOnRenderThread (OpenGLContext&) {}
-    void shutdownOnRenderThread()           { deactivateCurrentContext(); }
+    void initialiseOnRenderThread (OpenGLContext& c) { context = &c; }
+    void shutdownOnRenderThread()           { deactivateCurrentContext(); context = nullptr; }
 
     static void deactivateCurrentContext()  { wglMakeCurrent (0, 0); }
     bool makeActive() const noexcept        { return isActive() || wglMakeCurrent (dc, renderContext) != FALSE; }
@@ -102,7 +109,7 @@ public:
         return wglGetSwapIntervalEXT != nullptr ? wglGetSwapIntervalEXT() : 0;
     }
 
-    void updateWindowPosition (const Rectangle<int>& bounds)
+    void updateWindowPosition (Rectangle<int> bounds)
     {
         if (nativeWindow != nullptr)
             SetWindowPos ((HWND) nativeWindow->getNativeHandle(), 0,
@@ -114,13 +121,30 @@ public:
     void* getRawContext() const noexcept            { return renderContext; }
     unsigned int getFrameBufferID() const noexcept  { return 0; }
 
+    void triggerRepaint()
+    {
+        if (context != nullptr)
+            context->triggerRepaint();
+    }
+
     struct Locker { Locker (NativeContext&) {} };
 
 private:
-    Component dummyComponent;
+    struct DummyComponent  : public Component
+    {
+        DummyComponent (NativeContext& c) : context (c) {}
+
+        // The windowing code will call this when a paint callback happens
+        void handleCommandMessage (int) override   { context.triggerRepaint(); }
+
+        NativeContext& context;
+    };
+
+    ScopedPointer<DummyComponent> dummyComponent;
     ScopedPointer<ComponentPeer> nativeWindow;
     HGLRC renderContext;
     HDC dc;
+    OpenGLContext* context = {};
 
     #define JUCE_DECLARE_WGL_EXTENSION_FUNCTION(name, returnType, params) \
         typedef returnType (__stdcall *type_ ## name) params; type_ ## name name;
@@ -141,10 +165,10 @@ private:
 
     void createNativeWindow (Component& component)
     {
-        Component* topComp = component.getTopLevelComponent();
-        nativeWindow = createNonRepaintingEmbeddedWindowsPeer (&dummyComponent, topComp->getWindowHandle());
+        auto* topComp = component.getTopLevelComponent();
+        nativeWindow = createNonRepaintingEmbeddedWindowsPeer (*dummyComponent, topComp->getWindowHandle());
 
-        if (ComponentPeer* peer = topComp->getPeer())
+        if (auto* peer = topComp->getPeer())
             updateWindowPosition (peer->getAreaCoveredBy (component));
 
         nativeWindow->setVisible (true);
@@ -245,3 +269,5 @@ bool OpenGLHelpers::isContextActive()
 {
     return wglGetCurrentContext() != 0;
 }
+
+} // namespace juce

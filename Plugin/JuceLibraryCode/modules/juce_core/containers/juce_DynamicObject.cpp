@@ -1,37 +1,34 @@
 /*
   ==============================================================================
 
-   This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   This file is part of the JUCE library.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission to use, copy, modify, and/or distribute this software for any purpose with
-   or without fee is hereby granted, provided that the above copyright notice and this
-   permission notice appear in all copies.
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
-   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-   DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
-   IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   The code included in this file is provided under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license. Permission
+   To use, copy, modify, and/or distribute this software for any purpose with or
+   without fee is hereby granted provided that the above copyright notice and
+   this permission notice appear in all copies.
 
-   ------------------------------------------------------------------------------
-
-   NOTE! This permissive ISC license applies ONLY to files within the juce_core module!
-   All other JUCE modules are covered by a dual GPL/commercial license, so if you are
-   using any other modules, be sure to check that you also comply with their license.
-
-   For more details, visit www.juce.com
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
+
+namespace juce
+{
 
 DynamicObject::DynamicObject()
 {
 }
 
 DynamicObject::DynamicObject (const DynamicObject& other)
-    : properties (other.properties)
+   : ReferenceCountedObject(), properties (other.properties)
 {
 }
 
@@ -45,7 +42,7 @@ bool DynamicObject::hasProperty (const Identifier& propertyName) const
     return v != nullptr && ! v->isMethod();
 }
 
-var DynamicObject::getProperty (const Identifier& propertyName) const
+const var& DynamicObject::getProperty (const Identifier& propertyName) const
 {
     return properties [propertyName];
 }
@@ -67,10 +64,10 @@ bool DynamicObject::hasMethod (const Identifier& methodName) const
 
 var DynamicObject::invokeMethod (Identifier method, const var::NativeFunctionArgs& args)
 {
-    if (var::NativeFunction function = properties [method].getNativeFunction())
+    if (auto function = properties [method].getNativeFunction())
         return function (args);
 
-    return var();
+    return {};
 }
 
 void DynamicObject::setMethod (Identifier name, var::NativeFunction function)
@@ -85,16 +82,9 @@ void DynamicObject::clear()
 
 void DynamicObject::cloneAllProperties()
 {
-    for (LinkedListPointer<NamedValueSet::NamedValue>* i = &(properties.values);;)
-    {
-        if (NamedValueSet::NamedValue* const v = i->get())
-        {
-            v->value = v->value.clone();
-            i = &(v->nextListItem);
-        }
-        else
-            break;
-    }
+    for (int i = properties.size(); --i >= 0;)
+        if (auto* v = properties.getVarPointerAt (i))
+            *v = v->clone();
 }
 
 DynamicObject::Ptr DynamicObject::clone()
@@ -104,38 +94,33 @@ DynamicObject::Ptr DynamicObject::clone()
     return d;
 }
 
-void DynamicObject::writeAsJSON (OutputStream& out, const int indentLevel, const bool allOnOneLine)
+void DynamicObject::writeAsJSON (OutputStream& out, const int indentLevel, const bool allOnOneLine, int maximumDecimalPlaces)
 {
     out << '{';
     if (! allOnOneLine)
         out << newLine;
 
-    for (LinkedListPointer<NamedValueSet::NamedValue>* i = &(properties.values);;)
+    const int numValues = properties.size();
+
+    for (int i = 0; i < numValues; ++i)
     {
-        if (NamedValueSet::NamedValue* const v = i->get())
+        if (! allOnOneLine)
+            JSONFormatter::writeSpaces (out, indentLevel + JSONFormatter::indentSize);
+
+        out << '"';
+        JSONFormatter::writeString (out, properties.getName (i));
+        out << "\": ";
+        JSONFormatter::write (out, properties.getValueAt (i), indentLevel + JSONFormatter::indentSize, allOnOneLine, maximumDecimalPlaces);
+
+        if (i < numValues - 1)
         {
-            if (! allOnOneLine)
-                JSONFormatter::writeSpaces (out, indentLevel + JSONFormatter::indentSize);
-
-            out << '"';
-            JSONFormatter::writeString (out, v->name);
-            out << "\": ";
-            JSONFormatter::write (out, v->value, indentLevel + JSONFormatter::indentSize, allOnOneLine);
-
-            if (v->nextListItem.get() != nullptr)
-            {
-                if (allOnOneLine)
-                    out << ", ";
-                else
-                    out << ',' << newLine;
-            }
-            else if (! allOnOneLine)
-                out << newLine;
-
-            i = &(v->nextListItem);
+            if (allOnOneLine)
+                out << ", ";
+            else
+                out << ',' << newLine;
         }
-        else
-            break;
+        else if (! allOnOneLine)
+            out << newLine;
     }
 
     if (! allOnOneLine)
@@ -143,3 +128,5 @@ void DynamicObject::writeAsJSON (OutputStream& out, const int indentLevel, const
 
     out << '}';
 }
+
+} // namespace juce

@@ -2,28 +2,33 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   By using JUCE, you agree to the terms of both the JUCE 5 End-User License
+   Agreement and JUCE 5 Privacy Policy (both updated and effective as of the
+   27th April 2017).
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   End User License Agreement: www.juce.com/juce-5-licence
+   Privacy Policy: www.juce.com/juce-5-privacy-policy
 
-   ------------------------------------------------------------------------------
+   Or: You may also use this code under the terms of the GPL v3 (see
+   www.gnu.org/licenses).
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
+namespace juce
+{
+
 CallOutBox::CallOutBox (Component& c, const Rectangle<int>& area, Component* const parent)
-    : arrowSize (16.0f), content (c)
+    : arrowSize (16.0f), content (c), dismissalMouseClicksAreAlwaysConsumed (false)
 {
     addAndMakeVisible (content);
 
@@ -41,7 +46,11 @@ CallOutBox::CallOutBox (Component& c, const Rectangle<int>& area, Component* con
                                 .getDisplayContaining (area.getCentre()).userArea);
 
         addToDesktop (ComponentPeer::windowIsTemporary);
+
+        startTimer (100);
     }
+
+    creationTime = Time::getCurrentTime();
 }
 
 CallOutBox::~CallOutBox()
@@ -91,7 +100,7 @@ void CallOutBox::setArrowSize (const float newSize)
 
 int CallOutBox::getBorderSize() const noexcept
 {
-    return jmax (20, (int) arrowSize);
+    return jmax (getLookAndFeel().getCallOutBoxBorderSize (*this), (int) arrowSize);
 }
 
 void CallOutBox::paint (Graphics& g)
@@ -123,20 +132,31 @@ bool CallOutBox::hitTest (int x, int y)
 
 void CallOutBox::inputAttemptWhenModal()
 {
-    const Point<int> mousePos (getMouseXYRelative() + getBounds().getPosition());
-
-    if (targetArea.contains (mousePos))
+    if (dismissalMouseClicksAreAlwaysConsumed
+         || targetArea.contains (getMouseXYRelative() + getBounds().getPosition()))
     {
         // if you click on the area that originally popped-up the callout, you expect it
         // to get rid of the box, but deleting the box here allows the click to pass through and
         // probably re-trigger it, so we need to dismiss the box asynchronously to consume the click..
-        dismiss();
+
+        // For touchscreens, we make sure not to dismiss the CallOutBox immediately,
+        // as Windows still sends touch events before the CallOutBox had a chance
+        // to really open.
+
+        RelativeTime elapsed = Time::getCurrentTime() - creationTime;
+        if (elapsed.inMilliseconds() > 200)
+            dismiss();
     }
     else
     {
         exitModalState (0);
         setVisible (false);
     }
+}
+
+void CallOutBox::setDismissalMouseClicksAreAlwaysConsumed (bool b) noexcept
+{
+    dismissalMouseClicksAreAlwaysConsumed = b;
 }
 
 enum { callOutBoxDismissCommandId = 0x4f83a04b };
@@ -226,7 +246,7 @@ void CallOutBox::updatePosition (const Rectangle<int>& newAreaToPointTo, const R
 void CallOutBox::refreshPath()
 {
     repaint();
-    background = Image::null;
+    background = Image();
     outline.clear();
 
     const float gap = 4.5f;
@@ -236,3 +256,11 @@ void CallOutBox::refreshPath()
                        targetPoint - getPosition().toFloat(),
                        9.0f, arrowSize * 0.7f);
 }
+
+void CallOutBox::timerCallback()
+{
+    toFront (true);
+    stopTimer();
+}
+
+} // namespace juce

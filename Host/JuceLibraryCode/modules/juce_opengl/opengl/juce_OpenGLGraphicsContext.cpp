@@ -2,25 +2,32 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   By using JUCE, you agree to the terms of both the JUCE 5 End-User License
+   Agreement and JUCE 5 Privacy Policy (both updated and effective as of the
+   27th April 2017).
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   End User License Agreement: www.juce.com/juce-5-licence
+   Privacy Policy: www.juce.com/juce-5-privacy-policy
 
-   ------------------------------------------------------------------------------
+   Or: You may also use this code under the terms of the GPL v3 (see
+   www.gnu.org/licenses).
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
+
+namespace juce
+{
+
+extern void (*clearOpenGLGlyphCache)(); // declared in juce_graphics
 
 namespace OpenGLRendering
 {
@@ -38,18 +45,18 @@ struct TextureInfo
 struct CachedImageList  : public ReferenceCountedObject,
                           private ImagePixelData::Listener
 {
-    CachedImageList (size_t totalCacheSizeInPixels = 8 * 1024 * 1024) noexcept
-        : totalSize (0), maxCacheSize (totalCacheSizeInPixels) {}
+    CachedImageList (OpenGLContext& c) noexcept
+        : context (c), totalSize (0), maxCacheSize (c.getImageCacheSize()) {}
 
-    static CachedImageList* get (OpenGLContext& context)
+    static CachedImageList* get (OpenGLContext& c)
     {
         const char cacheValueID[] = "CachedImages";
-        CachedImageList* list = static_cast<CachedImageList*> (context.getAssociatedObject (cacheValueID));
+        CachedImageList* list = static_cast<CachedImageList*> (c.getAssociatedObject (cacheValueID));
 
         if (list == nullptr)
         {
-            list = new CachedImageList();
-            context.setAssociatedObject (cacheValueID, list);
+            list = new CachedImageList (c);
+            c.setAssociatedObject (cacheValueID, list);
         }
 
         return list;
@@ -90,7 +97,8 @@ struct CachedImageList  : public ReferenceCountedObject,
         CachedImage (CachedImageList& list, ImagePixelData* im)
             : owner (list), pixelData (im),
               lastUsed (Time::getCurrentTime()),
-              imageSize (im->width * im->height)
+              imageSize ((size_t) (im->width * im->height)),
+              textureNeedsReloading (true)
         {
             pixelData->listeners.add (&owner);
         }
@@ -105,8 +113,11 @@ struct CachedImageList  : public ReferenceCountedObject,
         {
             TextureInfo t;
 
-            if (texture.getTextureID() == 0)
+            if (textureNeedsReloading)
+            {
+                textureNeedsReloading = false;
                 texture.loadImage (Image (pixelData));
+            }
 
             t.textureID = texture.getTextureID();
             t.imageWidth = pixelData->width;
@@ -124,6 +135,7 @@ struct CachedImageList  : public ReferenceCountedObject,
         OpenGLTexture texture;
         Time lastUsed;
         const size_t imageSize;
+        bool textureNeedsReloading;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CachedImage)
     };
@@ -131,27 +143,43 @@ struct CachedImageList  : public ReferenceCountedObject,
     typedef ReferenceCountedObjectPtr<CachedImageList> Ptr;
 
 private:
+    OpenGLContext& context;
+    OwnedArray<CachedImage> images;
+    size_t totalSize, maxCacheSize;
+
+    bool canUseContext() const noexcept
+    {
+        return OpenGLContext::getCurrentContext() == &context;
+    }
+
     void imageDataChanged (ImagePixelData* im) override
     {
         if (CachedImage* c = findCachedImage (im))
-            c->texture.release();
+            c->textureNeedsReloading = true;
     }
 
     void imageDataBeingDeleted (ImagePixelData* im) override
     {
         for (int i = images.size(); --i >= 0;)
         {
-            if (images.getUnchecked(i)->pixelData == im)
+            CachedImage& ci = *images.getUnchecked(i);
+
+            if (ci.pixelData == im)
             {
-                totalSize -= images.getUnchecked(i)->imageSize;
-                images.remove (i);
+                if (canUseContext())
+                {
+                    totalSize -= ci.imageSize;
+                    images.remove (i);
+                }
+                else
+                {
+                    ci.pixelData = nullptr;
+                }
+
                 break;
             }
         }
     }
-
-    OwnedArray<CachedImage> images;
-    size_t totalSize, maxCacheSize;
 
     CachedImage* findCachedImage (ImagePixelData* const pixelData) const
     {
@@ -436,12 +464,6 @@ public:
         {}
     };
 
-   #if JUCE_ANDROID
-    #define JUCE_DECLARE_SWIZZLE_FUNCTION "\n" JUCE_MEDIUMP " vec4 swizzleRGBOrder (in " JUCE_MEDIUMP " vec4 c) { return vec4 (c.b, c.g, c.r, c.a); }\n"
-   #else
-    #define JUCE_DECLARE_SWIZZLE_FUNCTION "\n" JUCE_MEDIUMP " vec4 swizzleRGBOrder (in " JUCE_MEDIUMP " vec4 c) { return c; }\n"
-   #endif
-
     #define JUCE_DECLARE_MASK_UNIFORMS  "uniform sampler2D maskTexture;" \
                                         "uniform ivec4 maskBounds;"
     #define JUCE_FRAGCOORD_TO_MASK_POS  "vec2 ((pixelPos.x - float (maskBounds.x)) / float (maskBounds.z)," \
@@ -486,13 +508,13 @@ public:
     #define JUCE_DECLARE_RADIAL_UNIFORMS  "uniform sampler2D gradientTexture;" JUCE_DECLARE_MATRIX_UNIFORM
     #define JUCE_MATRIX_TIMES_FRAGCOORD   "(mat2 (matrix[0], matrix[3], matrix[1], matrix[4]) * pixelPos" \
                                           " + vec2 (matrix[2], matrix[5]))"
-    #define JUCE_GET_TEXTURE_COLOUR       "(frontColour.a * swizzleRGBOrder (texture2D (gradientTexture, vec2 (gradientPos, 0.5))))"
+    #define JUCE_GET_TEXTURE_COLOUR       "(frontColour.a * texture2D (gradientTexture, vec2 (gradientPos, 0.5)))"
 
     struct RadialGradientProgram  : public ShaderBase
     {
         RadialGradientProgram (OpenGLContext& context)
             : ShaderBase (context, JUCE_DECLARE_VARYING_PIXELPOS
-                          JUCE_DECLARE_RADIAL_UNIFORMS JUCE_DECLARE_VARYING_COLOUR JUCE_DECLARE_SWIZZLE_FUNCTION
+                          JUCE_DECLARE_RADIAL_UNIFORMS JUCE_DECLARE_VARYING_COLOUR
                           "void main()"
                           "{"
                             JUCE_MEDIUMP " float gradientPos = length (" JUCE_MATRIX_TIMES_FRAGCOORD ");"
@@ -509,7 +531,7 @@ public:
         RadialGradientMaskedProgram (OpenGLContext& context)
             : ShaderBase (context, JUCE_DECLARE_VARYING_PIXELPOS
                           JUCE_DECLARE_RADIAL_UNIFORMS JUCE_DECLARE_VARYING_COLOUR
-                          JUCE_DECLARE_MASK_UNIFORMS JUCE_DECLARE_SWIZZLE_FUNCTION
+                          JUCE_DECLARE_MASK_UNIFORMS
                           "void main()"
                           "{"
                             JUCE_MEDIUMP " float gradientPos = length (" JUCE_MATRIX_TIMES_FRAGCOORD ");"
@@ -544,7 +566,6 @@ public:
     {
         LinearGradient1Program (OpenGLContext& context)
             : ShaderBase (context, JUCE_DECLARE_LINEAR_UNIFORMS  // gradientInfo: x = x1, y = y1, z = (y2 - y1) / (x2 - x1), w = length
-                          JUCE_DECLARE_SWIZZLE_FUNCTION
                           "void main()"
                           "{"
                             JUCE_CALC_LINEAR_GRAD_POS1
@@ -560,7 +581,7 @@ public:
     {
         LinearGradient1MaskedProgram (OpenGLContext& context)
             : ShaderBase (context, JUCE_DECLARE_LINEAR_UNIFORMS  // gradientInfo: x = x1, y = y1, z = (y2 - y1) / (x2 - x1), w = length
-                          JUCE_DECLARE_MASK_UNIFORMS JUCE_DECLARE_SWIZZLE_FUNCTION
+                          JUCE_DECLARE_MASK_UNIFORMS
                           "void main()"
                           "{"
                             JUCE_CALC_LINEAR_GRAD_POS1
@@ -578,7 +599,6 @@ public:
     {
         LinearGradient2Program (OpenGLContext& context)
             : ShaderBase (context, JUCE_DECLARE_LINEAR_UNIFORMS  // gradientInfo: x = x1, y = y1, z = (x2 - x1) / (y2 - y1), y = y1, w = length
-                          JUCE_DECLARE_SWIZZLE_FUNCTION
                           "void main()"
                           "{"
                             JUCE_CALC_LINEAR_GRAD_POS2
@@ -594,7 +614,7 @@ public:
     {
         LinearGradient2MaskedProgram (OpenGLContext& context)
             : ShaderBase (context, JUCE_DECLARE_LINEAR_UNIFORMS  // gradientInfo: x = x1, y = y1, z = (x2 - x1) / (y2 - y1), y = y1, w = length
-                          JUCE_DECLARE_MASK_UNIFORMS JUCE_DECLARE_SWIZZLE_FUNCTION
+                          JUCE_DECLARE_MASK_UNIFORMS
                           "void main()"
                           "{"
                             JUCE_CALC_LINEAR_GRAD_POS2
@@ -655,14 +675,14 @@ public:
     #define JUCE_DECLARE_IMAGE_UNIFORMS "uniform sampler2D imageTexture;" \
                                         "uniform " JUCE_MEDIUMP " vec2 imageLimits;" \
                                         JUCE_DECLARE_MATRIX_UNIFORM JUCE_DECLARE_VARYING_COLOUR JUCE_DECLARE_VARYING_PIXELPOS
-    #define JUCE_GET_IMAGE_PIXEL        "swizzleRGBOrder (texture2D (imageTexture, vec2 (texturePos.x, 1.0 - texturePos.y)))"
+    #define JUCE_GET_IMAGE_PIXEL        "texture2D (imageTexture, vec2 (texturePos.x, 1.0 - texturePos.y))"
     #define JUCE_CLAMP_TEXTURE_COORD    JUCE_HIGHP " vec2 texturePos = clamp (" JUCE_MATRIX_TIMES_FRAGCOORD ", vec2 (0, 0), imageLimits);"
     #define JUCE_MOD_TEXTURE_COORD      JUCE_HIGHP " vec2 texturePos = mod (" JUCE_MATRIX_TIMES_FRAGCOORD ", imageLimits);"
 
     struct ImageProgram  : public ShaderBase
     {
         ImageProgram (OpenGLContext& context)
-            : ShaderBase (context, JUCE_DECLARE_VARYING_COLOUR JUCE_DECLARE_SWIZZLE_FUNCTION
+            : ShaderBase (context, JUCE_DECLARE_VARYING_COLOUR
                           "uniform sampler2D imageTexture;"
                           "varying " JUCE_HIGHP " vec2 texturePos;"
                           "void main()"
@@ -694,7 +714,7 @@ public:
     struct ImageMaskedProgram  : public ShaderBase
     {
         ImageMaskedProgram (OpenGLContext& context)
-            : ShaderBase (context, JUCE_DECLARE_IMAGE_UNIFORMS JUCE_DECLARE_MASK_UNIFORMS JUCE_DECLARE_SWIZZLE_FUNCTION
+            : ShaderBase (context, JUCE_DECLARE_IMAGE_UNIFORMS JUCE_DECLARE_MASK_UNIFORMS
                           "void main()"
                           "{"
                             JUCE_CLAMP_TEXTURE_COORD
@@ -711,7 +731,7 @@ public:
     struct TiledImageProgram  : public ShaderBase
     {
         TiledImageProgram (OpenGLContext& context)
-            : ShaderBase (context, JUCE_DECLARE_IMAGE_UNIFORMS JUCE_DECLARE_SWIZZLE_FUNCTION
+            : ShaderBase (context, JUCE_DECLARE_IMAGE_UNIFORMS
                           "void main()"
                           "{"
                             JUCE_MOD_TEXTURE_COORD
@@ -726,7 +746,7 @@ public:
     struct TiledImageMaskedProgram  : public ShaderBase
     {
         TiledImageMaskedProgram (OpenGLContext& context)
-            : ShaderBase (context, JUCE_DECLARE_IMAGE_UNIFORMS JUCE_DECLARE_MASK_UNIFORMS JUCE_DECLARE_SWIZZLE_FUNCTION
+            : ShaderBase (context, JUCE_DECLARE_IMAGE_UNIFORMS JUCE_DECLARE_MASK_UNIFORMS
                           "void main()"
                           "{"
                             JUCE_MOD_TEXTURE_COORD
@@ -743,7 +763,7 @@ public:
     struct CopyTextureProgram  : public ShaderBase
     {
         CopyTextureProgram (OpenGLContext& context)
-            : ShaderBase (context, JUCE_DECLARE_IMAGE_UNIFORMS JUCE_DECLARE_SWIZZLE_FUNCTION
+            : ShaderBase (context, JUCE_DECLARE_IMAGE_UNIFORMS
                           "void main()"
                           "{"
                             JUCE_MOD_TEXTURE_COORD
@@ -758,7 +778,7 @@ public:
     struct MaskTextureProgram  : public ShaderBase
     {
         MaskTextureProgram (OpenGLContext& context)
-            : ShaderBase (context, JUCE_DECLARE_IMAGE_UNIFORMS JUCE_DECLARE_SWIZZLE_FUNCTION
+            : ShaderBase (context, JUCE_DECLARE_IMAGE_UNIFORMS
                           "void main()"
                           "{"
                             JUCE_HIGHP " vec2 texturePos = " JUCE_MATRIX_TIMES_FRAGCOORD ";"
@@ -1118,7 +1138,7 @@ struct StateHelpers
 
         ~ShaderQuadQueue() noexcept
         {
-            static_jassert (sizeof (VertexInfo) == 8);
+            static_assert (sizeof (VertexInfo) == 8, "Sanity check VertexInfo size");
             context.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
             context.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
             context.extensions.glDeleteBuffers (2, buffers);
@@ -1153,7 +1173,14 @@ struct StateHelpers
             v[1].x = v[3].x = (GLshort) (x + w);
             v[2].y = v[3].y = (GLshort) (y + h);
 
-            const GLuint rgba = colour.getInRGBAMemoryOrder();
+           #if JUCE_BIG_ENDIAN
+            const GLuint rgba = (GLuint) ((colour.getRed() << 24) | (colour.getGreen() << 16)
+                                        | (colour.getBlue() << 8) |  colour.getAlpha());
+           #else
+            const GLuint rgba = (GLuint) ((colour.getAlpha() << 24) | (colour.getBlue() << 16)
+                                        | (colour.getGreen() << 8) |  colour.getRed());
+           #endif
+
             v[0].colour = rgba;
             v[1].colour = rgba;
             v[2].colour = rgba;
@@ -1178,15 +1205,15 @@ struct StateHelpers
 
         void add (const RectangleList<int>& list, const PixelARGB colour) noexcept
         {
-            for (const Rectangle<int>* i = list.begin(), * const e = list.end(); i != e; ++i)
-                add (*i, colour);
+            for (auto& i : list)
+                add (i, colour);
         }
 
         void add (const RectangleList<int>& list, const Rectangle<int>& clip, const PixelARGB colour) noexcept
         {
-            for (const Rectangle<int>* i = list.begin(), * const e = list.end(); i != e; ++i)
+            for (auto& i : list)
             {
-                const Rectangle<int> r (i->getIntersection (clip));
+                auto r = i.getIntersection (clip);
 
                 if (! r.isEmpty())
                     add (r, colour);
@@ -1569,7 +1596,7 @@ public:
         }
     }
 
-    typedef RenderingHelpers::GlyphCache <RenderingHelpers::CachedGlyphEdgeTable <SavedState>, SavedState> GlyphCacheType;
+    typedef RenderingHelpers::GlyphCache<RenderingHelpers::CachedGlyphEdgeTable<SavedState>, SavedState> GlyphCacheType;
 
     void drawGlyph (int glyphNumber, const AffineTransform& trans)
     {
@@ -1750,9 +1777,15 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NonShaderContext)
 };
 
-LowLevelGraphicsContext* createOpenGLContext (const Target&);
-LowLevelGraphicsContext* createOpenGLContext (const Target& target)
+static void clearOpenGLGlyphCacheCallback()
 {
+    SavedState::GlyphCacheType::getInstance().reset();
+}
+
+static LowLevelGraphicsContext* createOpenGLContext (const Target& target)
+{
+    clearOpenGLGlyphCache = clearOpenGLGlyphCacheCallback;
+
     if (target.context.areShadersAvailable())
         return new ShaderContext (target);
 
@@ -1775,16 +1808,8 @@ LowLevelGraphicsContext* createOpenGLGraphicsContext (OpenGLContext& context, Op
 
 LowLevelGraphicsContext* createOpenGLGraphicsContext (OpenGLContext& context, unsigned int frameBufferID, int width, int height)
 {
-    using namespace OpenGLRendering;
     return OpenGLRendering::createOpenGLContext (OpenGLRendering::Target (context, frameBufferID, width, height));
 }
-
-void clearOpenGLGlyphCache();
-void clearOpenGLGlyphCache()
-{
-    OpenGLRendering::SavedState::GlyphCacheType::getInstance().reset();
-}
-
 
 //==============================================================================
 struct CustomProgram  : public ReferenceCountedObject,
@@ -1833,7 +1858,7 @@ struct CustomProgram  : public ReferenceCountedObject,
 OpenGLGraphicsContextCustomShader::OpenGLGraphicsContextCustomShader (const String& fragmentShaderCode)
     : code (String (JUCE_DECLARE_VARYING_COLOUR
                     JUCE_DECLARE_VARYING_PIXELPOS
-                    "\n" JUCE_MEDIUMP " float pixelAlpha = frontColour.a;\n") + fragmentShaderCode),
+                    "\n#define pixelAlpha frontColour.a\n") + fragmentShaderCode),
       hashName (String::toHexString (fragmentShaderCode.hashCode64()) + "_shader")
 {
 }
@@ -1872,3 +1897,5 @@ Result OpenGLGraphicsContextCustomShader::checkCompilation (LowLevelGraphicsCont
 
     return Result::fail (errorMessage);
 }
+
+} // namespace juce

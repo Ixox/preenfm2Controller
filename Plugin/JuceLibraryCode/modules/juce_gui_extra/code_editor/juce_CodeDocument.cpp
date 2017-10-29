@@ -2,25 +2,30 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   By using JUCE, you agree to the terms of both the JUCE 5 End-User License
+   Agreement and JUCE 5 Privacy Policy (both updated and effective as of the
+   27th April 2017).
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   End User License Agreement: www.juce.com/juce-5-licence
+   Privacy Policy: www.juce.com/juce-5-privacy-policy
 
-   ------------------------------------------------------------------------------
+   Or: You may also use this code under the terms of the GPL v3 (see
+   www.gnu.org/licenses).
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
+
+namespace juce
+{
 
 class CodeDocumentLine
 {
@@ -102,9 +107,7 @@ public:
         lineLength = 0;
         lineLengthWithoutNewLines = 0;
 
-        String::CharPointerType t (line.getCharPointer());
-
-        for (;;)
+        for (String::CharPointerType t (line.getCharPointer());;)
         {
             const juce_wchar c = t.getAndAdvance();
 
@@ -242,16 +245,16 @@ CodeDocument::Position::Position() noexcept
 }
 
 CodeDocument::Position::Position (const CodeDocument& ownerDocument,
-                                  const int line_, const int indexInLine_) noexcept
-    : owner (const_cast <CodeDocument*> (&ownerDocument)),
-      characterPos (0), line (line_),
-      indexInLine (indexInLine_), positionMaintained (false)
+                                  const int lineNum, const int index) noexcept
+    : owner (const_cast<CodeDocument*> (&ownerDocument)),
+      characterPos (0), line (lineNum),
+      indexInLine (index), positionMaintained (false)
 {
-    setLineAndIndex (line_, indexInLine_);
+    setLineAndIndex (lineNum, index);
 }
 
 CodeDocument::Position::Position (const CodeDocument& ownerDocument, const int characterPos_) noexcept
-    : owner (const_cast <CodeDocument*> (&ownerDocument)),
+    : owner (const_cast<CodeDocument*> (&ownerDocument)),
       positionMaintained (false)
 {
     setPosition (characterPos_);
@@ -424,7 +427,7 @@ CodeDocument::Position CodeDocument::Position::movedByLines (const int deltaLine
 
 juce_wchar CodeDocument::Position::getCharacter() const
 {
-    if (const CodeDocumentLine* const l = owner->lines [line])
+    if (auto* l = owner->lines [line])
         return l->line [getIndexInLine()];
 
     return 0;
@@ -432,10 +435,10 @@ juce_wchar CodeDocument::Position::getCharacter() const
 
 String CodeDocument::Position::getLineText() const
 {
-    if (const CodeDocumentLine* const l = owner->lines [line])
+    if (auto* l = owner->lines [line])
         return l->line;
 
-    return String::empty;
+    return {};
 }
 
 void CodeDocument::Position::setPositionMaintained (const bool isMaintained)
@@ -484,7 +487,7 @@ String CodeDocument::getAllContent() const
 String CodeDocument::getTextBetween (const Position& start, const Position& end) const
 {
     if (end.getPosition() <= start.getPosition())
-        return String::empty;
+        return {};
 
     const int startLine = start.getLineNumber();
     const int endLine = end.getLineNumber();
@@ -494,7 +497,7 @@ String CodeDocument::getTextBetween (const Position& start, const Position& end)
         if (CodeDocumentLine* const line = lines [startLine])
             return line->line.substring (start.getIndexInLine(), end.getIndexInLine());
 
-        return String::empty;
+        return {};
     }
 
     MemoryOutputStream mo;
@@ -528,7 +531,7 @@ String CodeDocument::getTextBetween (const Position& start, const Position& end)
 
 int CodeDocument::getNumCharacters() const noexcept
 {
-    if (const CodeDocumentLine* const lastLine = lines.getLast())
+    if (auto* lastLine = lines.getLast())
         return lastLine->lineStartInFile + lastLine->lineLength;
 
     return 0;
@@ -536,10 +539,10 @@ int CodeDocument::getNumCharacters() const noexcept
 
 String CodeDocument::getLine (const int lineIndex) const noexcept
 {
-    if (const CodeDocumentLine* const line = lines [lineIndex])
+    if (auto* line = lines [lineIndex])
         return line->line;
 
-    return String::empty;
+    return {};
 }
 
 int CodeDocument::getMaximumLineLength() noexcept
@@ -636,7 +639,7 @@ void CodeDocument::setNewLineCharacters (const String& newChars) noexcept
 
 void CodeDocument::newTransaction()
 {
-    undoManager.beginNewTransaction (String::empty);
+    undoManager.beginNewTransaction (String());
 }
 
 void CodeDocument::undo()
@@ -809,21 +812,21 @@ public:
     {
     }
 
-    bool perform()
+    bool perform() override
     {
         owner.currentActionIndex++;
         owner.insert (text, insertPos, false);
         return true;
     }
 
-    bool undo()
+    bool undo() override
     {
         owner.currentActionIndex--;
         owner.remove (insertPos, insertPos + text.length(), false);
         return true;
     }
 
-    int getSizeInUnits()        { return text.length() + 32; }
+    int getSizeInUnits() override        { return text.length() + 32; }
 
 private:
     CodeDocument& owner;
@@ -858,7 +861,7 @@ void CodeDocument::insert (const String& text, const int insertPos, const bool u
             }
 
             maximumLineLength = -1;
-            Array <CodeDocumentLine*> newLines;
+            Array<CodeDocumentLine*> newLines;
             CodeDocumentLine::createLines (newLines, textInsideOriginalLine);
             jassert (newLines.size() > 0);
 
@@ -904,21 +907,21 @@ public:
     {
     }
 
-    bool perform()
+    bool perform() override
     {
         owner.currentActionIndex++;
         owner.remove (startPos, endPos, false);
         return true;
     }
 
-    bool undo()
+    bool undo() override
     {
         owner.currentActionIndex--;
         owner.insert (removedText, startPos, false);
         return true;
     }
 
-    int getSizeInUnits()    { return (endPos - startPos) + 32; }
+    int getSizeInUnits() override    { return (endPos - startPos) + 32; }
 
 private:
     CodeDocument& owner;
@@ -990,3 +993,5 @@ void CodeDocument::remove (const int startPos, const int endPos, const bool undo
         listeners.call (&CodeDocument::Listener::codeDocumentTextDeleted, startPos, endPos);
     }
 }
+
+} // namespace juce

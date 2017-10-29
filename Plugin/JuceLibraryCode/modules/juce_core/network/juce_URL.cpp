@@ -1,31 +1,139 @@
 /*
   ==============================================================================
 
-   This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   This file is part of the JUCE library.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission to use, copy, modify, and/or distribute this software for any purpose with
-   or without fee is hereby granted, provided that the above copyright notice and this
-   permission notice appear in all copies.
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
-   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-   DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
-   IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   The code included in this file is provided under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license. Permission
+   To use, copy, modify, and/or distribute this software for any purpose with or
+   without fee is hereby granted provided that the above copyright notice and
+   this permission notice appear in all copies.
 
-   ------------------------------------------------------------------------------
-
-   NOTE! This permissive ISC license applies ONLY to files within the juce_core module!
-   All other JUCE modules are covered by a dual GPL/commercial license, so if you are
-   using any other modules, be sure to check that you also comply with their license.
-
-   For more details, visit www.juce.com
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
+namespace juce
+{
+
+struct FallbackDownloadTask  : public URL::DownloadTask,
+                               public Thread
+{
+    FallbackDownloadTask (FileOutputStream* outputStreamToUse,
+                          size_t bufferSizeToUse,
+                          WebInputStream* streamToUse,
+                          URL::DownloadTask::Listener* listenerToUse)
+        : Thread ("DownloadTask thread"),
+          fileStream (outputStreamToUse),
+          stream (streamToUse),
+          bufferSize (bufferSizeToUse),
+          buffer (bufferSize),
+          listener (listenerToUse)
+    {
+        jassert (fileStream != nullptr);
+        jassert (stream != nullptr);
+
+        contentLength = stream->getTotalLength();
+        httpCode      = stream->getStatusCode();
+
+        startThread();
+    }
+
+    ~FallbackDownloadTask()
+    {
+        signalThreadShouldExit();
+        stream->cancel();
+        waitForThreadToExit (-1);
+    }
+
+    //==============================================================================
+    void run() override
+    {
+        while (! (stream->isExhausted() || stream->isError() || threadShouldExit()))
+        {
+            if (listener != nullptr)
+                listener->progress (this, downloaded, contentLength);
+
+            const int max = jmin ((int) bufferSize, contentLength < 0 ? std::numeric_limits<int>::max()
+                                                                      : static_cast<int> (contentLength - downloaded));
+
+            const int actual = stream->read (buffer.get(), max);
+
+            if (actual < 0 || threadShouldExit() || stream->isError())
+                break;
+
+            if (! fileStream->write (buffer.get(), static_cast<size_t> (actual)))
+            {
+                error = true;
+                break;
+            }
+
+            downloaded += actual;
+
+            if (downloaded == contentLength)
+                break;
+        }
+
+        fileStream->flush();
+
+        if (threadShouldExit() || stream->isError())
+            error = true;
+
+        if (contentLength > 0 && downloaded < contentLength)
+            error = true;
+
+        finished = true;
+
+        if (listener != nullptr && ! threadShouldExit())
+            listener->finished (this, ! error);
+    }
+
+    //==============================================================================
+    const ScopedPointer<FileOutputStream> fileStream;
+    const ScopedPointer<WebInputStream> stream;
+    const size_t bufferSize;
+    HeapBlock<char> buffer;
+    URL::DownloadTask::Listener* const listener;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FallbackDownloadTask)
+};
+
+void URL::DownloadTask::Listener::progress (DownloadTask*, int64, int64) {}
+URL::DownloadTask::Listener::~Listener() {}
+
+//==============================================================================
+URL::DownloadTask* URL::DownloadTask::createFallbackDownloader (const URL& urlToUse,
+                                                                const File& targetFileToUse,
+                                                                const String& extraHeadersToUse,
+                                                                Listener* listenerToUse,
+                                                                bool usePostRequest)
+{
+    const size_t bufferSize = 0x8000;
+    targetFileToUse.deleteFile();
+
+    if (ScopedPointer<FileOutputStream> outputStream = targetFileToUse.createOutputStream (bufferSize))
+    {
+        ScopedPointer<WebInputStream> stream = new WebInputStream (urlToUse, usePostRequest);
+        stream->withExtraHeaders (extraHeadersToUse);
+
+        if (stream->connect (nullptr))
+            return new FallbackDownloadTask (outputStream.release(), bufferSize, stream.release(), listenerToUse);
+    }
+
+    return nullptr;
+}
+
+URL::DownloadTask::DownloadTask() : contentLength (-1), downloaded (0), finished (false), error (false), httpCode (-1) {}
+URL::DownloadTask::~DownloadTask() {}
+
+//==============================================================================
 URL::URL()
 {
 }
@@ -41,18 +149,15 @@ URL::URL (const String& u)  : url (u)
             const int nextAmp   = url.indexOfChar (i + 1, '&');
             const int equalsPos = url.indexOfChar (i + 1, '=');
 
-            if (equalsPos > i + 1)
+            if (nextAmp < 0)
             {
-                if (nextAmp < 0)
-                {
-                    addParameter (removeEscapeChars (url.substring (i + 1, equalsPos)),
-                                  removeEscapeChars (url.substring (equalsPos + 1)));
-                }
-                else if (nextAmp > 0 && equalsPos < nextAmp)
-                {
-                    addParameter (removeEscapeChars (url.substring (i + 1, equalsPos)),
-                                  removeEscapeChars (url.substring (equalsPos + 1, nextAmp)));
-                }
+                addParameter (removeEscapeChars (equalsPos < 0 ? url.substring (i + 1) : url.substring (i + 1, equalsPos)),
+                              equalsPos < 0 ? String() : removeEscapeChars (url.substring (equalsPos + 1)));
+            }
+            else if (nextAmp > 0 && equalsPos < nextAmp)
+            {
+                addParameter (removeEscapeChars (equalsPos < 0 ? url.substring (i + 1, nextAmp) : url.substring (i + 1, equalsPos)),
+                              equalsPos < 0 ? String() : removeEscapeChars (url.substring (equalsPos + 1, nextAmp)));
             }
 
             i = nextAmp;
@@ -120,9 +225,12 @@ namespace URLHelpers
             if (i > 0)
                 p << '&';
 
-            p << URL::addEscapeChars (url.getParameterNames()[i], true)
-              << '='
-              << URL::addEscapeChars (url.getParameterValues()[i], true);
+            auto val = url.getParameterValues()[i];
+
+            p << URL::addEscapeChars (url.getParameterNames()[i], true);
+
+            if (val.isNotEmpty())
+                p << '=' << URL::addEscapeChars (val, true);
         }
 
         return p;
@@ -133,10 +241,10 @@ namespace URLHelpers
         int i = 0;
 
         while (CharacterFunctions::isLetterOrDigit (url[i])
-                || url[i] == '+' || url[i] == '-' || url[i] == '.')
+               || url[i] == '+' || url[i] == '-' || url[i] == '.')
             ++i;
 
-        return url[i] == ':' ? i + 1 : 0;
+        return url.substring (i).startsWith ("://") ? i + 1 : 0;
     }
 
     static int findStartOfNetLocation (const String& url)
@@ -179,6 +287,11 @@ String URL::toString (const bool includeGetParameters) const
     return url;
 }
 
+bool URL::isEmpty() const noexcept
+{
+    return url.isEmpty();
+}
+
 bool URL::isWellFormed() const
 {
     //xxx TODO
@@ -192,8 +305,8 @@ String URL::getDomain() const
     const int end2 = url.indexOfChar (start, ':');
 
     const int end = (end1 < 0 && end2 < 0) ? std::numeric_limits<int>::max()
-                                           : ((end1 < 0 || end2 < 0) ? jmax (end1, end2)
-                                                                     : jmin (end1, end2));
+                            : ((end1 < 0 || end2 < 0) ? jmax (end1, end2)
+                               : jmin (end1, end2));
     return url.substring (start, end);
 }
 
@@ -202,7 +315,7 @@ String URL::getSubPath() const
     const int startOfPath = URLHelpers::findStartOfPath (url);
 
     return startOfPath <= 0 ? String()
-                            : url.substring (startOfPath);
+        : url.substring (startOfPath);
 }
 
 String URL::getScheme() const
@@ -215,6 +328,13 @@ int URL::getPort() const
     const int colonPos = url.indexOfChar (URLHelpers::findStartOfNetLocation (url), ':');
 
     return colonPos > 0 ? url.substring (colonPos + 1).getIntValue() : 0;
+}
+
+URL URL::withNewDomainAndPath (const String& newURL) const
+{
+    URL u (*this);
+    u.url = newURL;
+    return u;
 }
 
 URL URL::withNewSubPath (const String& newPath) const
@@ -237,16 +357,14 @@ URL URL::getChildURL (const String& subPath) const
     return u;
 }
 
-void URL::createHeadersAndPostData (String& headers, MemoryBlock& headersAndPostData) const
+void URL::createHeadersAndPostData (String& headers, MemoryBlock& postDataToWrite) const
 {
-    MemoryOutputStream data (headersAndPostData, false);
-
-    data << URLHelpers::getMangledParameters (*this);
+    MemoryOutputStream data (postDataToWrite, false);
 
     if (filesToUpload.size() > 0)
     {
         // (this doesn't currently support mixing custom post-data with uploads..)
-        jassert (postData.isEmpty());
+        jassert (postData.getSize() == 0);
 
         const String boundary (String::toHexString (Random::getSystemRandom().nextInt64()));
 
@@ -285,7 +403,8 @@ void URL::createHeadersAndPostData (String& headers, MemoryBlock& headersAndPost
     }
     else
     {
-        data << postData;
+        data << URLHelpers::getMangledParameters (*this)
+             << postData;
 
         // if the user-supplied headers didn't contain a content-type, add one now..
         if (! headers.containsIgnoreCase ("Content-Type"))
@@ -305,11 +424,11 @@ bool URL::isProbablyAWebsiteURL (const String& possibleURL)
             return true;
 
     if (possibleURL.containsChar ('@')
-         || possibleURL.containsChar (' '))
+        || possibleURL.containsChar (' '))
         return false;
 
     const String topLevelDomain (possibleURL.upToFirstOccurrenceOf ("/", false, false)
-                                            .fromLastOccurrenceOf (".", false, false));
+                                 .fromLastOccurrenceOf (".", false, false));
 
     return topLevelDomain.isNotEmpty() && topLevelDomain.length() <= 3;
 }
@@ -319,39 +438,69 @@ bool URL::isProbablyAnEmailAddress (const String& possibleEmailAddress)
     const int atSign = possibleEmailAddress.indexOfChar ('@');
 
     return atSign > 0
-            && possibleEmailAddress.lastIndexOfChar ('.') > (atSign + 1)
-            && ! possibleEmailAddress.endsWithChar ('.');
+        && possibleEmailAddress.lastIndexOfChar ('.') > (atSign + 1)
+        && ! possibleEmailAddress.endsWithChar ('.');
 }
 
 //==============================================================================
-InputStream* URL::createInputStream (const bool usePostCommand,
-                                     OpenStreamProgressCallback* const progressCallback,
-                                     void* const progressCallbackContext,
-                                     String headers,
-                                     const int timeOutMs,
-                                     StringPairArray* const responseHeaders,
-                                     int* statusCode) const
+WebInputStream* URL::createInputStream (const bool usePostCommand,
+                                        OpenStreamProgressCallback* const progressCallback,
+                                        void* const progressCallbackContext,
+                                        String headers,
+                                        const int timeOutMs,
+                                        StringPairArray* const responseHeaders,
+                                        int* statusCode,
+                                        const int numRedirectsToFollow,
+                                        String httpRequestCmd) const
 {
-    MemoryBlock headersAndPostData;
+    ScopedPointer<WebInputStream> wi (new WebInputStream (*this, usePostCommand));
 
-    if (! headers.endsWithChar ('\n'))
-        headers << "\r\n";
+    struct ProgressCallbackCaller : WebInputStream::Listener
+    {
+        ProgressCallbackCaller (OpenStreamProgressCallback* const progressCallbackToUse,
+                                void* const progressCallbackContextToUse)
+            : callback (progressCallbackToUse), data (progressCallbackContextToUse)
+        {}
 
-    if (usePostCommand)
-        createHeadersAndPostData (headers, headersAndPostData);
+        bool postDataSendProgress (WebInputStream&, int bytesSent, int totalBytes) override
+        {
+            return callback(data, bytesSent, totalBytes);
+        }
 
-    if (! headers.endsWithChar ('\n'))
-        headers << "\r\n";
+        OpenStreamProgressCallback* const callback;
+        void* const data;
 
-    ScopedPointer<WebInputStream> wi (new WebInputStream (toString (! usePostCommand),
-                                                          usePostCommand, headersAndPostData,
-                                                          progressCallback, progressCallbackContext,
-                                                          headers, timeOutMs, responseHeaders));
+        // workaround a MSVC 2013 compiler warning
+        ProgressCallbackCaller (const ProgressCallbackCaller& o) : callback (o.callback), data (o.data) { jassertfalse; }
+        ProgressCallbackCaller& operator= (const ProgressCallbackCaller&) { jassertfalse; return *this; }
+    };
+
+    ScopedPointer<ProgressCallbackCaller> callbackCaller =
+        (progressCallback != nullptr ? new ProgressCallbackCaller (progressCallback, progressCallbackContext) : nullptr);
+
+    if (headers.isNotEmpty())
+        wi->withExtraHeaders (headers);
+
+    if (timeOutMs != 0)
+        wi->withConnectionTimeout (timeOutMs);
+
+    if (httpRequestCmd.isNotEmpty())
+        wi->withCustomRequestCommand (httpRequestCmd);
+
+    wi->withNumRedirectsToFollow (numRedirectsToFollow);
+
+    bool success = wi->connect (callbackCaller);
 
     if (statusCode != nullptr)
-        *statusCode = wi->statusCode;
+        *statusCode = wi->getStatusCode();
 
-    return wi->isError() ? nullptr : wi.release();
+    if (responseHeaders != nullptr)
+        *responseHeaders = wi->getResponseHeaders();
+
+    if (! success || wi->isError())
+        return nullptr;
+
+    return wi.release();
 }
 
 //==============================================================================
@@ -376,7 +525,7 @@ String URL::readEntireTextStream (const bool usePostCommand) const
     if (in != nullptr)
         return in->readEntireStreamAsString();
 
-    return String();
+    return {};
 }
 
 XmlElement* URL::readEntireXmlStream (const bool usePostCommand) const
@@ -393,7 +542,23 @@ URL URL::withParameter (const String& parameterName,
     return u;
 }
 
+URL URL::withParameters (const StringPairArray& parametersToAdd) const
+{
+    URL u (*this);
+
+    for (int i = 0; i < parametersToAdd.size(); ++i)
+        u.addParameter (parametersToAdd.getAllKeys()[i],
+                        parametersToAdd.getAllValues()[i]);
+
+    return u;
+}
+
 URL URL::withPOSTData (const String& newPostData) const
+{
+    return withPOSTData (MemoryBlock (newPostData.toRawUTF8(), newPostData.getNumBytesAsUTF8()));
+}
+
+URL URL::withPOSTData (const MemoryBlock& newPostData) const
 {
     URL u (*this);
     u.postData = newPostData;
@@ -463,10 +628,13 @@ String URL::removeEscapeChars (const String& s)
     return String::fromUTF8 (utf8.getRawDataPointer(), utf8.size());
 }
 
-String URL::addEscapeChars (const String& s, const bool isParameter)
+String URL::addEscapeChars (const String& s, const bool isParameter, bool roundBracketsAreLegal)
 {
-    const CharPointer_UTF8 legalChars (isParameter ? "_-.*!'()"
-                                                   : ",$_-.*!'()");
+    String legalChars (isParameter ? "_-.*!'"
+                                   : ",$_-.*!'");
+
+    if (roundBracketsAreLegal)
+        legalChars += "()";
 
     Array<char> utf8 (s.toRawUTF8(), (int) s.getNumBytesAsUTF8());
 
@@ -475,11 +643,11 @@ String URL::addEscapeChars (const String& s, const bool isParameter)
         const char c = utf8.getUnchecked(i);
 
         if (! (CharacterFunctions::isLetterOrDigit (c)
-                 || legalChars.indexOf ((juce_wchar) c) >= 0))
+                 || legalChars.containsChar ((juce_wchar) c)))
         {
             utf8.set (i, '%');
-            utf8.insert (++i, "0123456789abcdef" [((uint8) c) >> 4]);
-            utf8.insert (++i, "0123456789abcdef" [c & 15]);
+            utf8.insert (++i, "0123456789ABCDEF" [((uint8) c) >> 4]);
+            utf8.insert (++i, "0123456789ABCDEF" [c & 15]);
         }
     }
 
@@ -496,3 +664,5 @@ bool URL::launchInDefaultBrowser() const
 
     return Process::openDocument (u, String());
 }
+
+} // namespace juce

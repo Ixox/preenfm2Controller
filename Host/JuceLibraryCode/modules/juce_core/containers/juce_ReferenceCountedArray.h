@@ -1,34 +1,27 @@
 /*
   ==============================================================================
 
-   This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   This file is part of the JUCE library.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission to use, copy, modify, and/or distribute this software for any purpose with
-   or without fee is hereby granted, provided that the above copyright notice and this
-   permission notice appear in all copies.
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
-   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-   DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
-   IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   The code included in this file is provided under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license. Permission
+   To use, copy, modify, and/or distribute this software for any purpose with or
+   without fee is hereby granted provided that the above copyright notice and
+   this permission notice appear in all copies.
 
-   ------------------------------------------------------------------------------
-
-   NOTE! This permissive ISC license applies ONLY to files within the juce_core module!
-   All other JUCE modules are covered by a dual GPL/commercial license, so if you are
-   using any other modules, be sure to check that you also comply with their license.
-
-   For more details, visit www.juce.com
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
-#ifndef JUCE_REFERENCECOUNTEDARRAY_H_INCLUDED
-#define JUCE_REFERENCECOUNTEDARRAY_H_INCLUDED
-
+namespace juce
+{
 
 //==============================================================================
 /**
@@ -38,7 +31,7 @@
     The template parameter specifies the class of the object you want to point to - the easiest
     way to make a class reference-countable is to simply make it inherit from ReferenceCountedObject
     or SingleThreadedReferenceCountedObject, but if you need to, you can roll your own reference-countable
-    class by implementing a set of mathods called incReferenceCount(), decReferenceCount(), and
+    class by implementing a set of methods called incReferenceCount(), decReferenceCount(), and
     decReferenceCountWithoutDeleting(). See ReferenceCountedObject for examples of how these methods
     should behave.
 
@@ -72,7 +65,7 @@ public:
         const ScopedLockType lock (other.getLock());
         numUsed = other.size();
         data.setAllocatedSize (numUsed);
-        memcpy (data.elements, other.getRawDataPointer(), numUsed * sizeof (ObjectClass*));
+        memcpy (data.elements, other.getRawDataPointer(), (size_t) numUsed * sizeof (ObjectClass*));
 
         for (int i = numUsed; --i >= 0;)
             if (ObjectClass* o = data.elements[i])
@@ -119,30 +112,40 @@ public:
     */
     ~ReferenceCountedArray()
     {
-        clear();
+        releaseAllObjects();
     }
 
     //==============================================================================
     /** Removes all objects from the array.
-
-        Any objects in the array that are not referenced from elsewhere will be deleted.
+        Any objects in the array that whose reference counts drop to zero will be deleted.
     */
     void clear()
     {
         const ScopedLockType lock (getLock());
-
-        while (numUsed > 0)
-            if (ObjectClass* o = data.elements [--numUsed])
-                releaseObject (o);
-
-        jassert (numUsed == 0);
+        releaseAllObjects();
         data.setAllocatedSize (0);
+    }
+
+    /** Removes all objects from the array without freeing the array's allocated storage.
+        Any objects in the array that whose reference counts drop to zero will be deleted.
+        @see clear
+    */
+    void clearQuick()
+    {
+        const ScopedLockType lock (getLock());
+        releaseAllObjects();
     }
 
     /** Returns the current number of objects in the array. */
     inline int size() const noexcept
     {
         return numUsed;
+    }
+
+    /** Returns true if the array is empty, false otherwise. */
+    inline bool isEmpty() const noexcept
+    {
+        return size() == 0;
     }
 
     /** Returns a pointer to the object at this index in the array.
@@ -271,13 +274,13 @@ public:
     int indexOf (const ObjectClass* const objectToLookFor) const noexcept
     {
         const ScopedLockType lock (getLock());
-        ObjectClass** e = data.elements.getData();
+        ObjectClass** e = data.elements.get();
         ObjectClass** const endPointer = e + numUsed;
 
         while (e != endPointer)
         {
             if (objectToLookFor == *e)
-                return static_cast <int> (e - data.elements.getData());
+                return static_cast<int> (e - data.elements.get());
 
             ++e;
         }
@@ -293,7 +296,7 @@ public:
     bool contains (const ObjectClass* const objectToLookFor) const noexcept
     {
         const ScopedLockType lock (getLock());
-        ObjectClass** e = data.elements.getData();
+        ObjectClass** e = data.elements.get();
         ObjectClass** const endPointer = e + numUsed;
 
         while (e != endPointer)
@@ -376,12 +379,17 @@ public:
         If the array already contains a matching object, nothing will be done.
 
         @param newObject   the new object to add to the array
+        @returns           true if the object has been added, false otherwise
     */
-    void addIfNotAlreadyThere (ObjectClass* const newObject) noexcept
+    bool addIfNotAlreadyThere (ObjectClass* const newObject) noexcept
     {
         const ScopedLockType lock (getLock());
-        if (! contains (newObject))
-            add (newObject);
+
+        if (contains (newObject))
+            return false;
+
+        add (newObject);
+        return true;
     }
 
     /** Replaces an object in the array with a different one.
@@ -475,7 +483,7 @@ public:
     int addSorted (ElementComparator& comparator, ObjectClass* newObject) noexcept
     {
         const ScopedLockType lock (getLock());
-        const int index = findInsertIndexInSortedArray (comparator, data.elements.getData(), newObject, 0, numUsed);
+        const int index = findInsertIndexInSortedArray (comparator, data.elements.get(), newObject, 0, numUsed);
         insert (index, newObject);
         return index;
     }
@@ -490,7 +498,7 @@ public:
                              ObjectClass* newObject) noexcept
     {
         const ScopedLockType lock (getLock());
-        const int index = findInsertIndexInSortedArray (comparator, data.elements.getData(), newObject, 0, numUsed);
+        const int index = findInsertIndexInSortedArray (comparator, data.elements.get(), newObject, 0, numUsed);
 
         if (index > 0 && comparator.compareElements (newObject, data.elements [index - 1]) == 0)
             set (index - 1, newObject); // replace an existing object that matches
@@ -514,7 +522,7 @@ public:
     int indexOfSorted (ElementComparator& comparator,
                        const ObjectClass* const objectToLookFor) const noexcept
     {
-        (void) comparator;
+        ignoreUnused (comparator);
         const ScopedLockType lock (getLock());
         int s = 0, e = numUsed;
 
@@ -831,11 +839,11 @@ public:
     void sort (ElementComparator& comparator,
                const bool retainOrderOfEquivalentItems = false) const noexcept
     {
-        (void) comparator;  // if you pass in an object with a static compareElements() method, this
-                            // avoids getting warning messages about the parameter being unused
+        ignoreUnused (comparator); // if you pass in an object with a static compareElements() method, this
+                                   // avoids getting warning messages about the parameter being unused
 
         const ScopedLockType lock (getLock());
-        sortArray (comparator, data.elements.getData(), 0, size() - 1, retainOrderOfEquivalentItems);
+        sortArray (comparator, data.elements.get(), 0, size() - 1, retainOrderOfEquivalentItems);
     }
 
     //==============================================================================
@@ -886,6 +894,15 @@ private:
     ArrayAllocationBase <ObjectClass*, TypeOfCriticalSectionToUse> data;
     int numUsed;
 
+    void releaseAllObjects()
+    {
+        while (numUsed > 0)
+            if (ObjectClass* o = data.elements [--numUsed])
+                releaseObject (o);
+
+        jassert (numUsed == 0);
+    }
+
     static void releaseObject (ObjectClass* o)
     {
         if (o->decReferenceCountWithoutDeleting())
@@ -893,5 +910,4 @@ private:
     }
 };
 
-
-#endif   // JUCE_REFERENCECOUNTEDARRAY_H_INCLUDED
+} // namespace juce

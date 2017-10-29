@@ -2,25 +2,30 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   By using JUCE, you agree to the terms of both the JUCE 5 End-User License
+   Agreement and JUCE 5 Privacy Policy (both updated and effective as of the
+   27th April 2017).
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   End User License Agreement: www.juce.com/juce-5-licence
+   Privacy Policy: www.juce.com/juce-5-privacy-policy
 
-   ------------------------------------------------------------------------------
+   Or: You may also use this code under the terms of the GPL v3 (see
+   www.gnu.org/licenses).
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
+
+namespace juce
+{
 
 struct AudioThumbnail::MinMaxValue
 {
@@ -30,19 +35,27 @@ struct AudioThumbnail::MinMaxValue
         values[1] = 0;
     }
 
-    inline void set (const char newMin, const char newMax) noexcept
+    inline void set (const int8 newMin, const int8 newMax) noexcept
     {
         values[0] = newMin;
         values[1] = newMax;
     }
 
-    inline char getMinValue() const noexcept        { return values[0]; }
-    inline char getMaxValue() const noexcept        { return values[1]; }
+    inline int8 getMinValue() const noexcept        { return values[0]; }
+    inline int8 getMaxValue() const noexcept        { return values[1]; }
 
-    inline void setFloat (const float newMin, const float newMax) noexcept
+    inline void setFloat (Range<float> newRange) noexcept
     {
-        values[0] = (char) jlimit (-128, 127, roundFloatToInt (newMin * 127.0f));
-        values[1] = (char) jlimit (-128, 127, roundFloatToInt (newMax * 127.0f));
+        // Workaround for an ndk armeabi compiler bug which crashes on signed saturation
+       #if JUCE_ANDROID
+        Range<float> limitedRange (jlimit (-1.0f, 1.0f, newRange.getStart()),
+                                   jlimit (-1.0f, 1.0f, newRange.getEnd()));
+        values[0] = (int8) (limitedRange.getStart() * 127.0f);
+        values[1] = (int8) (limitedRange.getEnd()   * 127.0f);
+       #else
+        values[0] = (int8) jlimit (-128, 127, roundFloatToInt (newRange.getStart() * 127.0f));
+        values[1] = (int8) jlimit (-128, 127, roundFloatToInt (newRange.getEnd()   * 127.0f));
+       #endif
 
         if (values[0] == values[1])
         {
@@ -68,7 +81,7 @@ struct AudioThumbnail::MinMaxValue
     inline void write (OutputStream& output)   { output.write (values, 2); }
 
 private:
-    char values[2];
+    int8 values[2];
 };
 
 //==============================================================================
@@ -115,7 +128,7 @@ public:
         }
     }
 
-    void getLevels (int64 startSample, int numSamples, Array<float>& levels)
+    void getLevels (int64 startSample, int numSamples, Array<Range<float> >& levels)
     {
         const ScopedLock sl (readerLock);
 
@@ -132,11 +145,10 @@ public:
 
         if (reader != nullptr)
         {
-            float l[4] = { 0 };
-            reader->readMaxLevels (startSample, numSamples, l[0], l[1], l[2], l[3]);
+            if (levels.size() < (int) reader->numChannels)
+                levels.insertMultiple (0, Range<float>(), (int) reader->numChannels - levels.size());
 
-            levels.clearQuick();
-            levels.addArray ((const float*) l, 4);
+            reader->readMaxLevels (startSample, numSamples, levels.getRawDataPointer(), (int) reader->numChannels);
 
             lastReaderUseTime = Time::getMillisecondCounter();
         }
@@ -202,8 +214,8 @@ public:
 
 private:
     AudioThumbnail& owner;
-    ScopedPointer <InputSource> source;
-    ScopedPointer <AudioFormatReader> reader;
+    ScopedPointer<InputSource> source;
+    ScopedPointer<AudioFormatReader> reader;
     CriticalSection readerLock;
     uint32 lastReaderUseTime;
 
@@ -230,23 +242,26 @@ private:
                 const int lastThumbIndex  = sampleToThumbSample (startSample + numToDo);
                 const int numThumbSamps = lastThumbIndex - firstThumbIndex;
 
-                HeapBlock<MinMaxValue> levelData ((size_t) numThumbSamps * 2);
-                MinMaxValue* levels[2] = { levelData, levelData + numThumbSamps };
+                HeapBlock<MinMaxValue> levelData ((size_t) numThumbSamps * numChannels);
+                HeapBlock<MinMaxValue*> levels (numChannels);
+
+                for (int i = 0; i < (int) numChannels; ++i)
+                    levels[i] = levelData + i * numThumbSamps;
+
+                HeapBlock<Range<float> > levelsRead (numChannels);
 
                 for (int i = 0; i < numThumbSamps; ++i)
                 {
-                    float lowestLeft, highestLeft, lowestRight, highestRight;
+                    reader->readMaxLevels ((firstThumbIndex + i) * owner.samplesPerThumbSample,
+                                           owner.samplesPerThumbSample, levelsRead, (int) numChannels);
 
-                    reader->readMaxLevels ((firstThumbIndex + i) * owner.samplesPerThumbSample, owner.samplesPerThumbSample,
-                                           lowestLeft, highestLeft, lowestRight, highestRight);
-
-                    levels[0][i].setFloat (lowestLeft, highestLeft);
-                    levels[1][i].setFloat (lowestRight, highestRight);
+                    for (int j = 0; j < (int) numChannels; ++j)
+                        levels[j][i].setFloat (levelsRead[j]);
                 }
 
                 {
                     const ScopedUnlock su (readerLock);
-                    owner.setLevels (levels, firstThumbIndex, 2, numThumbSamps);
+                    owner.setLevels (levels, firstThumbIndex, (int) numChannels, numThumbSamps);
                 }
 
                 numSamplesFinished += numToDo;
@@ -285,8 +300,8 @@ public:
         {
             endSample = jmin (endSample, data.size() - 1);
 
-            char mx = -128;
-            char mn = 127;
+            int8 mx = -128;
+            int8 mn = 127;
 
             while (startSample <= endSample)
             {
@@ -391,6 +406,7 @@ public:
                 const MinMaxValue* cacheData = getData (channelNum, clip.getX() - area.getX());
 
                 RectangleList<float> waveform;
+                waveform.ensureStorageAllocated (clip.getWidth());
 
                 float x = (float) clip.getX();
 
@@ -451,7 +467,7 @@ private:
         if (timePerPixel * rate <= sampsPerThumbSample && levelData != nullptr)
         {
             int sample = roundToInt (startTime * rate);
-            Array<float> levels;
+            Array<Range<float> > levels;
 
             int i;
             for (i = 0; i < numSamples; ++i)
@@ -469,11 +485,10 @@ private:
                     {
                         levelData->getLevels (sample, jmax (1, nextSample - sample), levels);
 
-                        const int totalChans = jmin (levels.size() / 2, numChannelsCached);
+                        const int totalChans = jmin (levels.size(), numChannelsCached);
 
                         for (int chan = 0; chan < totalChans; ++chan)
-                            getData (chan, i)->setFloat (levels.getUnchecked (chan * 2),
-                                                         levels.getUnchecked (chan * 2 + 1));
+                            getData (chan, i)->setFloat (levels.getReference (chan));
                     }
                 }
 
@@ -691,7 +706,9 @@ int64 AudioThumbnail::getHashCode() const
 void AudioThumbnail::addBlock (const int64 startSample, const AudioSampleBuffer& incoming,
                                int startOffsetInBuffer, int numSamples)
 {
-    jassert (startSample >= 0);
+    jassert (startSample >= 0
+              && startOffsetInBuffer >= 0
+              && startOffsetInBuffer + numSamples <= incoming.getNumSamples());
 
     const int firstThumbIndex = (int) (startSample / samplesPerThumbSample);
     const int lastThumbIndex  = (int) ((startSample + numSamples + (samplesPerThumbSample - 1)) / samplesPerThumbSample);
@@ -713,8 +730,7 @@ void AudioThumbnail::addBlock (const int64 startSample, const AudioSampleBuffer&
             for (int i = 0; i < numToDo; ++i)
             {
                 const int start = i * samplesPerThumbSample;
-                Range<float> range (FloatVectorOperations::findMinAndMax (sourceData + start, jmin (samplesPerThumbSample, numSamples - start)));
-                dest[i].setFloat (range.getStart(), range.getEnd());
+                dest[i].setFloat (FloatVectorOperations::findMinAndMax (sourceData + start, jmin (samplesPerThumbSample, numSamples - start)));
             }
         }
 
@@ -817,3 +833,5 @@ void AudioThumbnail::drawChannels (Graphics& g, const Rectangle<int>& area, doub
                      startTimeSeconds, endTimeSeconds, i, verticalZoomFactor);
     }
 }
+
+} // namespace juce

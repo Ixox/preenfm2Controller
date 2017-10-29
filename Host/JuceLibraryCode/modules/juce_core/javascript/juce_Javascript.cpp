@@ -1,30 +1,27 @@
 /*
   ==============================================================================
 
-   This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   This file is part of the JUCE library.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission to use, copy, modify, and/or distribute this software for any purpose with
-   or without fee is hereby granted, provided that the above copyright notice and this
-   permission notice appear in all copies.
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
-   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-   DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
-   IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   The code included in this file is provided under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license. Permission
+   To use, copy, modify, and/or distribute this software for any purpose with or
+   without fee is hereby granted provided that the above copyright notice and
+   this permission notice appear in all copies.
 
-   ------------------------------------------------------------------------------
-
-   NOTE! This permissive ISC license applies ONLY to files within the juce_core module!
-   All other JUCE modules are covered by a dual GPL/commercial license, so if you are
-   using any other modules, be sure to check that you also comply with their license.
-
-   For more details, visit www.juce.com
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
+
+namespace juce
+{
 
 #define JUCE_JS_OPERATORS(X) \
     X(semicolon,     ";")        X(dot,          ".")       X(comma,        ",") \
@@ -44,7 +41,8 @@
 #define JUCE_JS_KEYWORDS(X) \
     X(var,      "var")      X(if_,     "if")     X(else_,  "else")   X(do_,       "do")       X(null_,     "null") \
     X(while_,   "while")    X(for_,    "for")    X(break_, "break")  X(continue_, "continue") X(undefined, "undefined") \
-    X(function, "function") X(return_, "return") X(true_,  "true")   X(false_,    "false")    X(new_,      "new")
+    X(function, "function") X(return_, "return") X(true_,  "true")   X(false_,    "false")    X(new_,      "new") \
+    X(typeof_,  "typeof")
 
 namespace TokenTypes
 {
@@ -66,11 +64,13 @@ struct JavascriptEngine::RootObject   : public DynamicObject
 {
     RootObject()
     {
-        setMethod ("exec",      exec);
-        setMethod ("eval",      eval);
-        setMethod ("trace",     trace);
-        setMethod ("charToInt", charToInt);
-        setMethod ("parseInt",  IntegerClass::parseInt);
+        setMethod ("exec",       exec);
+        setMethod ("eval",       eval);
+        setMethod ("trace",      trace);
+        setMethod ("charToInt",  charToInt);
+        setMethod ("parseInt",   IntegerClass::parseInt);
+        setMethod ("typeof",     typeof_internal);
+        setMethod ("parseFloat", parseFloat);
     }
 
     Time timeout;
@@ -97,11 +97,13 @@ struct JavascriptEngine::RootObject   : public DynamicObject
                 && (((a.isUndefined() || a.isVoid()) && (b.isUndefined() || b.isVoid())) || a == b);
     }
 
-    static String getTokenName (TokenType t)         { return t[0] == '$' ? String (t + 1) : ("'" + String (t) + "'"); }
-    static bool isFunction (const var& v)            { return dynamic_cast<FunctionObject*> (v.getObject()) != nullptr; }
-    static bool isNumericOrUndefined (const var& v)  { return v.isInt() || v.isDouble() || v.isInt64() || v.isBool() || v.isUndefined(); }
-    static int64 getOctalValue (const String& s)     { BigInteger b; b.parseString (s, 8); return b.toInt64(); }
-    static Identifier getPrototypeIdentifier()       { static const Identifier i ("prototype"); return i; }
+    static String getTokenName (TokenType t)                  { return t[0] == '$' ? String (t + 1) : ("'" + String (t) + "'"); }
+    static bool isFunction (const var& v) noexcept            { return dynamic_cast<FunctionObject*> (v.getObject()) != nullptr; }
+    static bool isNumeric (const var& v) noexcept             { return v.isInt() || v.isDouble() || v.isInt64() || v.isBool(); }
+    static bool isNumericOrUndefined (const var& v) noexcept  { return isNumeric (v) || v.isUndefined(); }
+    static int64 getOctalValue (const String& s)              { BigInteger b; b.parseString (s.initialSectionContainingOnly ("01234567"), 8); return b.toInt64(); }
+    static Identifier getPrototypeIdentifier()                { static const Identifier i ("prototype"); return i; }
+    static var* getPropertyPointer (DynamicObject* o, const Identifier& i) noexcept   { return o->getProperties().getVarPointer (i); }
 
     //==============================================================================
     struct CodeLocation
@@ -135,64 +137,66 @@ struct JavascriptEngine::RootObject   : public DynamicObject
         ReferenceCountedObjectPtr<RootObject> root;
         DynamicObject::Ptr scope;
 
-        var findFunctionCall (const CodeLocation& location, const var& targetObject, Identifier functionName) const
+        var findFunctionCall (const CodeLocation& location, const var& targetObject, const Identifier& functionName) const
         {
-            if (DynamicObject* o = targetObject.getDynamicObject())
+            if (auto* o = targetObject.getDynamicObject())
             {
-                if (var* prop = o->getProperties().getVarPointer (functionName))
+                if (auto* prop = getPropertyPointer (o, functionName))
                     return *prop;
 
-                for (DynamicObject* p = o->getProperty (getPrototypeIdentifier()).getDynamicObject(); p != nullptr;
+                for (auto* p = o->getProperty (getPrototypeIdentifier()).getDynamicObject(); p != nullptr;
                      p = p->getProperty (getPrototypeIdentifier()).getDynamicObject())
                 {
-                    if (var* prop = p->getProperties().getVarPointer (functionName))
+                    if (auto* prop = getPropertyPointer (p, functionName))
                         return *prop;
                 }
+
+                // if there's a class with an overridden DynamicObject::hasMethod, this avoids an error
+                if (o->hasMethod (functionName))
+                    return {};
             }
 
             if (targetObject.isString())
-                if (var* m = findRootClassProperty (StringClass::getClassName(), functionName))
+                if (auto* m = findRootClassProperty (StringClass::getClassName(), functionName))
                     return *m;
 
             if (targetObject.isArray())
-                if (var* m = findRootClassProperty (ArrayClass::getClassName(), functionName))
+                if (auto* m = findRootClassProperty (ArrayClass::getClassName(), functionName))
                     return *m;
 
-            if (var* m = findRootClassProperty (ObjectClass::getClassName(), functionName))
+            if (auto* m = findRootClassProperty (ObjectClass::getClassName(), functionName))
                 return *m;
 
             location.throwError ("Unknown function '" + functionName.toString() + "'");
-            return var();
+            return {};
         }
 
-        var* findRootClassProperty (Identifier className, Identifier propName) const
+        var* findRootClassProperty (const Identifier& className, const Identifier& propName) const
         {
-            if (DynamicObject* cls = root->getProperty (className).getDynamicObject())
-                return cls->getProperties().getVarPointer (propName);
+            if (auto* cls = root->getProperty (className).getDynamicObject())
+                return getPropertyPointer (cls, propName);
 
             return nullptr;
         }
 
-        var findSymbolInParentScopes (Identifier name) const
+        var findSymbolInParentScopes (const Identifier& name) const
         {
-            if (var* v = scope->getProperties().getVarPointer (name))
+            if (auto* v = getPropertyPointer (scope, name))
                 return *v;
 
             return parent != nullptr ? parent->findSymbolInParentScopes (name)
                                      : var::undefined();
         }
 
-        bool findAndInvokeMethod (Identifier function, const var::NativeFunctionArgs& args, var& result) const
+        bool findAndInvokeMethod (const Identifier& function, const var::NativeFunctionArgs& args, var& result) const
         {
-            const NamedValueSet& props = scope->getProperties();
-
-            DynamicObject* target = args.thisObject.getDynamicObject();
+            auto* target = args.thisObject.getDynamicObject();
 
             if (target == nullptr || target == scope)
             {
-                if (const var* m = props.getVarPointer (function))
+                if (auto* m = getPropertyPointer (scope, function))
                 {
-                    if (FunctionObject* fo = dynamic_cast<FunctionObject*> (m->getObject()))
+                    if (auto fo = dynamic_cast<FunctionObject*> (m->getObject()))
                     {
                         result = fo->invoke (*this, args);
                         return true;
@@ -200,10 +204,31 @@ struct JavascriptEngine::RootObject   : public DynamicObject
                 }
             }
 
+            const auto& props = scope->getProperties();
+
             for (int i = 0; i < props.size(); ++i)
-                if (DynamicObject* o = props.getValueAt (i).getDynamicObject())
+                if (auto* o = props.getValueAt (i).getDynamicObject())
                     if (Scope (this, root, o).findAndInvokeMethod (function, args, result))
                         return true;
+
+            return false;
+        }
+
+        bool invokeMethod (const var& m, const var::NativeFunctionArgs& args, var& result) const
+        {
+            if (isFunction (m))
+            {
+                auto* target = args.thisObject.getDynamicObject();
+
+                if (target == nullptr || target == scope)
+                {
+                    if (auto fo = dynamic_cast<FunctionObject*> (m.getObject()))
+                    {
+                        result = fo->invoke (*this, args);
+                        return true;
+                    }
+                }
+            }
 
             return false;
         }
@@ -211,7 +236,7 @@ struct JavascriptEngine::RootObject   : public DynamicObject
         void checkTimeOut (const CodeLocation& location) const
         {
             if (Time::getCurrentTime() > root->timeout)
-                location.throwError ("Execution timed-out");
+                location.throwError (root->timeout == Time() ? "Interrupted" : "Execution timed-out");
         }
     };
 
@@ -347,13 +372,13 @@ struct JavascriptEngine::RootObject   : public DynamicObject
 
     struct UnqualifiedName  : public Expression
     {
-        UnqualifiedName (const CodeLocation& l, Identifier n) noexcept : Expression (l), name (n) {}
+        UnqualifiedName (const CodeLocation& l, const Identifier& n) noexcept : Expression (l), name (n) {}
 
         var getResult (const Scope& s) const override  { return s.findSymbolInParentScopes (name); }
 
         void assign (const Scope& s, const var& newValue) const override
         {
-            if (var* v = s.scope->getProperties().getVarPointer (name))
+            if (var* v = getPropertyPointer (s.scope, name))
                 *v = newValue;
             else
                 s.root->setProperty (name, newValue);
@@ -364,7 +389,7 @@ struct JavascriptEngine::RootObject   : public DynamicObject
 
     struct DotOperator  : public Expression
     {
-        DotOperator (const CodeLocation& l, ExpPtr& p, Identifier c) noexcept : Expression (l), parent (p), child (c) {}
+        DotOperator (const CodeLocation& l, ExpPtr& p, const Identifier& c) noexcept : Expression (l), parent (p), child (c) {}
 
         var getResult (const Scope& s) const override
         {
@@ -378,7 +403,7 @@ struct JavascriptEngine::RootObject   : public DynamicObject
             }
 
             if (DynamicObject* o = p.getDynamicObject())
-                if (var* v = o->getProperties().getVarPointer (child))
+                if (const var* v = getPropertyPointer (o, child))
                     return *v;
 
             return var::undefined();
@@ -402,22 +427,46 @@ struct JavascriptEngine::RootObject   : public DynamicObject
 
         var getResult (const Scope& s) const override
         {
-            if (const Array<var>* array = object->getResult (s).getArray())
-                return (*array) [static_cast<int> (index->getResult (s))];
+            var arrayVar (object->getResult (s)); // must stay alive for the scope of this method
+            var key = index->getResult (s);
+
+            if (const Array<var>* array = arrayVar.getArray())
+                if (key.isInt() || key.isInt64() || key.isDouble())
+                    return (*array) [static_cast<int> (key)];
+
+            if (DynamicObject* o = arrayVar.getDynamicObject())
+                if (key.isString())
+                    if (const var* v = getPropertyPointer (o, Identifier (key)))
+                        return *v;
 
             return var::undefined();
         }
 
         void assign (const Scope& s, const var& newValue) const override
         {
-            if (Array<var>* array = object->getResult (s).getArray())
-            {
-                const int i = index->getResult (s);
-                while (array->size() < i)
-                    array->add (var::undefined());
+            var arrayVar (object->getResult (s)); // must stay alive for the scope of this method
+            var key = index->getResult (s);
 
-                array->set (i, newValue);
-                return;
+            if (Array<var>* array = arrayVar.getArray())
+            {
+                if (key.isInt() || key.isInt64() || key.isDouble())
+                {
+                    const int i = key;
+                    while (array->size() < i)
+                        array->add (var::undefined());
+
+                    array->set (i, newValue);
+                    return;
+                }
+            }
+
+            if (DynamicObject* o = arrayVar.getDynamicObject())
+            {
+                if (key.isString())
+                {
+                    o->setProperty (Identifier (key), newValue);
+                    return;
+                }
             }
 
             Expression::assign (s, newValue);
@@ -463,7 +512,7 @@ struct JavascriptEngine::RootObject   : public DynamicObject
         }
 
         var throwError (const char* typeName) const
-            { location.throwError (getTokenName (operation) + " is not allowed on the " + typeName + " type"); return var(); }
+            { location.throwError (getTokenName (operation) + " is not allowed on the " + typeName + " type"); return {}; }
     };
 
     struct EqualsOp  : public BinaryOperator
@@ -543,14 +592,14 @@ struct JavascriptEngine::RootObject   : public DynamicObject
     struct DivideOp  : public BinaryOperator
     {
         DivideOp (const CodeLocation& l, ExpPtr& a, ExpPtr& b) noexcept : BinaryOperator (l, a, b, TokenTypes::divide) {}
-        var getWithDoubles (double a, double b) const override  { return a / b; }
-        var getWithInts (int64 a, int64 b) const override       { return a / b; }
+        var getWithDoubles (double a, double b) const override  { return b != 0.0 ? a / b : std::numeric_limits<double>::infinity(); }
+        var getWithInts (int64 a, int64 b) const override       { return b != 0   ? var (a / (double) b) : var (std::numeric_limits<double>::infinity()); }
     };
 
     struct ModuloOp  : public BinaryOperator
     {
         ModuloOp (const CodeLocation& l, ExpPtr& a, ExpPtr& b) noexcept : BinaryOperator (l, a, b, TokenTypes::modulo) {}
-        var getWithInts (int64 a, int64 b) const override   { return a % b; }
+        var getWithInts (int64 a, int64 b) const override   { return b != 0 ? var (a % b) : var (std::numeric_limits<double>::infinity()); }
     };
 
     struct BitwiseOrOp  : public BinaryOperator
@@ -679,7 +728,7 @@ struct JavascriptEngine::RootObject   : public DynamicObject
             }
 
             var function (object->getResult (s));
-            return invokeFunction (s, function, var (s.scope));
+            return invokeFunction (s, function, var (s.scope.get()));
         }
 
         var invokeFunction (const Scope& s, const var& function, const var& thisObject) const
@@ -698,7 +747,12 @@ struct JavascriptEngine::RootObject   : public DynamicObject
             if (FunctionObject* fo = dynamic_cast<FunctionObject*> (function.getObject()))
                 return fo->invoke (s, args);
 
-            location.throwError ("This expression is not a function!"); return var();
+            if (DotOperator* dot = dynamic_cast<DotOperator*> (object.get()))
+                if (DynamicObject* o = thisObject.getDynamicObject())
+                    if (o->hasMethod (dot->child)) // allow an overridden DynamicObject::invokeMethod to accept a method call.
+                        return o->invokeMethod (dot->child, args);
+
+            location.throwError ("This expression is not a function!"); return {};
         }
 
         ExpPtr object;
@@ -776,7 +830,7 @@ struct JavascriptEngine::RootObject   : public DynamicObject
 
         DynamicObject::Ptr clone() override    { return new FunctionObject (*this); }
 
-        void writeAsJSON (OutputStream& out, int /*indentLevel*/, bool /*allOnOneLine*/) override
+        void writeAsJSON (OutputStream& out, int /*indentLevel*/, bool /*allOnOneLine*/, int /*maximumDecimalPlaces*/) override
         {
             out << "function " << functionCode;
         }
@@ -843,7 +897,7 @@ struct JavascriptEngine::RootObject   : public DynamicObject
                 String::CharPointerType end (p);
                 while (isIdentifierBody (*++end)) {}
 
-                const size_t len = end - p;
+                const size_t len = (size_t) (end - p);
                 #define JUCE_JS_COMPARE_KEYWORD(name, str) if (len == sizeof (str) - 1 && matchToken (TokenTypes::name, len)) return TokenTypes::name;
                 JUCE_JS_KEYWORDS (JUCE_JS_COMPARE_KEYWORD)
 
@@ -1032,7 +1086,7 @@ struct JavascriptEngine::RootObject   : public DynamicObject
         {
             ExpPtr lhs (parseLogicOperator());
 
-            if (matchIf (TokenTypes::question))          return parseTerneryOperator (lhs);
+            if (matchIf (TokenTypes::question))          return parseTernaryOperator (lhs);
             if (matchIf (TokenTypes::assign))            { ExpPtr rhs (parseExpression()); return new Assignment (location, lhs, rhs); }
             if (matchIf (TokenTypes::plusEquals))        return parseInPlaceOpExpression<AdditionOp> (lhs);
             if (matchIf (TokenTypes::minusEquals))       return parseInPlaceOpExpression<SubtractionOp> (lhs);
@@ -1069,7 +1123,7 @@ struct JavascriptEngine::RootObject   : public DynamicObject
             if (matchIf (TokenTypes::while_))           return parseDoOrWhileLoop (false);
             if (matchIf (TokenTypes::do_))              return parseDoOrWhileLoop (true);
             if (matchIf (TokenTypes::for_))             return parseForLoop();
-            if (matchIf (TokenTypes::return_))          return new ReturnStatement (location, matchIf (TokenTypes::semicolon) ? new Expression (location) : parseExpression());
+            if (matchIf (TokenTypes::return_))          return parseReturn();
             if (matchIf (TokenTypes::break_))           return new BreakStatement (location);
             if (matchIf (TokenTypes::continue_))        return new ContinueStatement (location);
             if (matchIf (TokenTypes::function))         return parseFunction();
@@ -1099,6 +1153,16 @@ struct JavascriptEngine::RootObject   : public DynamicObject
             s->trueBranch = parseStatement();
             s->falseBranch = matchIf (TokenTypes::else_) ? parseStatement() : new Statement (location);
             return s.release();
+        }
+
+        Statement* parseReturn()
+        {
+            if (matchIf (TokenTypes::semicolon))
+                return new ReturnStatement (location, new Expression (location));
+
+            ReturnStatement* r = new ReturnStatement (location, parseExpression());
+            matchIf (TokenTypes::semicolon);
+            return r;
         }
 
         Statement* parseVar()
@@ -1145,8 +1209,14 @@ struct JavascriptEngine::RootObject   : public DynamicObject
                 match (TokenTypes::semicolon);
             }
 
-            s->iterator = parseExpression();
-            match (TokenTypes::closeParen);
+            if (matchIf (TokenTypes::closeParen))
+                s->iterator = new Statement (location);
+            else
+            {
+                s->iterator = parseExpression();
+                match (TokenTypes::closeParen);
+            }
+
             s->body = parseStatement();
             return s.release();
         }
@@ -1258,10 +1328,12 @@ struct JavascriptEngine::RootObject   : public DynamicObject
 
                 while (currentType != TokenTypes::closeBrace)
                 {
-                    e->names.add (currentValue.toString());
+                    auto memberName = currentValue.toString();
                     match ((currentType == TokenTypes::literal && currentValue.isString())
                              ? TokenTypes::literal : TokenTypes::identifier);
                     match (TokenTypes::colon);
+
+                    e->names.add (memberName);
                     e->initialisers.add (parseExpression());
 
                     if (currentType != TokenTypes::closeBrace)
@@ -1316,7 +1388,7 @@ struct JavascriptEngine::RootObject   : public DynamicObject
         template <typename OpType>
         Expression* parsePreIncDec()
         {
-            Expression* e = parseFactor(); // careful - bare pointer is deliberately alised
+            Expression* e = parseFactor(); // careful - bare pointer is deliberately aliased
             ExpPtr lhs (e), one (new LiteralValue (location, (int) 1));
             return new SelfAssignment (location, e, new OpType (location, lhs, one));
         }
@@ -1324,9 +1396,17 @@ struct JavascriptEngine::RootObject   : public DynamicObject
         template <typename OpType>
         Expression* parsePostIncDec (ExpPtr& lhs)
         {
-            Expression* e = lhs.release(); // careful - bare pointer is deliberately alised
+            Expression* e = lhs.release(); // careful - bare pointer is deliberately aliased
             ExpPtr lhs2 (e), one (new LiteralValue (location, (int) 1));
             return new PostAssignment (location, e, new OpType (location, lhs2, one));
+        }
+
+        Expression* parseTypeof()
+        {
+            ScopedPointer<FunctionCall> f (new FunctionCall (location));
+            f->object = new UnqualifiedName (location, "typeof");
+            f->arguments.add (parseUnary());
+            return f.release();
         }
 
         Expression* parseUnary()
@@ -1335,6 +1415,7 @@ struct JavascriptEngine::RootObject   : public DynamicObject
             if (matchIf (TokenTypes::logicalNot))  { ExpPtr a (new LiteralValue (location, (int) 0)), b (parseUnary()); return new EqualsOp        (location, a, b); }
             if (matchIf (TokenTypes::plusplus))    return parsePreIncDec<AdditionOp>();
             if (matchIf (TokenTypes::minusminus))  return parsePreIncDec<SubtractionOp>();
+            if (matchIf (TokenTypes::typeof_))     return parseTypeof();
 
             return parseFactor();
         }
@@ -1420,7 +1501,7 @@ struct JavascriptEngine::RootObject   : public DynamicObject
             return a.release();
         }
 
-        Expression* parseTerneryOperator (ExpPtr& condition)
+        Expression* parseTernaryOperator (ExpPtr& condition)
         {
             ScopedPointer<ConditionalOp> e (new ConditionalOp (location));
             e->condition = condition;
@@ -1446,12 +1527,12 @@ struct JavascriptEngine::RootObject   : public DynamicObject
         ObjectClass()
         {
             setMethod ("dump",  dump);
-            setMethod ("clone", clone);
+            setMethod ("clone", cloneFn);
         }
 
         static Identifier getClassName()   { static const Identifier i ("Object"); return i; }
-        static var dump  (Args a)          { DBG (JSON::toString (a.thisObject)); (void) a; return var::undefined(); }
-        static var clone (Args a)          { return a.thisObject.clone(); }
+        static var dump  (Args a)          { DBG (JSON::toString (a.thisObject)); ignoreUnused (a); return var::undefined(); }
+        static var cloneFn (Args a)        { return a.thisObject.clone(); }
     };
 
     //==============================================================================
@@ -1462,6 +1543,9 @@ struct JavascriptEngine::RootObject   : public DynamicObject
             setMethod ("contains", contains);
             setMethod ("remove",   remove);
             setMethod ("join",     join);
+            setMethod ("push",     push);
+            setMethod ("splice",   splice);
+            setMethod ("indexOf",  indexOf);
         }
 
         static Identifier getClassName()   { static const Identifier i ("Array"); return i; }
@@ -1492,6 +1576,65 @@ struct JavascriptEngine::RootObject   : public DynamicObject
 
             return strings.joinIntoString (getString (a, 0));
         }
+
+        static var push (Args a)
+        {
+            if (Array<var>* array = a.thisObject.getArray())
+            {
+                for (int i = 0; i < a.numArguments; ++i)
+                    array->add (a.arguments[i]);
+
+                return array->size();
+            }
+
+            return var::undefined();
+        }
+
+        static var splice (Args a)
+        {
+            if (Array<var>* array = a.thisObject.getArray())
+            {
+                const int arraySize = array->size();
+                int start = get (a, 0);
+
+                if (start < 0)
+                    start = jmax (0, arraySize + start);
+                else if (start > arraySize)
+                    start = arraySize;
+
+                const int num = a.numArguments > 1 ? jlimit (0, arraySize - start, getInt (a, 1))
+                                                   : arraySize - start;
+
+                Array<var> itemsRemoved;
+                itemsRemoved.ensureStorageAllocated (num);
+
+                for (int i = 0; i < num; ++i)
+                    itemsRemoved.add (array->getReference (start + i));
+
+                array->removeRange (start, num);
+
+                for (int i = 2; i < a.numArguments; ++i)
+                    array->insert (start++, get (a, i));
+
+                return itemsRemoved;
+            }
+
+            return var::undefined();
+        }
+
+        static var indexOf (Args a)
+        {
+            if (const Array<var>* array = a.thisObject.getArray())
+            {
+                const var target (get (a, 0));
+
+                for (int i = (a.numArguments > 1 ? getInt (a, 1) : 0); i < array->size(); ++i)
+                    if (array->getReference(i) == target)
+                        return i;
+            }
+
+            return -1;
+        }
     };
 
     //==============================================================================
@@ -1509,7 +1652,7 @@ struct JavascriptEngine::RootObject   : public DynamicObject
 
         static Identifier getClassName()  { static const Identifier i ("String"); return i; }
 
-        static var fromCharCode (Args a)  { return String::charToString (getInt (a, 0)); }
+        static var fromCharCode (Args a)  { return String::charToString (static_cast<juce_wchar> (getInt (a, 0))); }
         static var substring (Args a)     { return a.thisObject.toString().substring (getInt (a, 0), getInt (a, 1)); }
         static var indexOf (Args a)       { return a.thisObject.toString().indexOf (getString (a, 0)); }
         static var charCodeAt (Args a)    { return (int) a.thisObject.toString() [getInt (a, 0)]; }
@@ -1544,7 +1687,6 @@ struct JavascriptEngine::RootObject   : public DynamicObject
             setMethod ("random",    Math_random);           setMethod ("randInt",   Math_randInt);
             setMethod ("min",       Math_min);              setMethod ("max",       Math_max);
             setMethod ("range",     Math_range);            setMethod ("sign",      Math_sign);
-            setMethod ("PI",        Math_pi);               setMethod ("E",         Math_e);
             setMethod ("toDegrees", Math_toDegrees);        setMethod ("toRadians", Math_toRadians);
             setMethod ("sin",       Math_sin);              setMethod ("asin",      Math_asin);
             setMethod ("sinh",      Math_sinh);             setMethod ("asinh",     Math_asinh);
@@ -1555,10 +1697,12 @@ struct JavascriptEngine::RootObject   : public DynamicObject
             setMethod ("log",       Math_log);              setMethod ("log10",     Math_log10);
             setMethod ("exp",       Math_exp);              setMethod ("pow",       Math_pow);
             setMethod ("sqr",       Math_sqr);              setMethod ("sqrt",      Math_sqrt);
+            setMethod ("ceil",      Math_ceil);             setMethod ("floor",     Math_floor);
+
+            setProperty ("PI", double_Pi);
+            setProperty ("E", exp (1.0));
         }
 
-        static var Math_pi        (Args)   { return double_Pi; }
-        static var Math_e         (Args)   { return exp (1.0); }
         static var Math_random    (Args)   { return Random::getSystemRandom().nextDouble(); }
         static var Math_randInt   (Args a) { return Random::getSystemRandom().nextInt (Range<int> (getInt (a, 0), getInt (a, 1))); }
         static var Math_abs       (Args a) { return isInt (a, 0) ? var (std::abs   (getInt (a, 0))) : var (std::abs   (getDouble (a, 0))); }
@@ -1567,8 +1711,8 @@ struct JavascriptEngine::RootObject   : public DynamicObject
         static var Math_range     (Args a) { return isInt (a, 0) ? var (jlimit (getInt (a, 1), getInt (a, 2), getInt (a, 0))) : var (jlimit (getDouble (a, 1), getDouble (a, 2), getDouble (a, 0))); }
         static var Math_min       (Args a) { return (isInt (a, 0) && isInt (a, 1)) ? var (jmin (getInt (a, 0), getInt (a, 1))) : var (jmin (getDouble (a, 0), getDouble (a, 1))); }
         static var Math_max       (Args a) { return (isInt (a, 0) && isInt (a, 1)) ? var (jmax (getInt (a, 0), getInt (a, 1))) : var (jmax (getDouble (a, 0), getDouble (a, 1))); }
-        static var Math_toDegrees (Args a) { return (180.0 / double_Pi) * getDouble (a, 0); }
-        static var Math_toRadians (Args a) { return (double_Pi / 180.0) * getDouble (a, 0); }
+        static var Math_toDegrees (Args a) { return radiansToDegrees (getDouble (a, 0)); }
+        static var Math_toRadians (Args a) { return degreesToRadians (getDouble (a, 0)); }
         static var Math_sin       (Args a) { return sin   (getDouble (a, 0)); }
         static var Math_asin      (Args a) { return asin  (getDouble (a, 0)); }
         static var Math_cos       (Args a) { return cos   (getDouble (a, 0)); }
@@ -1587,6 +1731,8 @@ struct JavascriptEngine::RootObject   : public DynamicObject
         static var Math_pow       (Args a) { return pow   (getDouble (a, 0), getDouble (a, 1)); }
         static var Math_sqr       (Args a) { double x = getDouble (a, 0); return x * x; }
         static var Math_sqrt      (Args a) { return std::sqrt  (getDouble (a, 0)); }
+        static var Math_ceil      (Args a) { return std::ceil  (getDouble (a, 0)); }
+        static var Math_floor     (Args a) { return std::floor (getDouble (a, 0)); }
 
         static Identifier getClassName()   { static const Identifier i ("Math"); return i; }
         template <typename Type> static Type sign (Type n) noexcept  { return n > 0 ? (Type) 1 : (n < 0 ? (Type) -1 : 0); }
@@ -1618,6 +1764,20 @@ struct JavascriptEngine::RootObject   : public DynamicObject
     //==============================================================================
     static var trace (Args a)      { Logger::outputDebugString (JSON::toString (a.thisObject)); return var::undefined(); }
     static var charToInt (Args a)  { return (int) (getString (a, 0)[0]); }
+    static var parseFloat (Args a) { return getDouble (a, 0); }
+
+    static var typeof_internal (Args a)
+    {
+        var v (get (a, 0));
+
+        if (v.isVoid())                      return "void";
+        if (v.isString())                    return "string";
+        if (isNumeric (v))                   return "number";
+        if (isFunction (v) || v.isMethod())  return "function";
+        if (v.isObject())                    return "object";
+
+        return "undefined";
+    }
 
     static var exec (Args a)
     {
@@ -1649,9 +1809,10 @@ JavascriptEngine::JavascriptEngine()  : maximumExecutionTime (15.0), root (new R
 
 JavascriptEngine::~JavascriptEngine() {}
 
-void JavascriptEngine::prepareTimeout() const   { root->timeout = Time::getCurrentTime() + maximumExecutionTime; }
+void JavascriptEngine::prepareTimeout() const noexcept   { root->timeout = Time::getCurrentTime() + maximumExecutionTime; }
+void JavascriptEngine::stop() noexcept                   { root->timeout = {}; }
 
-void JavascriptEngine::registerNativeObject (Identifier name, DynamicObject* object)
+void JavascriptEngine::registerNativeObject (const Identifier& name, DynamicObject* object)
 {
     root->setProperty (name, object);
 }
@@ -1687,7 +1848,7 @@ var JavascriptEngine::evaluate (const String& code, Result* result)
     return var::undefined();
 }
 
-var JavascriptEngine::callFunction (Identifier function, const var::NativeFunctionArgs& args, Result* result)
+var JavascriptEngine::callFunction (const Identifier& function, const var::NativeFunctionArgs& args, Result* result)
 {
     var returnVal (var::undefined());
 
@@ -1705,6 +1866,33 @@ var JavascriptEngine::callFunction (Identifier function, const var::NativeFuncti
     return returnVal;
 }
 
+var JavascriptEngine::callFunctionObject (DynamicObject* objectScope, const var& functionObject,
+                                          const var::NativeFunctionArgs& args, Result* result)
+{
+    var returnVal (var::undefined());
+
+    try
+    {
+        prepareTimeout();
+        if (result != nullptr) *result = Result::ok();
+        RootObject::Scope rootScope (nullptr, root, root);
+        RootObject::Scope (&rootScope, root, objectScope).invokeMethod (functionObject, args, returnVal);
+    }
+    catch (String& error)
+    {
+        if (result != nullptr) *result = Result::fail (error);
+    }
+
+    return returnVal;
+}
+
+const NamedValueSet& JavascriptEngine::getRootObjectProperties() const noexcept
+{
+    return root->getProperties();
+}
+
 #if JUCE_MSVC
  #pragma warning (pop)
 #endif
+
+} // namespace juce

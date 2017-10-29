@@ -2,29 +2,30 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   By using JUCE, you agree to the terms of both the JUCE 5 End-User License
+   Agreement and JUCE 5 Privacy Policy (both updated and effective as of the
+   27th April 2017).
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   End User License Agreement: www.juce.com/juce-5-licence
+   Privacy Policy: www.juce.com/juce-5-privacy-policy
 
-   ------------------------------------------------------------------------------
+   Or: You may also use this code under the terms of the GPL v3 (see
+   www.gnu.org/licenses).
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
-#ifndef JUCE_RSAKEY_H_INCLUDED
-#define JUCE_RSAKEY_H_INCLUDED
-
+namespace juce
+{
 
 //==============================================================================
 /**
@@ -32,6 +33,62 @@
 
     An object of this type makes up one half of a public/private RSA key pair. Use the
     createKeyPair() method to create a matching pair for encoding/decoding.
+
+    If you need to use this class in conjunction with a compatible enc/decryption
+    algorithm on a webserver, you can achieve the same thing in PHP like this:
+
+    @code
+    include ('Math/BigInteger.php');  // get this from: phpseclib.sourceforge.net
+
+    function applyToValue ($message, $key_part1, $key_part2)
+    {
+        $result = new Math_BigInteger();
+        $zero  = new Math_BigInteger();
+        $value = new Math_BigInteger (strrev ($message), 256);
+        $part1 = new Math_BigInteger ($key_part1, 16);
+        $part2 = new Math_BigInteger ($key_part2, 16);
+
+        while (! $value->equals ($zero))
+        {
+            $result = $result->multiply ($part2);
+            list ($value, $remainder) = $value->divide ($part2);
+            $result = $result->add ($remainder->modPow ($part1, $part2));
+        }
+
+        return strrev ($result->toBytes());
+    }
+    @endcode
+
+    ..or in Java with something like this:
+
+    @code
+    public class RSAKey
+    {
+        static BigInteger applyToValue (BigInteger value, String key_part1, String key_part2)
+        {
+            BigInteger result = BigInteger.ZERO;
+            BigInteger part1 = new BigInteger (key_part1, 16);
+            BigInteger part2 = new BigInteger (key_part2, 16);
+
+            if (part1.equals (BigInteger.ZERO) || part2.equals (BigInteger.ZERO)
+                 || value.compareTo (BigInteger.ZERO) <= 0)
+                return result;
+
+            while (! value.equals (BigInteger.ZERO))
+            {
+                result = result.multiply (part2);
+                BigInteger[] div = value.divideAndRemainder (part2);
+                value = div[0];
+                result = result.add (div[1].modPow (part1, part2));
+            }
+
+            return result;
+        }
+    }
+    @endcode
+
+    Disclaimer: neither of the code snippets above are tested! Please let me know if you have
+    any corrections for them!
 */
 class JUCE_API  RSAKey
 {
@@ -57,10 +114,14 @@ public:
 
     //==============================================================================
     /** Turns the key into a string representation.
-
         This can be reloaded using the constructor that takes a string.
     */
     String toString() const;
+
+    /** Returns true if the object is a valid key, or false if it was created by
+        the default constructor.
+    */
+    bool isValid() const noexcept;
 
     //==============================================================================
     /** Encodes or decodes a value.
@@ -110,5 +171,4 @@ private:
     JUCE_LEAK_DETECTOR (RSAKey)
 };
 
-
-#endif   // JUCE_RSAKEY_H_INCLUDED
+} // namespace juce

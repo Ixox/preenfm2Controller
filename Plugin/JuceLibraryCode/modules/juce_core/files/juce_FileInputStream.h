@@ -1,34 +1,27 @@
 /*
   ==============================================================================
 
-   This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   This file is part of the JUCE library.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission to use, copy, modify, and/or distribute this software for any purpose with
-   or without fee is hereby granted, provided that the above copyright notice and this
-   permission notice appear in all copies.
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
-   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-   DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
-   IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   The code included in this file is provided under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license. Permission
+   To use, copy, modify, and/or distribute this software for any purpose with or
+   without fee is hereby granted provided that the above copyright notice and
+   this permission notice appear in all copies.
 
-   ------------------------------------------------------------------------------
-
-   NOTE! This permissive ISC license applies ONLY to files within the juce_core module!
-   All other JUCE modules are covered by a dual GPL/commercial license, so if you are
-   using any other modules, be sure to check that you also comply with their license.
-
-   For more details, visit www.juce.com
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
-#ifndef JUCE_FILEINPUTSTREAM_H_INCLUDED
-#define JUCE_FILEINPUTSTREAM_H_INCLUDED
-
+namespace juce
+{
 
 //==============================================================================
 /**
@@ -40,10 +33,11 @@ class JUCE_API  FileInputStream  : public InputStream
 {
 public:
     //==============================================================================
-    /** Creates a FileInputStream.
+    /** Creates a FileInputStream to read from the given file.
 
-        @param fileToRead   the file to read from - if the file can't be accessed for some
-                            reason, then the stream will just contain no data
+        After creating a FileInputStream, you should use openedOk() or failedToOpen()
+        to make sure that it's OK before trying to read from it! If it failed, you
+        can call getStatus() to get more error information.
     */
     explicit FileInputStream (const File& fileToRead);
 
@@ -73,24 +67,22 @@ public:
 
     //==============================================================================
     int64 getTotalLength() override;
-    int read (void* destBuffer, int maxBytesToRead) override;
+    int read (void*, int) override;
     bool isExhausted() override;
     int64 getPosition() override;
-    bool setPosition (int64 pos) override;
+    bool setPosition (int64) override;
 
 private:
     //==============================================================================
-    File file;
+    const File file;
     void* fileHandle;
     int64 currentPosition;
     Result status;
-    bool needToSeek;
 
     void openHandle();
-    void closeHandle();
-    size_t readInternal (void* buffer, size_t numBytes);
+    size_t readInternal (void*, size_t);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FileInputStream)
 };
 
-#endif   // JUCE_FILEINPUTSTREAM_H_INCLUDED
+} // namespace juce

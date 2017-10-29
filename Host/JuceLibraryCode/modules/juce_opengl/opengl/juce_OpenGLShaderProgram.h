@@ -2,28 +2,30 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   By using JUCE, you agree to the terms of both the JUCE 5 End-User License
+   Agreement and JUCE 5 Privacy Policy (both updated and effective as of the
+   27th April 2017).
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   End User License Agreement: www.juce.com/juce-5-licence
+   Privacy Policy: www.juce.com/juce-5-privacy-policy
 
-   ------------------------------------------------------------------------------
+   Or: You may also use this code under the terms of the GPL v3 (see
+   www.gnu.org/licenses).
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
-#ifndef JUCE_OPENGLSHADERPROGRAM_H_INCLUDED
-#define JUCE_OPENGLSHADERPROGRAM_H_INCLUDED
+namespace juce
+{
 
 //==============================================================================
 /**
@@ -32,7 +34,10 @@
 class JUCE_API  OpenGLShaderProgram
 {
 public:
+    /** Creates a shader for use in a particular GL context. */
     OpenGLShaderProgram (const OpenGLContext&) noexcept;
+
+    /** Destructor. */
     ~OpenGLShaderProgram() noexcept;
 
     /** Returns the version of GLSL that the current context supports.
@@ -88,6 +93,36 @@ public:
     /** Deletes the program. */
     void release() noexcept;
 
+    //==============================================================================
+    //  Methods for setting shader uniforms without using a Uniform object (see below).
+    //  You must make sure this shader is the currently bound one before setting uniforms
+    //  with these functions.
+
+    /** Get the uniform ID from the variable name */
+    GLint getUniformIDFromName (const char* uniformName) const noexcept;
+
+    /** Sets a float uniform. */
+    void setUniform (const char* uniformName, GLfloat value) noexcept;
+    /** Sets an int uniform. */
+    void setUniform (const char* uniformName, GLint value) noexcept;
+    /** Sets a vec2 uniform. */
+    void setUniform (const char* uniformName, GLfloat x, GLfloat y) noexcept;
+    /** Sets a vec3 uniform. */
+    void setUniform (const char* uniformName, GLfloat x, GLfloat y, GLfloat z) noexcept;
+    /** Sets a vec4 uniform. */
+    void setUniform (const char* uniformName, GLfloat x, GLfloat y, GLfloat z, GLfloat w) noexcept;
+    /** Sets a vec4 uniform. */
+    void setUniform (const char* uniformName, GLint x, GLint y, GLint z, GLint w) noexcept;
+    /** Sets a vector float uniform. */
+    void setUniform (const char* uniformName, const GLfloat* values, GLsizei numValues) noexcept;
+    /** Sets a 2x2 matrix float uniform. */
+    void setUniformMat2 (const char* uniformName, const GLfloat* values, GLint count, GLboolean transpose) noexcept;
+    /** Sets a 3x3 matrix float uniform. */
+    void setUniformMat3 (const char* uniformName, const GLfloat* values, GLint count, GLboolean transpose) noexcept;
+    /** Sets a 4x4 matrix float uniform. */
+    void setUniformMat4 (const char* uniformName, const GLfloat* values, GLint count, GLboolean transpose) noexcept;
+
+    //==============================================================================
     /** Represents an openGL uniform value.
         After a program has been linked, you can create Uniform objects to let you
         set the uniforms that your shaders use.
@@ -95,7 +130,7 @@ public:
         Be careful not to call the set() functions unless the appropriate program
         is loaded into the current context.
     */
-    struct Uniform
+    struct JUCE_API  Uniform
     {
         /** Initialises a uniform.
             The program must have been successfully linked when this
@@ -135,22 +170,23 @@ public:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Uniform)
     };
 
+    //==============================================================================
     /** Represents an openGL vertex attribute value.
         After a program has been linked, you can create Attribute objects to let you
         set the attributes that your vertex shaders use.
     */
-    struct Attribute
+    struct JUCE_API  Attribute
     {
         /** Initialises an attribute.
             The program must have been successfully linked when this
             constructor is called.
         */
-        Attribute (const OpenGLShaderProgram& program, const char* attributeName);
+        Attribute (const OpenGLShaderProgram&, const char* attributeName);
 
         /** The attribute's ID number.
             If the uniform couldn't be found, this value will be < 0.
         */
-        GLint attributeID;
+        GLuint attributeID;
     };
 
     /** The ID number of the compiled program. */
@@ -158,10 +194,10 @@ public:
 
 private:
     const OpenGLContext& context;
-    mutable GLuint programID;
+    mutable GLuint programID = 0;
     String errorLog;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OpenGLShaderProgram)
 };
 
-#endif   // JUCE_OPENGLSHADERPROGRAM_H_INCLUDED
+} // namespace juce

@@ -1,48 +1,35 @@
 /*
   ==============================================================================
 
-   This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   This file is part of the JUCE library.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission to use, copy, modify, and/or distribute this software for any purpose with
-   or without fee is hereby granted, provided that the above copyright notice and this
-   permission notice appear in all copies.
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
-   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-   DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
-   IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   The code included in this file is provided under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license. Permission
+   To use, copy, modify, and/or distribute this software for any purpose with or
+   without fee is hereby granted provided that the above copyright notice and
+   this permission notice appear in all copies.
 
-   ------------------------------------------------------------------------------
-
-   NOTE! This permissive ISC license applies ONLY to files within the juce_core module!
-   All other JUCE modules are covered by a dual GPL/commercial license, so if you are
-   using any other modules, be sure to check that you also comply with their license.
-
-   For more details, visit www.juce.com
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
+namespace juce
+{
+
 XmlDocument::XmlDocument (const String& documentText)
-    : originalText (documentText),
-      input (nullptr),
-      outOfData (false),
-      errorOccurred (false),
-      needToLoadDTD (false),
-      ignoreEmptyTextElements (true)
+    : originalText (documentText)
 {
 }
 
 XmlDocument::XmlDocument (const File& file)
-    : input (nullptr),
-      outOfData (false),
-      errorOccurred (false),
-      needToLoadDTD (false),
-      ignoreEmptyTextElements (true),
-      inputSource (new FileInputSource (file))
+    : inputSource (new FileInputSource (file))
 {
 }
 
@@ -172,7 +159,7 @@ String XmlDocument::getFileContents (const String& filename) const
             return in->readEntireStreamAsString();
     }
 
-    return String::empty;
+    return {};
 }
 
 juce_wchar XmlDocument::readNextChar() noexcept
@@ -555,7 +542,8 @@ void XmlDocument::readChildElements (XmlElement& parent)
         else  // must be a character block
         {
             input = preWhitespaceInput; // roll back to include the leading whitespace
-            String textElementContent;
+            MemoryOutputStream textElementContent;
+            bool contentShouldBeUsed = ! ignoreEmptyTextElements;
 
             for (;;)
             {
@@ -602,31 +590,31 @@ void XmlDocument::readChildElements (XmlElement& parent)
                         input = entity.getCharPointer();
                         outOfData = false;
 
-                        for (;;)
-                        {
-                            XmlElement* const n = readNextElement (true);
-
-                            if (n == nullptr)
-                                break;
-
+                        while (XmlElement* n = readNextElement (true))
                             childAppender.append (n);
-                        }
 
                         input = oldInput;
                         outOfData = oldOutOfData;
                     }
                     else
                     {
-                        textElementContent += entity;
+                        textElementContent << entity;
+                        contentShouldBeUsed = contentShouldBeUsed || entity.containsNonWhitespaceChars();
                     }
                 }
                 else
                 {
-                    const String::CharPointerType start (input);
-
-                    for (;;)
+                    for (;; ++input)
                     {
-                        const juce_wchar nextChar = *input;
+                        juce_wchar nextChar = *input;
+
+                        if (nextChar == '\r')
+                        {
+                            nextChar = '\n';
+
+                            if (input[1] == '\n')
+                                continue;
+                        }
 
                         if (nextChar == '<' || nextChar == '&')
                             break;
@@ -638,15 +626,14 @@ void XmlDocument::readChildElements (XmlElement& parent)
                             return;
                         }
 
-                        ++input;
+                        textElementContent.appendUTF8Char (nextChar);
+                        contentShouldBeUsed = contentShouldBeUsed || ! CharacterFunctions::isWhitespace (nextChar);
                     }
-
-                    textElementContent.appendCharPointer (start, input);
                 }
             }
 
-            if ((! ignoreEmptyTextElements) || textElementContent.containsNonWhitespaceChars())
-                childAppender.append (XmlElement::createTextElement (textElementContent));
+            if (contentShouldBeUsed)
+                childAppender.append (XmlElement::createTextElement (textElementContent.toUTF8()));
         }
     }
 }
@@ -766,10 +753,10 @@ String XmlDocument::expandEntity (const String& ent)
         const juce_wchar char1 = ent[1];
 
         if (char1 == 'x' || char1 == 'X')
-            return String::charToString (static_cast <juce_wchar> (ent.substring (2).getHexValue32()));
+            return String::charToString (static_cast<juce_wchar> (ent.substring (2).getHexValue32()));
 
         if (char1 >= '0' && char1 <= '9')
-            return String::charToString (static_cast <juce_wchar> (ent.substring (1).getIntValue()));
+            return String::charToString (static_cast<juce_wchar> (ent.substring (1).getIntValue()));
 
         setLastError ("illegal escape sequence", false);
         return String::charToString ('&');
@@ -888,4 +875,6 @@ String XmlDocument::getParameterEntity (const String& entity)
     }
 
     return entity;
+}
+
 }

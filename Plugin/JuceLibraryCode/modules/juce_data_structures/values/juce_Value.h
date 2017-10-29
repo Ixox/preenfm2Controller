@@ -2,29 +2,30 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   By using JUCE, you agree to the terms of both the JUCE 5 End-User License
+   Agreement and JUCE 5 Privacy Policy (both updated and effective as of the
+   27th April 2017).
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   End User License Agreement: www.juce.com/juce-5-licence
+   Privacy Policy: www.juce.com/juce-5-privacy-policy
 
-   ------------------------------------------------------------------------------
+   Or: You may also use this code under the terms of the GPL v3 (see
+   www.gnu.org/licenses).
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
-#ifndef JUCE_VALUE_H_INCLUDED
-#define JUCE_VALUE_H_INCLUDED
-
+namespace juce
+{
 
 //==============================================================================
 /**
@@ -40,6 +41,10 @@
     When you create a Value with its default constructor, it acts as a wrapper around a
     simple var object, but by creating a Value that refers to a custom subclass of ValueSource,
     you can map the Value onto any kind of underlying data.
+
+    Important note! The Value class is not thread-safe! If you're accessing one from
+    multiple threads, then you'll need to use your own synchronisation around any code
+    that accesses it.
 */
 class JUCE_API  Value
 {
@@ -59,10 +64,8 @@ public:
     /** Creates a Value that is set to the specified value. */
     explicit Value (const var& initialValue);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+    /** Move constructor */
     Value (Value&&) noexcept;
-    Value& operator= (Value&&) noexcept;
-   #endif
 
     /** Destructor. */
     ~Value();
@@ -96,6 +99,9 @@ public:
         change asynchronously.
     */
     Value& operator= (const var& newValue);
+
+    /** Move assignment operator */
+    Value& operator= (Value&&) noexcept;
 
     /** Makes this object refer to the same underlying ValueSource as another one.
 
@@ -147,9 +153,9 @@ public:
         The listener is added to this specific Value object, and not to the shared
         object that it refers to. When this object is deleted, all the listeners will
         be lost, even if other references to the same Value still exist. So when you're
-        adding a listener, make sure that you add it to a ValueTree instance that will last
+        adding a listener, make sure that you add it to a Value instance that will last
         for as long as you need the listener. In general, you'd never want to add a listener
-        to a local stack-based ValueTree, but more likely to one that's a member variable.
+        to a local stack-based Value, but more likely to one that's a member variable.
 
         @see removeListener
     */
@@ -167,7 +173,8 @@ public:
         of a ValueSource object. If you're feeling adventurous, you can create your own custom
         ValueSource classes to allow Value objects to represent your own custom data items.
     */
-    class JUCE_API  ValueSource   : public SingleThreadedReferenceCountedObject
+    class JUCE_API  ValueSource   : public ReferenceCountedObject,
+                                    private AsyncUpdater
     {
     public:
         ValueSource();
@@ -192,8 +199,10 @@ public:
     protected:
         //==============================================================================
         friend class Value;
-        SortedSet <Value*> valuesWithListeners;
-        ReferenceCountedObjectPtr<ReferenceCountedObject> asyncUpdater;
+        SortedSet<Value*> valuesWithListeners;
+
+    private:
+        void handleAsyncUpdate() override;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ValueSource)
     };
@@ -210,14 +219,19 @@ public:
 private:
     //==============================================================================
     friend class ValueSource;
-    ReferenceCountedObjectPtr <ValueSource> value;
-    ListenerList <Listener> listeners;
+    ReferenceCountedObjectPtr<ValueSource> value;
+    ListenerList<Listener> listeners;
 
     void callListeners();
+    void removeFromListenerList();
 
     // This is disallowed to avoid confusion about whether it should
     // do a by-value or by-reference copy.
-    Value& operator= (const Value&);
+    Value& operator= (const Value&) JUCE_DELETED_FUNCTION;
+
+    // This declaration prevents accidental construction from an integer of 0,
+    // which is possible in some compilers via an implicit cast to a pointer.
+    explicit Value (void*) JUCE_DELETED_FUNCTION;
 };
 
 /** Writes a Value to an OutputStream as a UTF8 string. */
@@ -226,4 +240,4 @@ OutputStream& JUCE_CALLTYPE operator<< (OutputStream&, const Value&);
 /** This typedef is just for compatibility with old code - newer code should use the Value::Listener class directly. */
 typedef Value::Listener ValueListener;
 
-#endif   // JUCE_VALUE_H_INCLUDED
+} // namespace juce

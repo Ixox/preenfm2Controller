@@ -2,29 +2,30 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   Details of these licenses can be found at: www.gnu.org/licenses
+   By using JUCE, you agree to the terms of both the JUCE 5 End-User License
+   Agreement and JUCE 5 Privacy Policy (both updated and effective as of the
+   27th April 2017).
 
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+   End User License Agreement: www.juce.com/juce-5-licence
+   Privacy Policy: www.juce.com/juce-5-privacy-policy
 
-   ------------------------------------------------------------------------------
+   Or: You may also use this code under the terms of the GPL v3 (see
+   www.gnu.org/licenses).
 
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
-#ifndef JUCE_OPENGLCONTEXT_H_INCLUDED
-#define JUCE_OPENGLCONTEXT_H_INCLUDED
-
+namespace juce
+{
 
 //==============================================================================
 /**
@@ -86,6 +87,9 @@ public:
 
     /** Returns the component to which this context is currently attached, or nullptr. */
     Component* getTargetComponent() const noexcept;
+
+    /** If the given component has an OpenGLContext attached, then this will return it. */
+    static OpenGLContext* getContextAttachedTo (Component& component) noexcept;
 
     //==============================================================================
     /** Sets the pixel format which you'd like to use for the target GL surface.
@@ -216,6 +220,26 @@ public:
     int getSwapInterval() const;
 
     //==============================================================================
+    /** Execute a lambda, function or functor on the OpenGL thread with an active
+        context.
+
+        This method will attempt to execute functor on the OpenGL thread. If
+        blockUntilFinished is true then the method will block until the functor
+        has finished executing.
+
+        This function can only be called if the context is attached to a component.
+        Otherwise, this function will assert.
+
+        This function is useful when you need to excute house-keeping tasks such
+        as allocating, deallocating textures or framebuffers. As such, the functor
+        will execute without locking the message thread. Therefore, it is not
+        intended for any drawing commands or GUI code. Any GUI code should be
+        executed in the OpenGLRenderer::renderOpenGL callback instead.
+    */
+    template <typename T>
+    void executeOnGLThread (T&& functor, bool blockUntilFinished);
+
+    //==============================================================================
     /** Returns the scale factor used by the display that is being rendered.
 
         The scale is that of the display - see Desktop::Displays::Display::scale
@@ -262,6 +286,12 @@ public:
                       bool textureOriginIsBottomLeft);
 
 
+    /** Changes the amount of GPU memory that the internal cache for Images is allowed to use. */
+    void setImageCacheSize (size_t cacheSizeBytes) noexcept;
+
+    /** Returns the amount of GPU memory that the internal cache for Images is allowed to use. */
+    size_t getImageCacheSize() const noexcept;
+
     //==============================================================================
    #ifndef DOXYGEN
     class NativeContext;
@@ -274,15 +304,45 @@ private:
     OpenGLRenderer* renderer;
     double currentRenderScale;
     ScopedPointer<Attachment> attachment;
-    OpenGLPixelFormat pixelFormat;
+    OpenGLPixelFormat openGLPixelFormat;
     void* contextToShareWith;
     OpenGLVersion versionRequired;
-    bool renderComponents, useMultisampling, continuousRepaint;
+    size_t imageCacheMaxSize;
+    bool renderComponents, useMultisampling, continuousRepaint, overrideCanAttach;
 
+    //==============================================================================
+    struct AsyncWorker : ReferenceCountedObject
+    {
+        typedef ReferenceCountedObjectPtr<AsyncWorker> Ptr;
+        virtual void operator() (OpenGLContext&) = 0;
+        virtual ~AsyncWorker() {}
+    };
+
+    template <typename T>
+    struct AsyncWorkerFunctor : AsyncWorker
+    {
+        AsyncWorkerFunctor (T functorToUse) : functor (functorToUse) {}
+        void operator() (OpenGLContext& callerContext) override     { functor (callerContext); }
+        T functor;
+
+        JUCE_DECLARE_NON_COPYABLE (AsyncWorkerFunctor)
+    };
+
+    //==============================================================================
+    friend void componentPeerAboutToChange (Component&, bool);
+    void overrideCanBeAttached (bool);
+
+    //==============================================================================
     CachedImage* getCachedImage() const noexcept;
+    void execute (AsyncWorker::Ptr, bool);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OpenGLContext)
 };
 
+//==============================================================================
+#ifndef DOXYGEN
+template <typename T>
+void OpenGLContext::executeOnGLThread (T&& f, bool shouldBlock) { execute (new AsyncWorkerFunctor<T> (f), shouldBlock); }
+#endif
 
-#endif   // JUCE_OPENGLCONTEXT_H_INCLUDED
+} // namespace juce

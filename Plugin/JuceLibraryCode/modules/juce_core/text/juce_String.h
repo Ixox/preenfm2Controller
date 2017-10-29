@@ -1,34 +1,27 @@
 /*
   ==============================================================================
 
-   This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   This file is part of the JUCE library.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission to use, copy, modify, and/or distribute this software for any purpose with
-   or without fee is hereby granted, provided that the above copyright notice and this
-   permission notice appear in all copies.
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
-   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-   DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
-   IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   The code included in this file is provided under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license. Permission
+   To use, copy, modify, and/or distribute this software for any purpose with or
+   without fee is hereby granted provided that the above copyright notice and
+   this permission notice appear in all copies.
 
-   ------------------------------------------------------------------------------
-
-   NOTE! This permissive ISC license applies ONLY to files within the juce_core module!
-   All other JUCE modules are covered by a dual GPL/commercial license, so if you are
-   using any other modules, be sure to check that you also comply with their license.
-
-   For more details, visit www.juce.com
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
-#ifndef JUCE_STRING_H_INCLUDED
-#define JUCE_STRING_H_INCLUDED
-
+namespace juce
+{
 
 //==============================================================================
 /**
@@ -52,9 +45,8 @@ public:
     /** Creates a copy of another string. */
     String (const String& other) noexcept;
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+    /** Move constructor */
     String (String&& other) noexcept;
-   #endif
 
     /** Creates a string from a zero-terminated ascii text string.
 
@@ -89,12 +81,12 @@ public:
     */
     String (const char* text, size_t maxChars);
 
-    /** Creates a string from a whcar_t character string.
+    /** Creates a string from a wchar_t character string.
         Depending on the platform, this may be treated as either UTF-32 or UTF-16.
     */
     String (const wchar_t* text);
 
-    /** Creates a string from a whcar_t character string.
+    /** Creates a string from a wchar_t character string.
         Depending on the platform, this may be treated as either UTF-32 or UTF-16.
     */
     String (const wchar_t* text, size_t maxChars);
@@ -136,6 +128,9 @@ public:
     /** Creates a string from a UTF-8 encoded std::string. */
     String (const std::string&);
 
+    /** Creates a string from a StringRef */
+    String (StringRef);
+
     //==============================================================================
     /** Creates a string from a single character. */
     static String charToString (juce_wchar character);
@@ -144,12 +139,15 @@ public:
     ~String() noexcept;
 
     //==============================================================================
-    /** This is an empty string that can be used whenever one is needed.
-
-        It's better to use this than String() because it explains what's going on
-        and is more efficient.
+   #if JUCE_ALLOW_STATIC_NULL_VARIABLES
+    /** This is a static empty string object that can be used if you need a reference to one.
+        The value of String::empty is exactly the same as String(), and in almost all cases
+        it's better to avoid String::empty and just use String() or {} instead, so that the compiler
+        only has to reason about locally-constructed objects, rather than taking into account
+        the fact that you're referencing a global shared static memory address.
     */
     static const String empty;
+   #endif
 
     /** This is the character encoding type used internally to store the string.
 
@@ -167,7 +165,7 @@ public:
     typedef CharPointer_UTF32 CharPointerType;
    #elif (JUCE_STRING_UTF_TYPE == 16)
     typedef CharPointer_UTF16 CharPointerType;
-   #elif (JUCE_STRING_UTF_TYPE == 8)
+   #elif (DOXYGEN || JUCE_STRING_UTF_TYPE == 8)
     typedef CharPointer_UTF8  CharPointerType;
    #else
     #error "You must set the value of JUCE_STRING_UTF_TYPE to be either 8, 16, or 32!"
@@ -181,7 +179,7 @@ public:
     int64 hashCode64() const noexcept;
 
     /** Generates a probably-unique hashcode from this string. */
-    std::size_t hash() const noexcept;
+    size_t hash() const noexcept;
 
     /** Returns the number of characters in the string. */
     int length() const noexcept;
@@ -192,9 +190,8 @@ public:
     /** Replaces this string's contents with another string. */
     String& operator= (const String& other) noexcept;
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+    /** Moves the contents of another string to the receiver */
     String& operator= (String&& other) noexcept;
-   #endif
 
     /** Appends another string at the end of this one. */
     String& operator+= (const String& stringToAppend);
@@ -202,10 +199,16 @@ public:
     String& operator+= (const char* textToAppend);
     /** Appends another string at the end of this one. */
     String& operator+= (const wchar_t* textToAppend);
+    /** Appends another string at the end of this one. */
+    String& operator+= (StringRef textToAppend);
     /** Appends a decimal number at the end of this string. */
     String& operator+= (int numberToAppend);
     /** Appends a decimal number at the end of this string. */
+    String& operator+= (long numberToAppend);
+    /** Appends a decimal number at the end of this string. */
     String& operator+= (int64 numberToAppend);
+    /** Appends a decimal number at the end of this string. */
+    String& operator+= (uint64 numberToAppend);
     /** Appends a character at the end of this string. */
     String& operator+= (char characterToAppend);
     /** Appends a character at the end of this string. */
@@ -243,12 +246,12 @@ public:
 
         size_t extraBytesNeeded = 0, numChars = 1;
 
-        for (CharPointer t (startOfTextToAppend); t != endOfTextToAppend && ! t.isEmpty(); ++numChars)
+        for (auto t = startOfTextToAppend; t != endOfTextToAppend && ! t.isEmpty(); ++numChars)
             extraBytesNeeded += CharPointerType::getBytesRequiredFor (t.getAndAdvance());
 
         if (extraBytesNeeded > 0)
         {
-            const size_t byteOffsetOfNull = getByteOffsetOfEnd();
+            auto byteOffsetOfNull = getByteOffsetOfEnd();
 
             preallocateBytes (byteOffsetOfNull + extraBytesNeeded);
             CharPointerType (addBytesToPointer (text.getAddress(), (int) byteOffsetOfNull))
@@ -271,12 +274,12 @@ public:
         {
             size_t extraBytesNeeded = 0, numChars = 1;
 
-            for (CharPointer t (textToAppend); numChars <= maxCharsToTake && ! t.isEmpty(); ++numChars)
+            for (auto t = textToAppend; numChars <= maxCharsToTake && ! t.isEmpty(); ++numChars)
                 extraBytesNeeded += CharPointerType::getBytesRequiredFor (t.getAndAdvance());
 
             if (extraBytesNeeded > 0)
             {
-                const size_t byteOffsetOfNull = getByteOffsetOfEnd();
+                auto byteOffsetOfNull = getByteOffsetOfEnd();
 
                 preallocateBytes (byteOffsetOfNull + extraBytesNeeded);
                 CharPointerType (addBytesToPointer (text.getAddress(), (int) byteOffsetOfNull))
@@ -299,13 +302,13 @@ public:
         Note that there's also an isNotEmpty() method to help write readable code.
         @see containsNonWhitespaceChars()
     */
-    inline bool isEmpty() const noexcept                    { return text[0] == 0; }
+    inline bool isEmpty() const noexcept                    { return text.isEmpty(); }
 
     /** Returns true if the string contains at least one character.
         Note that there's also an isEmpty() method to help write readable code.
         @see containsNonWhitespaceChars()
     */
-    inline bool isNotEmpty() const noexcept                 { return text[0] != 0; }
+    inline bool isNotEmpty() const noexcept                 { return ! text.isEmpty(); }
 
     /** Resets this string to be empty. */
     void clear() noexcept;
@@ -346,15 +349,15 @@ public:
     */
     int compareIgnoreCase (const String& other) const noexcept;
 
-    /** Lexicographic comparison with another string.
+    /** Compares two strings, taking into account textual characteristics like numbers and spaces.
 
-        The comparison used here is case-insensitive and ignores leading non-alphanumeric
-        characters, making it good for sorting human-readable strings.
+        This comparison is case-insensitive and can detect words and embedded numbers in the
+        strings, making it good for sorting human-readable lists of things like filenames.
 
         @returns     0 if the two strings are identical; negative if this string comes before
                      the other one alphabetically, or positive if it comes after it.
     */
-    int compareLexicographically (const String& other) const noexcept;
+    int compareNatural (StringRef other, bool isCaseSensitive = false) const noexcept;
 
     /** Tests whether the string begins with another string.
         If the parameter is an empty string, this will always return true.
@@ -768,6 +771,17 @@ public:
                     StringRef stringToInsertInstead,
                     bool ignoreCase = false) const;
 
+    /** Replaces the first occurrence of a substring with another string.
+
+        Returns a copy of this string, with the first occurrence of stringToReplace
+        swapped for stringToInsertInstead.
+
+        Note that this is a const method, and won't alter the string itself.
+    */
+    String replaceFirstOccurrenceOf (StringRef stringToReplace,
+                                     StringRef stringToInsertInstead,
+                                     bool ignoreCase = false) const;
+
     /** Returns a string with all occurrences of a character replaced with a different one. */
     String replaceCharacter (juce_wchar characterToReplace,
                              juce_wchar characterToInsertInstead) const;
@@ -897,7 +911,8 @@ public:
         on the platform, it may be using wchar_t or char character types, so that even string
         literals can't be safely used as parameters if you're writing portable code.
     */
-    static String formatted (const String formatString, ... );
+    template <typename... Args>
+    static String formatted (const String& formatStr, Args... args)      { return formattedRaw (formatStr.toRawUTF8(), args...); }
 
     //==============================================================================
     // Numeric conversions..
@@ -932,6 +947,16 @@ public:
     */
     explicit String (uint64 largeIntegerValue);
 
+    /** Creates a string containing this signed long integer as a decimal number.
+        @see getIntValue, getFloatValue, getDoubleValue, toHexString
+    */
+    explicit String (long decimalInteger);
+
+    /** Creates a string containing this unsigned long integer as a decimal number.
+        @see getIntValue, getFloatValue, getDoubleValue, toHexString
+    */
+    explicit String (unsigned long decimalInteger);
+
     /** Creates a string representing this floating-point number.
         @param floatValue               the value to convert to a string
         @see getDoubleValue, getIntValue
@@ -961,6 +986,10 @@ public:
         @see getFloatValue, getIntValue
     */
     String (double doubleValue, int numberOfDecimalPlaces);
+
+    // Automatically creating a String from a bool opens up lots of nasty type conversion edge cases.
+    // If you want a String representation of a bool you can cast the bool to an int first.
+    explicit String (bool) = delete;
 
     /** Reads the value of the string as a decimal number (up to 32 bits in size).
 
@@ -1021,16 +1050,11 @@ public:
     */
     int64 getHexValue64() const noexcept;
 
-    /** Creates a string representing this 32-bit value in hexadecimal. */
-    static String toHexString (int number);
+    /** Returns a string representing this numeric value in hexadecimal. */
+    template <typename IntegerType>
+    static String toHexString (IntegerType number)      { return createHex (number); }
 
-    /** Creates a string representing this 64-bit value in hexadecimal. */
-    static String toHexString (int64 number);
-
-    /** Creates a string representing this 16-bit value in hexadecimal. */
-    static String toHexString (short number);
-
-    /** Creates a string containing a hex dump of a block of binary data.
+    /** Returns a string containing a hex dump of a block of binary data.
 
         @param data         the binary data to use as input
         @param size         how many bytes of data to use
@@ -1204,19 +1228,24 @@ public:
 
     //==============================================================================
    #if JUCE_MAC || JUCE_IOS || DOXYGEN
-    /** MAC ONLY - Creates a String from an OSX CFString. */
+    /** OSX ONLY - Creates a String from an OSX CFString. */
     static String fromCFString (CFStringRef cfString);
 
-    /** MAC ONLY - Converts this string to a CFString.
+    /** OSX ONLY - Converts this string to a CFString.
         Remember that you must use CFRelease() to free the returned string when you're
         finished with it.
     */
     CFStringRef toCFString() const;
 
-    /** MAC ONLY - Returns a copy of this string in which any decomposed unicode characters have
+    /** OSX ONLY - Returns a copy of this string in which any decomposed unicode characters have
         been converted to their precomposed equivalents. */
     String convertToPrecomposedUnicode() const;
    #endif
+
+    /** Returns the number of String objects which are currently sharing the same internal
+        data as this one.
+    */
+    int getReferenceCount() const noexcept;
 
 private:
     //==============================================================================
@@ -1225,7 +1254,7 @@ private:
     //==============================================================================
     struct PreallocationBytes
     {
-        explicit PreallocationBytes (size_t);
+        explicit PreallocationBytes (size_t) noexcept;
         size_t numBytes;
     };
 
@@ -1237,6 +1266,17 @@ private:
     // to bools (this is possible because the compiler can add an implicit cast
     // via a const char*)
     operator bool() const noexcept  { return false; }
+
+    //==============================================================================
+    static String formattedRaw (const char*, ...);
+
+    static String createHex (uint8);
+    static String createHex (uint16);
+    static String createHex (uint32);
+    static String createHex (uint64);
+
+    template <typename Type>
+    static String createHex (Type n)  { return createHex (static_cast<typename TypeHelpers::UnsignedTypeWithSize<sizeof (n)>::type> (n)); }
 };
 
 //==============================================================================
@@ -1284,21 +1324,31 @@ JUCE_API String& JUCE_CALLTYPE operator<< (String& string1, const char* string2)
 JUCE_API String& JUCE_CALLTYPE operator<< (String& string1, const wchar_t* string2);
 /** Appends a string to the end of the first one. */
 JUCE_API String& JUCE_CALLTYPE operator<< (String& string1, const String& string2);
+/** Appends a string to the end of the first one. */
+JUCE_API String& JUCE_CALLTYPE operator<< (String& string1, StringRef string2);
 
-/** Appends a decimal number at the end of a string. */
+/** Appends a decimal number to the end of a string. */
+JUCE_API String& JUCE_CALLTYPE operator<< (String& string1, uint8 number);
+/** Appends a decimal number to the end of a string. */
 JUCE_API String& JUCE_CALLTYPE operator<< (String& string1, short number);
-/** Appends a decimal number at the end of a string. */
+/** Appends a decimal number to the end of a string. */
 JUCE_API String& JUCE_CALLTYPE operator<< (String& string1, int number);
-/** Appends a decimal number at the end of a string. */
+/** Appends a decimal number to the end of a string. */
 JUCE_API String& JUCE_CALLTYPE operator<< (String& string1, long number);
-/** Appends a decimal number at the end of a string. */
+/** Appends a decimal number to the end of a string. */
+JUCE_API String& JUCE_CALLTYPE operator<< (String& string1, unsigned long number);
+/** Appends a decimal number to the end of a string. */
 JUCE_API String& JUCE_CALLTYPE operator<< (String& string1, int64 number);
-/** Appends a decimal number at the end of a string. */
+/** Appends a decimal number to the end of a string. */
 JUCE_API String& JUCE_CALLTYPE operator<< (String& string1, uint64 number);
-/** Appends a decimal number at the end of a string. */
+/** Appends a decimal number to the end of a string. */
 JUCE_API String& JUCE_CALLTYPE operator<< (String& string1, float number);
-/** Appends a decimal number at the end of a string. */
+/** Appends a decimal number to the end of a string. */
 JUCE_API String& JUCE_CALLTYPE operator<< (String& string1, double number);
+
+// Automatically creating a String from a bool opens up lots of nasty type conversion edge cases.
+// If you want a String representation of a bool you can cast the bool to an int first.
+JUCE_API String& JUCE_CALLTYPE operator<< (String&, bool) = delete;
 
 //==============================================================================
 /** Case-sensitive comparison of two strings. */
@@ -1308,11 +1358,11 @@ JUCE_API bool JUCE_CALLTYPE operator== (const String& string1, const char* strin
 /** Case-sensitive comparison of two strings. */
 JUCE_API bool JUCE_CALLTYPE operator== (const String& string1, const wchar_t* string2) noexcept;
 /** Case-sensitive comparison of two strings. */
-JUCE_API bool JUCE_CALLTYPE operator== (const String& string1, const CharPointer_UTF8 string2) noexcept;
+JUCE_API bool JUCE_CALLTYPE operator== (const String& string1, CharPointer_UTF8 string2) noexcept;
 /** Case-sensitive comparison of two strings. */
-JUCE_API bool JUCE_CALLTYPE operator== (const String& string1, const CharPointer_UTF16 string2) noexcept;
+JUCE_API bool JUCE_CALLTYPE operator== (const String& string1, CharPointer_UTF16 string2) noexcept;
 /** Case-sensitive comparison of two strings. */
-JUCE_API bool JUCE_CALLTYPE operator== (const String& string1, const CharPointer_UTF32 string2) noexcept;
+JUCE_API bool JUCE_CALLTYPE operator== (const String& string1, CharPointer_UTF32 string2) noexcept;
 
 /** Case-sensitive comparison of two strings. */
 JUCE_API bool JUCE_CALLTYPE operator!= (const String& string1, const String& string2) noexcept;
@@ -1321,11 +1371,11 @@ JUCE_API bool JUCE_CALLTYPE operator!= (const String& string1, const char* strin
 /** Case-sensitive comparison of two strings. */
 JUCE_API bool JUCE_CALLTYPE operator!= (const String& string1, const wchar_t* string2) noexcept;
 /** Case-sensitive comparison of two strings. */
-JUCE_API bool JUCE_CALLTYPE operator!= (const String& string1, const CharPointer_UTF8 string2) noexcept;
+JUCE_API bool JUCE_CALLTYPE operator!= (const String& string1, CharPointer_UTF8 string2) noexcept;
 /** Case-sensitive comparison of two strings. */
-JUCE_API bool JUCE_CALLTYPE operator!= (const String& string1, const CharPointer_UTF16 string2) noexcept;
+JUCE_API bool JUCE_CALLTYPE operator!= (const String& string1, CharPointer_UTF16 string2) noexcept;
 /** Case-sensitive comparison of two strings. */
-JUCE_API bool JUCE_CALLTYPE operator!= (const String& string1, const CharPointer_UTF32 string2) noexcept;
+JUCE_API bool JUCE_CALLTYPE operator!= (const String& string1, CharPointer_UTF32 string2) noexcept;
 
 /** Case-sensitive comparison of two strings. */
 JUCE_API bool JUCE_CALLTYPE operator>  (const String& string1, const String& string2) noexcept;
@@ -1361,5 +1411,14 @@ JUCE_API OutputStream& JUCE_CALLTYPE operator<< (OutputStream& stream, const Str
 /** Writes a string to an OutputStream as UTF8. */
 JUCE_API OutputStream& JUCE_CALLTYPE operator<< (OutputStream& stream, StringRef stringToWrite);
 
+} // namespace juce
 
-#endif   // JUCE_STRING_H_INCLUDED
+#if JUCE_COMPILER_SUPPORTS_INITIALIZER_LISTS // just used to avoid compiling this under compilers that lack libc++
+namespace std
+{
+    template <> struct hash<juce::String>
+    {
+        size_t operator() (const juce::String& s) const noexcept    { return s.hash(); }
+    };
+}
+#endif

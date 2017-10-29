@@ -1,34 +1,27 @@
 /*
   ==============================================================================
 
-   This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   This file is part of the JUCE library.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission to use, copy, modify, and/or distribute this software for any purpose with
-   or without fee is hereby granted, provided that the above copyright notice and this
-   permission notice appear in all copies.
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
-   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-   DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
-   IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   The code included in this file is provided under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license. Permission
+   To use, copy, modify, and/or distribute this software for any purpose with or
+   without fee is hereby granted provided that the above copyright notice and
+   this permission notice appear in all copies.
 
-   ------------------------------------------------------------------------------
-
-   NOTE! This permissive ISC license applies ONLY to files within the juce_core module!
-   All other JUCE modules are covered by a dual GPL/commercial license, so if you are
-   using any other modules, be sure to check that you also comply with their license.
-
-   For more details, visit www.juce.com
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
-#ifndef JUCE_XMLELEMENT_H_INCLUDED
-#define JUCE_XMLELEMENT_H_INCLUDED
-
+namespace juce
+{
 
 //==============================================================================
 /** A handy macro to make it easy to iterate all the child elements in an XmlElement.
@@ -134,7 +127,7 @@
     }
 
     // now we can turn the whole thing into a text document..
-    String myXmlDoc = animalsList.createDocument (String::empty);
+    String myXmlDoc = animalsList.createDocument (String());
     @endcode
 
     @see XmlDocument
@@ -144,26 +137,39 @@ class JUCE_API  XmlElement
 public:
     //==============================================================================
     /** Creates an XmlElement with this tag name. */
-    explicit XmlElement (const String& tagName) noexcept;
+    explicit XmlElement (const String& tagName);
+
+    /** Creates an XmlElement with this tag name. */
+    explicit XmlElement (const char* tagName);
+
+    /** Creates an XmlElement with this tag name. */
+    explicit XmlElement (const Identifier& tagName);
+
+    /** Creates an XmlElement with this tag name. */
+    explicit XmlElement (StringRef tagName);
+
+    /** Creates an XmlElement with this tag name. */
+    XmlElement (String::CharPointerType tagNameBegin, String::CharPointerType tagNameEnd);
 
     /** Creates a (deep) copy of another element. */
-    XmlElement (const XmlElement& other);
+    XmlElement (const XmlElement&);
 
     /** Creates a (deep) copy of another element. */
-    XmlElement& operator= (const XmlElement& other);
+    XmlElement& operator= (const XmlElement&);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-    XmlElement (XmlElement&& other) noexcept;
-    XmlElement& operator= (XmlElement&& other) noexcept;
-   #endif
+    /** Move assignment operator */
+    XmlElement& operator= (XmlElement&&) noexcept;
 
-    /** Deleting an XmlElement will also delete all its child elements. */
+    /** Move constructor */
+    XmlElement (XmlElement&&) noexcept;
+
+    /** Deleting an XmlElement will also delete all of its child elements. */
     ~XmlElement() noexcept;
 
     //==============================================================================
-    /** Compares two XmlElements to see if they contain the same text and attiributes.
+    /** Compares two XmlElements to see if they contain the same text and attributes.
 
-        The elements are only considered equivalent if they contain the same attiributes
+        The elements are only considered equivalent if they contain the same attributes
         with the same values, and have the same sub-nodes.
 
         @param other                    the other element to compare to
@@ -303,13 +309,11 @@ public:
     bool hasAttribute (StringRef attributeName) const noexcept;
 
     /** Returns the value of a named attribute.
-
         @param attributeName        the name of the attribute to look up
     */
     const String& getStringAttribute (StringRef attributeName) const noexcept;
 
     /** Returns the value of a named attribute.
-
         @param attributeName        the name of the attribute to look up
         @param defaultReturnValue   a value to return if the element doesn't have an attribute
                                     with this name
@@ -342,7 +346,7 @@ public:
 
     /** Returns the value of a named attribute as floating-point.
 
-        This will try to find the attribute and convert it to an integer (using
+        This will try to find the attribute and convert it to a double (using
         the String::getDoubleValue() method).
 
         @param attributeName        the name of the attribute to look up
@@ -377,7 +381,7 @@ public:
         @param newValue             the value to set it to
         @see removeAttribute
     */
-    void setAttribute (const String& attributeName, const String& newValue);
+    void setAttribute (const Identifier& attributeName, const String& newValue);
 
     /** Adds a named attribute to the element, setting it to an integer value.
 
@@ -391,7 +395,7 @@ public:
         @param attributeName        the name of the attribute to set
         @param newValue             the value to set it to
     */
-    void setAttribute (const String& attributeName, int newValue);
+    void setAttribute (const Identifier& attributeName, int newValue);
 
     /** Adds a named attribute to the element, setting it to a floating-point value.
 
@@ -405,14 +409,14 @@ public:
         @param attributeName        the name of the attribute to set
         @param newValue             the value to set it to
     */
-    void setAttribute (const String& attributeName, double newValue);
+    void setAttribute (const Identifier& attributeName, double newValue);
 
     /** Removes a named attribute from the element.
 
         @param attributeName    the name of the attribute to remove
         @see removeAllAttributes
     */
-    void removeAttribute (const String& attributeName) noexcept;
+    void removeAttribute (const Identifier& attributeName) noexcept;
 
     /** Removes all attributes from this element. */
     void removeAllAttributes() noexcept;
@@ -447,8 +451,8 @@ public:
         Also, it's much easier and neater to use this method indirectly via the
         forEachXmlChildElement macro.
 
-        @returns    the sibling element that follows this one, or zero if this is the last
-                    element in its parent
+        @returns    the sibling element that follows this one, or a nullptr if
+                    this is the last element in its parent
 
         @see getNextElement, isTextElement, forEachXmlChildElement
     */
@@ -555,7 +559,7 @@ public:
         XmlElement* newElement = myParentElement->createNewChildElement ("foobar");
         @endcode
     */
-    XmlElement* createNewChildElement (const String& tagName);
+    XmlElement* createNewChildElement (StringRef tagName);
 
     /** Replaces one of this element's children with another node.
 
@@ -589,10 +593,17 @@ public:
     /** Returns true if the given element is a child of this one. */
     bool containsChildElement (const XmlElement* possibleChild) const noexcept;
 
-    /** Recursively searches all sub-elements to find one that contains the specified
-        child element.
+    /** Recursively searches all sub-elements of this one, looking for an element
+        which is the direct parent of the specified element.
+
+        Because elements don't store a pointer to their parent, if you have one
+        and need to find its parent, the only way to do so is to exhaustively
+        search the whole tree for it.
+
+        If the given child is found somewhere in this element's hierarchy, then
+        this method will return its parent. If not, it will return nullptr.
     */
-    XmlElement* findParentElementOf (const XmlElement* elementToLookFor) noexcept;
+    XmlElement* findParentElementOf (const XmlElement* childToSearchFor) noexcept;
 
     //==============================================================================
     /** Sorts the child elements using a comparator.
@@ -625,7 +636,7 @@ public:
 
         if (num > 1)
         {
-            HeapBlock <XmlElement*> elems ((size_t) num);
+            HeapBlock<XmlElement*> elems ((size_t) num);
             getChildElementsAsArray (elems);
             sortArray (comparator, (XmlElement**) elems, 0, num - 1, retainOrderOfEquivalentItems);
             reorderChildElements (elems, num);
@@ -635,7 +646,7 @@ public:
     //==============================================================================
     /** Returns true if this element is a section of text.
 
-        Elements can either be an XML tag element or a secton of text, so this
+        Elements can either be an XML tag element or a section of text, so this
         is used to find out what kind of element this one is.
 
         @see getAllText, addTextElement, deleteAllTextElements
@@ -707,30 +718,34 @@ public:
     /** Creates a text element that can be added to a parent element. */
     static XmlElement* createTextElement (const String& text);
 
+    /** Checks if a given string is a valid XML name */
+    static bool isValidXmlName (StringRef possibleName) noexcept;
+
     //==============================================================================
 private:
     struct XmlAttributeNode
     {
         XmlAttributeNode (const XmlAttributeNode&) noexcept;
-        XmlAttributeNode (const String& name, const String& value) noexcept;
+        XmlAttributeNode (const Identifier&, const String&) noexcept;
+        XmlAttributeNode (String::CharPointerType, String::CharPointerType);
 
         LinkedListPointer<XmlAttributeNode> nextListItem;
-        String name, value;
-
-        bool hasName (StringRef) const noexcept;
+        Identifier name;
+        String value;
 
     private:
-        XmlAttributeNode& operator= (const XmlAttributeNode&);
+        XmlAttributeNode& operator= (const XmlAttributeNode&) JUCE_DELETED_FUNCTION;
     };
 
     friend class XmlDocument;
-    friend class LinkedListPointer <XmlAttributeNode>;
-    friend class LinkedListPointer <XmlElement>;
-    friend class LinkedListPointer <XmlElement>::Appender;
+    friend class LinkedListPointer<XmlAttributeNode>;
+    friend class LinkedListPointer<XmlElement>;
+    friend class LinkedListPointer<XmlElement>::Appender;
+    friend class NamedValueSet;
 
-    LinkedListPointer <XmlElement> nextListItem;
-    LinkedListPointer <XmlElement> firstChildElement;
-    LinkedListPointer <XmlAttributeNode> attributes;
+    LinkedListPointer<XmlElement> nextListItem;
+    LinkedListPointer<XmlElement> firstChildElement;
+    LinkedListPointer<XmlAttributeNode> attributes;
     String tagName;
 
     XmlElement (int) noexcept;
@@ -740,8 +755,12 @@ private:
     void reorderChildElements (XmlElement**, int) noexcept;
     XmlAttributeNode* getAttribute (StringRef) const noexcept;
 
+    // Sigh.. L"" or _T("") string literals are problematic in general, and really inappropriate
+    // for XML tags. Use a UTF-8 encoded literal instead, or if you're really determined to use
+    // UTF-16, cast it to a String and use the other constructor.
+    XmlElement (const wchar_t*) JUCE_DELETED_FUNCTION;
+
     JUCE_LEAK_DETECTOR (XmlElement)
 };
 
-
-#endif   // JUCE_XMLELEMENT_H_INCLUDED
+} // namespace juce

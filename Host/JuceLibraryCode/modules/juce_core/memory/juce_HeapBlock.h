@@ -1,42 +1,36 @@
 /*
   ==============================================================================
 
-   This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   This file is part of the JUCE library.
+   Copyright (c) 2017 - ROLI Ltd.
 
-   Permission to use, copy, modify, and/or distribute this software for any purpose with
-   or without fee is hereby granted, provided that the above copyright notice and this
-   permission notice appear in all copies.
+   JUCE is an open source library subject to commercial or open-source
+   licensing.
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
-   TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
-   NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-   DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
-   IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   The code included in this file is provided under the terms of the ISC license
+   http://www.isc.org/downloads/software-support-policy/isc-license. Permission
+   To use, copy, modify, and/or distribute this software for any purpose with or
+   without fee is hereby granted provided that the above copyright notice and
+   this permission notice appear in all copies.
 
-   ------------------------------------------------------------------------------
-
-   NOTE! This permissive ISC license applies ONLY to files within the juce_core module!
-   All other JUCE modules are covered by a dual GPL/commercial license, so if you are
-   using any other modules, be sure to check that you also comply with their license.
-
-   For more details, visit www.juce.com
+   JUCE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES, WHETHER
+   EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR PURPOSE, ARE
+   DISCLAIMED.
 
   ==============================================================================
 */
 
-#ifndef JUCE_HEAPBLOCK_H_INCLUDED
-#define JUCE_HEAPBLOCK_H_INCLUDED
+namespace juce
+{
 
-#ifndef DOXYGEN
+#if ! (defined (DOXYGEN) || JUCE_EXCEPTIONS_DISABLED)
 namespace HeapBlockHelper
 {
     template <bool shouldThrow>
-    struct ThrowOnFail          { static void check (void*) {} };
+    struct ThrowOnFail          { static void checkPointer (void*) {} };
 
     template<>
-    struct ThrowOnFail <true>   { static void check (void* data) { if (data == nullptr) throw std::bad_alloc(); } };
+    struct ThrowOnFail<true>    { static void checkPointer (void* data) { if (data == nullptr) throw std::bad_alloc(); } };
 }
 #endif
 
@@ -67,7 +61,7 @@ namespace HeapBlockHelper
 
     ..you could just write this:
     @code
-        HeapBlock <int> temp (1024);
+        HeapBlock<int> temp (1024);
         memcpy (temp, xyz, 1024 * sizeof (int));
         temp.calloc (2048);
         temp[0] = 1234;
@@ -109,7 +103,7 @@ public:
         other constructor that takes an InitialisationState parameter.
     */
     explicit HeapBlock (const size_t numElements)
-        : data (static_cast <ElementType*> (std::malloc (numElements * sizeof (ElementType))))
+        : data (static_cast<ElementType*> (std::malloc (numElements * sizeof (ElementType))))
     {
         throwOnAllocationFailure();
     }
@@ -120,7 +114,7 @@ public:
         or left uninitialised.
     */
     HeapBlock (const size_t numElements, const bool initialiseToZero)
-        : data (static_cast <ElementType*> (initialiseToZero
+        : data (static_cast<ElementType*> (initialiseToZero
                                                ? std::calloc (numElements, sizeof (ElementType))
                                                : std::malloc (numElements * sizeof (ElementType))))
     {
@@ -135,19 +129,19 @@ public:
         std::free (data);
     }
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+    /** Move constructor */
     HeapBlock (HeapBlock&& other) noexcept
         : data (other.data)
     {
         other.data = nullptr;
     }
 
+    /** Move assignment operator */
     HeapBlock& operator= (HeapBlock&& other) noexcept
     {
         std::swap (data, other.data);
         return *this;
     }
-   #endif
 
     //==============================================================================
     /** Returns a raw pointer to the allocated data.
@@ -155,6 +149,13 @@ public:
         freed by calling the free() method.
     */
     inline operator ElementType*() const noexcept                           { return data; }
+
+
+    /** Returns a raw pointer to the allocated data.
+        This may be a null pointer if the data hasn't yet been allocated, or if it has been
+        freed by calling the free() method.
+    */
+    inline ElementType* get() const noexcept                                { return data; }
 
     /** Returns a raw pointer to the allocated data.
         This may be a null pointer if the data hasn't yet been allocated, or if it has been
@@ -166,13 +167,13 @@ public:
         This may be a null pointer if the data hasn't yet been allocated, or if it has been
         freed by calling the free() method.
     */
-    inline operator void*() const noexcept                                  { return static_cast <void*> (data); }
+    inline operator void*() const noexcept                                  { return static_cast<void*> (data); }
 
     /** Returns a void pointer to the allocated data.
         This may be a null pointer if the data hasn't yet been allocated, or if it has been
         freed by calling the free() method.
     */
-    inline operator const void*() const noexcept                            { return static_cast <const void*> (data); }
+    inline operator const void*() const noexcept                            { return static_cast<const void*> (data); }
 
     /** Lets you use indirect calls to the first element in the array.
         Obviously this will cause problems if the array hasn't been initialised, because it'll
@@ -220,7 +221,7 @@ public:
     void malloc (const size_t newNumElements, const size_t elementSize = sizeof (ElementType))
     {
         std::free (data);
-        data = static_cast <ElementType*> (std::malloc (newNumElements * elementSize));
+        data = static_cast<ElementType*> (std::malloc (newNumElements * elementSize));
         throwOnAllocationFailure();
     }
 
@@ -230,7 +231,7 @@ public:
     void calloc (const size_t newNumElements, const size_t elementSize = sizeof (ElementType))
     {
         std::free (data);
-        data = static_cast <ElementType*> (std::calloc (newNumElements, elementSize));
+        data = static_cast<ElementType*> (std::calloc (newNumElements, elementSize));
         throwOnAllocationFailure();
     }
 
@@ -241,7 +242,7 @@ public:
     void allocate (const size_t newNumElements, bool initialiseToZero)
     {
         std::free (data);
-        data = static_cast <ElementType*> (initialiseToZero
+        data = static_cast<ElementType*> (initialiseToZero
                                              ? std::calloc (newNumElements, sizeof (ElementType))
                                              : std::malloc (newNumElements * sizeof (ElementType)));
         throwOnAllocationFailure();
@@ -254,15 +255,15 @@ public:
     */
     void realloc (const size_t newNumElements, const size_t elementSize = sizeof (ElementType))
     {
-        data = static_cast <ElementType*> (data == nullptr ? std::malloc (newNumElements * elementSize)
-                                                           : std::realloc (data, newNumElements * elementSize));
+        data = static_cast<ElementType*> (data == nullptr ? std::malloc (newNumElements * elementSize)
+                                                          : std::realloc (data, newNumElements * elementSize));
         throwOnAllocationFailure();
     }
 
     /** Frees any currently-allocated data.
         This will free the data and reset this object to be a null pointer.
     */
-    void free()
+    void free() noexcept
     {
         std::free (data);
         data = nullptr;
@@ -272,7 +273,7 @@ public:
         The two objects simply exchange their data pointers.
     */
     template <bool otherBlockThrows>
-    void swapWith (HeapBlock <ElementType, otherBlockThrows>& other) noexcept
+    void swapWith (HeapBlock<ElementType, otherBlockThrows>& other) noexcept
     {
         std::swap (data, other.data);
     }
@@ -295,7 +296,11 @@ private:
 
     void throwOnAllocationFailure() const
     {
-        HeapBlockHelper::ThrowOnFail<throwOnFailure>::check (data);
+       #if JUCE_EXCEPTIONS_DISABLED
+        jassert (data != nullptr); // without exceptions, you'll need to find a better way to handle this failure case.
+       #else
+        HeapBlockHelper::ThrowOnFail<throwOnFailure>::checkPointer (data);
+       #endif
     }
 
    #if ! (defined (JUCE_DLL) || defined (JUCE_DLL_BUILD))
@@ -304,5 +309,4 @@ private:
    #endif
 };
 
-
-#endif   // JUCE_HEAPBLOCK_H_INCLUDED
+} // namespace juce
