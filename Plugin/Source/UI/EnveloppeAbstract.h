@@ -21,15 +21,12 @@
 #define ENVELOPPEABTRACT_H_INCLUDED
 
 #include <stdlib.h>
-#include "../JuceLibraryCode/modules/juce_audio_devices/midi_io/juce_MidiOutput.h"
-#include "../JuceLibraryCode/modules/juce_core/containers/juce_LinkedListPointer.h"
-#include "../JuceLibraryCode/modules/juce_graphics/contexts/juce_GraphicsContext.h"
-#include "../JuceLibraryCode/modules/juce_gui_basics/components/juce_Component.h"
+#include "JuceHeader.h"
 #include "EnveloppeListener.h"
 
 namespace juce { class MouseEvent; }
 
-#define CIRCLE_RAY 4
+#define CIRCLE_RAY 5
 #define MARGIN_TOP CIRCLE_RAY
 #define MARGIN_BOTTOM CIRCLE_RAY
 #define MARGIN_LEFT CIRCLE_RAY
@@ -37,7 +34,6 @@ namespace juce { class MouseEvent; }
 
 #define RIGHT_TEXT_SIZE  120
 
-#include "JuceHeader.h"
 
 
 class EnveloppePoint;

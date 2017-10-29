@@ -38,6 +38,7 @@ public:
     //==============================================================================
     // This is just a standard Juce paint method...
     void paint (Graphics& g);
+	void resized();
     void timerCallback ();
     void updateUIWith(std::unordered_set<const char*> &ptu);
     void removeParamToUpdateUI(const char* paramName);

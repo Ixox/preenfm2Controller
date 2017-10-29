@@ -19,7 +19,6 @@
 
 #include "EnveloppeFree2.h"
 
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "Enveloppe.h"
 #include "MidifiedComponent.h"
 
@@ -61,13 +60,13 @@ void EnveloppeFree2::paint (Graphics& g)
     static const String adsr[] = { "S", "A", "R"} ;
     for (int v=0; v<3; v++) {
 
-        g.setColour (Colours::black);
+        g.setColour (Colours::whitesmoke);
         g.drawText(adsr[v], getWidth() - 80 , 10 + v * 16, 50, 10, Justification::centred, true);
 
         if (draggingPointIndex == v + 1) {
-            g.setColour (Colours::red);
+            g.setColour (Colours::yellow);
         } else {
-            g.setColour (Colours::black);
+            g.setColour (Colours::whitesmoke);
         }
 
         switch (v) {

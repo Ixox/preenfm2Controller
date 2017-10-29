@@ -9,321 +9,165 @@
  */
 
 #include "PreenLookAndFeel.h"
-#include "OTF/exoFont.h"
-
-static Colour createBaseColourPFM2 (Colour buttonColour,
-		bool hasKeyboardFocus,
-		bool isMouseOverButton,
-		bool isButtonDown) noexcept {
-
-	const float sat = hasKeyboardFocus ? 1.3f : 0.9f;
-	const Colour baseColour (buttonColour.withMultipliedSaturation (sat));
-
-	if (isButtonDown)
-		return baseColour.contrasting (0.2f);
-	if (isMouseOverButton)
-		return baseColour.contrasting (0.1f);
-
-	return baseColour;
-}
 
 
-preenfmLookAndFeel::preenfmLookAndFeel() : LookAndFeel_V3() {
-
-//    Font* myNewFont = 0;
-    juce::MemoryInputStream fontStream (exoFont::exofont, exoFont::exofontSize, true);
-    exoFont = new CustomTypeface (fontStream);
+preenfmLookAndFeel::preenfmLookAndFeel() : LookAndFeel_V4() {
 
 	setUsingNativeAlertWindows(true);
-//    myNewFont = new Font (*typeFace);
-  //  myNewFont->setHeight (10.0f);
-//    delete typeFace;
-
-//	exoFont = Typeface::createSystemTypefaceFor(exoFont::exofont, exoFont::exofontSize);
+	setColourScheme(
+		{	0xff505050, 0xff424242, 0xff606060,
+			0xffa6a6a6, 0xffffffff, 
+			0xff21ba90, 0xff000000, 
+			0xffffffff, 0xffffffff }	
+	);
 }
 
-Typeface::Ptr preenfmLookAndFeel::getTypefaceForFont(const Font &) {
-	return exoFont;
-}
 
-void preenfmLookAndFeel::drawLinearSliderBackground (Graphics& g, int x, int y, int width, int height,
-		float /*sliderPos*/,
-		float /*minSliderPos*/,
-		float /*maxSliderPos*/,
-		const Slider::SliderStyle /*style*/, Slider& slider)
+
+void preenfmLookAndFeel::drawRotarySlider(Graphics& g, int x, int y, int width, int height, float sliderPos,
+	const float rotaryStartAngle, const float rotaryEndAngle, Slider& slider)
 {
-	const float sliderRadius = 2.0f; // (float) (getSliderThumbRadius (slider) - 2);
+	const auto outline = Colours::grey;
+	const auto fill = Colours::lightblue;
 
-	const Colour trackColour (slider.findColour (Slider::trackColourId));
-	const Colour gradCol1 (trackColour.overlaidWith (Colours::black.withAlpha (slider.isEnabled() ? 0.25f : 0.13f)));
-	const Colour gradCol2 (trackColour.overlaidWith (Colour (0x14000000)));
-	Path indent;
+	const auto bounds = Rectangle<int>(x, y, width, height).toFloat().reduced(5);
 
-	if (slider.isHorizontal())
+	auto radius = jmin(bounds.getWidth(), bounds.getHeight()) / 2.0f;
+	const auto toAngle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
+	auto lineW = jmin(4.0f, radius * 0.5f);
+	auto arcRadius = radius - lineW * 0.5f;
+
+	Path backgroundArc;
+	backgroundArc.addCentredArc(bounds.getCentreX(),
+		bounds.getCentreY(),
+		arcRadius,
+		arcRadius,
+		0.0f,
+		rotaryStartAngle,
+		rotaryEndAngle,
+		true);
+
+	g.setColour(outline);
+	g.strokePath(backgroundArc, PathStrokeType(lineW, PathStrokeType::curved, PathStrokeType::butt));
+
+	if (slider.isEnabled())
 	{
-		const float iy = y + height * 0.5f - sliderRadius * 0.5f;
-		const float ih = sliderRadius;
+		Path valueArc;
+		valueArc.addCentredArc(bounds.getCentreX(),
+			bounds.getCentreY(),
+			arcRadius,
+			arcRadius,
+			0.0f,
+			rotaryStartAngle,
+			toAngle,
+			true);
 
-		indent.addRoundedRectangle (x - sliderRadius * 0.5f, iy,
-				width + sliderRadius, ih,
-				5.0f);
+		g.setColour(fill);
+		g.strokePath(valueArc, PathStrokeType(lineW, PathStrokeType::curved, PathStrokeType::butt));
+
+		const auto thumbWidth = lineW * 2.0f;
+		const Point<float> thumbPoint(bounds.getCentreX() + arcRadius * std::cos(toAngle - float_Pi * 0.5f),
+			bounds.getCentreY() + arcRadius * std::sin(toAngle - float_Pi * 0.5f));
+
+		g.setColour(fill);
+		g.drawLine(bounds.getCentreX(), bounds.getCentreY(), thumbPoint.getX(), thumbPoint.getY());
 	}
-	else
-	{
-		const float ix = x + width * 0.5f - sliderRadius * 0.5f;
-		const float iw = sliderRadius;
+}
 
-		g.setGradientFill (ColourGradient (gradCol1, ix, 0.0f,
-				gradCol2, ix + iw, 0.0f, false));
 
-		indent.addRoundedRectangle (ix, y - sliderRadius * 0.5f,
-				iw, height + sliderRadius,
-				5.0f);
-	}
+void preenfmLookAndFeel::drawLinearSlider(Graphics& g, int x, int y, int width, int height,
+	float sliderPos,
+	float minSliderPos,
+	float maxSliderPos,
+	const Slider::SliderStyle style, Slider& slider)
+{
 
-	//	    g.fillPath (indent);
-	if (slider.isEnabled()) {
-        g.setColour (Colours::darkgrey);
+	const auto outline = Colours::grey;
+	const auto fill = Colours::lightblue;
+
+
+	const auto trackWidth = jmin(4.0f, slider.isHorizontal() ? height * 0.25f : width * 0.25f);
+
+	const Point<float> startPoint(slider.isHorizontal() ? x : x + width * 0.5f,
+		slider.isHorizontal() ? y + height * 0.5f : height + y);
+
+	const Point<float> endPoint(slider.isHorizontal() ? width + x : startPoint.x,
+		slider.isHorizontal() ? startPoint.y : y);
+
+	Path backgroundTrack;
+	backgroundTrack.startNewSubPath(startPoint);
+	backgroundTrack.lineTo(endPoint);
+
+	g.setColour(outline);
+	g.strokePath(backgroundTrack, PathStrokeType(trackWidth, PathStrokeType::curved, PathStrokeType::butt));
+
+	Path valueTrack;
+	Point<float> minPoint, maxPoint, thumbPoint;
+	Point<float> midPoint = (endPoint + startPoint) / 2;
+
+	const auto kx = slider.isHorizontal() ? sliderPos : (x + width * 0.5f);
+	const auto ky = slider.isHorizontal() ? (y + height * 0.5f) : sliderPos;
+
+	minPoint = startPoint;
+	maxPoint = { kx, ky };
+
+	valueTrack.startNewSubPath(midPoint);
+	valueTrack.lineTo(maxPoint);
+
+	float knobWidth = trackWidth;
+	float knobHeight = trackWidth;
+	if (slider.isHorizontal()) {
+		knobHeight *= 3.0f;
 	} else {
-        g.setColour (Colour (0x80808080));
+		knobWidth *= 3.0f;
+
 	}
-	g.strokePath (indent, PathStrokeType (0.5f));
+
+	g.setColour(fill);
+	g.strokePath(valueTrack, PathStrokeType(trackWidth, PathStrokeType::curved, PathStrokeType::butt));
+	g.fillRect(Rectangle<float>(knobWidth, knobHeight).withCentre(maxPoint));
 }
 
 
-void preenfmLookAndFeel::drawLinearSliderThumb (Graphics& g, int x, int y, int width, int height,
-		float sliderPos, float minSliderPos, float maxSliderPos,
-		const Slider::SliderStyle style, Slider& slider) 				{
-
-	if (!slider.isEnabled()) {
-		return;
-	}
-
-	const float sliderRadius = (float) (getSliderThumbRadius (slider) - 2);
-
-	Colour knobColour (createBaseColourPFM2 (slider.findColour (Slider::thumbColourId),
-			slider.hasKeyboardFocus (false) && slider.isEnabled(),
-			slider.isMouseOverOrDragging() && slider.isEnabled(),
-			slider.isMouseButtonDown() && slider.isEnabled()));
-
-	const float outlineThickness = slider.isEnabled() ? 0.8f : 0.3f;
-
-	if (style == Slider::LinearHorizontal || style == Slider::LinearVertical)
-	{
-		float kx, ky;
-
-		if (style == Slider::LinearVertical)
-		{
-			kx = x + width * 0.5f;
-			ky = sliderPos;
-		}
-		else
-		{
-			kx = sliderPos;
-			ky = y + height * 0.5f;
-		}
-
-		//	        drawGlassSphere (g,
-		//	                         kx - sliderRadius,
-		//	                         ky - sliderRadius,
-		//	                         sliderRadius * 2.0f,
-		//	                         knobColour, outlineThickness);
-		if (slider.isEnabled()) {
-			g.setColour(knobColour);
-			g.fillRect( kx - sliderRadius + 3,  ky - sliderRadius, sliderRadius*2 - 6, sliderRadius*2);
-			g.setColour(Colours::grey);
-		} else {
-			g.setColour (Colour (0x80808080));
-		}
-		g.drawRect( kx - sliderRadius + 3,  ky - sliderRadius, sliderRadius*2 - 6, sliderRadius*2);
-	}
-	else
-	{
-		LookAndFeel_V2::drawLinearSliderThumb (g, x, y, width, height,
-				sliderPos, minSliderPos, maxSliderPos,
-				style, slider);
-	}
-				}
-
-void preenfmLookAndFeel::drawButtonBackground (Graphics& g, Button& button, const Colour& backgroundColour,
-		bool isMouseOverButton, bool isButtonDown)
+void preenfmLookAndFeel::drawComboBox(Graphics& g, int width, int height, bool,
+	int, int, int, int, ComboBox& box)
 {
-	if (!button.isEnabled()) {
-		return;
-	}
+	const auto cornerSize = box.findParentComponentOfClass<ChoicePropertyComponent>() != nullptr ? 0.0f : 3.0f;
+	const Rectangle<int> boxBounds(0, 0, width, height);
 
-	Colour baseColour (backgroundColour.withMultipliedSaturation (button.hasKeyboardFocus (true) ? 1.3f : 0.9f)
-			.withMultipliedAlpha (button.isEnabled() ? 0.9f : 0.5f));
+	g.setColour(box.findColour(ComboBox::backgroundColourId));
+	g.fillRoundedRectangle(boxBounds.toFloat(), cornerSize);
 
-	if (isButtonDown || isMouseOverButton)
-		baseColour = baseColour.contrasting (isButtonDown ? 0.2f : 0.1f);
+	g.setColour(box.findColour(ComboBox::outlineColourId));
+	g.drawRoundedRectangle(boxBounds.toFloat().reduced(0.5f, 0.5f), cornerSize, 1.0f);
 
-	const bool flatOnLeft   = button.isConnectedOnLeft();
-	const bool flatOnRight  = button.isConnectedOnRight();
-	const bool flatOnTop    = button.isConnectedOnTop();
-	const bool flatOnBottom = button.isConnectedOnBottom();
+	Rectangle<int> arrowZone(width - 18, 0, 15, height);
+	Path path;
+	path.startNewSubPath(arrowZone.getX() + 3.0f, arrowZone.getCentreY() - 2.0f);
+	path.lineTo(static_cast<float> (arrowZone.getCentreX()), arrowZone.getCentreY() + 3.0f);
+	path.lineTo(arrowZone.getRight() - 3.0f, arrowZone.getCentreY() - 2.0f);
 
-	const float width  = button.getWidth() - 1.0f;
-	const float height = button.getHeight() - 1.0f;
-
-	if (width > 0 && height > 0)
-	{
-		const float cornerSize = 4.0f;
-
-		Path outline;
-		outline.addRoundedRectangle (0.5f, 0.5f, width, height, cornerSize, cornerSize,
-				! (flatOnLeft  || flatOnTop),
-				! (flatOnRight || flatOnTop),
-				! (flatOnLeft  || flatOnBottom),
-				! (flatOnRight || flatOnBottom));
-
-
-		const float mainBrightness = baseColour.getBrightness();
-		const float mainAlpha = baseColour.getFloatAlpha();
-
-		g.setColour (baseColour);
-		g.fillPath (outline);
-		g.setColour (Colours::black.withAlpha (0.4f * mainAlpha));
-		g.strokePath (outline, PathStrokeType (1.0f));
-	}
+	g.setColour(box.findColour(ComboBox::arrowColourId).withAlpha((box.isEnabled() ? 0.9f : 0.2f)));
+	g.strokePath(path, PathStrokeType(1.5f));
 }
 
 
-void preenfmLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width, int height, float sliderPos,
-		const float rotaryStartAngle, const float rotaryEndAngle, Slider& slider)
+Font preenfmLookAndFeel::getComboBoxFont(ComboBox& box)
 {
-
-	const float radius = jmin (width / 2, height / 2) - 2.0f;
-	const float centreX = x + width * 0.5f;
-	const float centreY = y + height * 0.5f;
-	const float rx = centreX - radius;
-	const float ry = centreY - radius;
-	const float rw = radius * 2.0f;
-	const float angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
-	const bool isMouseOver = slider.isMouseOverOrDragging() && slider.isEnabled();
-
-	if (radius > 12.0f)
-	{
-        const float thickness = 0.75f;
-		if (slider.isEnabled()) {
-			g.setColour (slider.findColour (Slider::rotarySliderFillColourId).withAlpha (isMouseOver ? 1.0f : 0.7f));
-
-            Path filledArc;
-		    if (slider.getMinimum() >= 0) {
-	            filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, angle, thickness);
-	            g.fillPath (filledArc);
-		    } else {
-
-                filledArc.addPieSegment (rx, ry, rw, rw, 0, (sliderPos - 0.5) * (rotaryEndAngle - rotaryStartAngle), thickness);
-                g.fillPath (filledArc);
-		    }
-
-            float innerRadius = 1;
-            if (isMouseOver ) {
-                innerRadius = 2;
-            }
-            Path p;
-            p.addTriangle (-innerRadius, 0.0f,
-                    0.0f, -radius * thickness * 1.1f,
-                    innerRadius, 0.0f);
-
-            //              p.addEllipse (-innerRadius, -innerRadius, innerRadius * 2.0f, innerRadius * 2.0f);
-
-            g.fillPath (p, AffineTransform::rotation (angle).translated (centreX, centreY));
-            g.setColour (slider.findColour (Slider::rotarySliderOutlineColourId));
-		} else {
-            g.setColour (Colour (0x80808080));
-		}
-
-		Path outlineArc;
-		outlineArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, rotaryEndAngle, thickness);
-		outlineArc.closeSubPath();
-
-		g.strokePath (outlineArc, PathStrokeType (slider.isEnabled() ?  1.2f : 0.3f));
-	}
-	else
-	{
-		if (slider.isEnabled())
-			g.setColour (slider.findColour (Slider::rotarySliderFillColourId).withAlpha (isMouseOver ? 1.0f : 0.7f));
-		else
-			g.setColour (Colour (0x80808080));
-
-		Path p;
-		p.addEllipse (-0.4f * rw, -0.4f * rw, rw * 0.8f, rw * 0.8f);
-		PathStrokeType (rw * 0.1f).createStrokedPath (p, p);
-
-		p.addLineSegment (Line<float> (0.0f, 0.0f, 0.0f, -radius), rw * 0.2f);
-
-		g.fillPath (p, AffineTransform::rotation (angle).translated (centreX, centreY));
-	}
+	return Font(jmin(14.0f, box.getHeight() * 0.85f));
 }
 
 
-void preenfmLookAndFeel::drawTabButton (TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown)
+void preenfmLookAndFeel::positionComboBoxText(ComboBox& box, Label& label)
 {
-    const Rectangle<int> activeArea (button.getActiveArea());
+	label.setBounds(1, 1,
+		box.getWidth() - 18,
+		box.getHeight() - 2);
 
-    const TabbedButtonBar::Orientation o = button.getTabbedButtonBar().getOrientation();
-
-    const Colour bkg (button.getTabBackgroundColour());
-
-    if (button.getToggleState())
-    {
-        g.setColour (bkg);
-    }
-    else
-    {
-        Point<int> p1, p2;
-
-        switch (o)
-        {
-            case TabbedButtonBar::TabsAtBottom:   p1 = activeArea.getBottomLeft(); p2 = activeArea.getTopLeft();    break;
-            case TabbedButtonBar::TabsAtTop:      p1 = activeArea.getTopLeft();    p2 = activeArea.getBottomLeft(); break;
-            case TabbedButtonBar::TabsAtRight:    p1 = activeArea.getTopRight();   p2 = activeArea.getTopLeft();    break;
-            case TabbedButtonBar::TabsAtLeft:     p1 = activeArea.getTopLeft();    p2 = activeArea.getTopRight();   break;
-            default:                              jassertfalse; break;
-        }
-
-        g.setGradientFill (ColourGradient (bkg.brighter (0.2f), (float) p1.x, (float) p1.y,
-                                           bkg.darker (0.1f),   (float) p2.x, (float) p2.y, false));
-    }
-
-    g.fillRect (activeArea);
-
-    g.setColour (button.findColour (TabbedButtonBar::tabOutlineColourId));
-
-    Rectangle<int> r (activeArea);
-
-    if (o != TabbedButtonBar::TabsAtBottom)   g.fillRect (r.removeFromTop (1));
-    if (o != TabbedButtonBar::TabsAtTop)      g.fillRect (r.removeFromBottom (1));
-    if (o != TabbedButtonBar::TabsAtRight)    g.fillRect (r.removeFromLeft (1));
-    if (o != TabbedButtonBar::TabsAtLeft)     g.fillRect (r.removeFromRight (1));
-
-    const float alpha = button.isEnabled() ? ((isMouseOver || isMouseDown) ? 1.0f : 0.8f) : 0.3f;
-
-    Colour col (bkg.contrasting().withMultipliedAlpha (alpha));
-
-    if (TabbedButtonBar* bar = button.findParentComponentOfClass<TabbedButtonBar>())
-    {
-        TabbedButtonBar::ColourIds colID = button.isFrontTab() ? TabbedButtonBar::frontTextColourId
-                                                               : TabbedButtonBar::tabTextColourId;
-
-        if (bar->isColourSpecified (colID))
-            col = bar->findColour (colID);
-        else if (isColourSpecified (colID))
-            col = findColour (colID);
-    }
-
-    const Rectangle<float> area (button.getTextArea().toFloat());
-
-    float length = area.getWidth();
-    float depth  = area.getHeight();
-
-    if (button.getTabbedButtonBar().isVertical())
-        std::swap (length, depth);
-
-
-    g.setColour (col);
-    g.setFont (Font (depth * .5));
-	g.drawFittedText (button.getName().trim(), 0, 0,length, depth, Justification::centred, 1);
+	label.setFont(getComboBoxFont(box));
 }
+
+
+
+
+

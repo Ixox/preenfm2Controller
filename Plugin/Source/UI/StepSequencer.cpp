@@ -46,17 +46,15 @@ void StepSequencer::paint (Graphics& g)
 	float width = (float)getWidth() / numberOfValues;
 	for (int k = 0; k < numberOfValues; k++) {
 	    float height = (float)getHeight() * values[k] / (maxValue - 1) ;
-	    float red = 205.0f - height * 150.0f / getHeight() ;
-	    float blue = 255.0f;
-        float green = 255.0f - height * 178.0f / getHeight();
-        g.setColour ( Colour(red, green, blue));
+        uint8 alpha = 100 + height * 70 / getHeight();
+        g.setColour (Colour::fromRGBA(180.0f, 200.0f, 220.0f, alpha));
 		g.fillRect((float)k * width, (float)getHeight() - height, width, height);
 	}
     for (int k = 0; k < numberOfValues; k++) {
 		g.setColour (Colours::grey);
 		g.drawVerticalLine(width * (k +1), 0, getHeight());
 
-		g.setColour (Colours::darkgrey);
+		g.setColour (Colours::whitesmoke);
 		g.drawText(String(values[k]), (float) k * width, getHeight() - 20, width, 10, Justification::centred, true);
 	}
 //	g.setColour (Colours::red);

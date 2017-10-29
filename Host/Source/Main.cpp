@@ -31,8 +31,9 @@ public:
     {
         // Add your application's initialisation code here...
 
-        mainWindow = new StandalonePFM2Window("PreenFM2 Editor" , Colours::lightblue, nullptr);
+        mainWindow = new StandalonePFM2Window("PreenFM2 Editor" , Colour(0xff183B46), nullptr);
         mainWindow->setVisible (true);
+		mainWindow->setResizable(true, true);
     }
 
     void shutdown() override

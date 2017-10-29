@@ -53,18 +53,17 @@ Enveloppe::~Enveloppe()
 void Enveloppe::paint (Graphics& g)
 {
     EnveloppeAbstract::paint(g);
-
-
+	
     static const String adsr[] = { "A", "D", "S", "R" } ;
     for (int v=0; v<4; v++) {
 
-        g.setColour (Colours::black);
+        g.setColour (Colours::whitesmoke);
         g.drawText(adsr[v], getWidth() - RIGHT_TEXT_SIZE , 20 + v* 20, 50, 10, Justification::centred, true);
 
         if (draggingPointIndex == v + 1) {
-            g.setColour (Colours::red);
+            g.setColour (Colours::yellow);
         } else {
-            g.setColour (Colours::black);
+            g.setColour (Colours::whitesmoke);
         }
 
         String posisionX = String(pointList[v+1].get()->getX(), 2);

@@ -28,7 +28,7 @@ int Midificator::paramIndexCounter = 0;
 Pfm2AudioProcessor::Pfm2AudioProcessor()
 {
     myLookAndFeel = new preenfmLookAndFeel();
-    LookAndFeel::setDefaultLookAndFeel(myLookAndFeel);
+	LookAndFeel::setDefaultLookAndFeel(myLookAndFeel);
 
     // Important !!!! reset paramIndexCounter.
     Midificator::resetParamIndexCounter();
@@ -102,7 +102,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //        opShape[k] = new ComboBox("OP"+String(k+1)+" Shape");
         //		0, 7,
         nrpmParam = PREENFM2_NRPN_OPERATOR1_SHAPE + k * 4;
-        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Op"+String(k+1)+" Shape").toRawUTF8(), nrpmParam, 1, 1, 8, 1);
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Op"+String(k+1)+" Shape").toRawUTF8(), nrpmParam, 1, 1, 14, 1);
         newParam->addObserver(this);
         parameterSet.add(newParam);
         nrpmIndex[nrpmParam] = parameterIndex++;
@@ -112,7 +112,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //        opFrequencyType[k] = new ComboBox("Op"+ String(1) + " Freq Type");
         //        0, 1
         nrpmParam = PREENFM2_NRPN_OPERATOR1_FREQUENCY_TYPE + k * 4;
-        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Op"+String(k+1)+" Freq Type").toRawUTF8(), nrpmParam, 1, 1, 2, 1);
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Op"+String(k+1)+" Freq Type").toRawUTF8(), nrpmParam, 1, 1, 3, 1);
         newParam->addObserver(this);
         parameterSet.add(newParam);
         nrpmIndex[nrpmParam] = parameterIndex++;
@@ -131,7 +131,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //        opFrequencyFineTune[k] = new Slider("Op"+ String(k+1)+ " Fine Tune");
         //        opFrequencyFineTune[k]->setRange (-1.0f, 1.0f, .01f);
         nrpmParam = PREENFM2_NRPN_OPERATOR1_FREQUENCY_FINE_TUNE + k * 4;
-        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Op"+ String(k+1)+ " Fine Tune").toRawUTF8(), nrpmParam, 100, -1, 1, 0);
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Op"+ String(k+1)+ " Fine Tune").toRawUTF8(), nrpmParam, 100, -9, 9, 0);
         newParam->addObserver(this);
         parameterSet.add(newParam);
         nrpmIndex[nrpmParam] = parameterIndex++;
@@ -160,7 +160,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     }
     for (int k=0; k<12; k++) {
         nrpmParam = PREENFM2_NRPN_MTX1_SOURCE + k *4 ;
-        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Mtx"+String(k+1)+" Source").toRawUTF8(), nrpmParam, 1, 1, 18, 1);
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Mtx"+String(k+1)+" Source").toRawUTF8(), nrpmParam, 1, 1, 19, 1);
         newParam->addObserver(this);
         parameterSet.add(newParam);
         nrpmIndex[nrpmParam] = parameterIndex++;
@@ -172,7 +172,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         nrpmIndex[nrpmParam] = parameterIndex++;
 
         nrpmParam = PREENFM2_NRPN_MTX1_DESTINATION + k *4 ;
-        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Mtx"+String(k+1)+" Destination").toRawUTF8(), nrpmParam, 1, 1, 43, 1);
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Mtx"+String(k+1)+" Destination").toRawUTF8(), nrpmParam, 1, 1, 47, 1);
         newParam->addObserver(this);
         parameterSet.add(newParam);
         nrpmIndex[nrpmParam] = parameterIndex++;
@@ -203,7 +203,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //        lfoExtMidiSync[k]->addItem("MC*4", 2480);
         //        lfoExtMidiSync[k]->addItem("MC*8", 2490);
         nrpmParam = PREENFM2_NRPN_LFO1_FREQUENCY + k *4 ;
-        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("LFO"+ String(k+1) + " External Sync").toRawUTF8(), nrpmParam, 1, 2400, 2490, 2400);
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("LFO"+ String(k+1) + " External Sync").toRawUTF8(), nrpmParam, 1, 10000, 10080, 10000);
         newParam->addObserver(this);
         ((MidifiedFloatParameter*)newParam)->setSendRealValue(true);
         parameterSet.add(newParam);
@@ -215,7 +215,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //        addAndMakeVisible(lfoFrequency[k] = new Slider("LFO"+ String(k+1) + " Frequency"));
         //        lfoFrequency[k]->setRange (0, 24.0f, .01f);
         nrpmParam = PREENFM2_NRPN_LFO1_FREQUENCY + k *4 ;
-        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("LFO"+ String(k+1) + " Frequency").toRawUTF8(), nrpmParam, 100, 0, 24, 1);
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("LFO"+ String(k+1) + " Frequency").toRawUTF8(), nrpmParam, 100, 0, 99.9, 1);
         newParam->addObserver(this);
         parameterSet.add(newParam);
         nrpmIndex[nrpmParam] = parameterIndex++;
@@ -530,13 +530,13 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 
 Pfm2AudioProcessor::~Pfm2AudioProcessor()
 {
-    delete myLookAndFeel;
+   delete myLookAndFeel;
 }
 
 //==============================================================================
 const String Pfm2AudioProcessor::getName() const
 {
-    return JucePlugin_Name;
+	return "preenfm2 Editor"; // JucePlugin_Name;
 }
 
 int Pfm2AudioProcessor::getNumParameters()

@@ -1,18 +1,18 @@
 /*
   ==============================================================================
 
-  This is an automatically generated GUI class created by the Introjucer!
+  This is an automatically generated GUI class created by the Projucer!
 
   Be careful when adding custom code to these files, as only the code within
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.1.0
+  Created with Projucer version: 5.1.2
 
   ------------------------------------------------------------------------------
 
-  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright 2004-13 by Raw Material Software Ltd.
+  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright (c) 2015 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -34,30 +34,15 @@
 //==============================================================================
 MainTabs::MainTabs ()
 {
+    //[Constructor_pre] You can add your own custom stuff here..
+    //[/Constructor_pre]
+
     addAndMakeVisible (tabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtTop));
-    tabbedComponent->setTabBarDepth (30);
-    tabbedComponent->addTab (TRANS("Engine"), Colour (0xffe5f9ff), new PanelEngine(), true);
-    tabbedComponent->addTab (TRANS("Modulation"), Colour (0xffdeffe4), new PanelModulation(), true);
-    tabbedComponent->addTab (TRANS("Other"), Colour (0xfffffcc4), new PanelArpAndFilter(), true);
+    tabbedComponent->setTabBarDepth (40);
+    tabbedComponent->addTab (TRANS("Engine"), Colour (0xff062934), new PanelEngine(), true);
+    tabbedComponent->addTab (TRANS("Modulation"), Colour (0xff062934), new PanelModulation(), true);
+    tabbedComponent->addTab (TRANS("Arp & Filter"), Colour (0xff062934), new PanelArpAndFilter(), true);
     tabbedComponent->setCurrentTabIndex (0);
-
-    addAndMakeVisible (midiInputLabel = new Label ("midi input label",
-                                                   TRANS("0")));
-    midiInputLabel->setFont (Font (15.00f, Font::plain));
-    midiInputLabel->setJustificationType (Justification::centredLeft);
-    midiInputLabel->setEditable (false, false, false);
-    midiInputLabel->setColour (Label::textColourId, Colours::blue);
-    midiInputLabel->setColour (TextEditor::textColourId, Colours::black);
-    midiInputLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (midiInputLabel2 = new Label ("midi input label",
-                                                    TRANS("0")));
-    midiInputLabel2->setFont (Font (15.00f, Font::plain));
-    midiInputLabel2->setJustificationType (Justification::centredLeft);
-    midiInputLabel2->setEditable (false, false, false);
-    midiInputLabel2->setColour (Label::textColourId, Colours::blue);
-    midiInputLabel2->setColour (TextEditor::textColourId, Colours::black);
-    midiInputLabel2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (pullButton = new TextButton ("pull button"));
     pullButton->setTooltip (TRANS("Pull all parameters from the preenfm2 to this plugin"));
@@ -67,11 +52,13 @@ MainTabs::MainTabs ()
     addAndMakeVisible (presetNameLabel = new Label ("preset name label",
                                                     TRANS("preset")));
     presetNameLabel->setTooltip (TRANS("Click to edit"));
-    presetNameLabel->setFont (Font (25.90f, Font::bold));
+    presetNameLabel->setFont (Font (25.90f, Font::plain).withTypefaceStyle ("Bold"));
     presetNameLabel->setJustificationType (Justification::centredLeft);
     presetNameLabel->setEditable (true, true, false);
-    presetNameLabel->setColour (TextEditor::textColourId, Colours::black);
+    presetNameLabel->setColour (Label::textColourId, Colours::aliceblue);
+    presetNameLabel->setColour (TextEditor::textColourId, Colours::aliceblue);
     presetNameLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    presetNameLabel->setColour (TextEditor::highlightColourId, Colours::coral);
     presetNameLabel->addListener (this);
 
     addAndMakeVisible (pushButton = new TextButton ("push button"));
@@ -105,21 +92,40 @@ MainTabs::MainTabs ()
     midiChannelCombo->addListener (this);
 
     addAndMakeVisible (midiChannelLabel = new Label ("Midi Channel Label",
-                                                     TRANS("Midi Channel:")));
-    midiChannelLabel->setFont (Font (15.00f, Font::plain));
+                                                     TRANS("Midi :")));
+    midiChannelLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     midiChannelLabel->setJustificationType (Justification::centred);
     midiChannelLabel->setEditable (false, false, false);
+    midiChannelLabel->setColour (Label::textColourId, Colours::aliceblue);
     midiChannelLabel->setColour (TextEditor::textColourId, Colours::black);
     midiChannelLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (versionLabel = new Label ("Version Label",
                                                  TRANS("v?.?\n")));
-    versionLabel->setFont (Font (15.00f, Font::plain));
+    versionLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     versionLabel->setJustificationType (Justification::centredLeft);
     versionLabel->setEditable (false, false, false);
-    versionLabel->setColour (Label::textColourId, Colours::blue);
+    versionLabel->setColour (Label::textColourId, Colours::beige);
     versionLabel->setColour (TextEditor::textColourId, Colours::black);
     versionLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (midiInputLabel2 = new Label ("midi input label",
+                                                    TRANS("0")));
+    midiInputLabel2->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
+    midiInputLabel2->setJustificationType (Justification::centredLeft);
+    midiInputLabel2->setEditable (false, false, false);
+    midiInputLabel2->setColour (Label::textColourId, Colours::beige);
+    midiInputLabel2->setColour (TextEditor::textColourId, Colours::black);
+    midiInputLabel2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (midiInputLabel = new Label ("midi input label",
+                                                   TRANS("0")));
+    midiInputLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
+    midiInputLabel->setJustificationType (Justification::centredLeft);
+    midiInputLabel->setEditable (false, false, false);
+    midiInputLabel->setColour (Label::textColourId, Colours::beige);
+    midiInputLabel->setColour (TextEditor::textColourId, Colours::black);
+    midiInputLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
 
     //[UserPreSize]
@@ -146,14 +152,14 @@ MainTabs::~MainTabs()
     //[/Destructor_pre]
 
     tabbedComponent = nullptr;
-    midiInputLabel = nullptr;
-    midiInputLabel2 = nullptr;
     pullButton = nullptr;
     presetNameLabel = nullptr;
     pushButton = nullptr;
     midiChannelCombo = nullptr;
     midiChannelLabel = nullptr;
     versionLabel = nullptr;
+    midiInputLabel2 = nullptr;
+    midiInputLabel = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -166,7 +172,7 @@ void MainTabs::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.fillAll (Colours::aliceblue);
+    g.fillAll (Colour (0xff0b232a));
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -174,15 +180,18 @@ void MainTabs::paint (Graphics& g)
 
 void MainTabs::resized()
 {
-    tabbedComponent->setBounds (proportionOfWidth (0.0098f), proportionOfHeight (0.0247f), proportionOfWidth (0.9771f), proportionOfHeight (0.9694f));
-    midiInputLabel->setBounds (16, 0, 48, 16);
-    midiInputLabel2->setBounds (80, 0, 48, 16);
-    pullButton->setBounds (getWidth() - 108, 8, 55, 24);
-    presetNameLabel->setBounds (288, 8, 168, 32);
-    pushButton->setBounds (getWidth() - 180, 8, 55, 24);
+    //[UserPreResize] Add your own custom resize code here..
+    //[/UserPreResize]
+
+    tabbedComponent->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
+    pullButton->setBounds (getWidth() - 116, 8, 55, 24);
+    presetNameLabel->setBounds (proportionOfWidth (0.4003f), proportionOfHeight (0.0033f), 200, 32);
+    pushButton->setBounds (getWidth() - 184, 8, 55, 24);
     midiChannelCombo->setBounds (getWidth() - 268, 8, 55, 24);
     midiChannelLabel->setBounds (getWidth() - 364, 8, 103, 24);
-    versionLabel->setBounds (getWidth() - 44, 8, 39, 24);
+    versionLabel->setBounds (getWidth() - 58, 8, 55, 24);
+    midiInputLabel2->setBounds (proportionOfWidth (0.3557f), 21, 48, 12);
+    midiInputLabel->setBounds (proportionOfWidth (0.3557f), 5, 36, 12);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -340,63 +349,66 @@ void MainTabs::setMidiChannel(int newMidiChannel) {
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="MainTabs" componentName=""
                  parentClasses="public Component" constructorParams="" variableInitialisers=""
-                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 snapPixels="8" snapActive="0" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="900" initialHeight="710">
-  <BACKGROUND backgroundColour="fff0f8ff"/>
+  <BACKGROUND backgroundColour="ff0b232a"/>
   <TABBEDCOMPONENT name="new tabbed component" id="f175981f6c34a740" memberName="tabbedComponent"
-                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="0.983% 2.471% 97.707% 96.941%"
-                   orientation="top" tabBarDepth="30" initialTab="0">
-    <TAB name="Engine" colour="ffe5f9ff" useJucerComp="0" contentClassName="PanelEngine"
+                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="0 0 0M 0M"
+                   orientation="top" tabBarDepth="40" initialTab="0">
+    <TAB name="Engine" colour="ff062934" useJucerComp="0" contentClassName="PanelEngine"
          constructorParams="" jucerComponentFile=""/>
-    <TAB name="Modulation" colour="ffdeffe4" useJucerComp="0" contentClassName="PanelModulation"
+    <TAB name="Modulation" colour="ff062934" useJucerComp="0" contentClassName="PanelModulation"
          constructorParams="" jucerComponentFile=""/>
-    <TAB name="Arp &amp; Filter" colour="fffffcc4" useJucerComp="0" contentClassName="PanelArpAndFilter"
+    <TAB name="Arp &amp; Filter" colour="ff062934" useJucerComp="0" contentClassName="PanelArpAndFilter"
          constructorParams="" jucerComponentFile=""/>
   </TABBEDCOMPONENT>
-  <LABEL name="midi input label" id="f77b232960a175fb" memberName="midiInputLabel"
-         virtualName="" explicitFocusOrder="0" pos="16 0 48 16" textCol="ff0000ff"
-         edTextCol="ff000000" edBkgCol="0" labelText="0" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <LABEL name="midi input label" id="f5bde9938974ba9f" memberName="midiInputLabel2"
-         virtualName="" explicitFocusOrder="0" pos="80 0 48 16" textCol="ff0000ff"
-         edTextCol="ff000000" edBkgCol="0" labelText="0" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="pull button" id="9da85c0691256028" memberName="pullButton"
-              virtualName="" explicitFocusOrder="0" pos="108R 8 55 24" tooltip="Pull all parameters from the preenfm2 to this plugin"
+              virtualName="" explicitFocusOrder="0" pos="116R 8 55 24" tooltip="Pull all parameters from the preenfm2 to this plugin"
               buttonText="Pull" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="preset name label" id="4201f054ae2edbe" memberName="presetNameLabel"
-         virtualName="" explicitFocusOrder="0" pos="288 8 168 32" tooltip="Click to edit"
-         edTextCol="ff000000" edBkgCol="0" labelText="preset" editableSingleClick="1"
+         virtualName="" explicitFocusOrder="0" pos="40.027% 0.327% 200 32"
+         tooltip="Click to edit" textCol="fff0f8ff" edTextCol="fff0f8ff"
+         edBkgCol="0" hiliteCol="ffff7f50" labelText="preset" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="25.899999999999998579" bold="1" italic="0" justification="33"/>
+         fontsize="25.899999999999998579" kerning="0" bold="1" italic="0"
+         justification="33" typefaceStyle="Bold"/>
   <TEXTBUTTON name="push button" id="52c3034a926a2609" memberName="pushButton"
-              virtualName="" explicitFocusOrder="0" pos="180R 8 55 24" tooltip="Push all parameters from plugin to preenfm2"
+              virtualName="" explicitFocusOrder="0" pos="184R 8 55 24" tooltip="Push all parameters from plugin to preenfm2"
               buttonText="Push" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="Midi Channel" id="a2c1c2de24e3a5a3" memberName="midiChannelCombo"
             virtualName="" explicitFocusOrder="0" pos="268R 8 55 24" tooltip="Midi Channel"
             editable="0" layout="36" items="1&#10;2&#10;3&#10;4&#10;5&#10;6&#10;7&#10;8&#10;9&#10;10&#10;11&#10;12&#10;13&#10;14&#10;15&#10;16&#10;"
             textWhenNonSelected="1" textWhenNoItems="1"/>
   <LABEL name="Midi Channel Label" id="6b9a0088a5f5afa" memberName="midiChannelLabel"
-         virtualName="" explicitFocusOrder="0" pos="364R 8 103 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Midi Channel:" editableSingleClick="0"
+         virtualName="" explicitFocusOrder="0" pos="364R 8 103 24" textCol="fff0f8ff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Midi :" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
+         fontsize="15" kerning="0" bold="0" italic="0" justification="36"/>
   <LABEL name="Version Label" id="c8880c204a60b679" memberName="versionLabel"
-         virtualName="" explicitFocusOrder="0" pos="44R 8 39 24" textCol="ff0000ff"
+         virtualName="" explicitFocusOrder="0" pos="58R 8 55 24" textCol="fff5f5dc"
          edTextCol="ff000000" edBkgCol="0" labelText="v?.?&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15" kerning="0" bold="0" italic="0" justification="33"/>
+  <LABEL name="midi input label" id="f5bde9938974ba9f" memberName="midiInputLabel2"
+         virtualName="" explicitFocusOrder="0" pos="35.572% 21 48 12"
+         textCol="fff5f5dc" edTextCol="ff000000" edBkgCol="0" labelText="0"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="12" kerning="0" bold="0" italic="0"
+         justification="33"/>
+  <LABEL name="midi input label" id="f77b232960a175fb" memberName="midiInputLabel"
+         virtualName="" explicitFocusOrder="0" pos="35.572% 5 36 12" textCol="fff5f5dc"
+         edTextCol="ff000000" edBkgCol="0" labelText="0" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12" kerning="0" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

@@ -67,13 +67,13 @@ void EnveloppeFree1::paint (Graphics& g)
     static const String adsr[] = { "A", "D", "S", "R" } ;
     for (int v=0; v<4; v++) {
 
-        g.setColour (Colours::black);
+        g.setColour (Colours::whitesmoke);
         g.drawText(adsr[v], getWidth() - 80 , 10 + v * 16, 50, 10, Justification::centred, true);
 
         if (draggingPointIndex == v + 1) {
-            g.setColour (Colours::red);
+            g.setColour (Colours::yellow);
         } else {
-            g.setColour (Colours::black);
+            g.setColour (Colours::whitesmoke);
         }
 
 

@@ -1,18 +1,18 @@
 /*
   ==============================================================================
 
-  This is an automatically generated GUI class created by the Introjucer!
+  This is an automatically generated GUI class created by the Projucer!
 
   Be careful when adding custom code to these files, as only the code within
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.1.0
+  Created with Projucer version: 5.1.2
 
   ------------------------------------------------------------------------------
 
-  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright 2004-13 by Raw Material Software Ltd.
+  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright (c) 2015 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -30,60 +30,71 @@
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 const char* matrixSourceNames [] = { "None", "lfo 1", "lfo 2", "lfo 3", "Free Env 1", "Free Env 2", "Step Seq 1", "Step Seq 2",
-        "Mod Wheel", "Pit Bend", "After touch",  "Velocity", "Note1", "Note2", "Performance 1  ", "Performance 2", "Performance 3", "Performance 4",
+        "Mod Wheel", "Pit Bend", "After touch",  "Velocity", "Note1", "Note2", "Breath CC2",  "Performance 1  ", "Performance 2", "Performance 3", "Performance 4",
+		
         nullptr
 } ;
 
-const int matrixSourceIds[] = { 0, 1, 2, 3, 4 , 5, 6, 7, 8, 9, 10, 11, 12, 17, 13, 14, 15, 16 };
+const int matrixSourceIds[] = { 0, 1, 2, 3, 4 , 5, 6, 7, 8, 9, 10, 11, 12, 17, 18, 13, 14, 15, 16 };
 
 
 const char* matrixDestNames [] = {
-        "None", "Gate", "Modulation Index 1", "Modulation Index 2", "Modulation Index 3", "Modulation index 4", "All Mod. Indexes",
-        "Mix 1", "Pan 1", "Mix 2", "Pan 2", "Mix 3", "Pan 3", "Mix 4", "Pan 4", "All Mixes", "All Pans",
-        "Op1 Frequency", "Op2 Frequency", "Op3 Frequency", "Op4 Frequency", "Op5 Frequency", "Op6 Frequency", "All Op Frequencies",
-         "Op1 Attack", "Op2 Attack", "Op3 Attack", "Op4 Attack", "Op5 Attack", "Op6 Attack", "All Op Attack", "All Op Release",
-        "Mtx Multiplier 1", "Mtx Multiplier 2", "Mtx Multiplier 3", "Mtx Multiplier 4",
-        "lfo 1 Frequency", "lfo 2 Frequency", "lfo 3 Frequency", "Free Env2 Silence", "Step Seq 1 gate", "Step Seq 2 gate",
-        "Filter frequency", nullptr
+	        "None", "Gate", "Modulation Index 1", "Modulation Index 2", "Modulation Index 3", "Modulation index 4", "All Mod. Indexes",
+/*7*/        "Mix 1", "Pan 1", "Mix 2", "Pan 2", "Mix 3", "Pan 3", "Mix 4", "Pan 4", "All Mixes", "All Pans",
+/*17*/       "Op1 Frequency", "Op2 Frequency", "Op3 Frequency", "Op4 Frequency", "Op5 Frequency", "Op6 Frequency", "All Op Frequencies", "All Op Freq Harmonic",
+/*24*/       "Op1 Attack", "Op2 Attack", "Op3 Attack", "Op4 Attack", "Op5 Attack", "Op6 Attack", 
+/*30*/		 "Carrier Attacks", "Carrier Decays", "Carrier Releases", "Modulator Attacks", "Modulator Decays", "Modulator Releases",
+/*32*/        "Mtx Multiplier 1", "Mtx Multiplier 2", "Mtx Multiplier 3", "Mtx Multiplier 4",
+/*36*/        "lfo 1 Frequency", "lfo 2 Frequency", "lfo 3 Frequency", "Free Env2 Silence", "Step Seq 1 gate", "Step Seq 2 gate",
+/*42*/        "Filter frequency", 
+		
+		nullptr
 } ;
-/*
+
 const int matrixDestIds [] = { 0, 1, 2, 3, 4, 5, 6,
 	7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-	17, 18, 19, 20, 21, 22, 23,
+	17, 18, 19, 20, 21, 22, 23, 43,
+	24, 25, 26, 27, 28, 29,
+	30, 44, 31, 45, 46, 47,
 	32, 33, 34, 35,
-	36, 37, 38, 39, 40, 41, 42
+	36, 37, 38, 39, 40, 41,
+	42
+
 };
-*/
+
 
 //[/MiscUserDefs]
 
 //==============================================================================
 PanelModulation::PanelModulation ()
 {
+    //[Constructor_pre] You can add your own custom stuff here..
+    //[/Constructor_pre]
+
     addAndMakeVisible (matrixGroup = new GroupComponent ("matrix group",
                                                          TRANS("Matrix")));
-    matrixGroup->setColour (GroupComponent::outlineColourId, Colour (0x604f4f4f));
-    matrixGroup->setColour (GroupComponent::textColourId, Colour (0xff4f4f4f));
+    matrixGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
+    matrixGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
     addAndMakeVisible (lfoGroup = new GroupComponent ("lfo group",
-                                                      TRANS("LFO")));
-    lfoGroup->setColour (GroupComponent::outlineColourId, Colour (0x604f4f4f));
-    lfoGroup->setColour (GroupComponent::textColourId, Colour (0xff4f4f4f));
+                                                      String()));
+    lfoGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
+    lfoGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
     addAndMakeVisible (env1Group = new GroupComponent ("env 1 group",
                                                        TRANS("Free Enveloppe 1")));
-    env1Group->setColour (GroupComponent::outlineColourId, Colour (0x60808080));
-    env1Group->setColour (GroupComponent::textColourId, Colour (0xff4f4f4f));
+    env1Group->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
+    env1Group->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
     addAndMakeVisible (env2Group = new GroupComponent ("env 2 group",
                                                        TRANS("Free Enveloppe 2")));
-    env2Group->setColour (GroupComponent::outlineColourId, Colour (0x60808080));
-    env2Group->setColour (GroupComponent::textColourId, Colour (0xff4f4f4f));
+    env2Group->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
+    env2Group->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
     addAndMakeVisible (stepSeqGroup = new GroupComponent ("step sequencer group",
-                                                          TRANS("Step Sequencers")));
-    stepSeqGroup->setColour (GroupComponent::outlineColourId, Colour (0x60808080));
-    stepSeqGroup->setColour (GroupComponent::textColourId, Colour (0xff4f4f4f));
+                                                          String()));
+    stepSeqGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
+    stepSeqGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
 
     //[UserPreSize]
@@ -93,8 +104,6 @@ PanelModulation::PanelModulation ()
         addAndMakeVisible(lfoButton[k] = new TextButton ("lfo button"));
         lfoButton[k]->setButtonText ("LFO " + String(k+1));
         lfoButton[k]->addListener (this);
-        lfoButton[k]->setColour (TextButton::buttonColourId, Colour (0xffcff0e5));
-        lfoButton[k]->setColour (TextButton::buttonOnColourId, Colours::aliceblue);
         lfoButton[k]->setClickingTogglesState(true);
         lfoButton[k]->setRadioGroupId(4243);
         lfoButton[k]->setConnectedEdges((k!=0 ? Button::ConnectedOnLeft : 0) | (k!= NUMBER_OF_LFO-1 ? Button::ConnectedOnRight : 0 ));
@@ -124,21 +133,21 @@ PanelModulation::PanelModulation ()
         lfoExtMidiSync[k]->setEditableText (false);
         lfoExtMidiSync[k]->setJustificationType (Justification::left);
         lfoExtMidiSync[k]->setColour (ComboBox::buttonColourId, Colours::blue);
-        lfoExtMidiSync[k]->addItem("Internal", 2400);
-        lfoExtMidiSync[k]->addItem("MC/16", 2410);
-        lfoExtMidiSync[k]->addItem("MC/8", 2420);
-        lfoExtMidiSync[k]->addItem("MC/4", 2430);
-        lfoExtMidiSync[k]->addItem("MC/2", 2440);
-        lfoExtMidiSync[k]->addItem("MC", 2450);
-        lfoExtMidiSync[k]->addItem("MC*2", 2460);
-        lfoExtMidiSync[k]->addItem("MC*3", 2470);
-        lfoExtMidiSync[k]->addItem("MC*4", 2480);
-        lfoExtMidiSync[k]->addItem("MC*8", 2490);
-        lfoExtMidiSync[k]->setSelectedId(2400);
+        lfoExtMidiSync[k]->addItem("Internal", 9990);
+        lfoExtMidiSync[k]->addItem("MC/16", 10000);
+        lfoExtMidiSync[k]->addItem("MC/8", 10010);
+        lfoExtMidiSync[k]->addItem("MC/4", 10020);
+        lfoExtMidiSync[k]->addItem("MC/2", 10030);
+        lfoExtMidiSync[k]->addItem("MC", 10040);
+        lfoExtMidiSync[k]->addItem("MC*2", 10050);
+        lfoExtMidiSync[k]->addItem("MC*3", 10060);
+        lfoExtMidiSync[k]->addItem("MC*4", 10070);
+        lfoExtMidiSync[k]->addItem("MC*8", 10080);
+        lfoExtMidiSync[k]->setSelectedId(10000);
         lfoExtMidiSync[k]->addListener (this);
 
         addAndMakeVisible(lfoFrequency[k] = new SliderPfm2("LFO"+ String(k+1) + " Frequency"));
-        lfoFrequency[k]->setRange (0, 24.0f, .01f);
+        lfoFrequency[k]->setRange (0, 99.9f, .1f);
         lfoFrequency[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         lfoFrequency[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 35, 16);
         lfoFrequency[k]->setDoubleClickReturnValue(true, 3.0f);
@@ -171,6 +180,7 @@ PanelModulation::PanelModulation ()
         lfoKsynOnOff[k]->addListener (this);
 
     }
+
     lfoButton[0]->setToggleState(true, sendNotification);
 
     addAndMakeVisible(lfoPhaseLabel = new Label("LFO phase label", "Phase"));
@@ -178,7 +188,7 @@ PanelModulation::PanelModulation ()
 
     addAndMakeVisible(lfoFrequencyLabel = new Label("LFO freq label", "Frequency"));
     lfoFrequencyLabel->setJustificationType(Justification::centredTop);
-
+	
     addAndMakeVisible(lfoBiasLabel = new Label("LFO bias label", "Bias"));
     lfoBiasLabel->setJustificationType(Justification::centredTop);
 
@@ -225,8 +235,6 @@ PanelModulation::PanelModulation ()
         stepSeqButton[k]->setBounds(16 + 80*k,336, 80, 20);
         stepSeqButton[k]->setButtonText (TRANS("Sequencer " + String(k+1)));
         stepSeqButton[k]->addListener (this);
-        stepSeqButton[k]->setColour (TextButton::buttonColourId, Colour (0xffcff0e5));
-        stepSeqButton[k]->setColour (TextButton::buttonOnColourId, Colours::aliceblue);
         stepSeqButton[k]->setClickingTogglesState(true);
         stepSeqButton[k]->setRadioGroupId(4242);
         stepSeqButton[k]->setConnectedEdges((k!=0 ? Button::ConnectedOnLeft : 0) | (k!= NUMBER_OF_STEP_SEQ-1 ? Button::ConnectedOnRight : 0 ));
@@ -243,6 +251,7 @@ PanelModulation::PanelModulation ()
 
     for (int r = 0; r < NUMBER_OF_MATRIX_ROW; r++) {
         addAndMakeVisible(matrixRowLabel[r] = new Label(String("matrix label ")+ String(r+1), String(r+1)));
+		matrixRowLabel[r]->setJustificationType(Justification::centred);
 
         addAndMakeVisible(matrixMultipler[r] = new SliderPfm2("Mtx"+ String (r+1) + " Multiplier"));
         matrixMultipler[r]->setRange (-10.0f, 10.0f, .01f);
@@ -250,7 +259,7 @@ PanelModulation::PanelModulation ()
         matrixMultipler[r]->setTextBoxStyle (Slider::TextBoxLeft, false, 35, 16);
         matrixMultipler[r]->setDoubleClickReturnValue(true, 0.0f);
         matrixMultipler[r]->setValue(0.0f, dontSendNotification);
-        matrixMultipler[r]->addListener (this);
+		matrixMultipler[r]->addListener (this);
 
         addAndMakeVisible(matrixSource[r] = new ComboBox("Mtx"+ String (r+1) + " Source"));
         matrixSource[r]->setEditableText (false);
@@ -260,6 +269,7 @@ PanelModulation::PanelModulation ()
             matrixSource[r]->addItem(matrixSourceNames[i], matrixSourceIds[i] + 1);
         }
         matrixSource[r]->setSelectedId(1);
+		matrixSource[r]->setScrollWheelEnabled(true);
         matrixSource[r]->addListener(this);
 
         addAndMakeVisible(matrixDestination[r] = new ComboBox("Mtx"+ String (r+1) + " Destination"));
@@ -267,14 +277,14 @@ PanelModulation::PanelModulation ()
         matrixDestination[r]->setJustificationType (Justification::centred);
         matrixDestination[r]->setColour (ComboBox::buttonColourId, Colours::blue);
         for (int i = 0; matrixDestNames[i] != nullptr; i++) {
-            matrixDestination[r]->addItem(matrixDestNames[i], i + 1);
+            matrixDestination[r]->addItem(matrixDestNames[i], matrixDestIds[i] + 1);
         }
         matrixDestination[r]->setSelectedId(1);
+		matrixDestination[r]->setScrollWheelEnabled(true);
         matrixDestination[r]->addListener(this);
     }
 
-    addAndMakeVisible(enveloppeFree1 = new EnveloppeFree1 (127 /* 
-															   !!!!!!!!!!!!!!!! */));
+    addAndMakeVisible(enveloppeFree1 = new EnveloppeFree1 (127 ));
     enveloppeFree1->setName (TRANS("Free Env 1"));
 
     addAndMakeVisible(enveloppeFree2 = new EnveloppeFree2 (127));
@@ -291,11 +301,6 @@ PanelModulation::PanelModulation ()
     enveloppeFree2Loop->setSelectedId(1);
     enveloppeFree2Loop->addListener (this);
     //[/UserPreSize]
-
-
-
-    setSize (900, 700);
-
 
     //[Constructor] You can add your own custom stuff here..
     eventsToAdd = nullptr;
@@ -325,48 +330,67 @@ void PanelModulation::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
+    {
+        int x = 0, y = 0, width = getWidth() - 0, height = getHeight() - 0;
+        Colour fillColour1 = Colour (0xff0b3e4e), fillColour2 = Colour (0xff061e26);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setGradientFill (ColourGradient (fillColour1,
+                                       static_cast<float> (proportionOfWidth (0.7622f)) - 0.0f + x,
+                                       static_cast<float> (proportionOfHeight (0.4532f)) - 0.0f + y,
+                                       fillColour2,
+                                       static_cast<float> (proportionOfWidth (0.1590f)) - 0.0f + x,
+                                       static_cast<float> (proportionOfHeight (0.8976f)) - 0.0f + y,
+                                       true));
+        g.fillRect (x, y, width, height);
+    }
+
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
 }
 
 void PanelModulation::resized()
 {
-    matrixGroup->setBounds (proportionOfWidth (0.6021f), proportionOfHeight (0.0078f), proportionOfWidth (0.3955f), proportionOfHeight (0.9876f));
-    lfoGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.0078f), proportionOfWidth (0.5903f), proportionOfHeight (0.2298f));
-    env1Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.2453f), proportionOfWidth (0.5903f), proportionOfHeight (0.1848f));
-    env2Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.4301f), proportionOfWidth (0.5903f), proportionOfHeight (0.1848f));
-    stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6227f), proportionOfWidth (0.5903f), proportionOfHeight (0.3711f));
+    //[UserPreResize] Add your own custom resize code here..
+    //[/UserPreResize]
+
+    matrixGroup->setBounds (proportionOfWidth (0.5977f), proportionOfHeight (0.0087f), proportionOfWidth (0.3948f), proportionOfHeight (0.9869f));
+    lfoGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.0098f), proportionOfWidth (0.5901f), proportionOfHeight (0.2299f));
+    env1Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.2440f), proportionOfWidth (0.5901f), proportionOfHeight (0.1852f));
+    env2Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.4292f), proportionOfWidth (0.5901f), proportionOfHeight (0.1852f));
+    stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6100f), proportionOfWidth (0.5901f), proportionOfHeight (0.3834f));
     //[UserResized] Add your own custom resize handling here..
-    lfoPhaseLabel->setBounds(proportionOfWidth (0.21f),  proportionOfHeight (0.06f) , 80, 20);
-    lfoFrequencyLabel->setBounds(proportionOfWidth (0.30f),  proportionOfHeight (0.04f) , 80, 20);
-    lfoBiasLabel->setBounds(proportionOfWidth (0.39f),  proportionOfHeight (0.04f) , 80, 20);
-    lfoKSynLabel->setBounds(proportionOfWidth (0.48f),  proportionOfHeight (0.04f) , 80, 20);
-    for (int k=0; k<NUMBER_OF_LFO; k++) {
-        lfoButton[k]      ->setBounds(proportionOfWidth (0.02f) + 50*k, proportionOfHeight (0.035f) , 50, 20);
-        lfoShape[k]       ->setBounds(proportionOfWidth (0.07f),        proportionOfHeight (0.12f) , 80, 20);
-        lfoPhase[k]       ->setBounds(proportionOfWidth (0.21f),        proportionOfHeight (0.10f) , 80, 60);
-        lfoExtMidiSync[k] ->setBounds(proportionOfWidth (0.30f) + 10,   proportionOfHeight (0.08f) , 60, 20);
-        lfoFrequency[k]   ->setBounds(proportionOfWidth (0.30f),        proportionOfHeight (0.12f) , 80, 60);
-        lfoBias[k]        ->setBounds(proportionOfWidth (0.39f),        proportionOfHeight (0.06f) , 80, proportionOfHeight (0.16f));
-        lfoKsynOnOff[k]   ->setBounds(proportionOfWidth (0.48f) + 15,   proportionOfHeight (0.08f) , 50, 20);
-        lfoKSync[k]       ->setBounds(proportionOfWidth (0.48f),        proportionOfHeight (0.12f) , 80, 60);
+
+	lfoPhaseLabel->setBounds(proportionOfWidth (0.48f),      proportionOfHeight (0.04f) , proportionOfWidth(0.080f), 20);
+    lfoFrequencyLabel->setBounds(proportionOfWidth (0.21f),  proportionOfHeight (0.04f) , proportionOfWidth(0.080f), 20);
+    lfoBiasLabel->setBounds(proportionOfWidth (0.30f),       proportionOfHeight (0.04f) , proportionOfWidth(0.080f), 20);
+    lfoKSynLabel->setBounds(proportionOfWidth (0.39f),       proportionOfHeight (0.04f) , proportionOfWidth(0.080f), 20);
+	for (int k=0; k<NUMBER_OF_LFO; k++) {
+        lfoButton[k]      ->setBounds(2 + 60*k, proportionOfHeight (0.01f) + 9 , 60, 26);
+        lfoShape[k]       ->setBounds(proportionOfWidth (0.07f),        proportionOfHeight (0.12f) , proportionOfWidth(0.08f), 20);
+        lfoPhase[k]       ->setBounds(proportionOfWidth (0.48f),        proportionOfHeight (0.10f) , proportionOfWidth(0.08f), proportionOfHeight(0.1f));
+        lfoExtMidiSync[k] ->setBounds(proportionOfWidth (0.21f),        proportionOfHeight (0.08f) , proportionOfWidth(0.08f), 20);
+        lfoFrequency[k]   ->setBounds(proportionOfWidth (0.21f),        proportionOfHeight (0.12f) , proportionOfWidth(0.08f), proportionOfHeight(0.1f));
+        lfoBias[k]        ->setBounds(proportionOfWidth (0.30f),        proportionOfHeight (0.06f) , proportionOfWidth(0.08f), proportionOfHeight (0.16f));
+        lfoKsynOnOff[k]   ->setBounds(proportionOfWidth (0.39f),        proportionOfHeight (0.08f) , proportionOfWidth(0.08f), 20);
+        lfoKSync[k]       ->setBounds(proportionOfWidth (0.39f),        proportionOfHeight (0.12f) , proportionOfWidth(0.08f), proportionOfHeight(0.1f));
     }
 
     stepSeqBPMLabel->setBounds(proportionOfWidth (0.25f),  proportionOfHeight (0.66) , 40, 20);
     stepSeqGateLabel->setBounds(proportionOfWidth (0.46f),  proportionOfHeight (0.66) , 60, 20);
     for (int k=0; k<NUMBER_OF_STEP_SEQ; k++) {
-        stepSeqButton[k]->setBounds(proportionOfWidth (0.02f) + 80*k, proportionOfHeight (0.65f) , 80, 20);
+        stepSeqButton[k]->setBounds(2 + 100 * k, proportionOfHeight (0.61f) + 9, 100, 26);
         stepSequencer[k]->setBounds(proportionOfWidth (0.02f), proportionOfHeight (0.78f), proportionOfWidth (0.55f), proportionOfHeight (0.20f));
-        stepSeqExtMidiSync[k] ->setBounds(proportionOfWidth (0.29f) + 10,        proportionOfHeight (0.66f) , 60, 20);
+        stepSeqExtMidiSync[k] ->setBounds(proportionOfWidth (0.29f) + 10,        proportionOfHeight (0.66f) , 80, 20);
         stepSeqBPM[k]   ->setBounds(proportionOfWidth (0.27f),        proportionOfHeight (0.69f) , 80, 60);
         stepSeqGate[k]   ->setBounds(proportionOfWidth (0.46f) + 20 - proportionOfWidth(0.08),        proportionOfHeight (0.70f) , proportionOfWidth(0.16), 40);
     }
 
     for (int r =0; r<NUMBER_OF_MATRIX_ROW; r++) {
-        matrixRowLabel[r]   ->setBounds(proportionOfWidth (0.61f)  , proportionOfHeight (.06f + .08f * r), 40, 20);
-        matrixSource[r]     ->setBounds(proportionOfWidth (0.64f)  , proportionOfHeight (.06f + .08f * r), 90, 20);
-        matrixMultipler[r]  ->setBounds(proportionOfWidth (0.76f)  , proportionOfHeight (.035f + .08f * r), 80, 50);
-        matrixDestination[r]->setBounds(proportionOfWidth (0.86f)  , proportionOfHeight (.06f + .08f * r), 110, 20);
+        matrixRowLabel[r]   ->setBounds(proportionOfWidth (0.60f)  , proportionOfHeight (.06f + .08f * r), proportionOfWidth(0.03f), 20);
+        matrixSource[r]     ->setBounds(proportionOfWidth (0.63f)  , proportionOfHeight (.06f + .08f * r), proportionOfWidth(0.10f), 20);
+        matrixMultipler[r]  ->setBounds(proportionOfWidth (0.74f)  , proportionOfHeight (.034f + .08f * r), proportionOfWidth(0.12f), proportionOfHeight(0.088f));
+        matrixDestination[r]->setBounds(proportionOfWidth (0.86f)  , proportionOfHeight (.06f + .08f * r), proportionOfWidth(0.12f), 20);
     }
     enveloppeFree1->setBounds(proportionOfWidth (0.02f), proportionOfHeight (0.27f), proportionOfWidth (0.55f), proportionOfHeight (0.14f));
     enveloppeFree2->setBounds(proportionOfWidth (0.02f), proportionOfHeight (0.46f), proportionOfWidth (0.55f), proportionOfHeight (0.14f));
@@ -452,9 +476,9 @@ void PanelModulation::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPl
         }
     }
     for (int k=0; k < NUMBER_OF_LFO; k++) {
-    	if (sliderThatWasMoved == lfoFrequency[k] && lfoExtMidiSync[k]->getSelectedId() != 2400) {
+    	if (sliderThatWasMoved == lfoFrequency[k] && lfoExtMidiSync[k]->getSelectedId() != 9990) {
     		lfoFrequency[k]->setEnabled(true);
-    		lfoExtMidiSync[k]->setSelectedId(2400, dontSendNotification);
+    		lfoExtMidiSync[k]->setSelectedId(9990, dontSendNotification);
     	}
 
         if (sliderThatWasMoved == lfoKSync[k] && lfoKsynOnOff[k]->getSelectedId() != 2) {
@@ -488,11 +512,11 @@ void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fr
     for (int k = 0 ; k< NUMBER_OF_LFO; k++) {
         if (comboBoxThatHasChanged == lfoExtMidiSync[k]) {
             // Refresh Ksyn frequency on pfm2
-            if (comboBoxThatHasChanged->getSelectedId() == 2400) {
+            if (comboBoxThatHasChanged->getSelectedId() == 9990) {
                 lfoFrequency[k]->setEnabled(true);
                 // Force sending new value
                 float value = lfoFrequency[k]->getValue();
-                lfoFrequency[k]->setValue(24.0);
+                lfoFrequency[k]->setValue(99.9);
                 lfoFrequency[k]->setValue(value);
             } else {
                 lfoFrequency[k]->setEnabled(false);
@@ -538,7 +562,7 @@ void PanelModulation::buildParameters() {
         updateComboParameter(lfoExtMidiSync[k]);
         updateSliderParameter(lfoPhase[k]);
         updateSliderParameter(lfoFrequency[k]);
-        updateSliderParameter(lfoBias[k]);
+//        updateSliderParameter(lfoBias[k]);
         updateComboParameter(lfoKsynOnOff[k]);
         updateSliderParameter(lfoKSync[k]);
     }
@@ -655,9 +679,9 @@ void PanelModulation::updateComboParameter_hook(ComboBox* combo) {
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA
@@ -667,22 +691,25 @@ BEGIN_JUCER_METADATA
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="900"
                  initialHeight="700">
-  <BACKGROUND backgroundColour="cff0e5"/>
+  <BACKGROUND backgroundColour="62934">
+    <RECT pos="0 0 0M 0M" fill=" radial: 76.217% 45.316%, 15.901% 89.76%, 0=ff0b3e4e, 1=ff061e26"
+          hasStroke="0"/>
+  </BACKGROUND>
   <GROUPCOMPONENT name="matrix group" id="f5fd2d041b369fc" memberName="matrixGroup"
-                  virtualName="" explicitFocusOrder="0" pos="60.249% 0.781% 39.531% 98.698%"
-                  outlinecol="604f4f4f" textcol="ff4f4f4f" title="Matrix"/>
+                  virtualName="" explicitFocusOrder="0" pos="59.767% 0.871% 39.479% 98.693%"
+                  outlinecol="ff749fad" textcol="ff749fad" title="Matrix"/>
   <GROUPCOMPONENT name="lfo group" id="25551a3d7e81232d" memberName="lfoGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0% 0.781% 59.004% 22.917%"
-                  outlinecol="604f4f4f" textcol="ff4f4f4f" title="LFO"/>
+                  virtualName="" explicitFocusOrder="0" pos="0% 0.98% 59.013% 22.985%"
+                  outlinecol="ff749fad" textcol="ff749fad" title=""/>
   <GROUPCOMPONENT name="env 1 group" id="dc02178fe3e4a3e1" memberName="env1Group"
-                  virtualName="" explicitFocusOrder="0" pos="0% 24.479% 59.004% 18.49%"
-                  outlinecol="60808080" textcol="ff4f4f4f" title="Free Enveloppe 1"/>
+                  virtualName="" explicitFocusOrder="0" pos="0% 24.401% 59.013% 18.519%"
+                  outlinecol="ff749fad" textcol="ff749fad" title="Free Enveloppe 1"/>
   <GROUPCOMPONENT name="env 2 group" id="c35474bb62378ab6" memberName="env2Group"
-                  virtualName="" explicitFocusOrder="0" pos="0% 42.969% 59.004% 18.49%"
-                  outlinecol="60808080" textcol="ff4f4f4f" title="Free Enveloppe 2"/>
+                  virtualName="" explicitFocusOrder="0" pos="0% 42.919% 59.013% 18.519%"
+                  outlinecol="ff749fad" textcol="ff749fad" title="Free Enveloppe 2"/>
   <GROUPCOMPONENT name="step sequencer group" id="edf809d50c7eeefc" memberName="stepSeqGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0% 62.24% 59.004% 37.109%"
-                  outlinecol="60808080" textcol="ff4f4f4f" title="Step Sequencers"/>
+                  virtualName="" explicitFocusOrder="0" pos="0% 61.002% 59.013% 38.344%"
+                  outlinecol="ff749fad" textcol="ff749fad" title=""/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

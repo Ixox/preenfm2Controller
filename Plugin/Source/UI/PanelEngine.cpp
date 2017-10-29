@@ -1,18 +1,18 @@
 /*
   ==============================================================================
 
-  This is an automatically generated GUI class created by the Introjucer!
+  This is an automatically generated GUI class created by the Projucer!
 
   Be careful when adding custom code to these files, as only the code within
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.1.0
+  Created with Projucer version: 5.1.2
 
   ------------------------------------------------------------------------------
 
-  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright 2004-13 by Raw Material Software Ltd.
+  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright (c) 2015 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -77,23 +77,28 @@ const int algo4_png_sizes[] = {
 //==============================================================================
 PanelEngine::PanelEngine ()
 {
+    //[Constructor_pre] You can add your own custom stuff here..
+	envToCopy = -1;
+	envSelected = 0;
+    //[/Constructor_pre]
+
     addAndMakeVisible (operatorGroup = new GroupComponent ("operator group",
-                                                           TRANS("Operators")));
+                                                           String()));
     operatorGroup->setTextLabelPosition (Justification::centredLeft);
-    operatorGroup->setColour (GroupComponent::outlineColourId, Colour (0x60808080));
-    operatorGroup->setColour (GroupComponent::textColourId, Colour (0xff4f4f4f));
+    operatorGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
+    operatorGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
     addAndMakeVisible (mixerGroup = new GroupComponent ("mixer group",
                                                         TRANS("Mixer")));
     mixerGroup->setTextLabelPosition (Justification::centredLeft);
-    mixerGroup->setColour (GroupComponent::outlineColourId, Colour (0x60808080));
-    mixerGroup->setColour (GroupComponent::textColourId, Colour (0xff4f4f4f));
+    mixerGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
+    mixerGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
     addAndMakeVisible (imGroup = new GroupComponent ("IM group",
                                                      TRANS("Modulation indexes")));
     imGroup->setTextLabelPosition (Justification::centredLeft);
-    imGroup->setColour (GroupComponent::outlineColourId, Colour (0x60808080));
-    imGroup->setColour (GroupComponent::textColourId, Colour (0xff4f4f4f));
+    imGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
+    imGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
 
     //[UserPreSize]
@@ -101,7 +106,7 @@ PanelEngine::PanelEngine ()
         addAndMakeVisible(volumeKnob[k] = new SliderPfm2("Volume " + String(k+1)));
         volumeKnob[k]->setRange (0, 1, .01f);
         volumeKnob[k]->setSliderStyle (Slider::RotaryVerticalDrag);
-        volumeKnob[k]->setTextBoxStyle (Slider::NoTextBox, false, 20, 20);
+        volumeKnob[k]->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
         volumeKnob[k]->setDoubleClickReturnValue(true, 1.0f);
         volumeKnob[k]->setValue(1.0f, dontSendNotification);
         volumeKnob[k]->addListener (this);
@@ -115,6 +120,7 @@ PanelEngine::PanelEngine ()
         panKnob[k]->addListener (this);
 
         addAndMakeVisible(mixLabel[k] = new Label(String("mix label ")+ String(k+1), String("Mix ")+ String(k+1)));
+		mixLabel[k]->setJustificationType(Justification::centred);
     }
 
     for (int k=0; k<NUMBER_OF_IM; k++) {
@@ -124,7 +130,7 @@ PanelEngine::PanelEngine ()
         addAndMakeVisible(IMKnob[k] = new SliderPfm2("IM " + String(k+1)));
         IMKnob[k]->setRange (0, 16, .01f);
         IMKnob[k]->setSliderStyle (Slider::RotaryVerticalDrag);
-        IMKnob[k]->setTextBoxStyle (Slider::TextBoxLeft, false, 30, 16);
+        IMKnob[k]->setTextBoxStyle (Slider::TextBoxLeft, false, 40, 16);
         IMKnob[k]->setDoubleClickReturnValue(true, 1.0f);
         IMKnob[k]->setValue(1.0f, dontSendNotification);
         IMKnob[k]->addListener (this);
@@ -132,7 +138,7 @@ PanelEngine::PanelEngine ()
         addAndMakeVisible(IMVelocityKnob[k] = new SliderPfm2("IM Velocity " + String(k+1)));
         IMVelocityKnob[k]->setRange (0, 16, .01f);
         IMVelocityKnob[k]->setSliderStyle (Slider::RotaryVerticalDrag);
-        IMVelocityKnob[k]->setTextBoxStyle (Slider::TextBoxLeft, false, 30, 16);
+        IMVelocityKnob[k]->setTextBoxStyle (Slider::TextBoxLeft, false, 40, 16);
         IMVelocityKnob[k]->setDoubleClickReturnValue(true, 0.0f);
         IMVelocityKnob[k]->setValue(0.0f, dontSendNotification);
         IMVelocityKnob[k]->addListener (this);
@@ -142,15 +148,22 @@ PanelEngine::PanelEngine ()
 	addAndMakeVisible(IMVelocityLabel = new Label("IM Velocity Label", "Velocity"));
 	IMVelocityLabel->setJustificationType(Justification::centredTop);
 
+	addAndMakeVisible(envCopyButton = new TextButton("Copy"));
+	envCopyButton->setColour(TextButton::buttonColourId, Colour::fromRGBA(150, 150, 150, 50));
+	envCopyButton->setColour(TextButton::buttonOnColourId, Colour::fromRGBA(150, 150, 150, 150));
+	envCopyButton->addListener(this);
+	addAndMakeVisible(envPasteButton = new TextButton("Paste"));
+	envPasteButton->setColour(TextButton::buttonColourId, Colour::fromRGBA(150, 150, 150, 50));
+	envPasteButton->setColour(TextButton::buttonOnColourId, Colour::fromRGBA(150, 150, 150, 150));
+	envPasteButton->addListener(this);
+
+
     for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
         enveloppe[k] = new Enveloppe ();
         enveloppe[k]->setName ("Op"+String(k+1)+" Env");
 
         enveloppeButton[k] = new TextButton ("enveloppe button");
         enveloppeButton[k]->setButtonText ("Op" + String(k+1));
-
-        enveloppeButton[k]->setColour (TextButton::buttonColourId, Colour (0xffa4c9e9));
-        enveloppeButton[k]->setColour (TextButton::buttonOnColourId, Colours::aliceblue);
 
         enveloppeButton[k]->setClickingTogglesState(true);
         enveloppeButton[k]->setRadioGroupId(4242);
@@ -161,16 +174,23 @@ PanelEngine::PanelEngine ()
         opShape[k] = new ComboBox("Op"+String(k+1)+" Shape");
         opShape[k]->setJustificationType (Justification::centred);
         opShape[k]->setColour (ComboBox::buttonColourId, Colours::blue);
-        opShape[k]->addItem("Sin", 1);
+		opShape[k]->addItem("Off", 8);
+		opShape[k]->addItem("Sin", 1);
         opShape[k]->addItem("Saw", 2);
         opShape[k]->addItem("Square", 3);
         opShape[k]->addItem("Sin^2", 4);
         opShape[k]->addItem("SinZero", 5);
         opShape[k]->addItem("SinPos", 6);
-        opShape[k]->addItem("Noise", 7);
-        opShape[k]->addItem("Off", 8);
-        opShape[k]->setSelectedId(1);
-        opShape[k]->setEditableText (false);
+        opShape[k]->addItem("Rand/Noise", 7);
+		opShape[k]->addItem("User 1", 9);
+		opShape[k]->addItem("User 2", 10);
+		opShape[k]->addItem("User 3", 11);
+		opShape[k]->addItem("User 4", 12);
+		opShape[k]->addItem("User 5", 13);
+		opShape[k]->addItem("User 6", 14);
+		opShape[k]->setSelectedId(1);
+		opShape[k]->setScrollWheelEnabled(true);
+		opShape[k]->setEditableText (false);
         opShape[k]->addListener (this);
 
         opFrequencyType[k] = new ComboBox("Op"+ String(k+1) + " Freq Type");
@@ -178,8 +198,9 @@ PanelEngine::PanelEngine ()
         opFrequencyType[k]->setJustificationType (Justification::centred);
         opFrequencyType[k]->setColour (ComboBox::buttonColourId, Colours::blue);
         opFrequencyType[k]->addItem("Keyboard", 1);
-        opFrequencyType[k]->addItem("Fixed", 2);
-        opFrequencyType[k]->setSelectedId(1);
+		opFrequencyType[k]->addItem("Fixed", 2);
+		opFrequencyType[k]->addItem("Fine tune Hertz", 3);
+		opFrequencyType[k]->setSelectedId(1);
         opFrequencyType[k]->addListener (this);
 
 		opFrequency[k] = new SliderPfm2Always2Decimals("Op" + String(k+1) + " Frequency");
@@ -190,7 +211,7 @@ PanelEngine::PanelEngine ()
         opFrequency[k]->addListener (this);
 
         opFrequencyFineTune[k] = new SliderPfm2("Op"+ String(k+1)+ " Fine Tune");
-        opFrequencyFineTune[k]->setRange (-1.0f, 1.0f, .01f);
+        opFrequencyFineTune[k]->setRange (-9.0f, 9.0f, .01f);
         opFrequencyFineTune[k]->setSliderStyle (Slider::RotaryVerticalDrag);
         opFrequencyFineTune[k]->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 16);
         opFrequencyFineTune[k]->setDoubleClickReturnValue(true, 0.0f);
@@ -295,7 +316,6 @@ PanelEngine::PanelEngine ()
 
     //[/UserPreSize]
 
-    setSize (900, 700);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -327,58 +347,103 @@ void PanelEngine::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
+    g.fillAll (Colour (0xff062934));
+
+    {
+        int x = 4, y = -4, width = getWidth() - 0, height = getHeight() - 0;
+        Colour fillColour1 = Colour (0xff0b3f50), fillColour2 = Colour (0xff062934);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setGradientFill (ColourGradient (fillColour1,
+                                       static_cast<float> (proportionOfWidth (0.3016f)) - 4.0f + x,
+                                       static_cast<float> (proportionOfHeight (0.1220f)) - static_cast<float> (-4) + y,
+                                       fillColour2,
+                                       static_cast<float> (proportionOfWidth (0.0340f)) - 4.0f + x,
+                                       static_cast<float> (proportionOfHeight (0.9000f)) - static_cast<float> (-4) + y,
+                                       true));
+        g.fillRect (x, y, width, height);
+    }
+
+    {
+        float x = static_cast<float> (proportionOfWidth (0.1412f)), y = static_cast<float> (proportionOfHeight (0.0065f)), width = static_cast<float> (proportionOfWidth (0.3400f)), height = static_cast<float> (proportionOfHeight (0.3094f));
+        Colour fillColour1 = Colour (0xff1ca5cf), fillColour2 = Colour (0xff0b3d4d);
+        Colour strokeColour = Colours::black;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setGradientFill (ColourGradient (fillColour1,
+                                       static_cast<float> (proportionOfWidth (0.2961f)) - static_cast<float> (proportionOfWidth (0.1412f)) + x,
+                                       static_cast<float> (proportionOfHeight (0.0610f)) - static_cast<float> (proportionOfHeight (0.0065f)) + y,
+                                       fillColour2,
+                                       static_cast<float> (proportionOfWidth (0.2961f)) - static_cast<float> (proportionOfWidth (0.1412f)) + x,
+                                       static_cast<float> (proportionOfHeight (0.4444f)) - static_cast<float> (proportionOfHeight (0.0065f)) + y,
+                                       true));
+        g.fillRoundedRectangle (x, y, width, height, 10.000f);
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 10.000f, 2.500f);
+    }
+
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
 }
 
 void PanelEngine::resized()
 {
-    operatorGroup->setBounds (proportionOfWidth (0.0095f), proportionOfHeight (0.5016f), proportionOfWidth (0.9798f), proportionOfHeight (0.4798f));
-    mixerGroup->setBounds (proportionOfWidth (0.0119f), proportionOfHeight (0.3121f), proportionOfWidth (0.5962f), proportionOfHeight (0.1848f));
-    imGroup->setBounds (proportionOfWidth (0.6128f), proportionOfHeight (0.0000f), proportionOfWidth (0.3729f), proportionOfHeight (0.4969f));
+    //[UserPreResize] Add your own custom resize code here..
+    //[/UserPreResize]
+
+    operatorGroup->setBounds (proportionOfWidth (0.0103f), proportionOfHeight (0.5000f), proportionOfWidth (0.9801f), proportionOfHeight (0.4804f));
+    mixerGroup->setBounds (proportionOfWidth (0.0117f), proportionOfHeight (0.3116f), proportionOfWidth (0.5963f), proportionOfHeight (0.1852f));
+    imGroup->setBounds (proportionOfWidth (0.6121f), proportionOfHeight (0.0000f), proportionOfWidth (0.3729f), proportionOfHeight (0.4967f));
     //[UserResized] Add your own custom resize handling here..
+
+	envCopyButton->setBounds(proportionOfWidth(0.023f), proportionOfHeight(0.645f), proportionOfWidth(0.06f), proportionOfHeight(0.03f));
+	envPasteButton->setBounds(proportionOfWidth(0.09f), proportionOfHeight(0.645f), proportionOfWidth(0.06f), proportionOfHeight(0.03f));
 
     // OPERATORS !
     for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
         enveloppe[k]->setBounds (proportionOfWidth (0.0200f), proportionOfHeight (0.67f), proportionOfWidth (0.9600f), proportionOfHeight (0.30f));
-        enveloppeButton[k]->setBounds(proportionOfWidth (0.0100f) + 10 + 50*k ,proportionOfHeight (0.50f) + 18, 50, 22);
-    	opShape[k]->setBounds(proportionOfWidth (0.17f)   ,        proportionOfHeight (.61f), 80, 20);
-    	opFrequencyType[k]->setBounds(    proportionOfWidth (0.47f)  , proportionOfHeight (.58f), 80, 20);
-    	opFrequency[k]->setBounds(        proportionOfWidth (0.62f)  , proportionOfHeight (.56f), 80, 60);
-    	opFrequencyFineTune[k]->setBounds(proportionOfWidth (0.77f)  , proportionOfHeight (.56f), 80, 60);
-    }
-	opShapeLabel->setBounds(proportionOfWidth (0.17)  , proportionOfHeight (.57f), 80, 20);
+        enveloppeButton[k]->setBounds(proportionOfWidth (0.0100f) + 2 + 50*k, proportionOfHeight (0.50f) + 9, 50, 26);
+	}
 
-	opFrequencyTypeLabel->setBounds(    proportionOfWidth (0.47f)  , proportionOfHeight (.53f), 80, 20);
-	opFrequencyLabel->setBounds(        proportionOfWidth (0.62f)  , proportionOfHeight (.53f), 80, 20);
-	opFrequencyFineTuneLabel->setBounds(proportionOfWidth (0.77f)  , proportionOfHeight (.53f), 80, 20);
+	opShapeLabel->setBounds(proportionOfWidth(0.4), proportionOfHeight(.53f), proportionOfWidth(0.12f), 20);
+	opFrequencyTypeLabel->setBounds(proportionOfWidth(0.55f), proportionOfHeight(.53f), proportionOfWidth(0.12f), 20);
+	opFrequencyLabel->setBounds(proportionOfWidth(0.7f), proportionOfHeight(.52f), proportionOfWidth(0.08f), 20);
+	opFrequencyFineTuneLabel->setBounds(proportionOfWidth(0.83f), proportionOfHeight(.52f), proportionOfWidth(0.08f), 20);
+	for (int k = 0; k<NUMBER_OF_OPERATORS; k++) {
+		opShape[k]->setBounds(proportionOfWidth (0.4f)   ,            proportionOfHeight (.58f), proportionOfWidth(0.12f), 20);
+    	opFrequencyType[k]->setBounds(    proportionOfWidth (0.55f)  , proportionOfHeight (.58f), proportionOfWidth(0.12f), 20);
+    	opFrequency[k]->setBounds(        proportionOfWidth (0.70f)  , proportionOfHeight (.55f), proportionOfWidth(0.08f), proportionOfHeight(0.11f));
+    	opFrequencyFineTune[k]->setBounds(proportionOfWidth (0.83f)  , proportionOfHeight (.55f), proportionOfWidth(0.08f), proportionOfHeight(0.11f));
+    }
 
     // MIX !
-	for (int k =0; k<NUMBER_OF_MIX; k++) {
-        volumeKnob[k]->setBounds(proportionOfWidth (0.09f * k + .08) - 20  ,proportionOfHeight (0.35f) , 40, 40);
-        mixLabel[k]->setBounds(proportionOfWidth (0.09f * k + .08) - 20  ,proportionOfHeight (0.42f) , 40, 16);
-        panKnob[k]->setBounds(proportionOfWidth (0.09f * k + .08) - 40  ,proportionOfHeight (0.44f) , 80, 30);
+	for (int k = 0; k<NUMBER_OF_MIX; k++) {
+        volumeKnob[k]->setBounds(proportionOfWidth (0.09f * k + .04f)   ,proportionOfHeight (0.34f) , proportionOfWidth(0.08f), proportionOfHeight(0.08f));
+        mixLabel[k]->setBounds(proportionOfWidth (0.09f * k + .04f)   ,proportionOfHeight (0.42f) , proportionOfWidth(0.08f), proportionOfHeight(0.025f));
+        panKnob[k]->setBounds(proportionOfWidth (0.09f * k + .04f)   ,proportionOfHeight (0.44f) , proportionOfWidth(0.08f), proportionOfHeight(.043f));
     }
 
-    for (int k =0; k<NUMBER_OF_IM; k++) {
-    	IMNumber[k]->setBounds(proportionOfWidth (0.67f) - 20  , proportionOfHeight (.06f + .088f * k) + 10, 40, 20);
-    	IMKnob[k]->setBounds(proportionOfWidth (0.77f) - 40  , proportionOfHeight (.06f + .088f * k), 80, 40);
-    	IMVelocityKnob[k]->setBounds(proportionOfWidth (0.90f) - 40  , proportionOfHeight (.06f + .088f * k), 80, 40);
+    for (int k = 0; k<NUMBER_OF_IM; k++) {
+    	IMNumber[k]->setBounds(proportionOfWidth (0.63f)        , proportionOfHeight (.055f + .088f * k), proportionOfWidth(0.055f), proportionOfHeight(0.08f));
+    	IMKnob[k]->setBounds(proportionOfWidth (0.69f)          , proportionOfHeight (.055f + .088f * k), proportionOfWidth(0.11f), proportionOfHeight(0.08f));
+    	IMVelocityKnob[k]->setBounds(proportionOfWidth (0.84f)  , proportionOfHeight (.055f + .088f * k), proportionOfWidth(0.11f), proportionOfHeight(0.08f));
     }
-    IMLabel->setBounds(proportionOfWidth (0.77f) - 40  , proportionOfHeight (.02f), 80, 40);
-	IMVelocityLabel->setBounds(proportionOfWidth (0.90f) - 40  , proportionOfHeight (.02f), 80, 40);
 
-	algoChooser->setBounds(proportionOfWidth (0.03f)  , proportionOfHeight (.05f), 80, 40);
-	algoChooserLabel->setBounds(proportionOfWidth (0.03f)  , proportionOfHeight (.02f), 80, 40);
+    IMLabel->setBounds(proportionOfWidth (0.69f)   , proportionOfHeight (.02f), proportionOfWidth(0.11f), proportionOfHeight(0.05f));
+	IMVelocityLabel->setBounds(proportionOfWidth (0.84f) , proportionOfHeight (.02f), proportionOfWidth(0.11f), proportionOfHeight(0.05f));
 
-	velocity->setBounds(proportionOfWidth (0.03f)  , proportionOfHeight (.18f), 80, 60);
-	velocityLabel->setBounds(proportionOfWidth (0.03f)  , proportionOfHeight (.15f), 80, 60);
+	algoChooser->setBounds(proportionOfWidth (0.03f)  , proportionOfHeight (.05f), proportionOfWidth(0.08f), proportionOfHeight(0.08f));
+	algoChooserLabel->setBounds(proportionOfWidth (0.03f)  , proportionOfHeight (.02f), proportionOfWidth(0.08f), 40);
 
-	voices->setBounds(proportionOfWidth (0.50f)  , proportionOfHeight (.05f), 80, 60);
-	voicesLabel->setBounds(proportionOfWidth (0.50f)  , proportionOfHeight (.02f), 80, 60);
 
-	glide->setBounds(proportionOfWidth (0.50f)  , proportionOfHeight (.18f), 80, 60);
-	glideLabel->setBounds(proportionOfWidth (0.50f)  , proportionOfHeight (.15f), 80, 60);
+	voices->setBounds(proportionOfWidth (0.50f)  , proportionOfHeight (.05f), proportionOfWidth(0.08f), proportionOfHeight(0.11f));
+	voicesLabel->setBounds(proportionOfWidth (0.50f)  , proportionOfHeight (.02f), proportionOfWidth(0.08f), 40);
+
+	velocity->setBounds(proportionOfWidth(0.03f), proportionOfHeight(.20f), proportionOfWidth(0.08f), proportionOfHeight(0.11f));
+	velocityLabel->setBounds(proportionOfWidth(0.03f), proportionOfHeight(.17f), proportionOfWidth(0.08f), 40);
+
+	glide->setBounds(proportionOfWidth (0.50f)  , proportionOfHeight (.20f), proportionOfWidth(0.08f), proportionOfHeight(0.11f));
+	glideLabel->setBounds(proportionOfWidth (0.50f)  , proportionOfHeight (.17f), proportionOfWidth(0.08f), 40);
 
 	resizeAlgoDrawableImage();
 
@@ -397,20 +462,45 @@ void PanelEngine::resizeAlgoDrawableImage() {
 	float height = proportionOfHeight(0.31f);
 	juce::Rectangle<float> rect = juce::Rectangle<float>(left, top, width, height);
 	algoDrawableImage->setTransformToFit(rect, RectanglePlacement::centred | RectanglePlacement::onlyReduceInSize);
+
 }
 
 void PanelEngine::newAlgo(int algoNumber) {
 	int numberOfMixer = algoInformation[algoNumber].mix;
 	for (int m=0; m<6; m++) {
-		volumeKnob[m]->setEnabled(m < numberOfMixer);
-		panKnob[m]->setEnabled(m < numberOfMixer);
-		mixLabel[m]->setEnabled(m < numberOfMixer);
+		if (m < numberOfMixer) {
+			volumeKnob[m]->setEnabled(true);
+			panKnob[m]->setEnabled(true);
+			mixLabel[m]->setEnabled(true);
+			volumeKnob[m]->setAlpha(1.0f);
+			panKnob[m]->setAlpha(1.0f);
+			mixLabel[m]->setAlpha(1.0f);
+		} else {
+			volumeKnob[m]->setEnabled(false);
+			panKnob[m]->setEnabled(false);
+			mixLabel[m]->setEnabled(false);
+			volumeKnob[m]->setAlpha(.2f);
+			panKnob[m]->setAlpha(.2f);
+			mixLabel[m]->setAlpha(.2f);
+		}
 	}
 	int numberOfIM = algoInformation[algoNumber].im;
 	for (int im = 0; im < 5; im++) {
-		IMKnob[im]->setEnabled(im < numberOfIM);
-		IMVelocityKnob[im]->setEnabled(im < numberOfIM);
-		IMNumber[im]->setEnabled(im < numberOfIM);
+		if (im < numberOfIM) {
+			IMKnob[im]->setEnabled(true);
+			IMVelocityKnob[im]->setEnabled(true);
+			IMNumber[im]->setEnabled(true);
+			IMKnob[im]->setAlpha(1.0f);
+			IMVelocityKnob[im]->setAlpha(1.0f);
+			IMNumber[im]->setAlpha(1.0f);
+		} else {
+			IMKnob[im]->setEnabled(false);
+			IMVelocityKnob[im]->setEnabled(false);
+			IMNumber[im]->setEnabled(false);
+			IMKnob[im]->setAlpha(0.2f);
+			IMVelocityKnob[im]->setAlpha(0.2f);
+			IMNumber[im]->setAlpha(0.2f);
+		}
 	}
 	int numberOfOp = algoInformation[algoNumber].osc;
 	for (int o=0; o<6; o++) {
@@ -490,6 +580,7 @@ void PanelEngine::buttonClicked (Button* buttonThatWasClicked)
     if (enveloppeButtonClicked) {
         for (int k = 0 ; k< NUMBER_OF_OPERATORS; k++) {
             if (buttonThatWasClicked == enveloppeButton[k]) {
+				envSelected = k;
                 enveloppe[k]->setVisible(true);
                 opShape[k]->setVisible(true);
                 opFrequencyType[k]->setVisible(true);
@@ -504,6 +595,24 @@ void PanelEngine::buttonClicked (Button* buttonThatWasClicked)
             }
         }
     }
+
+	if (buttonThatWasClicked == envPasteButton) {
+		if (envToCopy >= 0) {
+			for (int k = 0; k < enveloppe[envToCopy]->getNumberOfPoints(); k++) {
+				enveloppe[envSelected]->setX(k, enveloppe[envToCopy]->getX(k));
+				enveloppe[envSelected]->setY(k, enveloppe[envToCopy]->getY(k));
+			}
+			// Point 0 is not a real point. 
+			for (int k = 1; k < enveloppe[envToCopy]->getNumberOfPoints(); k++) {
+				enveloppe[envSelected]->notifyObservers(k, true);
+				enveloppe[envSelected]->notifyObservers(k, false);
+			}
+			enveloppe[envSelected]->repaint();
+		}
+	} else if (buttonThatWasClicked == envCopyButton)  {
+		envToCopy = envSelected;
+		envPasteButton->setButtonText("Paste " + String(envToCopy + 1));
+	}
 
     //[/UserbuttonClicked_Pre]
 
@@ -603,9 +712,9 @@ void PanelEngine::updateSliderParameter_hook(Slider* slider) {
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA
@@ -615,16 +724,21 @@ BEGIN_JUCER_METADATA
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="900"
                  initialHeight="700">
-  <BACKGROUND backgroundColour="a8c8e4"/>
+  <BACKGROUND backgroundColour="ff062934">
+    <RECT pos="4 -4 0M 0M" fill=" radial: 30.158% 12.2%, 3.4% 90%, 0=ff0b3f50, 1=ff062934"
+          hasStroke="0"/>
+    <ROUNDRECT pos="14.119% 0.654% 34% 30.937%" cornerSize="10" fill=" radial: 29.609% 6.1%, 29.609% 44.444%, 0=ff1ca5cf, 1=ff0b3d4d"
+               hasStroke="1" stroke="2.5, mitered, butt" strokeColour="solid: ff000000"/>
+  </BACKGROUND>
   <GROUPCOMPONENT name="operator group" id="3a99a017e94aaaf5" memberName="operatorGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0.95% 50.155% 97.981% 47.981%"
-                  outlinecol="60808080" textcol="ff4f4f4f" title="Operators" textpos="33"/>
+                  virtualName="" explicitFocusOrder="0" pos="1.028% 50% 98.012% 48.039%"
+                  outlinecol="ff749fad" textcol="ff749fad" title="" textpos="33"/>
   <GROUPCOMPONENT name="mixer group" id="a41fc3891a2af464" memberName="mixerGroup"
-                  virtualName="" explicitFocusOrder="0" pos="1.188% 31.211% 59.62% 18.478%"
-                  outlinecol="60808080" textcol="ff4f4f4f" title="Mixer" textpos="33"/>
+                  virtualName="" explicitFocusOrder="0" pos="1.165% 31.155% 59.63% 18.519%"
+                  outlinecol="ff749fad" textcol="ff749fad" title="Mixer" textpos="33"/>
   <GROUPCOMPONENT name="IM group" id="249d6ec6feb3696f" memberName="imGroup" virtualName=""
-                  explicitFocusOrder="0" pos="61.283% 0% 37.292% 49.689%" outlinecol="60808080"
-                  textcol="ff4f4f4f" title="Modulation indexes" textpos="33"/>
+                  explicitFocusOrder="0" pos="61.206% 0% 37.286% 49.673%" outlinecol="ff749fad"
+                  textcol="ff749fad" title="Modulation indexes" textpos="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

@@ -30,7 +30,9 @@ Pfm2AudioProcessorEditor::Pfm2AudioProcessorEditor (Pfm2AudioProcessor* ownerFil
     addAndMakeVisible (mainTabs = new MainTabs());
     mainTabs->buildParameters(ownerFilter->parameterSet);
     // This is where our plugin's editor size is set.
-    setSize (900, 710);
+
+	setSize (1000, 750);
+	
 	startTimer(200);
 	uiOutOfSync = false;
 }
@@ -45,6 +47,12 @@ Pfm2AudioProcessorEditor::~Pfm2AudioProcessorEditor()
 void Pfm2AudioProcessorEditor::paint (Graphics& g)
 {
 }
+
+
+void Pfm2AudioProcessorEditor::resized() {
+	mainTabs->setSize(getWidth(), getHeight());
+}
+
 
 void Pfm2AudioProcessorEditor::updateUIWith(std::unordered_set<const char*> &ptu) {
     for(std::unordered_set<const char*>::iterator it = ptu.begin(); it != ptu.end(); ++it) {

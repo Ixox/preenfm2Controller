@@ -71,9 +71,9 @@ public:
         jassert (processor != nullptr); // Your createPluginFilter() function must return a valid object!
         AudioProcessor::setTypeOfNextNewPlugin (AudioProcessor::wrapperType_Undefined);
 
-        processor->setPlayConfigDetails (JucePlugin_MaxNumInputChannels,
-                                         JucePlugin_MaxNumOutputChannels,
-                                         44000, 512);
+        processor->setPlayConfigDetails (2, // JucePlugin_MaxNumInputChannels,
+                                         2, //JucePlugin_MaxNumOutputChannels,
+                                         48000, 512);
     }
 
     void deletePlugin()
@@ -162,7 +162,7 @@ public:
         o.content->setSize (400, 600);
 
         o.dialogTitle                   = TRANS("Settings");
-        o.dialogBackgroundColour        = Colour (0xfff0f0f0);
+        o.dialogBackgroundColour        = Colour (0xff183B46);
         o.escapeKeyTriggersCloseButton  = true;
         o.useNativeTitleBar             = false;
         o.resizable                     = false;
@@ -289,7 +289,7 @@ public:
         : DocumentWindow (title, backgroundColour, DocumentWindow::minimiseButton | DocumentWindow::closeButton),
           optionsButton ("Options")
     {
-        setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton, false);
+        setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton | DocumentWindow::maximiseButton, false);
 
         Component::addAndMakeVisible (optionsButton);
         optionsButton.addListener (this);

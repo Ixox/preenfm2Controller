@@ -72,17 +72,32 @@ void EnveloppeAbstract::paint (Graphics& g)
 
 //    g.drawLine(pointPositionX[3], pointPositionY[3], pointPositionX[3], getHeight() - MARGIN_BOTTOM);
     // Draw main enveloppe shapr
-    g.setColour (Colours::blue);
-    for (int p = 0; p < pointList.size() -1; p++) {
-        g.drawLine(pointList[p].get()->getPositionOnScreenX(),
-                pointList[p].get()->getPositionOnScreenY(),
-                pointList[p+1].get()->getPositionOnScreenX(),
-                pointList[p+1].get()->getPositionOnScreenY());
+    g.setColour (Colours::whitesmoke);
+	Path path;
+	path.startNewSubPath(pointList[0].get()->getPositionOnScreenX(),
+		pointList[0].get()->getPositionOnScreenY() );
+	for (int p = 1; p < pointList.size() ; p++) {
+		path.lineTo(pointList[p].get()->getPositionOnScreenX(),
+			pointList[p].get()->getPositionOnScreenY());
     }
+	g.setColour(Colours::whitesmoke);
+	g.strokePath(path, PathStrokeType(1.8f, PathStrokeType::beveled, PathStrokeType::rounded));
+
+	// Back to bottom
+	path.lineTo(pointList[pointList.size()-1].get()->getPositionOnScreenX(),
+		pointList[0].get()->getPositionOnScreenY());
+	// Back to first point
+	path.lineTo(pointList[0].get()->getPositionOnScreenX(),
+		pointList[0].get()->getPositionOnScreenY());
+	g.setColour(Colour(0x33bbbbbb));
+	g.fillPath(path);
+
+
+
 
     for (int p = 0; p < pointList.size(); p++) {
         if (draggingPointIndex == p) {
-            g.setColour (Colours::red);
+            g.setColour (Colours::yellow);
             g.fillEllipse((int)pointList[p].get()->getPositionOnScreenX() - CIRCLE_RAY,
                     (int)pointList[p].get()->getPositionOnScreenY() - CIRCLE_RAY ,
                     CIRCLE_RAY*2, CIRCLE_RAY*2);
@@ -95,7 +110,7 @@ void EnveloppeAbstract::paint (Graphics& g)
             }
         } else {
             if (overPointIndex == p) {
-                g.setColour (Colours::red);
+                g.setColour (Colours::yellow);
                 if (!pointList[p].get()->isYConstrained()) {
                 	g.drawVerticalLine((int)pointList[p].get()->getPositionOnScreenX(), MARGIN_TOP, getHeight() - MARGIN_BOTTOM);
                 }
@@ -103,7 +118,7 @@ void EnveloppeAbstract::paint (Graphics& g)
                 	g.drawHorizontalLine((int)pointList[p].get()->getPositionOnScreenY(), MARGIN_LEFT, getWidth() - MARGIN_RIGHT);
                 }
             } else {
-                g.setColour (Colours::blue);
+                g.setColour (Colours::grey);
             }
             g.drawEllipse((int)pointList[p].get()->getPositionOnScreenX() - CIRCLE_RAY,
                     (int)pointList[p].get()->getPositionOnScreenY() - CIRCLE_RAY ,
@@ -117,8 +132,8 @@ void EnveloppeAbstract::paint (Graphics& g)
 void EnveloppeAbstract::mouseMove(const MouseEvent &event)  {
 
     for (int p = pointList.size() - 1; p >= 0; p--) {
-        if (abs(event.x - pointList[p].get()->getPositionOnScreenX()) < 5
-                && abs(event.y - pointList[p].get()->getPositionOnScreenY()) < 5) {
+        if (abs(event.x - pointList[p].get()->getPositionOnScreenX()) < (CIRCLE_RAY+1)
+                && abs(event.y - pointList[p].get()->getPositionOnScreenY()) < (CIRCLE_RAY+1)) {
             if (overPointIndex != p) {
                 overPointIndex = p;
                 setMouseCursor(MouseCursor::PointingHandCursor);
@@ -144,7 +159,6 @@ void EnveloppeAbstract::mouseDown (const MouseEvent &event)  {
             draggingPointIndex = p  ;
             startDragX = event.x;
             startDragY = event.y;
-//            setMouseCursor(MouseCursor::NoCursor);
             repaint();
             return;
         }
@@ -171,13 +185,11 @@ void EnveloppeAbstract::mouseDrag (const MouseEvent &event)  {
     float oldVY = pointList[draggingPointIndex].get()->getY();
     pointList[draggingPointIndex].get()->setY(pointList[draggingPointIndex].get()->getY() - (float)(event.y - startDragY) / scaleY * slowMoveRatio);
     if (oldVX != pointList[draggingPointIndex].get()->getX()) {
-    	//newXValue(draggingPointIndex, pointList[draggingPointIndex].get()->getX());
     	// Tell listeners
     	notifyObservers(draggingPointIndex, true);
     	startDragX = event.x;
     }
     if (oldVY != pointList[draggingPointIndex ].get()->getY()) {
-    	//newYValue(draggingPointIndex, pointList[draggingPointIndex].get()->getY());
     	// Tell listeners
     	notifyObservers(draggingPointIndex, false);
     	startDragY = event.y;
