@@ -1,0 +1,20 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2015
+
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pfm2Editor - App", "pfm2Editor_App.vcxproj", "{BFCB09EF-67A3-1885-9A43-E20DE37629B1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BFCB09EF-67A3-1885-9A43-E20DE37629B1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BFCB09EF-67A3-1885-9A43-E20DE37629B1}.Debug|Win32.Build.0 = Debug|Win32
+		{BFCB09EF-67A3-1885-9A43-E20DE37629B1}.Release|Win32.ActiveCfg = Release|Win32
+		{BFCB09EF-67A3-1885-9A43-E20DE37629B1}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
