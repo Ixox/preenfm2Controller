@@ -22,7 +22,7 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
 #include "Enveloppe.h"
-#include "PanelOfParameters.h"
+#include "PanelOfComponents.h"
 
 #define NUMBER_OF_OPERATORS 6
 #define NUMBER_OF_IM 5
@@ -45,7 +45,7 @@ class PanelEngine  : public Component,
                      public Slider::Listener,
                      public Button::Listener,
                      public ComboBox::Listener,
-                     public PanelOfParameters
+                     public PanelOfComponents
 {
 public:
     //==============================================================================

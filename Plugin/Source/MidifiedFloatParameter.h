@@ -23,12 +23,10 @@
 
 #include <stdlib.h>
 #include <map>
-
 #include "JuceHeader.h"
-#include "PluginParameters/include/Parameter.h"
-#include "PluginParameters/include/FloatParameter.h"
 
-using namespace teragon;
+
+class Pfm2AudioProcessor;
 
 class Midificator {
 public:
@@ -101,21 +99,26 @@ protected:
 
 };
 
-class MidifiedFloatParameter: public FloatParameter, public Midificator {
+
+
+class MidifiedFloatParameter: public AudioProcessorParameterWithID, public Midificator {
 public:
 
-	MidifiedFloatParameter (std::map<int , Parameter* > *nrpmParameterMap,
-							const char* componentName, 
+	MidifiedFloatParameter (std::map<int , AudioProcessorParameter* > *nrpmParameterMap,
+							String componentName, 
 							int nrpnParam, 
 							float valueMultipler, 
 							float minValue,
 							float maxValue,
 							float defaultValue
 							) 
-		: FloatParameter(componentName, minValue, maxValue, defaultValue), Midificator(nrpnParam, minValue, valueMultipler) 
+		: AudioProcessorParameterWithID(componentName.replaceCharacter(' ', '_'), componentName),
+		 Midificator(nrpnParam, minValue, valueMultipler),
+		 range(minValue, maxValue), value(defaultValue), defaultValue(defaultValue)
 	{
-		nrpmParameterMap->insert(std::pair<int , teragon::Parameter* > (nrpnParam, this));
-		range = maxValue - minValue;
+		this->componentName = componentName;
+		nrpmParameterMap->insert(std::pair<int , AudioProcessorParameter* > (nrpnParam, this));
+		rangeFloat = maxValue - minValue;
 		sendRealValue = false;
 	}
 
@@ -146,7 +149,7 @@ public:
 	}
 
 	float getScaledValueFromNrpn(int value) const {
-		return (float)value / this->valueMultiplier / range - bias;
+		return (float)value / this->valueMultiplier / rangeFloat - bias;
 	}
 
 	void setSendRealValue(bool srv) {
@@ -157,33 +160,51 @@ public:
 		return this->sendRealValue;
 	}
 
-private:
-	bool sendRealValue;
-	float range;
-};
-/*
-class MidifiedComboBox: public ComboBox, public Midificator {
-public:
-	MidifiedComboBox (const String& componentName, int nrpnParam = -1, float minValue = 0.0f, float valueMultipler = 100.0f) : ComboBox(componentName), Midificator(nrpnParam, minValue, valueMultipler) {
+	void setProcessor(Pfm2AudioProcessor* audioProcessor) {
+		this->audioProcessor = audioProcessor;
 	}
+
+	// parameter float
+	float get() const noexcept { return value; }
+	operator float() const noexcept { return value; }
+	AudioParameterFloat& operator= (float newValue);
+
+	void setValue(float newValue);
+	void setRealValue(float newValue);
+
+	float getValue() const { return range.convertTo0to1(value); }
+	float getRealValue() const { return value; }
+	float getDefaultValue() const { return range.convertTo0to1(defaultValue); }
+	int getNumSteps() const { return AudioProcessorParameterWithID::getNumSteps(); }
+	float getValueForText(const String& text) const { return range.convertTo0to1(text.getFloatValue()); }
+
+	String getText(float v, int length) const
+	{
+		String asText(range.convertFrom0to1(v), 2);
+		return length > 0 ? asText.substring(0, length) : asText;
+	}
+
+	String getName() {
+		return componentName;
+	}
+
+	float getMin() {
+		return range.getRange().getStart();
+	}
+
+	float getMax() {
+		return range.getRange().getEnd();
+	}
+
+private:
+	String componentName;
+	NormalisableRange<float> range;
+	float value, defaultValue;
+	Pfm2AudioProcessor* audioProcessor;
+	bool sendRealValue;
+	float rangeFloat;
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MidifiedFloatParameter)
 };
-
-
-class MidifiedToggleButton: public ToggleButton, public Midificator {
-public:
-    // sendNrpn is overloaded, we don't use valueMultiplier here
-    MidifiedToggleButton(const String& componentName, int nrpnParam = -1, int nrpnValue = -1) : ToggleButton(componentName), Midificator(nrpnParam, nrpnValue, 0) {
-    }
-
-    void sendNrpn(MidiBuffer* midiBuffer) {
-        if (midiBuffer != nullptr) {
-            midiBuffer->addEvent(MidiMessage::controllerEvent(1, 99, getNrpnParamMSB()), Time::getMillisecondCounter());
-            midiBuffer->addEvent(MidiMessage::controllerEvent(1, 98, getNrpnParamLSB()), Time::getMillisecondCounter());
-            midiBuffer->addEvent(MidiMessage::controllerEvent(1, 6, ((int)minValue) >> 7), Time::getMillisecondCounter());
-            midiBuffer->addEvent(MidiMessage::controllerEvent(1, 38, ((int)minValue) & 0x7f), Time::getMillisecondCounter());
-        }
-    }
-};
-*/
 
 #endif  // MIDIFIEDPARAMETER_H_INCLUDED

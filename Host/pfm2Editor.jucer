@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="I4cnWy" name="pfm2Editor" projectType="guiapp" version="2.08.1"
+<JUCERPROJECT id="I4cnWy" name="pfm2Editor" projectType="guiapp" version="2.08.2"
               bundleIdentifier="com.ixox.pfm2Editor" includeBinaryInAppConfig="1"
               jucerVersion="5.1.2" defines="" companyName="Xavier Hosxe" companyWebsite="http://www.preenfm.net"
               companyEmail="preenfm1@gmail.com" displaySplashScreen="1" reportAppUsage="1"
@@ -8,7 +8,6 @@
   <MAINGROUP id="c6LJM5" name="pfm2Editor">
     <GROUP id="{4109EA71-F7BE-3C72-D039-241F993FAEB9}" name="Source">
       <GROUP id="{1D684675-DA20-07E6-EFC5-ECF1687EF7D5}" name="Plugin">
-        <FILE id="XbD5Gd" name="SliderPfm2.h" compile="0" resource="0" file="../Plugin/Source/UI/SliderPfm2.h"/>
         <FILE id="psmrC7" name="AlgoPNG.cpp" compile="1" resource="0" file="../Plugin/Source/UI/png/AlgoPNG.cpp"/>
         <FILE id="XG0f87" name="AlgoPNG.h" compile="0" resource="0" file="../Plugin/Source/UI/png/AlgoPNG.h"/>
         <FILE id="o49x3a" name="Enveloppe.cpp" compile="1" resource="0" file="../Plugin/Source/UI/Enveloppe.cpp"/>
@@ -29,8 +28,10 @@
               file="../Plugin/Source/UI/EnveloppeListener.h"/>
         <FILE id="We4G3E" name="MainTabs.cpp" compile="1" resource="0" file="../Plugin/Source/UI/MainTabs.cpp"/>
         <FILE id="ASxXjn" name="MainTabs.h" compile="0" resource="0" file="../Plugin/Source/UI/MainTabs.h"/>
-        <FILE id="zZwe9K" name="MidifiedComponent.h" compile="0" resource="0"
-              file="../Plugin/Source/UI/MidifiedComponent.h"/>
+        <FILE id="tGCS8H" name="MidifiedFloatParameter.cpp" compile="1" resource="0"
+              file="../Plugin/Source/MidifiedFloatParameter.cpp"/>
+        <FILE id="oitU81" name="MidifiedFloatParameter.h" compile="0" resource="0"
+              file="../Plugin/Source/MidifiedFloatParameter.h"/>
         <FILE id="m2zq7N" name="PanelArpAndFilter.cpp" compile="1" resource="0"
               file="../Plugin/Source/UI/PanelArpAndFilter.cpp"/>
         <FILE id="xr3WUJ" name="PanelArpAndFilter.h" compile="0" resource="0"
@@ -41,8 +42,8 @@
               file="../Plugin/Source/UI/PanelModulation.cpp"/>
         <FILE id="KEWRRt" name="PanelModulation.h" compile="0" resource="0"
               file="../Plugin/Source/UI/PanelModulation.h"/>
-        <FILE id="pysef4" name="PanelOfParameters.h" compile="0" resource="0"
-              file="../Plugin/Source/UI/PanelOfParameters.h"/>
+        <FILE id="pysef4" name="PanelOfComponents.h" compile="0" resource="0"
+              file="../Plugin/Source/UI/PanelOfComponents.h"/>
         <FILE id="VIEd6L" name="PluginEditor.cpp" compile="1" resource="0"
               file="../Plugin/Source/PluginEditor.cpp"/>
         <FILE id="pe564r" name="PluginEditor.h" compile="0" resource="0" file="../Plugin/Source/PluginEditor.h"/>
@@ -55,10 +56,10 @@
         <FILE id="BLH8sw" name="PreenLookAndFeel.h" compile="0" resource="0"
               file="../Plugin/Source/UI/PreenLookAndFeel.h"/>
         <FILE id="bgOvnw" name="PreenNrpn.h" compile="0" resource="0" file="../Plugin/Source/PreenNrpn.h"/>
+        <FILE id="XbD5Gd" name="SliderPfm2.h" compile="0" resource="0" file="../Plugin/Source/UI/SliderPfm2.h"/>
         <FILE id="Ql80Jn" name="StepSequencer.cpp" compile="1" resource="0"
               file="../Plugin/Source/UI/StepSequencer.cpp"/>
         <FILE id="s9fzsf" name="StepSequencer.h" compile="0" resource="0" file="../Plugin/Source/UI/StepSequencer.h"/>
-        <FILE id="LKBfHU" name="tinythread.cpp" compile="1" resource="0" file="../Plugin/Source/PluginParameters/include/tinythread/source/tinythread.cpp"/>
       </GROUP>
       <FILE id="K7kPuZ" name="AudioProcessorPlayerWithMidiOutput.cpp" compile="1"
             resource="0" file="Source/AudioProcessorPlayerWithMidiOutput.cpp"/>

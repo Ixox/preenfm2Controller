@@ -19,7 +19,6 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "MidifiedParameter.h"
 #include "UI/PreenLookAndFeel.h"
 
 int Midificator::paramIndexCounter = 0;
@@ -34,7 +33,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     Midificator::resetParamIndexCounter();
 
     pfm2Editor = nullptr;
-    teragon::Parameter* newParam;
+	MidifiedFloatParameter* newParam;
     parameterIndex = 0;
 
     for (int k=0; k<2048; k++) {
@@ -44,58 +43,50 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     // Algo
     int nrpmParam = PREENFM2_NRPN_ALGO;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Algo").toRawUTF8(), nrpmParam, 1, 1, 28,1);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
+	addMidifiedParameter(newParam);
     nrpmIndex[nrpmParam] = parameterIndex++;
 
     // Velocity
     nrpmParam = PREENFM2_NRPN_VELOCITY;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Velocity").toRawUTF8(), nrpmParam, 1, 0, 16,1);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
     // Voices
     nrpmParam = PREENFM2_NRPN_VOICE;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Voices").toRawUTF8(), nrpmParam, 1, 0, 16,1);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
     // Velocity
     nrpmParam = PREENFM2_NRPN_GLIDE;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Glide").toRawUTF8(), nrpmParam, 1, 0, 10,1);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
     for (int k=0; k<6; k++) {
         nrpmParam = PREENFM2_NRPN_MIX1 + k * 2;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Volume "+String(k+1)).toRawUTF8(), nrpmParam, 100, 0,1,1);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
     }
     for (int k=0; k<6; k++) {
         nrpmParam = PREENFM2_NRPN_PAN1 + k * 2;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Pan "+String(k+1)).toRawUTF8(), nrpmParam, 100, -1, 1, 0);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
     }
     for (int k=0; k<5; k++) {
         nrpmParam = PREENFM2_NRPN_IM1 + k * 2;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("IM "+String(k+1)).toRawUTF8(), nrpmParam, 100, 0,16,1.5);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
     }
     for (int k=0; k<5; k++) {
         nrpmParam = PREENFM2_NRPN_IM1_VELOCITY + k * 2;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("IM Velocity "+String(k+1)).toRawUTF8(), nrpmParam, 100, 0,16,1);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
     }
     // OPERATOR
     for (int k=0; k<6; k++) {
@@ -103,9 +94,8 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //		0, 7,
         nrpmParam = PREENFM2_NRPN_OPERATOR1_SHAPE + k * 4;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Op"+String(k+1)+" Shape").toRawUTF8(), nrpmParam, 1, 1, 14, 1);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
 
     }
     for (int k=0; k<6; k++) {
@@ -113,9 +103,8 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //        0, 1
         nrpmParam = PREENFM2_NRPN_OPERATOR1_FREQUENCY_TYPE + k * 4;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Op"+String(k+1)+" Freq Type").toRawUTF8(), nrpmParam, 1, 1, 3, 1);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
     }
     for (int k=0; k<6; k++) {
         //
@@ -123,18 +112,16 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //        opFrequency[k]->setRange (0, 16, 1.0f / 12.0f);
         nrpmParam = PREENFM2_NRPN_OPERATOR1_FREQUENCY + k * 4;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Op" + String(k+1) + " Frequency").toRawUTF8(), nrpmParam, 100, 0, 16, 1.0);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
     }
     for (int k=0; k<6; k++) {
         //        opFrequencyFineTune[k] = new Slider("Op"+ String(k+1)+ " Fine Tune");
         //        opFrequencyFineTune[k]->setRange (-1.0f, 1.0f, .01f);
         nrpmParam = PREENFM2_NRPN_OPERATOR1_FREQUENCY_FINE_TUNE + k * 4;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Op"+ String(k+1)+ " Fine Tune").toRawUTF8(), nrpmParam, 100, -9, 9, 0);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
 
     }
     for (int k=0; k<6; k++) {
@@ -142,18 +129,16 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
             const char* pointName[] = { " Attk", " Deca", " Sust", " Rele" };
             nrpmParam = PREENFM2_NRPN_ENV1_ATTK + k * 8 + p * 2;
             newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Op"+String(k+1)+" Env"+ pointName[p]).toRawUTF8(), nrpmParam, 100, 0, 16, 1);
-            newParam->addObserver(this);
-            parameterSet.add(newParam);
-            nrpmIndex[nrpmParam] = parameterIndex++;
+			addMidifiedParameter(newParam);
+			nrpmIndex[nrpmParam] = parameterIndex++;
         }
         for (int p=0; p<4; p++) {
             const char* pointName[] = { " Attk lvl", " Deca lvl", " Sust lvl", " Rele lvl" };
             float level[] = { 1.0, 1.0, 1.0, 0.0 };
             nrpmParam = PREENFM2_NRPN_ENV1_ATTK_LEVEL + k * 8 + p * 2;
             newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Op"+String(k+1)+" Env"+ pointName[p]).toRawUTF8(), nrpmParam, 100, 0, 1, level[p]);
-            newParam->addObserver(this);
-            parameterSet.add(newParam);
-            nrpmIndex[nrpmParam] = parameterIndex++;
+			addMidifiedParameter(newParam);
+			nrpmIndex[nrpmParam] = parameterIndex++;
         }
         //        enveloppe[k]->setName (TRANS("enveloppe " + String(k+1)));
         //
@@ -161,21 +146,18 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     for (int k=0; k<12; k++) {
         nrpmParam = PREENFM2_NRPN_MTX1_SOURCE + k *4 ;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Mtx"+String(k+1)+" Source").toRawUTF8(), nrpmParam, 1, 1, 19, 1);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
 
         nrpmParam = PREENFM2_NRPN_MTX1_MULTIPLIER + k *4 ;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Mtx"+String(k+1)+" Multiplier").toRawUTF8(), nrpmParam, 100, -10, 10, 0);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
 
         nrpmParam = PREENFM2_NRPN_MTX1_DESTINATION + k *4 ;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Mtx"+String(k+1)+" Destination").toRawUTF8(), nrpmParam, 1, 1, 47, 1);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
     }
 
     for (int k = 0; k < 3; k++) {
@@ -187,27 +169,14 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //        lfoShape[k]->addItem("Random", 5);
         nrpmParam = PREENFM2_NRPN_LFO1_SHAPE + k *4 ;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("LFO"+ String(k+1)+ " Shape").toRawUTF8(), nrpmParam, 1, 1, 5, 1);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
 
-        //        addAndMakeVisible(lfoExtMidiSync[k] = new ComboBox("LFO"+ String(k+1) + " External Sync"));
-        //        lfoExtMidiSync[k]->addItem("Internal", 2400);
-        //        lfoExtMidiSync[k]->addItem("MC/16", 2410);
-        //        lfoExtMidiSync[k]->addItem("MC/8", 2420);
-        //        lfoExtMidiSync[k]->addItem("MC/4", 2430);
-        //        lfoExtMidiSync[k]->addItem("MC/2", 2440);
-        //        lfoExtMidiSync[k]->addItem("MC", 2450);
-        //        lfoExtMidiSync[k]->addItem("MC*2", 2460);
-        //        lfoExtMidiSync[k]->addItem("MC*3", 2470);
-        //        lfoExtMidiSync[k]->addItem("MC*4", 2480);
-        //        lfoExtMidiSync[k]->addItem("MC*8", 2490);
         nrpmParam = PREENFM2_NRPN_LFO1_FREQUENCY + k *4 ;
-        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("LFO"+ String(k+1) + " External Sync").toRawUTF8(), nrpmParam, 1, 10000, 10080, 10000);
-        newParam->addObserver(this);
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("LFO"+ String(k+1) + " External Sync").toRawUTF8(), nrpmParam, 1, 9990, 10080, 9990);
         ((MidifiedFloatParameter*)newParam)->setSendRealValue(true);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
 
 
 
@@ -216,9 +185,8 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //        lfoFrequency[k]->setRange (0, 24.0f, .01f);
         nrpmParam = PREENFM2_NRPN_LFO1_FREQUENCY + k *4 ;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("LFO"+ String(k+1) + " Frequency").toRawUTF8(), nrpmParam, 100, 0, 99.9, 1);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
 
 
 
@@ -226,9 +194,8 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //        lfoBias[k]->setRange (-1.0f, 1.0f, .01f);
         nrpmParam = PREENFM2_NRPN_LFO1_BIAS + k *4 ;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("LFO"+ String(k+1) + " Bias").toRawUTF8(), nrpmParam, 100, -1, 1, 0);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
 
 
 
@@ -237,38 +204,34 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //        lfoKsynOnOff[k]->addItem("On", 2);
         nrpmParam = PREENFM2_NRPN_LFO1_KSYN + k *4 ;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("LFO"+ String(k+1) + " KeySync").toRawUTF8(), nrpmParam, 1, 0, 1, 0);
-        newParam->addObserver(this);
         ((MidifiedFloatParameter*)newParam)->setBias(-1);
-        //        ((MidifiedFloatParameter*)newParam)->setSendRealValue(true);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+        ((MidifiedFloatParameter*)newParam)->setSendRealValue(true);
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
 
         //        addAndMakeVisible(lfoKSync[k] = new Slider("LFO"+ String(k+1) + " KeySync time"));
         //        lfoKSync[k]->setRange (0.0f, 16.0f, .01f);
         nrpmParam = PREENFM2_NRPN_LFO1_KSYN + k *4 ;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("LFO"+ String(k+1) + " KeySync time").toRawUTF8(), nrpmParam, 100, 0, 16, 0.01);
-        newParam->addObserver(this);
         ((MidifiedFloatParameter*)newParam)->setBias(.01);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
     }
 
     for (int p=0; p<4; p++) {
         const char* pointName[] = { " Attk", " Deca", " Sust", " Rele" };
         nrpmParam = PREENFM2_NRPN_FREE_ENV1_ATTK + p;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String(String("Free Env 1") + pointName[p]).toRawUTF8(), nrpmParam, 100, 0, 16, 1);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
     }
 
     for (int p=0; p<3; p++) {
         const char* pointName[] = { " Sile", " Attk", " Deca" };
         nrpmParam = PREENFM2_NRPN_FREE_ENV2_SILENCE + p;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String(String("Free Env 2") + pointName[p]).toRawUTF8(), nrpmParam, 100, 0, 16, 1);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
     }
 
 
@@ -294,10 +257,9 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 
         nrpmParam = PREENFM2_NRPN_STEPSEQ1_BPM + seq *4 ;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Step Seq " + String(seq+1) + " External Sync").toRawUTF8(), nrpmParam, 1, 240, 2450, 240);
-        newParam->addObserver(this);
         ((MidifiedFloatParameter*)newParam)->setSendRealValue(true);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
 
 
         //        addAndMakeVisible(stepSeqBPM[k] = new Slider("SEQ"+ String(k+1) + " BPM"));
@@ -310,10 +272,9 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 
         nrpmParam = PREENFM2_NRPN_STEPSEQ1_BPM + seq *4 ;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Step Seq " + String(seq+1) + " BPM").toRawUTF8(), nrpmParam, 1, 10, 240, 1);
-        newParam->addObserver(this);
         ((MidifiedFloatParameter*)newParam)->setBias(10);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
 
 
         //        addAndMakeVisible(stepSeqGate[k] = new Slider("SEQ"+ String(k+1) + " Gate"));
@@ -326,101 +287,86 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 
         nrpmParam = PREENFM2_NRPN_STEPSEQ1_GATE + seq *4 ;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Step Seq " + String(seq+1) + " Gate").toRawUTF8(), nrpmParam, 100, 0, 1, .5);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
 
 
         for (int step= 0; step <16; step ++) {
             nrpmParam = PREENFM2_NRPN_STEPSEQ1_STEP1 + (seq * 128) + step;
             newParam = new MidifiedFloatParameter(&nrpmParameterMap, String(String("Step Seq ") + String(seq + 1) + " Step " + String(step  + 1 )).toRawUTF8(), nrpmParam, 1, 0, 16, 16 - step);
-            newParam->addObserver(this);
-            parameterSet.add(newParam);
-            nrpmIndex[nrpmParam] = parameterIndex++;
+			addMidifiedParameter(newParam);
+			nrpmIndex[nrpmParam] = parameterIndex++;
         }
     }
 
     nrpmParam = PREENFM2_NRPN_FREE_ENV2_LOOP;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, "Free Env 2 Loop", nrpmParam, 1, 1, 3, 1);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
 
 
     nrpmParam = PREENFM2_NRPN_ARP_CLOCK ;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Clock Combo").toRawUTF8(), nrpmParam, 1, 1, 3, 1);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_ARP_BPM ;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp bpm slider").toRawUTF8(), nrpmParam, 1, 10, 240, 60);
-    newParam->addObserver(this);
     ((MidifiedFloatParameter*)newParam)->setBias(10);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_ARP_DIRECTION ;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp dir combo box").toRawUTF8(), nrpmParam, 1, 1, 13, 1);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_ARP_OCTAVE ;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp octave slider").toRawUTF8(), nrpmParam, 1, 1, 3, 1);
-    newParam->addObserver(this);
     ((MidifiedFloatParameter*)newParam)->setBias(1);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_ARP_PATTERN;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp pattern combo box").toRawUTF8(), nrpmParam, 1, 1, 25, 1);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_ARP_DIVISION;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp division combo box").toRawUTF8(), nrpmParam, 1, 1, 17, 1);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_ARP_DURATION;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp duration combo box").toRawUTF8(), nrpmParam, 1, 1, 17, 1);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_ARP_LATCH;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp latch combo box").toRawUTF8(), nrpmParam, 1, 1, 2, 1);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_FILTER_TYPE;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Filter Combo").toRawUTF8(), nrpmParam, 1, 1, 7, 1);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_FILTER_PARAM1;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("filter param1 slider").toRawUTF8(), nrpmParam, 100, 0, 1, .5);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_FILTER_PARAM2;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("filter param2 slider").toRawUTF8(), nrpmParam, 100, 0, 1, .5);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_FILTER_GAIN;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("filter gain slider").toRawUTF8(), nrpmParam, 100, 0, 2, .9);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    nrpmIndex[nrpmParam] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[nrpmParam] = parameterIndex++;
 
 
     for (int k=0; k<3; k++) {
@@ -428,9 +374,8 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         // lfoPhase[k]->setRange (0, 1.0f, .01f);
         nrpmParam = PREENFM2_NRPN_LFO_PHASE1 + k;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("LFO"+ String(k+1) + " Phase").toRawUTF8(), nrpmParam, 100, 0, 1, 0);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
     }
 
     for (int n=0; n<2; n++) {
@@ -450,9 +395,8 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //    noteBefore[n]->addListener (this);
         nrpmParam = PREENFM2_NRPN_NOTE1_BEFORE + n * 4;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Note"+ String(n + 1)+" before").toRawUTF8(), nrpmParam, 1, 1, 7, 5);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
 
 
         //    addAndMakeVisible(noteBreak[n] = new SliderPfm2("Note"+ String(n + 1)+" break"));
@@ -464,9 +408,8 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //    noteBreak[n]->addListener (this);
         nrpmParam = PREENFM2_NRPN_NOTE1_BREAKNOTE + n * 4;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Note"+ String(n + 1)+" break").toRawUTF8(), nrpmParam, 1, 0, 127, 60);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
 
         //    addAndMakeVisible(noteAfter[n] = new ComboBox("Note"+ String(n + 1)+" after"));
         //    noteAfter[n]->setEditableText (false);
@@ -483,9 +426,8 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //    noteAfter[n]->addListener (this);
         nrpmParam = PREENFM2_NRPN_NOTE1_AFTER + n * 4;
         newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Note"+ String(n + 1)+" after").toRawUTF8(), nrpmParam, 1, 1, 7, 1);
-        newParam->addObserver(this);
-        parameterSet.add(newParam);
-        nrpmIndex[nrpmParam] = parameterIndex++;
+		addMidifiedParameter(newParam);
+		nrpmIndex[nrpmParam] = parameterIndex++;
 
     }
 
@@ -505,22 +447,19 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     currentMidiChannel = 1;
     nrpmParam = 127 * 128 + 126;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, "Midi Channel", nrpmParam, 1, 0, 16,1);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    nrpmIndex[2045] = parameterIndex++;
+	addMidifiedParameter(newParam);
+	nrpmIndex[2045] = parameterIndex++;
     
     nrpmParam = 127 * 128 + 126;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, "push button", nrpmParam, 1, 0, 127, 0);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    // Put in last slot
+	addMidifiedParameter(newParam);
+	// Put in last slot
     nrpmIndex[2046] = parameterIndex++;
 
     nrpmParam = 127 * 128 + 127;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, "pull button", nrpmParam, 1, 0, 127, 0);
-    newParam->addObserver(this);
-    parameterSet.add(newParam);
-    // Put in last slot
+	addMidifiedParameter(newParam);
+	// Put in last slot
     nrpmIndex[2047] = parameterIndex++;
    
     midiMessageCollector.reset(44100);
@@ -539,26 +478,6 @@ const String Pfm2AudioProcessor::getName() const
 	return "preenfm2 Editor"; // JucePlugin_Name;
 }
 
-int Pfm2AudioProcessor::getNumParameters()
-{
-    return parameterSet.size();
-}
-
-float Pfm2AudioProcessor::getParameter (int index)
-{
-    return parameterSet[index]->getScaledValue();
-}
-
-
-const String Pfm2AudioProcessor::getParameterName (int index)
-{
-    return String(parameterSet[index]->getName().c_str());
-}
-
-const String Pfm2AudioProcessor::getParameterText (int index)
-{
-    return String(parameterSet[index]->getDisplayText().c_str());
-}
 
 const String Pfm2AudioProcessor::getInputChannelName (int channelIndex) const
 {
@@ -664,13 +583,13 @@ void Pfm2AudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
         buffer.clear (i, 0, buffer.getNumSamples());
 
     // dispatch realtime events to non realtime observer
-    parameterSet.processRealtimeEvents();
+//    parameterSet.processRealtimeEvents();
     midiMessageCollector.removeNextBlockOfMessages(midiMessages,  buffer.getNumSamples());
-    /*
+    
     if (midiMessages.getNumEvents() > 0) {
         printf("processBlock : %d midi messages \n", midiMessages.getNumEvents());
     }
-     */
+    
     if (parametersToUpdate.size() > 0 ) {
 		if (parametersToUpdateMutex.try_lock()) {
 	        std::unordered_set<const char*> newSet;
@@ -691,16 +610,13 @@ bool Pfm2AudioProcessor::hasEditor() const
 
 AudioProcessorEditor* Pfm2AudioProcessor::createEditor()
 {
-	parameterSet.pause();
 
     pfm2Editor = new Pfm2AudioProcessorEditor (this);
 	pfm2Editor->setMidiChannel(currentMidiChannel);
     pfm2Editor->setMidiMessageCollector(midiMessageCollector);
     pfm2Editor->setPresetName(presetName);
     pfm2Editor->setPresetNamePtr(presetName);
-    printf("createEditor : %u\n", (unsigned int)parameterSet.size());
-
-	parameterSet.resume();
+    printf("createEditor : %u\n", (unsigned int)getNumParameters());
 
     return pfm2Editor;
 }
@@ -717,8 +633,9 @@ void Pfm2AudioProcessor::getStateInformation (MemoryBlock& destData)
     xml.setAttribute("presetName", presetName);
 
     // add some attributes to it..
+	const OwnedArray< AudioProcessorParameter >&parameterSet = getParameters();
     for (int p=0; p< parameterSet.size(); p++) {
-        xml.setAttribute(teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str(), parameterSet[p]->getScaledValue());
+       xml.setAttribute(parameterSet[p]->getName(256), parameterSet[p]->getValue());
     }
 
     for (int k=0; k<NUMBER_OF_PROGRAM; k++) {
@@ -749,28 +666,35 @@ void Pfm2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
         if (pfm2Editor) {
             pfm2Editor->setPresetName(presetName);
         }
+
+
         printf(">>> PresetName : %s\n", presetName);
         // make sure that it's actually our type of XML object..
+
+
+
         if (xmlState->hasTagName ("PreenFM2AppStatus")) {
-            
+			const OwnedArray< AudioProcessorParameter >&parameterSet = getParameters();
+
             for (int k=0; k<NUMBER_OF_PROGRAM; k++) {
                 if (xmlState->getStringAttribute("Preset" + String(k)) != String::empty){
                     programName[k] = xmlState->getStringAttribute("Preset" + String(k));
                 }
             }
-            
+            /*
             double value;
             for (int p=0; p< parameterSet.size(); p++) {
                 if (p == nrpmIndex[2047]) continue;
 
-                if (xmlState->getStringAttribute(teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str()) != String::empty) {
-                    value  = (float) xmlState->getDoubleAttribute (teragon::Parameter::makeSafeName(parameterSet[p]->getName()).c_str(), value);
-                    parameterSet.setScaled(p, value, this);
+                if (xmlState->getStringAttribute(parameterSet[p]->getName(256))) {
+                    value  = (float) xmlState->getDoubleAttribute (parameterSet[p]->getName(), value);
+					/// TODO !!!!! XH
+                    //parameterSet.setScaled(p, value, this);
                 } else {
                     printf("Cannot set %d : %s\n", p, parameterSet[p]->getName().c_str());
                 }
             }
-            parameterSet.processRealtimeEvents();
+//            parameterSet.processRealtimeEvents();
 			// If no UI we must set current
 			currentMidiChannel = parameterSet[nrpmIndex[2045]]->getValue();
 			
@@ -783,7 +707,7 @@ void Pfm2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 					parametersToUpdateMutex.unlock();
                 }
             }
-
+			*/
             // Flush NRPN
             flushAllParametrsToNrpn();
         }
@@ -796,6 +720,9 @@ void Pfm2AudioProcessor::flushAllParametrsToNrpn() {
 
 //    printf("Pfm2AudioProcessor::flushAllParametrsToNrpn this : 0x%x \n", (unsigned long)&midiMessageCollector);
 
+	const OwnedArray< AudioProcessorParameter >&parameterSet = getParameters();
+
+
     for (int p=0; p< parameterSet.size(); p++) {
         // Pull button
         if (p == nrpmIndex[2046] || p == nrpmIndex[2047]) {
@@ -805,8 +732,8 @@ void Pfm2AudioProcessor::flushAllParametrsToNrpn() {
         if (midifiedFP != nullptr) {
 //            printf("%d %s Add Nrpn %d : %d\n", p, midifiedFP->getName().c_str(), midifiedFP->getNrpnParamMSB() * 127 + midifiedFP->getNrpnParamLSB(),
 //                    midifiedFP->getNrpnValueMSB(midifiedFP->getValue()) * 127 + midifiedFP->getNrpnValueLSB(midifiedFP->getValue()));
-            midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel, midifiedFP->getValue());
-//            usleep(5000);
+            midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel, parameterSet[p]->getValue());
+            // usleep(5000);
         }
     }
 }
@@ -821,6 +748,9 @@ bool Pfm2AudioProcessor::isRealtimePriority() const {
 // 
 void Pfm2AudioProcessor::handleIncomingMidiBuffer(MidiBuffer &buffer, int numberOfSamples) {
     if (!buffer.isEmpty()) {
+
+
+
         MidiBuffer newBuffer;
         MidiMessage midiMessage;
         int samplePosition;
@@ -828,7 +758,9 @@ void Pfm2AudioProcessor::handleIncomingMidiBuffer(MidiBuffer &buffer, int number
         while (midiIterator.getNextEvent(midiMessage, samplePosition)) {
             bool copyMessageInNewBuffer = true;
 
+			
             if (midiMessage.isController() && midiMessage.getChannel() == currentMidiChannel) {
+				DBG("Midi message " << midiMessage.getControllerNumber() << " , " << midiMessage.getControllerValue() << "\n");
                 switch (midiMessage.getControllerNumber()) {
                 case 99:
                     currentNrpn.paramMSB = midiMessage.getControllerValue();
@@ -873,18 +805,19 @@ void Pfm2AudioProcessor::setParameter (int index, float newValue)
 {
     // printf("Pfm2AudioProcessor::setParameter  %d : %f\r\n", index, newValue);
 
-    parameterSet.setScaled(index, newValue, this);
+//    parameterSet.setScaled(index, newValue, this);
+	const OwnedArray< AudioProcessorParameter >&parameters = getParameters();
 
-    const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameterSet[index]);
+    const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameters[index]);
     if (midifiedFP != nullptr) {
         // send nrpn
-        midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel, midifiedFP->getValue());
+        midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel, parameters[index]->getValue());
     } else {
         printf("Pfm2AudioProcessor::setParameter NULL midifiedFP \r\n");
     }
     // REDRAW UI : must be done in processblock after parameterSet is really udpated.
 	parametersToUpdateMutex.lock();
-    parametersToUpdate.insert(midifiedFP->getName().c_str());
+    parametersToUpdate.insert(parameters[index]->getName(256).toRawUTF8());
 	parametersToUpdateMutex.unlock();
 }
 
@@ -912,7 +845,6 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
         return;
     }
 
-    Parameter* parameter = parameterSet[index];
 
 /*
     if (forceIndex != -1) {
@@ -921,19 +853,21 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
         printf("Pfm2AudioProcessor::handleIncomingNrpn(%d, %d) : %s\r\n", param, value, parameter->getName().c_str());
     }
 */
-
-
-    MidifiedFloatParameter* midifiedFP = dynamic_cast<MidifiedFloatParameter*>(parameter);
-    if (parameter != nullptr) {
+	
+	const OwnedArray< AudioProcessorParameter >&parameters = getParameters();
+	MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)parameters[index];
+    if (midifiedFP != nullptr) {
         float newFloatValue = midifiedFP->getValueFromNrpn(value);
         // Redirect to combo ?
-        if ((newFloatValue > midifiedFP->getMaxValue() || newFloatValue < midifiedFP->getMinValue()) && forceIndex == -1) {
+		float end = midifiedFP->getMax();
+		float start = midifiedFP->getMin();
+		if ((newFloatValue > end || newFloatValue < start) && forceIndex == -1) {
             // First remove current Slider value
 			parametersToUpdateMutex.lock();
-            parametersToUpdate.erase(midifiedFP->getName().c_str());
+			parametersToUpdate.erase(parameters[index]->getName(256).toRawUTF8());
 			parametersToUpdateMutex.unlock();
             if (pfm2Editor) {
-                pfm2Editor->removeParamToUpdateUI(midifiedFP->getName().c_str());
+                pfm2Editor->removeParamToUpdateUI(parameters[index]->getName(256).toRawUTF8());
             }
 
             // We redirect the Nrpn to previous param
@@ -941,15 +875,15 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
             return;
         }
         // Set the value but we don't want to be notified
-        parameterSet.set(index, midifiedFP->getValueFromNrpn(value), this);
+		midifiedFP->setRealValue(midifiedFP->getValueFromNrpn(value));
         // Notify host
-        sendParamChangeMessageToListeners(index, midifiedFP->getScaledValueFromNrpn(value));
+        sendParamChangeMessageToListeners(index, midifiedFP->getValue());
         // REDRAW UI : must be done in processblock after parameterSet is really udpated.
         if (pfm2Editor) {
             pfm2Editor->newNrpnParam(param, value);
         }
 		parametersToUpdateMutex.lock();
-        parametersToUpdate.insert(midifiedFP->getName().c_str());
+        parametersToUpdate.insert(parameters[index]->getName(256).toRawUTF8());
 		parametersToUpdateMutex.unlock();
     }
 }
@@ -960,28 +894,27 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
  . tell host
  . Send NRPN
  */
-void Pfm2AudioProcessor::onParameterUpdated(const teragon::Parameter *parameter) {
-    // printf("Pfm2AudioProcessor::onParameterUpdated %s = %f \n", parameter->getName().c_str(), parameter->getValue());
+void Pfm2AudioProcessor::onParameterUpdated(AudioProcessorParameter *parameter) {
+    
 
     const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameter);
     if (midifiedFP != nullptr) {
         int index = midifiedFP->getParamIndex();
-
+		
         if (index == nrpmIndex[2046]) {
             // Push button
             flushAllParametrsToNrpn();
         } else if (index == nrpmIndex[2045]) {
             // Midi Channel changed
-            currentMidiChannel = parameter->getValue();
-            // printf("New midi channel : %d\r\n", currentMidiChannel);
+            currentMidiChannel = midifiedFP->getRealValue();
         } else {
             // Notify host
-            sendParamChangeMessageToListeners(index, parameter->getScaledValue());
+            sendParamChangeMessageToListeners(index, midifiedFP->getValue());
             // send nrpn
-            if (!midifiedFP->getSendRealValue() || parameter->getValue() != 1) {
-//				printf("Value : %f\n",  parameter->getValue());
-                midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel, parameter->getValue());
-            }
+			// XH ???????????
+//            if (!midifiedFP->getSendRealValue() || midifiedFP->getValue() != 1) {
+                midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel, midifiedFP->getRealValue());
+//            }
         }
     }
 }
@@ -1010,6 +943,11 @@ void Pfm2AudioProcessor::sendNrpnPresetName() {
         midiMessageCollector.addMessageToQueue(byte4);
     }
 
+}
+
+void Pfm2AudioProcessor::addMidifiedParameter(MidifiedFloatParameter *param) {
+	addParameter(param);
+	param->setProcessor(this);
 }
 
 

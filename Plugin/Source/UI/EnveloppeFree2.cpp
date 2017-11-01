@@ -20,7 +20,6 @@
 #include "EnveloppeFree2.h"
 
 #include "Enveloppe.h"
-#include "MidifiedComponent.h"
 
 //==============================================================================
 EnveloppeFree2::EnveloppeFree2(int nrpnBase)
@@ -84,27 +83,8 @@ void EnveloppeFree2::paint (Graphics& g)
 }
 
 
-//void EnveloppeFree2::handleIncomingNrpn(int param, int value) {
-//	switch (param - nrpnBase) {
-//	case 0:
-//	case 1:
-//	case 2:
-//		pointList[param - nrpnBase + 1].get()->setX(value / 100.0f);
-//		repaint();
-//		break;
-//	case 3:
-//		loopCombo->setSelectedId(value + 1, dontSendNotification);
-//		break;
-//	}
-//}
 
-void EnveloppeFree2::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
-/*
-	MidifiedComboBox* midifiedComboBox = dynamic_cast<MidifiedComboBox*>(comboBoxThatHasChanged);
-	if(midifiedComboBox != nullptr) {
-		sendNrpn(nrpnBase + 3,  midifiedComboBox->getSelectedId() - 1);
-	}
-	*/
+void EnveloppeFree2::comboBoxChanged(ComboBox* comboBoxThatHasChanged) {
 }
 
 void EnveloppeFree2::resized() {

@@ -94,24 +94,6 @@ void EnveloppeFree1::paint (Graphics& g)
     }
 }
 
-//
-//void EnveloppeFree1::handleIncomingNrpn(int param, int value) {
-//	switch (param - nrpnBase) {
-//	case 0:
-//	case 1:
-//	case 3:
-//		pointList[param - nrpnBase + 1].get()->setX(value / 100.0f);
-//		repaint();
-//		break;
-//	case 2:
-//		pointList[2].get()->setYFixedValue(value / 100.0f);
-//		pointList[param - nrpnBase + 1].get()->setY(value / 100.0f);
-//		repaint();
-//		break;
-//	}
-//}
-//
-
 
 void EnveloppeFree1::newXValue(int draggingPointIndex, float newX) {
 }

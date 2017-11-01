@@ -40,7 +40,7 @@
 namespace ProjectInfo
 {
     const char* const  projectName    = "pfm2Editor";
-    const char* const  versionString  = "2.08.1";
-    const int          versionNumber  = 0x20801;
+    const char* const  versionString  = "2.08.2";
+    const int          versionNumber  = 0x20802;
 }
 #endif

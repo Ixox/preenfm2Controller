@@ -23,8 +23,9 @@
 #include <mutex>
 #include <unordered_set>
 #include "JuceHeader.h"
-#include "PluginParameters/include/PluginParameters.h"
 #include "PreenNrpn.h"
+#include "MidifiedFloatParameter.h"
+
 
 #define NUMBER_OF_PROGRAM 1
 
@@ -41,7 +42,7 @@ class Pfm2AudioProcessorEditor;
 //==============================================================================
 /**
 */
-class Pfm2AudioProcessor  : public AudioProcessor, public teragon::ParameterObserver
+class Pfm2AudioProcessor  : public AudioProcessor
 {
 public:
     //==============================================================================
@@ -61,13 +62,8 @@ public:
     //==============================================================================
     const String getName() const;
 
-    int getNumParameters();
-
-    float getParameter (int index);
     void setParameter (int index, float newValue);
 
-    const String getParameterName (int index);
-    const String getParameterText (int index);
 
     const String getInputChannelName (int channelIndex) const;
     const String getOutputChannelName (int channelIndex) const;
@@ -94,20 +90,21 @@ public:
 	void handleIncomingNrpn(int param, int value, int forceIndex = -1);
     // Parameter observer
     bool isRealtimePriority() const;
-    void onParameterUpdated(const teragon::Parameter *parameter);
+    void onParameterUpdated(AudioProcessorParameter *parameter);
     // accessed from editor so must be public
-    teragon::ConcurrentParameterSet parameterSet;
 	MidiMessageCollector midiMessageCollector;
 	struct Nrpn currentNrpn;
 	void flushAllParametrsToNrpn();
     void sendNrpnPresetName();
 	void editorClosed() {  pfm2Editor = nullptr; }
 
+	void addMidifiedParameter(MidifiedFloatParameter *param);
+
 private:
-	 std::map<int , teragon::Parameter* > nrpmParameterMap;
-	 int nrpmIndex[2048];
-	 int parameterIndex;
-	 char presetName[13];
+	std::map<int, AudioProcessorParameter* > nrpmParameterMap;
+	int nrpmIndex[2048];
+	int parameterIndex;
+	char presetName[13];
     int currentProgram;
     String programName[NUMBER_OF_PROGRAM];
     int currentMidiChannel;

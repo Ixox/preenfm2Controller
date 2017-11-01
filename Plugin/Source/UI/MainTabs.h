@@ -20,10 +20,8 @@
 #pragma once
 
 //[Headers]     -- You can add your own extra header files here --
-#include "../PluginParameters/include/PluginParameters.h"
-
 #include <unordered_set>
-
+class MidifiedFloatParameter;
 class PanelEngine;
 class PanelModulation;
 class PanelArpAndFilter;
@@ -52,8 +50,7 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void handleIncomingMidiBuffer(MidiBuffer &buffer, int numberOfSamples);
-    void buildParameters(teragon::ConcurrentParameterSet& parameterSet);
+    void buildParameters(AudioProcessor *audioProcessor);
 	void updateUI(std::unordered_set<const char*> &paramSet);
 	void newNrpnParam(int nrpn, int value);
 	void setPresetName(const char* presetName);
@@ -67,18 +64,18 @@ public:
     void buttonClicked (Button* buttonThatWasClicked) override;
     void labelTextChanged (Label* labelThatHasChanged) override;
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
-
+	MidifiedFloatParameter* getParameterFromName(String componentName);
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     int midiInfo;
+	AudioProcessor* audioProcessor;
     PanelEngine* panelEngine;
     PanelModulation* panelModulation;
     PanelArpAndFilter* panelArpAndFilter;
-    teragon::ConcurrentParameterSet* parameterSet;
-    teragon::ParameterValue pullButtonValue;
-    teragon::ParameterValue pushButtonValue;
+    float pullButtonValue;
+    float pushButtonValue;
     int currentMidiChannel;
     MidiMessageCollector *midiMessageCollector;
 	char *presetNamePtr;

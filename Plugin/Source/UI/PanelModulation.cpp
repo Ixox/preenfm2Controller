@@ -19,10 +19,8 @@
 
 //[Headers] You can add your own extra header files here...
 #include "JuceHeader.h"
-#include "../PluginParameters/include/PluginParameters.h"
-
 #include "SliderPfm2.h"
-
+#include "../MidifiedFloatParameter.h"
 //[/Headers]
 
 #include "PanelModulation.h"
@@ -143,7 +141,7 @@ PanelModulation::PanelModulation ()
         lfoExtMidiSync[k]->addItem("MC*3", 10060);
         lfoExtMidiSync[k]->addItem("MC*4", 10070);
         lfoExtMidiSync[k]->addItem("MC*8", 10080);
-        lfoExtMidiSync[k]->setSelectedId(10000);
+        lfoExtMidiSync[k]->setSelectedId(9990);
         lfoExtMidiSync[k]->addListener (this);
 
         addAndMakeVisible(lfoFrequency[k] = new SliderPfm2("LFO"+ String(k+1) + " Frequency"));
@@ -469,10 +467,10 @@ void PanelModulation::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPl
     // Update the value if the change comes from the UI
     //printf("PanelModulation::sliderValueChanged (%u) : %s\n", fromPluginUI ? 1:0, sliderThatWasMoved->getName().toRawUTF8() );
     if (fromPluginUI) {
-		teragon::Parameter * parameterReady = panelParameterMap[sliderThatWasMoved->getName()];
+		AudioProcessorParameter * parameterReady = parameterMap[sliderThatWasMoved->getName()];
         if (parameterReady != nullptr) {
-            teragon::ParameterValue value = sliderThatWasMoved->getValue();
-            parameterSet->set(parameterReady, value, nullptr);
+            double value = sliderThatWasMoved->getValue();
+			((MidifiedFloatParameter*)parameterReady)->setRealValue(value);
         }
     }
     for (int k=0; k < NUMBER_OF_LFO; k++) {
@@ -502,11 +500,11 @@ void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
 void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPluginUI) {
     // Update the value if the change comes from the UI
     if (fromPluginUI) {
-        teragon::Parameter * parameterReady = panelParameterMap[comboBoxThatHasChanged->getName()];
+		AudioProcessorParameter * parameterReady = parameterMap[comboBoxThatHasChanged->getName()];
         if (parameterReady != nullptr) {
-            teragon::ParameterValue value = comboBoxThatHasChanged->getSelectedId();
-            parameterSet->set(parameterReady, value, nullptr);
-        }
+            double value = comboBoxThatHasChanged->getSelectedId();
+			((MidifiedFloatParameter*)parameterReady)->setRealValue(value);
+		}
     }
 
     for (int k = 0 ; k< NUMBER_OF_LFO; k++) {
@@ -562,7 +560,7 @@ void PanelModulation::buildParameters() {
         updateComboParameter(lfoExtMidiSync[k]);
         updateSliderParameter(lfoPhase[k]);
         updateSliderParameter(lfoFrequency[k]);
-//        updateSliderParameter(lfoBias[k]);
+        updateSliderParameter(lfoBias[k]);
         updateComboParameter(lfoKsynOnOff[k]);
         updateSliderParameter(lfoKSync[k]);
     }
@@ -593,33 +591,29 @@ void PanelModulation::updateUIEnveloppe(const char* paramName) {
 
     for (int p=1; p < enveloppeFree1->getNumberOfPoints() ; p++) {
         String name = String(pString) + String(pointName[p-1]);
-        teragon::Parameter* paramToMap =  parameterSet->get(name.toRawUTF8());
 
-        if (paramName != nullptr && name != String(paramName)) {
+		MidifiedFloatParameter* param = checkParamExistence(name);
+		// Will remove that later but dont' BUG for the moment if that doesn't fit
+		if (param == nullptr) {
+			printf("Enveloppe point %s does not exist...\r\n", name.toRawUTF8());
+			return;
+		}
+
+		if (paramName != nullptr && name != String(paramName)) {
             continue;
-        } else {
-//            printf("Cool... It's %s\r\n", name.toRawUTF8());
-        }
+        } 
 
-        // Will remove that later but dont' BUG for the moment if that doesn't fit
-        if (paramToMap == nullptr) {
-            printf("Enveloppe point %s does not exist...\r\n", name.toRawUTF8());
-            return;
-        }
-
-        if (panelParameterMap[name] == nullptr) {
-            panelParameterMap.set(name ,paramToMap);
-        }
         // And let's update the value and update the UI Without sending modification !!!
         // No modification : we dont want sliderValueChanged to be called in the different panels
+		
         if (p  == 3) {
-            if (paramToMap->getValue() != enveloppeFree1->getY(p)) {
-                enveloppeFree1->setY(p, paramToMap->getValue());
+            if (param->getValue() != enveloppeFree1->getY(p)) {
+                enveloppeFree1->setY(p, param->getRealValue());
                 enveloppeFree1->repaint();
             }
         } else {
-            if (paramToMap->getValue() != enveloppeFree1->getX(p)) {
-                enveloppeFree1->setX(p, paramToMap->getValue());
+            if (param->getValue() != enveloppeFree1->getX(p)) {
+                enveloppeFree1->setX(p, param->getRealValue());
                 enveloppeFree1->repaint();
             }
         }
@@ -630,27 +624,22 @@ void PanelModulation::updateUIEnveloppe(const char* paramName) {
 
     for (int p=1; p < enveloppeFree2->getNumberOfPoints() ; p++) {
         String name = String(pString) + String(pointName[p-1]);
-        teragon::Parameter* paramToMap =  parameterSet->get(name.toRawUTF8());
 
-        if (paramName != nullptr && name != String(paramName)) {
-            continue;
-        } else {
-//            printf("Cool... It's %s\r\n", name.toRawUTF8());
-        }
+		MidifiedFloatParameter* param = checkParamExistence(name);
+		// Will remove that later but dont' BUG for the moment if that doesn't fit
+		if (param == nullptr) {
+			printf("Enveloppe point %s does not exist...\r\n", name.toRawUTF8());
+			return;
+		}
 
-        // Will remove that later but dont' BUG for the moment if that doesn't fit
-        if (paramToMap == nullptr) {
-            printf("Enveloppe point %s does not exist...\r\n", name.toRawUTF8());
-            return;
-        }
-
-        if (panelParameterMap[name] == nullptr) {
-            panelParameterMap.set(name ,paramToMap);
-        }
-        // And let's update the value and update the UI Without sending modification !!!
+		if (paramName != nullptr && name != String(paramName)) {
+			continue;
+		}
+		
+		// And let's update the value and update the UI Without sending modification !!!
         // No modification : we dont want sliderValueChanged to be called in the different panels
-        if (paramToMap->getValue() != enveloppeFree2->getX(p)) {
-            enveloppeFree2->setX(p, paramToMap->getValue());
+        if (param->getValue() != enveloppeFree2->getX(p)) {
+            enveloppeFree2->setX(p, param->getRealValue());
             enveloppeFree2->repaint();
         }
     }

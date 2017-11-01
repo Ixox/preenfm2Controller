@@ -20,7 +20,6 @@
 #include "PluginEditor.h"
 
 #include "UI/MainTabs.h"
-#include "PluginParameters/include/PluginParameters.h"
 
 //==============================================================================
 Pfm2AudioProcessorEditor::Pfm2AudioProcessorEditor (Pfm2AudioProcessor* ownerFilter)
@@ -28,7 +27,7 @@ Pfm2AudioProcessorEditor::Pfm2AudioProcessorEditor (Pfm2AudioProcessor* ownerFil
 {
 	this->ownerFilter = ownerFilter;
     addAndMakeVisible (mainTabs = new MainTabs());
-    mainTabs->buildParameters(ownerFilter->parameterSet);
+    mainTabs->buildParameters(getAudioProcessor());
     // This is where our plugin's editor size is set.
 
 	setSize (1000, 750);
@@ -55,20 +54,21 @@ void Pfm2AudioProcessorEditor::resized() {
 
 
 void Pfm2AudioProcessorEditor::updateUIWith(std::unordered_set<const char*> &ptu) {
-    for(std::unordered_set<const char*>::iterator it = ptu.begin(); it != ptu.end(); ++it) {
-		this->parametersToUpdateMutex.lock();
+	this->parametersToUpdateMutex.lock();
+	for(std::unordered_set<const char*>::iterator it = ptu.begin(); it != ptu.end(); ++it) {
 		this->parametersToUpdate.insert(*it);
-		this->parametersToUpdateMutex.unlock();
 	}
+	this->parametersToUpdateMutex.unlock();
 }
 
+
 void Pfm2AudioProcessorEditor::removeParamToUpdateUI(const char* paramName) {
-    if (this->parametersToUpdate.count(paramName) > 0) {
+	this->parametersToUpdateMutex.lock();
+	if (this->parametersToUpdate.count(paramName) > 0) {
 //        printf("#### Pfm2AudioProcessorEditor ERASE %d times\r\n", this->parametersToUpdate.count(paramName));
-		this->parametersToUpdateMutex.lock();
         this->parametersToUpdate.erase(paramName);
-		this->parametersToUpdateMutex.unlock();
-    }
+	}
+	this->parametersToUpdateMutex.unlock();
 }
 
 void Pfm2AudioProcessorEditor::timerCallback () {

@@ -21,7 +21,6 @@
 #include "JuceHeader.h"
 #include "png/AlgoPNG.h"
 #include "SliderPfm2.h"
-
 //[/Headers]
 
 #include "PanelEngine.h"
@@ -198,8 +197,8 @@ PanelEngine::PanelEngine ()
         opFrequencyType[k]->setJustificationType (Justification::centred);
         opFrequencyType[k]->setColour (ComboBox::buttonColourId, Colours::blue);
         opFrequencyType[k]->addItem("Keyboard", 1);
-		opFrequencyType[k]->addItem("Fixed", 2);
 		opFrequencyType[k]->addItem("Fine tune Hertz", 3);
+		opFrequencyType[k]->addItem("Fixed", 2);
 		opFrequencyType[k]->setSelectedId(1);
         opFrequencyType[k]->addListener (this);
 
@@ -531,10 +530,10 @@ void PanelEngine::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPlugin
 {
     // Update the value if the change comes from the UI
     if (fromPluginUI) {
-		teragon::Parameter * parameterReady = panelParameterMap[sliderThatWasMoved->getName()];
+		AudioProcessorParameter* parameterReady = parameterMap[sliderThatWasMoved->getName()];
         if (parameterReady != nullptr) {
-            teragon::ParameterValue value = sliderThatWasMoved->getValue();
-            parameterSet->set(parameterReady, value, nullptr);
+            double value = sliderThatWasMoved->getValue();
+			((MidifiedFloatParameter*) parameterReady)->setRealValue(value);
         }
     }
 	if (sliderThatWasMoved == algoChooser) {
@@ -560,10 +559,10 @@ void PanelEngine::comboBoxChanged (ComboBox* comboBoxThatHasChanged) {
 void PanelEngine::comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPluginUI) {
     // Update the value if the change comes from the UI
     if (fromPluginUI) {
-        teragon::Parameter * parameterReady = panelParameterMap[comboBoxThatHasChanged->getName()];
+        AudioProcessorParameter * parameterReady = parameterMap[comboBoxThatHasChanged->getName()];
         if (parameterReady != nullptr) {
-            teragon::ParameterValue value = comboBoxThatHasChanged->getSelectedId();
-            parameterSet->set(parameterReady, value, nullptr);
+            double value = comboBoxThatHasChanged->getSelectedId();
+			((MidifiedFloatParameter*)parameterReady)->setRealValue(value);
         }
     }
 }
@@ -672,27 +671,26 @@ void PanelEngine::updateUIEnveloppe(const char* paramName) {
                 continue;
             }
 
-            teragon::Parameter* paramToMap =  parameterSet->get(name.toRawUTF8());
+			MidifiedFloatParameter* param = checkParamExistence(name.toRawUTF8());
             // Will remove that later but dont' BUG for the moment if that doesn't fit
-            if (paramToMap == nullptr) {
+            if (param == nullptr) {
                 printf("Enveloppe point %s does not exist...\r\n", name.toRawUTF8());
                 return;
             }
 
-            if (panelParameterMap[name] == nullptr) {
-                panelParameterMap.set(name ,paramToMap);
-            }
             // And let's update the value and update the UI Without sending modification !!!
             // No modification : we dont want sliderValueChanged to be called in the different panels
+
+
             if ((p & 0x1) == 0) {
-                if (paramToMap->getValue() != enveloppe[k]->getX(p / 2)) {
-                    enveloppe[k]->setX(p / 2, paramToMap->getValue());
+                if (param->getValue() != enveloppe[k]->getX(p / 2)) {
+                    enveloppe[k]->setX(p / 2, param->getRealValue());
                     enveloppe[k]->repaint();
 
                 }
             } else {
-                if (paramToMap->getValue() != enveloppe[k]->getY(p / 2)) {
-                    enveloppe[k]->setY(p / 2, paramToMap->getValue());
+                if (param->getValue() != enveloppe[k]->getY(p / 2)) {
+                    enveloppe[k]->setY(p / 2, param->getRealValue());
                     enveloppe[k]->repaint();
                 }
             }

@@ -41,11 +41,6 @@ public:
     void updateValues(const MouseEvent& event);
     void setValues(int x, int y);
     int getValue(int step) const { if (step <numberOfValues) return values[step]; else return 0; }
-//    void setMidiBuffer(MidiBuffer* eventsToAdd) {
-//        this->eventsToAdd = eventsToAdd;
-//    }
-//    void sendNrpn (int nrpnParam, int nrpnValue);
-//    void handleIncomingNrpn(int param, int value);
 
     void paint (Graphics&);
     void resized();

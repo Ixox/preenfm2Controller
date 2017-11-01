@@ -57,8 +57,6 @@ void StepSequencer::paint (Graphics& g)
 		g.setColour (Colours::whitesmoke);
 		g.drawText(String(values[k]), (float) k * width, getHeight() - 20, width, 10, Justification::centred, true);
 	}
-//	g.setColour (Colours::red);
-//	g.drawText(String(debugValue), 10, 10 , 50, 10, Justification::centred, true);
 
     g.setColour (Colours::grey);
     g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
@@ -132,24 +130,4 @@ void StepSequencer::setValues(int x, int y) {
         repaint();
     }
 }
-
-//void StepSequencer::sendNrpn (int nrpnParam, int nrpnValue) {
-//	if (eventsToAdd != nullptr) {
-//	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 99, (nrpnParam >> 7)), Time::getMillisecondCounter());
-//	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 98, (nrpnParam & 0xFF)), Time::getMillisecondCounter());
-//	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 6, (nrpnValue >> 7)), Time::getMillisecondCounter());
-//	    eventsToAdd->addEvent(MidiMessage::controllerEvent(1, 38, (nrpnValue & 0xFF)), Time::getMillisecondCounter());
-//	}
-//}
-//
-
-
-//
-//void StepSequencer::handleIncomingNrpn(int param, int value) {
-//	int x = param - nrpnBase;
-//	if (values[x] != value && value >= 0 && value < maxValue) {
-//		values[x] = value;
-//		repaint();
-//	}
-//}
 

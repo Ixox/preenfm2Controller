@@ -21,8 +21,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
-#include "MidifiedComponent.h"
-#include "PanelOfParameters.h"
+#include "PanelOfComponents.h"
 
 //[/Headers]
 
@@ -37,7 +36,7 @@
                                                                     //[/Comments]
 */
 class PanelArpAndFilter  : public Component,
-                           public PanelOfParameters,
+                           public PanelOfComponents,
                            public Slider::Listener,
                            public ComboBox::Listener
 {
@@ -54,7 +53,7 @@ public:
     void filterIsNow(bool paramOn1, bool paramOn2);
     void setMidiBuffer(MidiBuffer& eventsToAdd) { this->eventsToAdd = &eventsToAdd; }
     void buildParameters();
-    void onParameterUpdated(const teragon::Parameter *parameter);
+    void onParameterUpdated(AudioProcessorParameter *parameter);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPluginUI);
     void sliderValueChanged (Slider* sliderThatWasMoved, bool fromPluginUI);
     void updateComboParameter_hook(ComboBox* combo);

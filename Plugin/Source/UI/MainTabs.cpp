@@ -19,7 +19,6 @@
 
 //[Headers] You can add your own extra header files here...
 #include "JuceHeader.h"
-#include "../PluginParameters/include/PluginParameters.h"
 #include "PanelEngine.h"
 #include "PanelModulation.h"
 #include "PanelArpAndFilter.h"
@@ -204,19 +203,21 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == pullButton)
     {
         //[UserButtonCode_pullButton] -- add your button handler code here..
+		// XH !!!
 
-        teragon::Parameter* param =  parameterSet->get("pull button");
+		MidifiedFloatParameter* param = getParameterFromName("pull button");
         pullButtonValue = (pullButtonValue == 0 ? 1 : 0) ;
-        parameterSet->set(param, pullButtonValue, nullptr);
+		param->setRealValue(pullButtonValue);
 
         //[/UserButtonCode_pullButton]
     }
     else if (buttonThatWasClicked == pushButton)
     {
         //[UserButtonCode_pushButton] -- add your button handler code here..
-        teragon::Parameter* param =  parameterSet->get("push button");
-        pushButtonValue = (pushButtonValue == 0 ? 1 : 0) ;
-        parameterSet->set(param, pushButtonValue, nullptr);
+
+		 MidifiedFloatParameter* param = getParameterFromName("push button");
+		 pushButtonValue = (pushButtonValue == 0 ? 1 : 0);
+		 param->setRealValue(1);
 
         //[/UserButtonCode_pushButton]
     }
@@ -269,10 +270,12 @@ void MainTabs::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == midiChannelCombo)
     {
         //[UserComboBoxCode_midiChannelCombo] -- add your combo box handling code here..
-        teragon::Parameter* param =  parameterSet->get("Midi Channel");
+
+		MidifiedFloatParameter* param = getParameterFromName("Midi Channel");
+		
         if (currentMidiChannel != midiChannelCombo->getSelectedId()) {
             currentMidiChannel = midiChannelCombo->getSelectedId();
-            parameterSet->set(param, currentMidiChannel, nullptr);
+			param->setRealValue(currentMidiChannel);
         }
 
         //[/UserComboBoxCode_midiChannelCombo]
@@ -286,17 +289,27 @@ void MainTabs::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
+MidifiedFloatParameter* MainTabs::getParameterFromName(String componentName) {
+	const OwnedArray<AudioProcessorParameter>& parameters = audioProcessor->getParameters();
+	for (int p = 0; p < parameters.size(); p++) {
+		if (parameters[p]->getName(256) == componentName) {
+			return (MidifiedFloatParameter*) parameters[p];		
+		}
+	}
+	
+}
 
-void MainTabs::buildParameters(teragon::ConcurrentParameterSet& parameterSet) {
-    this->parameterSet = &parameterSet;
 
-    panelEngine->setParameterSet(parameterSet);
+void MainTabs::buildParameters(AudioProcessor *audioProcessor) {
+    this->audioProcessor = audioProcessor;
+
+    panelEngine->setParameterSet(audioProcessor);
     panelEngine->buildParameters();
 
-    panelModulation->setParameterSet(parameterSet);
+    panelModulation->setParameterSet(audioProcessor);
     panelModulation->buildParameters();
 
-    panelArpAndFilter->setParameterSet(parameterSet);
+    panelArpAndFilter->setParameterSet(audioProcessor);
     panelArpAndFilter->buildParameters();
 }
 
@@ -312,7 +325,8 @@ void MainTabs::updateUI(std::unordered_set<const char*> &paramSet) {
 
     for(std::unordered_set<const char*>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
         if (strcmp((*it), "Midi Channel") == 0) {
-            midiChannelCombo->setSelectedId(this->parameterSet->get("Midi Channel")->getValue());
+			// XH !!!
+			//            midiChannelCombo->setSelectedId(this->parameterSet->get("Midi Channel")->getValue());
         }
     }
     panelEngine->updateUI(paramSet);

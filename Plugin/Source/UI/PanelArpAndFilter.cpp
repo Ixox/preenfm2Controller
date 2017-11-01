@@ -19,8 +19,8 @@
 
 //[Headers] You can add your own extra header files here...
 #include "JuceHeader.h"
-#include "../PluginParameters/include/PluginParameters.h"
 #include "SliderPfm2.h"
+#include "../MidifiedFloatParameter.h"
 //[/Headers]
 
 #include "PanelArpAndFilter.h"
@@ -619,11 +619,11 @@ void PanelArpAndFilter::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 void PanelArpAndFilter::comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPluginUI) {
     // Update the value if the change comes from the UI
     if (fromPluginUI) {
-        teragon::Parameter * parameterReady = panelParameterMap[comboBoxThatHasChanged->getName()];
+		AudioProcessorParameter* parameterReady = parameterMap[comboBoxThatHasChanged->getName()];
         if (parameterReady != nullptr) {
-            teragon::ParameterValue value = comboBoxThatHasChanged->getSelectedId();
-            parameterSet->set(parameterReady, value, nullptr);
-        }
+            double value = comboBoxThatHasChanged->getSelectedId();
+			((MidifiedFloatParameter*)parameterReady)->setRealValue(value);
+		}
     }
 
     if (comboBoxThatHasChanged == arpClockComboBox) {
@@ -657,11 +657,11 @@ void PanelArpAndFilter::sliderValueChanged(Slider* sliderThatWasMoved, bool from
 {
     // Update the value if the change comes from the UI
     if (fromPluginUI) {
-        teragon::Parameter * parameterReady = panelParameterMap[sliderThatWasMoved->getName()];
+		AudioProcessorParameter * parameterReady = parameterMap[sliderThatWasMoved->getName()];
         if (parameterReady != nullptr) {
-            teragon::ParameterValue value = sliderThatWasMoved->getValue();
-            parameterSet->set(parameterReady, value, nullptr);
-        }
+            double value = sliderThatWasMoved->getValue();
+			((MidifiedFloatParameter*)parameterReady)->setRealValue(value);
+		}
     }
 }
 
@@ -724,7 +724,7 @@ void PanelArpAndFilter::buildParameters() {
 
 }
 
-void PanelArpAndFilter::onParameterUpdated(const teragon::Parameter *parameter) {
+void PanelArpAndFilter::onParameterUpdated(AudioProcessorParameter *parameter) {
 }
 
 void PanelArpAndFilter::updateComboParameter_hook(ComboBox* combo) {

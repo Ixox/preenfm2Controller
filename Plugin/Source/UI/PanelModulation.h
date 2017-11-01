@@ -24,7 +24,7 @@
 #include "StepSequencer.h"
 #include "EnveloppeFree1.h"
 #include "EnveloppeFree2.h"
-#include "PanelOfParameters.h"
+#include "PanelOfComponents.h"
 
 
 #define NUMBER_OF_STEP_SEQ 2
@@ -47,7 +47,7 @@ class PanelModulation  : public Component,
                          public Slider::Listener,
                          public Button::Listener,
                          public ComboBox::Listener,
-                         public PanelOfParameters
+                         public PanelOfComponents
 {
 public:
     //==============================================================================
