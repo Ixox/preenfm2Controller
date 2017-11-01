@@ -382,6 +382,9 @@
     <ClCompile Include="..\..\..\Plugin\Source\UI\MainTabs.cpp">
       <Filter>pfm2Editor\Source\Plugin</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Plugin\Source\MidifiedFloatParameter.cpp">
+      <Filter>pfm2Editor\Source\Plugin</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\UI\PanelArpAndFilter.cpp">
       <Filter>pfm2Editor\Source\Plugin</Filter>
     </ClCompile>
@@ -401,9 +404,6 @@
       <Filter>pfm2Editor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\UI\StepSequencer.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Plugin\Source\PluginParameters\include\tinythread\source\tinythread.cpp">
       <Filter>pfm2Editor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\AudioProcessorPlayerWithMidiOutput.cpp">
@@ -2157,9 +2157,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\SliderPfm2.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\png\AlgoPNG.h">
       <Filter>pfm2Editor\Source\Plugin</Filter>
     </ClInclude>
@@ -2181,7 +2178,7 @@
     <ClInclude Include="..\..\..\Plugin\Source\UI\MainTabs.h">
       <Filter>pfm2Editor\Source\Plugin</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\MidifiedComponent.h">
+    <ClInclude Include="..\..\..\Plugin\Source\MidifiedFloatParameter.h">
       <Filter>pfm2Editor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\PanelArpAndFilter.h">
@@ -2193,7 +2190,7 @@
     <ClInclude Include="..\..\..\Plugin\Source\UI\PanelModulation.h">
       <Filter>pfm2Editor\Source\Plugin</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\PanelOfParameters.h">
+    <ClInclude Include="..\..\..\Plugin\Source\UI\PanelOfComponents.h">
       <Filter>pfm2Editor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\PluginEditor.h">
@@ -2206,6 +2203,9 @@
       <Filter>pfm2Editor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\PreenNrpn.h">
+      <Filter>pfm2Editor\Source\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Plugin\Source\UI\SliderPfm2.h">
       <Filter>pfm2Editor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\StepSequencer.h">
