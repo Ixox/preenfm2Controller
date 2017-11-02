@@ -51,12 +51,13 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     void buildParameters(AudioProcessor *audioProcessor);
-	void updateUI(std::unordered_set<const char*> &paramSet);
+	void updateUI(std::unordered_set<String> &paramSet);
 	void newNrpnParam(int nrpn, int value);
 	void setPresetName(const char* presetName);
 	void setPresetNamePtr(char* presetNamePtr);
     void setMidiMessageCollector(MidiMessageCollector &midiMessageCollector);
 	void setMidiChannel(int newMidiChannel);
+	void setPushButtonEnabled(bool enabled);
     //[/UserMethods]
 
     void paint (Graphics& g) override;

@@ -21,7 +21,6 @@
 #include "PluginEditor.h"
 #include "UI/PreenLookAndFeel.h"
 
-int Midificator::paramIndexCounter = 0;
 
 //==============================================================================
 Pfm2AudioProcessor::Pfm2AudioProcessor()
@@ -30,11 +29,12 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 	LookAndFeel::setDefaultLookAndFeel(myLookAndFeel);
 
     // Important !!!! reset paramIndexCounter.
-    Midificator::resetParamIndexCounter();
+	MidifiedFloatParameter::resetParamIndexCounter();
 
     pfm2Editor = nullptr;
 	MidifiedFloatParameter* newParam;
     parameterIndex = 0;
+	flushAllParametrsToNrpnStatus = FLUSH_FINISHED;
 
     for (int k=0; k<2048; k++) {
         nrpmIndex[k] = -1;
@@ -582,17 +582,21 @@ void Pfm2AudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
     for (int i = 0; i < getNumOutputChannels(); ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // dispatch realtime events to non realtime observer
-//    parameterSet.processRealtimeEvents();
+
+	if (flushAllParametrsToNrpnStatus != FLUSH_FINISHED) {
+		flushAllParametrsToNrpn();
+	}
+
     midiMessageCollector.removeNextBlockOfMessages(midiMessages,  buffer.getNumSamples());
     
+
     if (midiMessages.getNumEvents() > 0) {
         printf("processBlock : %d midi messages \n", midiMessages.getNumEvents());
     }
     
     if (parametersToUpdate.size() > 0 ) {
 		if (parametersToUpdateMutex.try_lock()) {
-	        std::unordered_set<const char*> newSet;
+	        std::unordered_set<String> newSet;
 			newSet.swap(parametersToUpdate);
 			parametersToUpdateMutex.unlock();
 			if (pfm2Editor) {
@@ -708,34 +712,54 @@ void Pfm2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
                 }
             }
 			*/
-            // Flush NRPN
-            flushAllParametrsToNrpn();
+            // Start Flushing NRPN
+			flushAllParametrsToNrpnStatus = FLUSH_START;
+			if (pfm2Editor) {
+				const MessageManagerLock mmLock;
+				pfm2Editor->setPushButtonEnabled(false);
+			}
         }
     }
 }
 
 
 void Pfm2AudioProcessor::flushAllParametrsToNrpn() {
-    sendNrpnPresetName();
+	if (flushAllParametrsToNrpnStatus == FLUSH_START) {
+		sendNrpnPresetName();
+		flushAllParametrsToNrpnStatus ++;
+		return;
+	}
 
-//    printf("Pfm2AudioProcessor::flushAllParametrsToNrpn this : 0x%x \n", (unsigned long)&midiMessageCollector);
+	//    printf("Pfm2AudioProcessor::flushAllParametrsToNrpn this : 0x%x \n", (unsigned long)&midiMessageCollector);
 
 	const OwnedArray< AudioProcessorParameter >&parameterSet = getParameters();
-
-
-    for (int p=0; p< parameterSet.size(); p++) {
-        // Pull button
+	int max = 1;
+	int p;
+    for (p = flushAllParametrsToNrpnStatus; p < parameterSet.size() && max < 8; p++ , max++) {
+        // Pull/push button
         if (p == nrpmIndex[2046] || p == nrpmIndex[2047]) {
             continue;
         }
-        const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameterSet[p]);
+         MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)parameterSet[p];
         if (midifiedFP != nullptr) {
 //            printf("%d %s Add Nrpn %d : %d\n", p, midifiedFP->getName().c_str(), midifiedFP->getNrpnParamMSB() * 127 + midifiedFP->getNrpnParamLSB(),
 //                    midifiedFP->getNrpnValueMSB(midifiedFP->getValue()) * 127 + midifiedFP->getNrpnValueLSB(midifiedFP->getValue()));
-            midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel, parameterSet[p]->getValue());
-            // usleep(5000);
+
+			//DBG(String(p) << " " << parameterSet[p]->getName(256) << " Add Nrpn " << String(midifiedFP->getNrpnParamMSB() * 127 + midifiedFP->getNrpnParamLSB()) << " value " << String(midifiedFP->getNrpnValueMSB(midifiedFP->getValue()) * 127 + midifiedFP->getNrpnValueLSB(midifiedFP->getValue())));
+            midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel);
         }
     }
+	if (p == parameterSet.size()) {
+		// Flush terminated
+		flushAllParametrsToNrpnStatus = FLUSH_FINISHED;
+		if (pfm2Editor) {
+			const MessageManagerLock mmLock;
+			pfm2Editor->setPushButtonEnabled(true);
+		}
+
+	} else {
+		flushAllParametrsToNrpnStatus = p;
+	}
 }
 
 
@@ -803,22 +827,18 @@ void Pfm2AudioProcessor::handleIncomingMidiBuffer(MidiBuffer &buffer, int number
  */
 void Pfm2AudioProcessor::setParameter (int index, float newValue)
 {
-    // printf("Pfm2AudioProcessor::setParameter  %d : %f\r\n", index, newValue);
-
-//    parameterSet.setScaled(index, newValue, this);
-	const OwnedArray< AudioProcessorParameter >&parameters = getParameters();
-
-    const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameters[index]);
+ 
+    MidifiedFloatParameter* midifiedFP =(MidifiedFloatParameter*)getParameters()[index];
     if (midifiedFP != nullptr) {
         // send nrpn
-        midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel, parameters[index]->getValue());
-    } else {
+        midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel);
+		// REDRAW UI : must be done in processblock after parameterSet is really udpated.
+		parametersToUpdateMutex.lock();
+		parametersToUpdate.insert(midifiedFP->getName());
+		parametersToUpdateMutex.unlock();
+	} else {
         printf("Pfm2AudioProcessor::setParameter NULL midifiedFP \r\n");
     }
-    // REDRAW UI : must be done in processblock after parameterSet is really udpated.
-	parametersToUpdateMutex.lock();
-    parametersToUpdate.insert(parameters[index]->getName(256).toRawUTF8());
-	parametersToUpdateMutex.unlock();
 }
 
 
@@ -897,13 +917,20 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int value, int forceIndex
 void Pfm2AudioProcessor::onParameterUpdated(AudioProcessorParameter *parameter) {
     
 
-    const MidifiedFloatParameter* midifiedFP = dynamic_cast<const MidifiedFloatParameter*>(parameter);
+    MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)parameter;
     if (midifiedFP != nullptr) {
         int index = midifiedFP->getParamIndex();
 		
         if (index == nrpmIndex[2046]) {
             // Push button
-            flushAllParametrsToNrpn();
+			// Let's start flushing in process block
+			if (flushAllParametrsToNrpnStatus == FLUSH_FINISHED) {
+				flushAllParametrsToNrpnStatus = FLUSH_START;
+				if (pfm2Editor) {
+					const MessageManagerLock mmLock;
+					pfm2Editor->setPushButtonEnabled(false);
+				}
+			}
         } else if (index == nrpmIndex[2045]) {
             // Midi Channel changed
             currentMidiChannel = midifiedFP->getRealValue();
@@ -911,10 +938,10 @@ void Pfm2AudioProcessor::onParameterUpdated(AudioProcessorParameter *parameter) 
             // Notify host
             sendParamChangeMessageToListeners(index, midifiedFP->getValue());
             // send nrpn
-			// XH ???????????
-//            if (!midifiedFP->getSendRealValue() || midifiedFP->getValue() != 1) {
-                midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel, midifiedFP->getRealValue());
-//            }
+			// XH Why did i need to have this line ?????
+			//  if (!midifiedFP->getSendRealValue() || midifiedFP->getValue() != 1) {
+            midifiedFP->addNrpn(midiMessageCollector, currentMidiChannel);
+			//  }
         }
     }
 }

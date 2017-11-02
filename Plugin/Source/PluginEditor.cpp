@@ -53,9 +53,9 @@ void Pfm2AudioProcessorEditor::resized() {
 }
 
 
-void Pfm2AudioProcessorEditor::updateUIWith(std::unordered_set<const char*> &ptu) {
+void Pfm2AudioProcessorEditor::updateUIWith(std::unordered_set<String> &paramSet) {
 	this->parametersToUpdateMutex.lock();
-	for(std::unordered_set<const char*>::iterator it = ptu.begin(); it != ptu.end(); ++it) {
+	for(std::unordered_set<String>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
 		this->parametersToUpdate.insert(*it);
 	}
 	this->parametersToUpdateMutex.unlock();
@@ -73,7 +73,7 @@ void Pfm2AudioProcessorEditor::removeParamToUpdateUI(const char* paramName) {
 
 void Pfm2AudioProcessorEditor::timerCallback () {
 	if (this->parametersToUpdate.size() > 0) {
-		std::unordered_set<const char*> newSet;
+		std::unordered_set<String> newSet;
 		this->parametersToUpdateMutex.lock();
 		newSet.swap(this->parametersToUpdate);
 		this->parametersToUpdateMutex.unlock();
@@ -100,5 +100,10 @@ void Pfm2AudioProcessorEditor::setPresetNamePtr(char* presetNamePtr) {
 void Pfm2AudioProcessorEditor::setPresetName(const char* presetName) {
     mainTabs->setPresetName(presetName);
 }
+
+void Pfm2AudioProcessorEditor::setPushButtonEnabled(bool enabled) {
+	mainTabs->setPushButtonEnabled(enabled);
+}
+
 
 

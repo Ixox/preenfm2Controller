@@ -28,80 +28,10 @@
 
 class Pfm2AudioProcessor;
 
-class Midificator {
-public:
-	Midificator(int nrpmP, float minV, float valueM) {
-	    setMidificatorParam(nrpmP, minV, valueM);
-	    bias = 0;
-		paramIndex = paramIndexCounter++;
-	};
-    
-    virtual ~Midificator() {};
-
-	void setMidificatorParam(int nrpmP, float minV, float valueM) {
-	    pfm2MinValue = minV;
-	    valueMultiplier = valueM;
-	    nrpnParam = nrpmP;
-	}
-
-	void addNrpn(juce::MidiMessageCollector& midiMessageCollector, const int midiChannel, const double value) const {
-		double timeNow = Time::getMillisecondCounterHiRes() * .001;
-		MidiMessage byte1 = MidiMessage::controllerEvent(midiChannel, 99, getNrpnParamMSB());
-		byte1.setTimeStamp(timeNow);
-		midiMessageCollector.addMessageToQueue(byte1);
-
-		MidiMessage byte2 = MidiMessage::controllerEvent(midiChannel, 98, getNrpnParamLSB());
-		byte2.setTimeStamp(timeNow);
-		midiMessageCollector.addMessageToQueue(byte2);
-
-		MidiMessage byte3 = MidiMessage::controllerEvent(midiChannel, 6, getNrpnValueMSB(value));
-		byte3.setTimeStamp(timeNow);
-		midiMessageCollector.addMessageToQueue(byte3);
-
-		MidiMessage byte4 = MidiMessage::controllerEvent(midiChannel, 38, getNrpnValueLSB(value));
-		byte4.setTimeStamp(timeNow);
-		midiMessageCollector.addMessageToQueue(byte4);
-	}
-
-	int getNrpnParamMSB() const { return nrpnParam >> 7; }
-	int getNrpnParamLSB() const { return nrpnParam & 0xff; }
-	virtual int getNrpnValueMSB (double value) const {
-		int iv = (value - pfm2MinValue + bias) * valueMultiplier + .005f ;
-		return iv >> 7;
-	}
-	virtual int getNrpnValueLSB(double value) const {
-		int iv = (value - pfm2MinValue + bias) * valueMultiplier + .005f;
-		return iv & 0x7f;
-	}
-
-	static void resetParamIndexCounter() { paramIndexCounter = 0; }
-	int getParamIndex() const { return paramIndex; }
-
-    void setBias(float b) {
-        this->bias = b;
-    }
-
-    bool getBias() const {
-        return this->bias;
-    }
-
-    int getNrpn() const {
-        return this->nrpnParam;
-    }
-
-protected:
-	float pfm2MinValue;
-	float valueMultiplier;
-	int nrpnParam;
-	int paramIndex;
-	static int paramIndexCounter;
-    float bias;
-
-};
 
 
 
-class MidifiedFloatParameter: public AudioProcessorParameterWithID, public Midificator {
+class MidifiedFloatParameter: public AudioProcessorParameterWithID {
 public:
 
 	MidifiedFloatParameter (std::map<int , AudioProcessorParameter* > *nrpmParameterMap,
@@ -113,30 +43,47 @@ public:
 							float defaultValue
 							) 
 		: AudioProcessorParameterWithID(componentName.replaceCharacter(' ', '_'), componentName),
-		 Midificator(nrpnParam, minValue, valueMultipler),
 		 range(minValue, maxValue), value(defaultValue), defaultValue(defaultValue)
 	{
 		this->componentName = componentName;
 		nrpmParameterMap->insert(std::pair<int , AudioProcessorParameter* > (nrpnParam, this));
 		rangeFloat = maxValue - minValue;
 		sendRealValue = false;
+
+		this->pfm2MinValue = minValue;
+		this->valueMultiplier = valueMultipler;
+		this->nrpnParam = nrpnParam;
+
+
+		bias = 0;
+		paramIndex = paramIndexCounter++;
 	}
 
-	int getNrpnValueMSB (double value) const {
+
+	int getNrpnValueLSB() const {
 		if (!sendRealValue) {
-			return Midificator::getNrpnValueMSB(value);
-		} else {
-			int iv = value + .005f + bias;
-			return iv >> 7;
-		}
-	}
-	int getNrpnValueLSB(double value) const {
-		if (!sendRealValue) {
-			return Midificator::getNrpnValueLSB(value);
+			int iv = (value - pfm2MinValue + bias) * valueMultiplier + .005f;
+			return iv & 0x7f;
 		} else {
 			int iv = value + .005f + bias;
 			return iv & 0x7f;
 		}
+	}
+	int getNrpnValueMSB() const {
+		if (!sendRealValue) {
+			int iv = (value - pfm2MinValue + bias) * valueMultiplier + .005f;
+			return iv >> 7;
+		}
+		else {
+			int iv = value + .005f + bias;
+			return iv >> 7;
+		}
+	}
+	int getNrpnParamMSB() const {
+		return nrpnParam >> 7;
+	}
+	int getNrpnParamLSB() const {
+		return nrpnParam & 0xff;
 	}
 
 
@@ -163,6 +110,30 @@ public:
 	void setProcessor(Pfm2AudioProcessor* audioProcessor) {
 		this->audioProcessor = audioProcessor;
 	}
+
+	void addNrpn(juce::MidiMessageCollector& midiMessageCollector, const int midiChannel);
+
+	static void resetParamIndexCounter() { 
+		paramIndexCounter = 0; 
+	}
+
+	int getParamIndex() const { return 
+		paramIndex; 
+	}
+
+	void setBias(float b) {
+		this->bias = b;
+	}
+
+	bool getBias() const {
+		return this->bias;
+	}
+
+	int getNrpn() const {
+		return this->nrpnParam;
+	}
+
+
 
 	// parameter float
 	float get() const noexcept { return value; }
@@ -195,6 +166,14 @@ public:
 	float getMax() {
 		return range.getRange().getEnd();
 	}
+
+protected:
+	static int paramIndexCounter;
+	float pfm2MinValue;
+	float valueMultiplier;
+	int nrpnParam;
+	int paramIndex;
+	float bias;
 
 private:
 	String componentName;

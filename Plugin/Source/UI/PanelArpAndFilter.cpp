@@ -724,8 +724,6 @@ void PanelArpAndFilter::buildParameters() {
 
 }
 
-void PanelArpAndFilter::onParameterUpdated(AudioProcessorParameter *parameter) {
-}
 
 void PanelArpAndFilter::updateComboParameter_hook(ComboBox* combo) {
     comboBoxChanged(combo, false);

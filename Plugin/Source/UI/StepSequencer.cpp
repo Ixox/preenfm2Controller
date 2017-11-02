@@ -17,7 +17,6 @@
  */
 
 
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "StepSequencer.h"
 
 //==============================================================================

@@ -47,13 +47,10 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void setMidiOutput(MidiOutput* midiOutput);
-    void handleIncomingNrpn(int param, int value);
     void arpIsNow(bool arpOn, bool enableBPM);
     void filterIsNow(bool paramOn1, bool paramOn2);
     void setMidiBuffer(MidiBuffer& eventsToAdd) { this->eventsToAdd = &eventsToAdd; }
     void buildParameters();
-    void onParameterUpdated(AudioProcessorParameter *parameter);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPluginUI);
     void sliderValueChanged (Slider* sliderThatWasMoved, bool fromPluginUI);
     void updateComboParameter_hook(ComboBox* combo);

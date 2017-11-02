@@ -20,6 +20,7 @@
 #include "PluginProcessor.h"
 #include "MidifiedFloatParameter.h"
 
+int MidifiedFloatParameter::paramIndexCounter = 0;
 
 void MidifiedFloatParameter::setValue(float newValue) {
 	float tmpValue = range.convertFrom0to1(newValue);
@@ -35,3 +36,22 @@ void MidifiedFloatParameter::setRealValue(float newValue) {
 		audioProcessor->onParameterUpdated(this);
 	}
 }
+
+void MidifiedFloatParameter::addNrpn(juce::MidiMessageCollector& midiMessageCollector, const int midiChannel) {
+	MidiMessage byte1 = MidiMessage::controllerEvent(midiChannel, 99, getNrpnParamMSB());
+	byte1.setTimeStamp(Time::getMillisecondCounterHiRes() * .001);
+	midiMessageCollector.addMessageToQueue(byte1);
+
+	MidiMessage byte2 = MidiMessage::controllerEvent(midiChannel, 98, getNrpnParamLSB());
+	byte2.setTimeStamp(Time::getMillisecondCounterHiRes() * .001);
+	midiMessageCollector.addMessageToQueue(byte2);
+
+	MidiMessage byte3 = MidiMessage::controllerEvent(midiChannel, 6, getNrpnValueMSB());
+	byte3.setTimeStamp(Time::getMillisecondCounterHiRes() * .001);
+	midiMessageCollector.addMessageToQueue(byte3);
+
+	MidiMessage byte4 = MidiMessage::controllerEvent(midiChannel, 38, getNrpnValueLSB());
+	byte4.setTimeStamp(Time::getMillisecondCounterHiRes() * .001);
+	midiMessageCollector.addMessageToQueue(byte4);
+}
+

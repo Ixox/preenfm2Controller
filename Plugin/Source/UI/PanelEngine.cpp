@@ -643,7 +643,9 @@ void PanelEngine::buildParameters() {
         updateSliderParameter(opFrequencyFineTune[k]);
     }
 
-    updateUIEnveloppe();
+	// To fill map with all points
+	updateUIEnveloppe("##");
+
     for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
         // Let listen to enveloppe
         if (!initialized) {
@@ -659,22 +661,22 @@ void PanelEngine::buildParameters() {
     initialized = true;
 }
 
-void PanelEngine::updateUIEnveloppe(const char* paramName) {
+void PanelEngine::updateUIEnveloppe(String paramName) {
     const char** pointName = enveloppe[0]->getPointSuffix();
     for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
-        const char* pString = enveloppe[k]->getName().toRawUTF8();
+        String pString = enveloppe[k]->getName();
 
         for (int p=2; p < enveloppe[k]->getNumberOfPoints() * 2; p++) {
-            String name = String(pString) + String(pointName[p - 2]);
+            String name = pString + String(pointName[p - 2]);
 
-            if (paramName != nullptr && name != String(paramName)) {
+            if (name != String(paramName)) {
                 continue;
             }
 
-			MidifiedFloatParameter* param = checkParamExistence(name.toRawUTF8());
+			MidifiedFloatParameter* param = checkParamExistence(name);
             // Will remove that later but dont' BUG for the moment if that doesn't fit
             if (param == nullptr) {
-                printf("Enveloppe point %s does not exist...\r\n", name.toRawUTF8());
+                printf("Enveloppe point %s does not exist...\r\n", name);
                 return;
             }
 

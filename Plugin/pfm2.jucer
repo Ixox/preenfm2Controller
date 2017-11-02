@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="nWJaEw" name="pfm2Plugin" projectType="audioplug" version="2.08.1"
+<JUCERPROJECT id="nWJaEw" name="pfm2Plugin" projectType="audioplug" version="2.08.2"
               bundleIdentifier="com.ixox.pfm2" includeBinaryInAppConfig="1"
               buildVST="1" buildVST3="0" buildAU="0" buildRTAS="0" buildAAX="0"
               pluginName="pfm2" pluginDesc="PreenFM2 patch editor" pluginManufacturer="Ixox"
@@ -15,55 +15,6 @@
               pluginIsMidiEffectPlugin="0" cppLanguageStandard="11">
   <MAINGROUP id="vhKV8J" name="pfm2Plugin">
     <GROUP id="{C1BB27D8-689D-95C2-2F2A-98449E82469F}" name="Source">
-      <GROUP id="{C9E1AC1F-C51D-DEE8-BF60-DF0D14E6487C}" name="PluginParameters">
-        <GROUP id="{68403646-F18C-BED4-7EFE-DE388355B5FC}" name="include">
-          <FILE id="pqm6ah" name="BlobParameter.h" compile="0" resource="0" file="Source/PluginParameters/include/BlobParameter.h"/>
-          <FILE id="JKLg4v" name="BooleanParameter.h" compile="0" resource="0"
-                file="Source/PluginParameters/include/BooleanParameter.h"/>
-          <FILE id="UcFeQ8" name="ConcurrentParameterSet.h" compile="0" resource="0"
-                file="Source/PluginParameters/include/ConcurrentParameterSet.h"/>
-          <FILE id="z3Fbcy" name="DataParameter.h" compile="0" resource="0" file="Source/PluginParameters/include/DataParameter.h"/>
-          <FILE id="F4fO4W" name="DecibelParameter.h" compile="0" resource="0"
-                file="Source/PluginParameters/include/DecibelParameter.h"/>
-          <FILE id="s58k18" name="Event.h" compile="0" resource="0" file="Source/PluginParameters/include/Event.h"/>
-          <FILE id="nDmtZ5" name="EventDispatcher.h" compile="0" resource="0"
-                file="Source/PluginParameters/include/EventDispatcher.h"/>
-          <FILE id="qSL9Ga" name="FloatParameter.h" compile="0" resource="0"
-                file="Source/PluginParameters/include/FloatParameter.h"/>
-          <FILE id="oI0xSY" name="FrequencyParameter.h" compile="0" resource="0"
-                file="Source/PluginParameters/include/FrequencyParameter.h"/>
-          <FILE id="qvHUq5" name="IntegerParameter.h" compile="0" resource="0"
-                file="Source/PluginParameters/include/IntegerParameter.h"/>
-          <FILE id="S3Qx04" name="Parameter.h" compile="0" resource="0" file="Source/PluginParameters/include/Parameter.h"/>
-          <FILE id="d6a26m" name="ParameterSet.h" compile="0" resource="0" file="Source/PluginParameters/include/ParameterSet.h"/>
-          <FILE id="P8owT9" name="PluginParameters.h" compile="0" resource="0"
-                file="Source/PluginParameters/include/PluginParameters.h"/>
-          <GROUP id="{3221FCF7-88F5-D6E4-D574-C803730D74B3}" name="readerwriterqueue">
-            <FILE id="i8u37A" name="atomicops.h" compile="0" resource="0" file="Source/PluginParameters/include/readerwriterqueue/atomicops.h"/>
-            <FILE id="GimH4E" name="LICENSE.md" compile="0" resource="1" file="Source/PluginParameters/include/readerwriterqueue/LICENSE.md"/>
-            <FILE id="S6c4EO" name="readerwriterqueue.h" compile="0" resource="0"
-                  file="Source/PluginParameters/include/readerwriterqueue/readerwriterqueue.h"/>
-            <FILE id="Nj7MtA" name="README.md" compile="0" resource="1" file="Source/PluginParameters/include/readerwriterqueue/README.md"/>
-          </GROUP>
-          <FILE id="mHOGL2" name="StringParameter.h" compile="0" resource="0"
-                file="Source/PluginParameters/include/StringParameter.h"/>
-          <GROUP id="{45583901-8859-B505-5CE1-FCCB83448B2B}" name="tinythread">
-            <GROUP id="{1C23CCD1-089A-D63C-BC7F-58DF56A331F9}" name="doc">
-              <FILE id="zejIBe" name="Doxyfile" compile="0" resource="1" file="Source/PluginParameters/include/tinythread/doc/Doxyfile"/>
-            </GROUP>
-            <FILE id="XHyTbI" name="mkbuild.sh" compile="0" resource="1" file="Source/PluginParameters/include/tinythread/mkbuild.sh"/>
-            <FILE id="o8ilK2" name="README.txt" compile="0" resource="1" file="Source/PluginParameters/include/tinythread/README.txt"/>
-            <GROUP id="{A10C7AB4-F7E5-9D15-3358-25C3ADB9E5D8}" name="source">
-              <FILE id="PU6ZSP" name="fast_mutex.h" compile="0" resource="0" file="Source/PluginParameters/include/tinythread/source/fast_mutex.h"/>
-              <FILE id="QzWMZV" name="tinythread.cpp" compile="1" resource="0" file="Source/PluginParameters/include/tinythread/source/tinythread.cpp"/>
-              <FILE id="O2FyiP" name="tinythread.h" compile="0" resource="0" file="Source/PluginParameters/include/tinythread/source/tinythread.h"/>
-            </GROUP>
-          </GROUP>
-          <FILE id="ks0N0S" name="VoidParameter.h" compile="0" resource="0" file="Source/PluginParameters/include/VoidParameter.h"/>
-        </GROUP>
-        <FILE id="tGnXJZ" name="LICENSE.txt" compile="0" resource="1" file="Source/PluginParameters/LICENSE.txt"/>
-        <FILE id="aBYGtd" name="README.md" compile="0" resource="1" file="Source/PluginParameters/README.md"/>
-      </GROUP>
       <GROUP id="{98E9ADF3-34F5-56D9-9C70-85258E9238C7}" name="UI">
         <FILE id="aBEIAf" name="Enveloppe.cpp" compile="1" resource="0" file="Source/UI/Enveloppe.cpp"/>
         <FILE id="sPMUva" name="Enveloppe.h" compile="0" resource="0" file="Source/UI/Enveloppe.h"/>
@@ -81,8 +32,6 @@
               file="Source/UI/EnveloppeFree2.h"/>
         <FILE id="ipjnWZ" name="MainTabs.cpp" compile="1" resource="0" file="Source/UI/MainTabs.cpp"/>
         <FILE id="psd3mT" name="MainTabs.h" compile="0" resource="0" file="Source/UI/MainTabs.h"/>
-        <FILE id="BeISsq" name="MidifiedComponent.h" compile="0" resource="0"
-              file="Source/UI/MidifiedComponent.h"/>
         <FILE id="K78Fig" name="PanelArpAndFilter.cpp" compile="1" resource="0"
               file="Source/UI/PanelArpAndFilter.cpp"/>
         <FILE id="b6qyBE" name="PanelArpAndFilter.h" compile="0" resource="0"
@@ -93,8 +42,8 @@
               file="Source/UI/PanelModulation.cpp"/>
         <FILE id="Nlr1xZ" name="PanelModulation.h" compile="0" resource="0"
               file="Source/UI/PanelModulation.h"/>
-        <FILE id="uoK521" name="PanelOfParameters.h" compile="0" resource="0"
-              file="Source/UI/PanelOfParameters.h"/>
+        <FILE id="bLaZYV" name="PanelOfComponents.h" compile="0" resource="0"
+              file="Source/UI/PanelOfComponents.h"/>
         <GROUP id="{B5F0E8C9-02ED-16C9-125E-2FED5E9292EB}" name="png">
           <FILE id="jVOlAd" name="AlgoPNG.cpp" compile="1" resource="0" file="Source/UI/png/AlgoPNG.cpp"/>
           <FILE id="OoxLra" name="AlgoPNG.h" compile="0" resource="0" file="Source/UI/png/AlgoPNG.h"/>
@@ -107,8 +56,10 @@
               file="Source/UI/StepSequencer.cpp"/>
         <FILE id="A59H2L" name="StepSequencer.h" compile="0" resource="0" file="Source/UI/StepSequencer.h"/>
       </GROUP>
-      <FILE id="H9SmKj" name="MidifiedParameter.h" compile="0" resource="0"
-            file="Source/MidifiedParameter.h"/>
+      <FILE id="Zp5dDU" name="MidifiedFloatParameter.cpp" compile="1" resource="0"
+            file="Source/MidifiedFloatParameter.cpp"/>
+      <FILE id="zz7Em5" name="MidifiedFloatParameter.h" compile="0" resource="0"
+            file="Source/MidifiedFloatParameter.h"/>
       <FILE id="k3O45T" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="BmYEuQ" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
@@ -143,6 +94,7 @@
         <MODULEPATH id="juce_audio_formats" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_audio_plugin_client" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <XCODE_MAC targetFolder="Builds/MacOSX" vstFolder="/Users/xhosxe/dev/VST3 SDK "
@@ -171,6 +123,7 @@
         <MODULEPATH id="juce_audio_formats" path="../../juce"/>
         <MODULEPATH id="juce_audio_devices" path="../../juce"/>
         <MODULEPATH id="juce_audio_basics" path="../../juce"/>
+        <MODULEPATH id="juce_audio_utils" path="../../juce"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2015 targetFolder="Builds/VisualStudio2015" bigIcon="ehPiCf">
@@ -185,20 +138,21 @@
                        isDebug="0" optimisation="2" targetName="pfm2Plugin_w32"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_video" path="../../juce"/>
-        <MODULEPATH id="juce_opengl" path="../../juce"/>
-        <MODULEPATH id="juce_gui_extra" path="../../juce"/>
-        <MODULEPATH id="juce_gui_basics" path="../../juce"/>
-        <MODULEPATH id="juce_graphics" path="../../juce"/>
-        <MODULEPATH id="juce_events" path="../../juce"/>
-        <MODULEPATH id="juce_data_structures" path="../../juce"/>
-        <MODULEPATH id="juce_cryptography" path="../../juce"/>
-        <MODULEPATH id="juce_core" path="../../juce"/>
-        <MODULEPATH id="juce_audio_processors" path="../../juce"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../juce"/>
-        <MODULEPATH id="juce_audio_formats" path="../../juce"/>
-        <MODULEPATH id="juce_audio_devices" path="../../juce"/>
-        <MODULEPATH id="juce_audio_basics" path="../../juce"/>
+        <MODULEPATH id="juce_video" path="JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_opengl" path="JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_gui_extra" path="JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_graphics" path="JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_events" path="JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_data_structures" path="JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_cryptography" path="JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_core" path="JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_audio_basics" path="JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="JuceLibraryCode\modules"/>
       </MODULEPATHS>
     </VS2015>
   </EXPORTFORMATS>
@@ -208,6 +162,7 @@
     <MODULES id="juce_audio_formats" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_audio_processors" showAllCode="1" useLocalCopy="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
     <MODULES id="juce_core" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_cryptography" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_data_structures" showAllCode="1" useLocalCopy="1"/>

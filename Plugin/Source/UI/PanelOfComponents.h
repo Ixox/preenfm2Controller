@@ -171,12 +171,12 @@ public:
         }
     }
 
-    void updateUI(std::unordered_set<const char*> &paramSet) {
-    	for(std::unordered_set<const char*>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
-    		Component* component = componentMap[String(*it)];
+    void updateUI(std::unordered_set<String> &paramSet) {
+    	for(std::unordered_set<String>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
+    		Component* component = componentMap[*it];
 
             if (component == nullptr) {
-                if (String(*it).startsWith("Step Seq")) {
+                if ((*it).startsWith("Step Seq")) {
                     updateUIStepSequencer(*it);
                     continue;
                 } else {
@@ -198,8 +198,8 @@ public:
     	}
     }
 
-    virtual void updateUIEnveloppe(const char* paramName) { }
-    virtual void updateUIStepSequencer(const char* paramName) {
+    virtual void updateUIEnveloppe(String paramName) { }
+    virtual void updateUIStepSequencer(String paramName) {
     }
 
 

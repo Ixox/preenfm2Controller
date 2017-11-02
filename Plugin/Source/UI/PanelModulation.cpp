@@ -465,7 +465,6 @@ void PanelModulation::sliderValueChanged (Slider* sliderThatWasMoved) {
 void PanelModulation::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPluginUI)
 {
     // Update the value if the change comes from the UI
-    //printf("PanelModulation::sliderValueChanged (%u) : %s\n", fromPluginUI ? 1:0, sliderThatWasMoved->getName().toRawUTF8() );
     if (fromPluginUI) {
 		AudioProcessorParameter * parameterReady = parameterMap[sliderThatWasMoved->getName()];
         if (parameterReady != nullptr) {
@@ -573,7 +572,7 @@ void PanelModulation::buildParameters() {
         updateSliderParameter(stepSeqBPM[k]);
         updateSliderParameter(stepSeqGate[k]);
     }
-    updateUIEnveloppe();
+	updateUIEnveloppe("##");
 
     // Let listen to enveloppe
     if (!initialized) {
@@ -585,21 +584,20 @@ void PanelModulation::buildParameters() {
 }
 
 
-void PanelModulation::updateUIEnveloppe(const char* paramName) {
+void PanelModulation::updateUIEnveloppe(String paramName) {
     const char** pointName = enveloppeFree1->getPointSuffix();
-    const char* pString = enveloppeFree1->getName().toRawUTF8();
+    String pString = enveloppeFree1->getName();
 
     for (int p=1; p < enveloppeFree1->getNumberOfPoints() ; p++) {
-        String name = String(pString) + String(pointName[p-1]);
+        String name = pString + String(pointName[p-1]);
 
 		MidifiedFloatParameter* param = checkParamExistence(name);
 		// Will remove that later but dont' BUG for the moment if that doesn't fit
 		if (param == nullptr) {
-			printf("Enveloppe point %s does not exist...\r\n", name.toRawUTF8());
 			return;
 		}
 
-		if (paramName != nullptr && name != String(paramName)) {
+		if (name != String(paramName)) {
             continue;
         } 
 
@@ -620,7 +618,7 @@ void PanelModulation::updateUIEnveloppe(const char* paramName) {
     }
 
     pointName = enveloppeFree2->getPointSuffix();
-    pString = enveloppeFree2->getName().toRawUTF8();
+    pString = enveloppeFree2->getName();
 
     for (int p=1; p < enveloppeFree2->getNumberOfPoints() ; p++) {
         String name = String(pString) + String(pointName[p-1]);
@@ -628,11 +626,10 @@ void PanelModulation::updateUIEnveloppe(const char* paramName) {
 		MidifiedFloatParameter* param = checkParamExistence(name);
 		// Will remove that later but dont' BUG for the moment if that doesn't fit
 		if (param == nullptr) {
-			printf("Enveloppe point %s does not exist...\r\n", name.toRawUTF8());
 			return;
 		}
 
-		if (paramName != nullptr && name != String(paramName)) {
+		if (name != String(paramName)) {
 			continue;
 		}
 		
@@ -645,8 +642,8 @@ void PanelModulation::updateUIEnveloppe(const char* paramName) {
     }
 }
 
-void PanelModulation::updateUIStepSequencer(const char* paramName) {
-    if (String(paramName).startsWith("Step Seq 1")) {
+void PanelModulation::updateUIStepSequencer(String paramName) {
+    if (paramName.startsWith("Step Seq 1")) {
         updateStepSeqParameter(stepSequencer[0]);
     } else  {
         updateStepSeqParameter(stepSequencer[1]);

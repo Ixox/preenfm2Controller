@@ -56,7 +56,6 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void setMidiOutput(MidiOutput* midiOutput);
     void buttonClicked (Button* buttonThatWasClicked);
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void sliderValueChanged(Slider* sliderThatWasMoved, bool fromPluginUI);
@@ -65,8 +64,8 @@ public:
     void buildParameters();
     void updateSliderParameter_hook(Slider* slider);
     void updateComboParameter_hook(ComboBox* combo);
-    void updateUIEnveloppe(const char* paramName = nullptr);
-    void updateUIStepSequencer(const char* paramName = nullptr);
+    void updateUIEnveloppe(String paramName);
+    void updateUIStepSequencer(String paramName);
     //[/UserMethods]
 
     void paint (Graphics& g) override;

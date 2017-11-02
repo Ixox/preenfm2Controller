@@ -40,19 +40,19 @@ public:
     void paint (Graphics& g);
 	void resized();
     void timerCallback ();
-    void updateUIWith(std::unordered_set<const char*> &ptu);
+    void updateUIWith(std::unordered_set<String> &paramSet);
     void removeParamToUpdateUI(const char* paramName);
     void newNrpnParam(int nrpn, int value);
     void setMidiMessageCollector(MidiMessageCollector &midiMessageCollector);
 	void setMidiChannel(int newMidiChannel);
     void setPresetName(const char* presetName);
     void setPresetNamePtr(char* presetName);
-
+	void setPushButtonEnabled(bool enabled);
 
 private:
 	bool uiOutOfSync;
     MainTabs * mainTabs;
-    std::unordered_set<const char*> parametersToUpdate;
+    std::unordered_set<String> parametersToUpdate;
 	std::mutex parametersToUpdateMutex;
 	Pfm2AudioProcessor* ownerFilter;
 };

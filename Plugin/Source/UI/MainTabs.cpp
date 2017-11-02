@@ -203,7 +203,6 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == pullButton)
     {
         //[UserButtonCode_pullButton] -- add your button handler code here..
-		// XH !!!
 
 		MidifiedFloatParameter* param = getParameterFromName("pull button");
         pullButtonValue = (pullButtonValue == 0 ? 1 : 0) ;
@@ -217,7 +216,7 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
 
 		 MidifiedFloatParameter* param = getParameterFromName("push button");
 		 pushButtonValue = (pushButtonValue == 0 ? 1 : 0);
-		 param->setRealValue(1);
+		 param->setRealValue(pushButtonValue);
 
         //[/UserButtonCode_pushButton]
     }
@@ -313,7 +312,7 @@ void MainTabs::buildParameters(AudioProcessor *audioProcessor) {
     panelArpAndFilter->buildParameters();
 }
 
-void MainTabs::updateUI(std::unordered_set<const char*> &paramSet) {
+void MainTabs::updateUI(std::unordered_set<String> &paramSet) {
     /*
     printf("====================================================\r\n");
     printf("====> %d\r\n", paramSet.size());
@@ -323,10 +322,10 @@ void MainTabs::updateUI(std::unordered_set<const char*> &paramSet) {
     printf("====================================================\r\n");
     */
 
-    for(std::unordered_set<const char*>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
-        if (strcmp((*it), "Midi Channel") == 0) {
-			// XH !!!
-			//            midiChannelCombo->setSelectedId(this->parameterSet->get("Midi Channel")->getValue());
+    for(std::unordered_set<String>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
+        if (*it == "Midi Channel") {
+			MidifiedFloatParameter* param = getParameterFromName("Midi Channel");
+			midiChannelCombo->setSelectedId(param->getRealValue());
         }
     }
     panelEngine->updateUI(paramSet);
@@ -358,6 +357,13 @@ void MainTabs::setMidiMessageCollector(MidiMessageCollector &midiMessageCollecto
 void MainTabs::setMidiChannel(int newMidiChannel) {
 	midiChannelCombo->setSelectedId(newMidiChannel);
 }
+
+
+void MainTabs::setPushButtonEnabled(bool enabled) {
+	pushButton->setEnabled(enabled);
+
+}
+
 //[/MiscUserCode]
 
 

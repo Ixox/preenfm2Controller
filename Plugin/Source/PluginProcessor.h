@@ -29,6 +29,9 @@
 
 #define NUMBER_OF_PROGRAM 1
 
+#define FLUSH_START  -1
+#define FLUSH_FINISHED -2
+
 struct Nrpn {
 	char paramMSB;
 	char paramLSB;
@@ -108,10 +111,11 @@ private:
     int currentProgram;
     String programName[NUMBER_OF_PROGRAM];
     int currentMidiChannel;
+	int flushAllParametrsToNrpnStatus;
 
      Pfm2AudioProcessorEditor* pfm2Editor;
 	 LookAndFeel* myLookAndFeel;
-     std::unordered_set<const char*> parametersToUpdate;
+     std::unordered_set<String> parametersToUpdate;
 	 std::mutex parametersToUpdateMutex;
 
 	 //==============================================================================
