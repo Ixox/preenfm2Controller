@@ -41,7 +41,7 @@ public:
 	void resized();
     void timerCallback ();
     void updateUIWith(std::unordered_set<String> &paramSet);
-    void removeParamToUpdateUI(const char* paramName);
+    void removeParamToUpdateUI(String paramName);
     void newNrpnParam(int nrpn, int value);
     void setMidiMessageCollector(MidiMessageCollector &midiMessageCollector);
 	void setMidiChannel(int newMidiChannel);

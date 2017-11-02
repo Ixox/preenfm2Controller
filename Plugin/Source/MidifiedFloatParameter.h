@@ -159,6 +159,19 @@ public:
 		return componentName;
 	}
 
+	// From terragon audio parameter makeSafeName()
+	String getNameForXML() {
+		String result;
+		for (size_t i = 0; i < name.length(); ++i) {
+			if (((name[i] >= 'a' && name[i] <= 'z') ||
+				(name[i] >= '0' && name[i] <= '9') ||
+				(name[i] >= 'A' && name[i] <= 'Z'))) {
+				result += name[i];
+			}
+		}
+		return result;
+	}
+
 	float getMin() {
 		return range.getRange().getStart();
 	}

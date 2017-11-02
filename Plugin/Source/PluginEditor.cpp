@@ -62,7 +62,7 @@ void Pfm2AudioProcessorEditor::updateUIWith(std::unordered_set<String> &paramSet
 }
 
 
-void Pfm2AudioProcessorEditor::removeParamToUpdateUI(const char* paramName) {
+void Pfm2AudioProcessorEditor::removeParamToUpdateUI(String paramName) {
 	this->parametersToUpdateMutex.lock();
 	if (this->parametersToUpdate.count(paramName) > 0) {
 //        printf("#### Pfm2AudioProcessorEditor ERASE %d times\r\n", this->parametersToUpdate.count(paramName));
