@@ -591,8 +591,13 @@ void PanelModulation::updateUIEnveloppe(String paramName) {
 
 		MidifiedFloatParameter* param = checkParamExistence(name);
 		// Will remove that later but dont' BUG for the moment if that doesn't fit
-		if (param == nullptr || name != String(paramName)) {
+		// Will remove that later but dont' BUG for the moment if that doesn't fit
+		if (param == nullptr) {
 			return;
+		}
+
+		if (name != String(paramName)) {
+			continue;
 		}
 
         // And let's update the value and update the UI Without sending modification !!!
@@ -618,6 +623,7 @@ void PanelModulation::updateUIEnveloppe(String paramName) {
         String name = String(pString) + String(pointName[p-1]);
 
 		MidifiedFloatParameter* param = checkParamExistence(name);
+
 		// Will remove that later but dont' BUG for the moment if that doesn't fit
 		if (param == nullptr) {
 			return;

@@ -72,9 +72,10 @@ public:
 		if (parameter == nullptr) {
 			const OwnedArray<AudioProcessorParameter>& parameters = audioProcessor->getParameters();
 			for (int p = 0; p < parameters.size(); p++) {
-				if (parameters[p]->getName(256) == componentName) {
-					parameter = (MidifiedFloatParameter*)parameters[p];
+				parameter = (MidifiedFloatParameter*)parameters[p];
+				if (parameter->getName() == componentName) {
 					parameterMap.set(componentName, parameter);
+					break;
 				}
 			}
 		}
@@ -175,15 +176,6 @@ public:
     	for(std::unordered_set<String>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
     		Component* component = componentMap[*it];
 
-            if (component == nullptr) {
-                if ((*it).startsWith("Step Seq")) {
-                    updateUIStepSequencer(*it);
-                    continue;
-                } else {
-                    updateUIEnveloppe((*it));
-                }
-			}
-
     		Slider* slider = dynamic_cast<Slider*>(component);
     		if (slider != nullptr) {
     			updateSliderFromParameter(slider);
@@ -195,6 +187,18 @@ public:
     			updateComboFromParameter(combo);
                 continue;
     		}
+
+			if ((*it).startsWith("Step Seq") && (*it).indexOf(" Step ") == 10) {
+				updateUIStepSequencer(*it);
+				continue;
+			}
+
+			if (((*it).startsWith("Op") && (*it).indexOf(" Env") == 3)
+				|| (*it).startsWith("Free Env ")) {
+				updateUIEnveloppe((*it));
+				continue;
+			}
+
     	}
     }
 
