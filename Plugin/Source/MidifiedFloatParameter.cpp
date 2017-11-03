@@ -48,15 +48,15 @@ void MidifiedFloatParameter::addNrpn(MidiBuffer& midiBuffer, const int midiChann
 	midiBuffer.addEvent(byte1, 512);
 
 	MidiMessage byte2 = MidiMessage::controllerEvent(midiChannel, 98, getNrpnParamLSB());
-	byte2.setTimeStamp(time + .001);
+	byte2.setTimeStamp(time);
 	midiBuffer.addEvent(byte2, 512);
 
 	MidiMessage byte3 = MidiMessage::controllerEvent(midiChannel, 6, getNrpnValueMSB());
-	byte3.setTimeStamp(time + .002);
+	byte3.setTimeStamp(time);
 	midiBuffer.addEvent(byte3, 512);
 
 	MidiMessage byte4 = MidiMessage::controllerEvent(midiChannel, 38, getNrpnValueLSB());
-	byte4.setTimeStamp(time + .003);
+	byte4.setTimeStamp(time);
 	midiBuffer.addEvent(byte4, 512);
 }
 

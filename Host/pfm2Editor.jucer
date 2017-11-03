@@ -44,6 +44,10 @@
               file="../Plugin/Source/UI/PanelModulation.h"/>
         <FILE id="pysef4" name="PanelOfComponents.h" compile="0" resource="0"
               file="../Plugin/Source/UI/PanelOfComponents.h"/>
+        <FILE id="VcofEJ" name="Pfm2MidiDevice.cpp" compile="1" resource="0"
+              file="../Plugin/Source/Pfm2MidiDevice.cpp"/>
+        <FILE id="e4V6NL" name="Pfm2MidiDevice.h" compile="0" resource="0"
+              file="../Plugin/Source/Pfm2MidiDevice.h"/>
         <FILE id="VIEd6L" name="PluginEditor.cpp" compile="1" resource="0"
               file="../Plugin/Source/PluginEditor.cpp"/>
         <FILE id="pe564r" name="PluginEditor.h" compile="0" resource="0" file="../Plugin/Source/PluginEditor.h"/>

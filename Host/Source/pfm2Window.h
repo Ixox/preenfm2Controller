@@ -27,7 +27,6 @@
 #ifndef PFM2_WINDOW_H_INCLUDED
 #define PFM2_WINDOW_H_INCLUDED
 
-#include "AudioProcessorPlayerWithMidiOutput.h"
 
 extern AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 
@@ -156,8 +155,8 @@ public:
     {
         DialogWindow::LaunchOptions o;
         o.content.setOwned (new AudioDeviceSelectorComponent (deviceManager,
-                                                              0,0,2,2,
-                                                              true, true,
+                                                              0,0,0,0,
+                                                              true, false,
                                                               true, false));
         o.content->setSize (400, 600);
 
@@ -223,8 +222,8 @@ public:
             "Quick Configuration Help",
             "Click on Options > Midi Settings\r\n"
 			". Select any working audio output\r\n"
-            ". Select at least PreenFM in active midi input\r\n"
-            ". Select PreenFM in midi output\r\n"
+			". Do not select preenfm2 anywhere"
+            ". Select your keyboard in midi input\r\n"
             "Close the windows and start playing...\r\n"
             "\r\n"
             "If it does not work, check your preenfm2 settings : \r\n"
@@ -241,15 +240,13 @@ public:
     ScopedPointer<PropertySet> settings;
     ScopedPointer<AudioProcessor> processor;
     AudioDeviceManager deviceManager;
-    AudioProcessorPlayerWithMidiOutput player;
+    AudioProcessorPlayer player;
 
 private:
     void setupAudioDevices()
     {
         deviceManager.addAudioCallback (&player);
         deviceManager.addMidiInputCallback (String::empty, &player);
-        // Added by Xavier to allow midi output
-        player.setDeviceManager(&deviceManager);
         reloadAudioDeviceState();
     }
 
@@ -370,13 +367,10 @@ public:
     void buttonClicked (Button*) override
     {
         PopupMenu m;
-		/*
-		Not used anymore in 2.08.2
 		m.addItem (5, TRANS("Quick Help"));
         m.addSeparator();
         m.addItem (1, TRANS("Midi Settings"));
         m.addSeparator();
-		*/
 		m.addItem (2, TRANS("Save current state"));
         m.addItem (3, TRANS("Load a saved state"));
         m.addSeparator();

@@ -61,6 +61,10 @@
             file="Source/MidifiedFloatParameter.cpp"/>
       <FILE id="zz7Em5" name="MidifiedFloatParameter.h" compile="0" resource="0"
             file="Source/MidifiedFloatParameter.h"/>
+      <FILE id="qFXWlT" name="Pfm2MidiDevice.cpp" compile="1" resource="0"
+            file="Source/Pfm2MidiDevice.cpp"/>
+      <FILE id="IzstaB" name="Pfm2MidiDevice.h" compile="0" resource="0"
+            file="Source/Pfm2MidiDevice.h"/>
       <FILE id="k3O45T" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="BmYEuQ" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>

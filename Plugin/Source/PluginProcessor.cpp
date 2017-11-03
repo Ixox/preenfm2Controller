@@ -27,37 +27,16 @@
 Pfm2AudioProcessor::Pfm2AudioProcessor()
 {
 
-	pfm2MidiOut = nullptr;
-	pfm2MidiIn = nullptr;
 
-	StringArray devices = MidiOutput::getDevices();
-
-	for (int d = 0; d < devices.size(); d++) {
-		DBG("Output : " << devices[d]);
-		if (devices[d] == "PreenFM mk2") {
-			pfm2MidiOut = MidiOutput::openDevice(d);
-			DBG("Output found :)");
-			break;
-		}
-	}
-
-	devices = MidiInput::getDevices();
-	for (int d = 0; d < devices.size(); d++) {
-		DBG("Input : " << devices[d]);
-		if (devices[d] == "PreenFM mk2") {
-			DBG("Input found :)" );
-			if ((pfm2MidiIn = MidiInput::openDevice(d, this)) != nullptr) {
-				pfm2MidiIn->start();
-			}
-			break;
-		}
-	}
-
-	if (pfm2MidiIn == nullptr || pfm2MidiOut == nullptr) {
+	if (pfm2MidiDevice->getMidiInput() == nullptr || pfm2MidiDevice->getMidiOutput() == nullptr) {
 		AlertWindow::showMessageBox(AlertWindow::WarningIcon,
 			":-(",
 			"Cannot find your preenfm2 on the USB port");
 	}
+	else {
+		pfm2MidiDevice->addListener(this);
+	}
+
     myLookAndFeel = new preenfmLookAndFeel();
 	LookAndFeel::setDefaultLookAndFeel(myLookAndFeel);
 
@@ -495,13 +474,7 @@ Pfm2AudioProcessor::~Pfm2AudioProcessor()
 {
    delete myLookAndFeel;
 
-   if (pfm2MidiOut != nullptr) {
-	   delete pfm2MidiOut;
-   }
-   if (pfm2MidiIn != nullptr) {
-	   pfm2MidiIn->stop();
-	   delete pfm2MidiIn;
-   }
+   pfm2MidiDevice->removeListener(this);
 
 }
 
@@ -606,7 +579,32 @@ void Pfm2AudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
 	for (int i = 0; i < getNumOutputChannels(); ++i) {
 		buffer.clear(i, 0, buffer.getNumSamples());
 	}
-    
+ 
+	if (midiMessages.getNumEvents() > 0 && pfm2MidiDevice->getMidiOutput() != nullptr) {
+		MidiBuffer::Iterator i(midiMessages);
+		MidiMessage message;
+		int samplePosition; // Note: not actually used, so no need to initialise.
+		newMidiNotes.clear();
+
+
+		double now = Time::getMillisecondCounter();
+
+		while (i.getNextEvent(message, samplePosition)) {
+			if (message.getChannel() == currentMidiChannel) {
+//				DBG(message.getDescription());
+//				DBG("timestamp : " << message.getTimeStamp() << " / " << buffer.getNumSamples());
+				newMidiNotes.addEvent(message, now );
+			}			
+		}
+		if (newMidiNotes.getNumEvents() > 0) {
+			if (newMidiNotes.getNumEvents() > 1) {
+				DBG("MIDI NOTES : " << newMidiNotes.getNumEvents());
+			}
+			pfm2MidiDevice->getMidiOutput()->sendBlockOfMessagesNow(newMidiNotes);
+		}
+	}
+
+	midiMessages.clear();
 }
 
 //==============================================================================
@@ -848,8 +846,8 @@ void Pfm2AudioProcessor::onParameterUpdated(AudioProcessorParameter *parameter) 
 }
 
 void Pfm2AudioProcessor::flushMidiOut() {
-	if (pfm2MidiOut != nullptr) {
-		pfm2MidiOut->sendBlockOfMessagesNow(midiOutBuffer);
+	if (pfm2MidiDevice->getMidiOutput() != nullptr) {
+		pfm2MidiDevice->getMidiOutput()->sendBlockOfMessagesNow(midiOutBuffer);
 	}
 	midiOutBuffer.clear();
 }
@@ -860,7 +858,11 @@ void Pfm2AudioProcessor::setPresetName(String newName) {
 
 
 void Pfm2AudioProcessor::sendNrpnPresetName() {
-    for (int k=0; k<12; k++) {
+	char nameToSend[13] = "\0\0\0\0\0\0\0\0\0\0\0\0";
+	for (int k = 0; k < presetName.length(); k++) {
+		nameToSend[k] = presetName[k];
+	}
+	for (int k=0; k<12; k++) {
         double timeNow = Time::getMillisecondCounterHiRes() * .001;
         MidiMessage byte1 = MidiMessage::controllerEvent(currentMidiChannel, 99, 1);
         byte1.setTimeStamp(timeNow);
@@ -870,7 +872,7 @@ void Pfm2AudioProcessor::sendNrpnPresetName() {
         byte2.setTimeStamp(timeNow);
 		midiOutBuffer.addEvent(byte2, 512);
 
-        int letter = presetName[k];
+        int letter = nameToSend[k];
 
         MidiMessage byte3 = MidiMessage::controllerEvent(currentMidiChannel, 6, letter >> 7);
         byte3.setTimeStamp(timeNow);

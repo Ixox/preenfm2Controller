@@ -24,6 +24,7 @@
 #include <unordered_set>
 #include "JuceHeader.h"
 #include "PreenNrpn.h"
+#include "Pfm2MidiDevice.h"
 #include "MidifiedFloatParameter.h"
 
 
@@ -100,11 +101,10 @@ public:
 
 	void addMidifiedParameter(MidifiedFloatParameter *param);
 	void flushMidiOut();
-	// == MidiInputCallback
-	void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message);
-	void handlePartialSysexMessage(MidiInput *source, const uint8 *messageData, int numBytesSoFar, double timestamp);
 
 	void parameterUpdatedForUI(int p);
+	void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message);
+	void handlePartialSysexMessage(MidiInput *source, const uint8 *messageData, int numBytesSoFar, double timestamp);
 
 
 private:
@@ -113,9 +113,11 @@ private:
 	int parameterIndex;
 	String presetName;
     int currentMidiChannel;
-	MidiOutput* pfm2MidiOut;
-	MidiInput* pfm2MidiIn;
 	MidiBuffer midiOutBuffer;
+	MidiBuffer newMidiNotes;
+	// Shared by all plugin instances
+	SharedResourcePointer<Pfm2MidiDevice> pfm2MidiDevice;
+
 
      Pfm2AudioProcessorEditor* pfm2Editor;
 	 LookAndFeel* myLookAndFeel;
