@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Xavier Hosxe
+ * Copyright 2017 Xavier Hosxe
  *
  * Author: Xavier Hosxe (xavier <dot> hosxe
  *                      (at) g m a i l <dot> com)
@@ -70,7 +70,6 @@ void EnveloppeAbstract::paint (Graphics& g)
     g.drawHorizontalLine(MARGIN_TOP, MARGIN_LEFT, getWidth() - MARGIN_RIGHT);
     g.drawHorizontalLine(getHeight() - MARGIN_BOTTOM, MARGIN_LEFT, getWidth() - MARGIN_RIGHT);
 
-//    g.drawLine(pointPositionX[3], pointPositionY[3], pointPositionX[3], getHeight() - MARGIN_BOTTOM);
     // Draw main enveloppe shapr
     g.setColour (Colours::whitesmoke);
 	Path path;
@@ -86,6 +85,7 @@ void EnveloppeAbstract::paint (Graphics& g)
 	// Back to bottom
 	path.lineTo(pointList[pointList.size()-1].get()->getPositionOnScreenX(),
 		pointList[0].get()->getPositionOnScreenY());
+
 	// Back to first point
 	path.lineTo(pointList[0].get()->getPositionOnScreenX(),
 		pointList[0].get()->getPositionOnScreenY());

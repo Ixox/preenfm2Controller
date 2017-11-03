@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Xavier Hosxe
+ * Copyright 2017 Xavier Hosxe
  *
  * Author: Xavier Hosxe (xavier <dot> hosxe
  *                      (at) g m a i l <dot> com)
@@ -27,10 +27,7 @@
 #include "MidifiedFloatParameter.h"
 
 
-#define NUMBER_OF_PROGRAM 1
 
-#define FLUSH_START  -1
-#define FLUSH_FINISHED -2
 
 struct Nrpn {
 	char paramMSB;
@@ -45,7 +42,7 @@ class Pfm2AudioProcessorEditor;
 //==============================================================================
 /**
 */
-class Pfm2AudioProcessor  : public AudioProcessor
+class Pfm2AudioProcessor  : public AudioProcessor, public MidiInputCallback
 {
 public:
     //==============================================================================
@@ -89,7 +86,6 @@ public:
     void getStateInformation (MemoryBlock& destData);
     void setStateInformation (const void* data, int sizeInBytes);
 
-	void handleIncomingMidiBuffer(MidiBuffer &buffer, int numberOfSamples);
 	void handleIncomingNrpn(int param, int value, int forceIndex = -1);
     // Parameter observer
     bool isRealtimePriority() const;
@@ -99,24 +95,30 @@ public:
 	struct Nrpn currentNrpn;
 	void flushAllParametrsToNrpn();
     void sendNrpnPresetName();
+	void setPresetName(String newName);
 	void editorClosed() {  pfm2Editor = nullptr; }
 
 	void addMidifiedParameter(MidifiedFloatParameter *param);
+	void flushMidiOut();
+	// == MidiInputCallback
+	void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message);
+	void handlePartialSysexMessage(MidiInput *source, const uint8 *messageData, int numBytesSoFar, double timestamp);
+
+	void parameterUpdatedForUI(int p);
+
 
 private:
 	std::map<int, AudioProcessorParameter* > nrpmParameterMap;
 	int nrpmIndex[2048];
 	int parameterIndex;
-	char presetName[13];
-    int currentProgram;
-    String programName[NUMBER_OF_PROGRAM];
+	String presetName;
     int currentMidiChannel;
-	int flushAllParametrsToNrpnStatus;
+	MidiOutput* pfm2MidiOut;
+	MidiInput* pfm2MidiIn;
+	MidiBuffer midiOutBuffer;
 
      Pfm2AudioProcessorEditor* pfm2Editor;
 	 LookAndFeel* myLookAndFeel;
-     std::unordered_set<String> parametersToUpdate;
-	 std::mutex parametersToUpdateMutex;
 
 	 //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Pfm2AudioProcessor)

@@ -73,7 +73,7 @@ public:
 
         processor->setPlayConfigDetails (2, // JucePlugin_MaxNumInputChannels,
                                          2, //JucePlugin_MaxNumOutputChannels,
-                                         48000, 512);
+                                         44100, 512);
     }
 
     void deletePlugin()
@@ -370,11 +370,14 @@ public:
     void buttonClicked (Button*) override
     {
         PopupMenu m;
-        m.addItem (5, TRANS("Quick Help"));
+		/*
+		Not used anymore in 2.08.2
+		m.addItem (5, TRANS("Quick Help"));
         m.addSeparator();
         m.addItem (1, TRANS("Midi Settings"));
         m.addSeparator();
-        m.addItem (2, TRANS("Save current state"));
+		*/
+		m.addItem (2, TRANS("Save current state"));
         m.addItem (3, TRANS("Load a saved state"));
         m.addSeparator();
         m.addItem (4, TRANS("Reset to default state"));

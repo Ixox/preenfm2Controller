@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Xavier Hosxe
+ * Copyright 2017 Xavier Hosxe
  *
  * Author: Xavier Hosxe (xavier <dot> hosxe
  *                      (at) g m a i l <dot> com)
@@ -28,7 +28,10 @@
 #include "StepSequencerListener.h"
 #include "../MidifiedFloatParameter.h"
 
-class PanelOfComponents : public EnveloppeListener, public StepSequencerListener
+class PanelOfComponents : public EnveloppeListener, 
+						  public StepSequencerListener,
+						  public Slider::Listener
+
 {
 public:
 	~PanelOfComponents() {
@@ -42,7 +45,7 @@ public:
 
     virtual void buildParameters() = 0;
 
-    void updateSliderParameter(Slider* slider) {
+    void updateSliderFromParameter(Slider* slider) {
 
 		String componentName = slider->getName();
 		if (componentMap[componentName] == nullptr) {
@@ -57,11 +60,10 @@ public:
 
 		// Will remove that later but dont' BUG for the moment if that doesn't fit
 		if (parameter == nullptr) {
-			printf("Slider %s does not exist...\r\n", slider->getName().toRawUTF8());
 			return ;
 		}
 
-        updateSliderParameter_hook(slider);
+        updateSliderFromParameter_hook(slider);
 	}
 
 	MidifiedFloatParameter* checkParamExistence(String componentName) {
@@ -80,9 +82,9 @@ public:
 	}
 
     // Can be overriden by sub classes
-    virtual void updateSliderParameter_hook(Slider* slider) { }
+    virtual void updateSliderFromParameter_hook(Slider* slider) { }
 
-    void updateComboParameter(ComboBox* combo) {
+    void updateComboFromParameter(ComboBox* combo) {
 
 		String componentName = combo->getName();
 		if (componentMap[componentName] == nullptr) {
@@ -93,7 +95,6 @@ public:
 
 		// Will remove that later but dont' BUG for the moment if that doesn't fit
 		if (parameter == nullptr) {
-			printf("Combo box %s does not exist...\r\n", combo->getName().toRawUTF8());
 			return;
 		}
 
@@ -101,7 +102,7 @@ public:
 		// No modification : we dont want sliderValueChanged to be called in the different panels
 		if (combo->getSelectedId() != parameter->getRealValue()) {
 			combo->setSelectedId(parameter->getRealValue() + .0001f, dontSendNotification);
-			updateComboParameter_hook(combo);
+			updateComboFromParameter_hook(combo);
 		}
     }
 
@@ -115,7 +116,6 @@ public:
 
             // Will remove that later but dont' BUG for the moment if that doesn't fit
             if (parameter == nullptr) {
-                printf("step sequencer %s does not exist...\r\n", stepName.toRawUTF8());
                 return;
             }
 
@@ -128,7 +128,7 @@ public:
     }
 
     // Can be overriden by sub classes
-    virtual void updateComboParameter_hook(ComboBox* combo) { }
+    virtual void updateComboFromParameter_hook(ComboBox* combo) { }
 
 
     // Enveloppe Listener
@@ -186,13 +186,13 @@ public:
 
     		Slider* slider = dynamic_cast<Slider*>(component);
     		if (slider != nullptr) {
-    			updateSliderParameter(slider);
+    			updateSliderFromParameter(slider);
                 continue;
     		}
 
     		ComboBox* combo = dynamic_cast<ComboBox*>(component);
     		if (combo != nullptr) {
-    			updateComboParameter(combo);
+    			updateComboFromParameter(combo);
                 continue;
     		}
     	}
@@ -202,6 +202,19 @@ public:
     virtual void updateUIStepSequencer(String paramName) {
     }
 
+
+	void sliderDragStarted(Slider* slider)	override {
+		AudioProcessorParameter * param = parameterMap[slider->getName()];
+		if (param != nullptr) {
+			param->beginChangeGesture();
+		}
+	}
+	void sliderDragEnded(Slider* slider) override {
+		AudioProcessorParameter * param = parameterMap[slider->getName()];
+		if (param != nullptr) {
+			param->endChangeGesture();
+		}
+	}
 
 protected:
     HashMap<const String, MidifiedFloatParameter *> parameterMap;

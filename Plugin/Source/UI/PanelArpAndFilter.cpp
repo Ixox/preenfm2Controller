@@ -1,21 +1,21 @@
 /*
-  ==============================================================================
-
-  This is an automatically generated GUI class created by the Projucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
-  Created with Projucer version: 5.1.2
-
-  ------------------------------------------------------------------------------
-
-  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright (c) 2015 - ROLI Ltd.
-
-  ==============================================================================
+* Copyright 2017 Xavier Hosxe
+*
+* Author: Xavier Hosxe (xavier <dot> hosxe
+*                      (at) g m a i l <dot> com)
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 
 //[Headers] You can add your own extra header files here...
 #include "JuceHeader.h"
@@ -698,38 +698,38 @@ void PanelArpAndFilter::buildParameters() {
 //    arpDurationCombo->setSelectedId(1);
 //    arpLatchCombo->setSelectedId(1);
 
-    updateComboParameter(arpClockComboBox);
-    updateComboParameter(filterComboBox);
+    updateComboFromParameter(arpClockComboBox);
+    updateComboFromParameter(filterComboBox);
 
-    updateComboParameter(arpDirectionCombo);
-    updateComboParameter(arpPatternCombo);
-    updateComboParameter(arpDivisionCombo);
-    updateComboParameter(arpDurationCombo);
-    updateComboParameter(arpLatchCombo);
+    updateComboFromParameter(arpDirectionCombo);
+    updateComboFromParameter(arpPatternCombo);
+    updateComboFromParameter(arpDivisionCombo);
+    updateComboFromParameter(arpDurationCombo);
+    updateComboFromParameter(arpLatchCombo);
 
-    updateSliderParameter(arpBPM);
-    updateSliderParameter(arpOctavleSlider);
+    updateSliderFromParameter(arpBPM);
+    updateSliderFromParameter(arpOctavleSlider);
 
-    updateComboParameter(filterComboBox);
-    updateSliderParameter(filterParam1Slider);
-    updateSliderParameter(filterParam2Slider);
-    updateSliderParameter(filterGainSlider);
+    updateComboFromParameter(filterComboBox);
+    updateSliderFromParameter(filterParam1Slider);
+    updateSliderFromParameter(filterParam2Slider);
+    updateSliderFromParameter(filterGainSlider);
 
 
     for (int k = 0; k<2; k++) {
-        updateComboParameter(noteBefore[k]);
-        updateSliderParameter(noteBreak[k]);
-        updateComboParameter(noteAfter[k]);
+        updateComboFromParameter(noteBefore[k]);
+        updateSliderFromParameter(noteBreak[k]);
+        updateComboFromParameter(noteAfter[k]);
     }
 
 }
 
 
-void PanelArpAndFilter::updateComboParameter_hook(ComboBox* combo) {
+void PanelArpAndFilter::updateComboFromParameter_hook(ComboBox* combo) {
     comboBoxChanged(combo, false);
 }
 
-void PanelArpAndFilter::updateSliderParameter_hook(Slider* slider) {
+void PanelArpAndFilter::updateSliderFromParameter_hook(Slider* slider) {
     sliderValueChanged(slider, false);
 }
 

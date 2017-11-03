@@ -52,6 +52,7 @@
               file="Source/UI/PreenLookAndFeel.cpp"/>
         <FILE id="vuIkKh" name="PreenLookAndFeel.h" compile="0" resource="0"
               file="Source/UI/PreenLookAndFeel.h"/>
+        <FILE id="YxaBOn" name="SliderPfm2.h" compile="0" resource="0" file="Source/UI/SliderPfm2.h"/>
         <FILE id="kSY6r4" name="StepSequencer.cpp" compile="1" resource="0"
               file="Source/UI/StepSequencer.cpp"/>
         <FILE id="A59H2L" name="StepSequencer.h" compile="0" resource="0" file="Source/UI/StepSequencer.h"/>

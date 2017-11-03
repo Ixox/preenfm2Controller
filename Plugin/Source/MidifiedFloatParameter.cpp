@@ -29,6 +29,10 @@ void MidifiedFloatParameter::setValue(float newValue) {
 	}
 }
 
+void MidifiedFloatParameter::setValueFromNrpn(int nrpnValue) {
+	float newValue = getValueFromNrpn(nrpnValue);
+	value = newValue;
+}
 
 void MidifiedFloatParameter::setRealValue(float newValue) {
 	if (value != newValue) {
@@ -37,21 +41,22 @@ void MidifiedFloatParameter::setRealValue(float newValue) {
 	}
 }
 
-void MidifiedFloatParameter::addNrpn(juce::MidiMessageCollector& midiMessageCollector, const int midiChannel) {
+void MidifiedFloatParameter::addNrpn(MidiBuffer& midiBuffer, const int midiChannel) {
+	double time = Time::getMillisecondCounterHiRes() * .001;
 	MidiMessage byte1 = MidiMessage::controllerEvent(midiChannel, 99, getNrpnParamMSB());
-	byte1.setTimeStamp(Time::getMillisecondCounterHiRes() * .001);
-	midiMessageCollector.addMessageToQueue(byte1);
+	byte1.setTimeStamp(time);
+	midiBuffer.addEvent(byte1, 512);
 
 	MidiMessage byte2 = MidiMessage::controllerEvent(midiChannel, 98, getNrpnParamLSB());
-	byte2.setTimeStamp(Time::getMillisecondCounterHiRes() * .001);
-	midiMessageCollector.addMessageToQueue(byte2);
+	byte2.setTimeStamp(time + .001);
+	midiBuffer.addEvent(byte2, 512);
 
 	MidiMessage byte3 = MidiMessage::controllerEvent(midiChannel, 6, getNrpnValueMSB());
-	byte3.setTimeStamp(Time::getMillisecondCounterHiRes() * .001);
-	midiMessageCollector.addMessageToQueue(byte3);
+	byte3.setTimeStamp(time + .002);
+	midiBuffer.addEvent(byte3, 512);
 
 	MidiMessage byte4 = MidiMessage::controllerEvent(midiChannel, 38, getNrpnValueLSB());
-	byte4.setTimeStamp(Time::getMillisecondCounterHiRes() * .001);
-	midiMessageCollector.addMessageToQueue(byte4);
+	byte4.setTimeStamp(time + .003);
+	midiBuffer.addEvent(byte4, 512);
 }
 

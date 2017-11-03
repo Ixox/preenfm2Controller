@@ -1,24 +1,24 @@
 /*
-  ==============================================================================
-
-  This is an automatically generated GUI class created by the Projucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
-  Created with Projucer version: 5.1.2
-
-  ------------------------------------------------------------------------------
-
-  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright (c) 2015 - ROLI Ltd.
-
-  ==============================================================================
+* Copyright 2017 Xavier Hosxe
+*
+* Author: Xavier Hosxe (xavier <dot> hosxe
+*                      (at) g m a i l <dot> com)
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 //[Headers] You can add your own extra header files here...
 #include "JuceHeader.h"
+#include "../PluginProcessor.h"
 #include "PanelEngine.h"
 #include "PanelModulation.h"
 #include "PanelArpAndFilter.h"
@@ -141,7 +141,9 @@ MainTabs::MainTabs ()
 	panelArpAndFilter = ((PanelArpAndFilter*)tabbedComponent->getTabContentComponent(2));
 	pullButtonValue = 0;
     currentMidiChannel = 1;
-    // SET null !
+	pullButtonValue = 0;
+	pushButtonValue = 0;
+	// SET null !
     //[/Constructor]
 }
 
@@ -205,7 +207,7 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_pullButton] -- add your button handler code here..
 
 		MidifiedFloatParameter* param = getParameterFromName("pull button");
-        pullButtonValue = (pullButtonValue == 0 ? 1 : 0) ;
+        pullButtonValue = (pullButtonValue == 1 ? 0 : 1) ;
 		param->setRealValue(pullButtonValue);
 
         //[/UserButtonCode_pullButton]
@@ -215,7 +217,7 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_pushButton] -- add your button handler code here..
 
 		 MidifiedFloatParameter* param = getParameterFromName("push button");
-		 pushButtonValue = (pushButtonValue == 0 ? 1 : 0);
+		 pushButtonValue = (pushButtonValue == 1 ? 0 : 1);
 		 param->setRealValue(pushButtonValue);
 
         //[/UserButtonCode_pushButton]
@@ -233,27 +235,12 @@ void MainTabs::labelTextChanged (Label* labelThatHasChanged)
     if (labelThatHasChanged == presetNameLabel)
     {
         //[UserLabelCode_presetNameLabel] -- add your label text handling code here..
-        for (int k=0; k<12; k++) {
-            int timeNow = Time::getMillisecondCounter();
-            MidiMessage byte1 = MidiMessage::controllerEvent(currentMidiChannel, 99, 1);
-            byte1.setTimeStamp(timeNow);
-            midiMessageCollector->addMessageToQueue(byte1);
+		Pfm2AudioProcessor* pfm2Processor = dynamic_cast<Pfm2AudioProcessor*>(audioProcessor);
+		if (pfm2Processor) {
+			pfm2Processor->setPresetName(presetNameLabel->getText());
+			pfm2Processor->sendNrpnPresetName();
+		}
 
-            MidiMessage byte2 = MidiMessage::controllerEvent(currentMidiChannel, 98, 100 + k);
-            byte2.setTimeStamp(timeNow);
-            midiMessageCollector->addMessageToQueue(byte2);
-
-            int letter = presetNameLabel->getText().toRawUTF8()[k];
-			this->presetNamePtr[k] = (char)letter;
-
-            MidiMessage byte3 = MidiMessage::controllerEvent(currentMidiChannel, 6, letter >> 7);
-            byte3.setTimeStamp(timeNow);
-            midiMessageCollector->addMessageToQueue(byte3);
-
-            MidiMessage byte4 = MidiMessage::controllerEvent(currentMidiChannel, 38, letter & 0xff);
-            byte4.setTimeStamp(timeNow);
-            midiMessageCollector->addMessageToQueue(byte4);
-        }
         //[/UserLabelCode_presetNameLabel]
     }
 
@@ -326,7 +313,7 @@ void MainTabs::updateUI(std::unordered_set<String> &paramSet) {
         if (*it == "Midi Channel") {
 			MidifiedFloatParameter* param = getParameterFromName("Midi Channel");
 			midiChannelCombo->setSelectedId(param->getRealValue());
-        }
+		}
     }
     panelEngine->updateUI(paramSet);
     panelModulation->updateUI(paramSet);
@@ -341,16 +328,16 @@ void MainTabs::newNrpnParam(int nrpn, int value) {
 }
 
 
-void MainTabs::setPresetName(const char* presetName) {
-    presetNameLabel->setText(String(presetName), dontSendNotification);
+void MainTabs::setPresetName(String presetName) {
+    presetNameLabel->setText(presetName, dontSendNotification);
 }
 
 void MainTabs::setPresetNamePtr(char* presetNamePtr) {
 	this->presetNamePtr = presetNamePtr;
 }
 
-void MainTabs::setMidiMessageCollector(MidiMessageCollector &midiMessageCollector) {
-    this->midiMessageCollector = &midiMessageCollector;
+void MainTabs::setMidiOutBuffer(MidiBuffer *midiOutBuffer) {
+    this->midiOutBuffer = midiOutBuffer;
 }
 
 
@@ -359,10 +346,6 @@ void MainTabs::setMidiChannel(int newMidiChannel) {
 }
 
 
-void MainTabs::setPushButtonEnabled(bool enabled) {
-	pushButton->setEnabled(enabled);
-
-}
 
 //[/MiscUserCode]
 

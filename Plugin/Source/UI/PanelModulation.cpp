@@ -1,22 +1,20 @@
 /*
-  ==============================================================================
-
-  This is an automatically generated GUI class created by the Projucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
-  Created with Projucer version: 5.1.2
-
-  ------------------------------------------------------------------------------
-
-  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright (c) 2015 - ROLI Ltd.
-
-  ==============================================================================
+* Copyright 2017 Xavier Hosxe
+*
+* Author: Xavier Hosxe (xavier <dot> hosxe
+*                      (at) g m a i l <dot> com)
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 //[Headers] You can add your own extra header files here...
 #include "JuceHeader.h"
 #include "SliderPfm2.h"
@@ -550,29 +548,29 @@ void PanelModulation::comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fr
 
 void PanelModulation::buildParameters() {
     for (int k=0; k<NUMBER_OF_MATRIX_ROW; k++) {
-        updateComboParameter(matrixSource[k]);
-        updateSliderParameter(matrixMultipler[k]);
-        updateComboParameter(matrixDestination[k]);
+        updateComboFromParameter(matrixSource[k]);
+        updateSliderFromParameter(matrixMultipler[k]);
+        updateComboFromParameter(matrixDestination[k]);
     }
     for (int k = 0; k < NUMBER_OF_LFO; k++) {
-        updateComboParameter(lfoShape[k]);
-        updateComboParameter(lfoExtMidiSync[k]);
-        updateSliderParameter(lfoPhase[k]);
-        updateSliderParameter(lfoFrequency[k]);
-        updateSliderParameter(lfoBias[k]);
-        updateComboParameter(lfoKsynOnOff[k]);
-        updateSliderParameter(lfoKSync[k]);
+        updateComboFromParameter(lfoShape[k]);
+        updateComboFromParameter(lfoExtMidiSync[k]);
+        updateSliderFromParameter(lfoPhase[k]);
+        updateSliderFromParameter(lfoFrequency[k]);
+        updateSliderFromParameter(lfoBias[k]);
+        updateComboFromParameter(lfoKsynOnOff[k]);
+        updateSliderFromParameter(lfoKSync[k]);
     }
 
-    updateComboParameter(enveloppeFree2Loop);
+    updateComboFromParameter(enveloppeFree2Loop);
 
     for (int k=0; k < NUMBER_OF_STEP_SEQ; k++) {
         updateStepSeqParameter(stepSequencer[k]);
-        updateComboParameter(stepSeqExtMidiSync[k]);
-        updateSliderParameter(stepSeqBPM[k]);
-        updateSliderParameter(stepSeqGate[k]);
+        updateComboFromParameter(stepSeqExtMidiSync[k]);
+        updateSliderFromParameter(stepSeqBPM[k]);
+        updateSliderFromParameter(stepSeqGate[k]);
     }
-	updateUIEnveloppe("##");
+	updateUIEnveloppe("#INITIALIZE#");
 
     // Let listen to enveloppe
     if (!initialized) {
@@ -593,13 +591,9 @@ void PanelModulation::updateUIEnveloppe(String paramName) {
 
 		MidifiedFloatParameter* param = checkParamExistence(name);
 		// Will remove that later but dont' BUG for the moment if that doesn't fit
-		if (param == nullptr) {
+		if (param == nullptr || name != String(paramName)) {
 			return;
 		}
-
-		if (name != String(paramName)) {
-            continue;
-        } 
 
         // And let's update the value and update the UI Without sending modification !!!
         // No modification : we dont want sliderValueChanged to be called in the different panels
@@ -652,11 +646,11 @@ void PanelModulation::updateUIStepSequencer(String paramName) {
 
 
 
-void PanelModulation::updateSliderParameter_hook(Slider* slider) {
+void PanelModulation::updateSliderFromParameter_hook(Slider* slider) {
 	sliderValueChanged(slider, false);
 }
 
-void PanelModulation::updateComboParameter_hook(ComboBox* combo) {
+void PanelModulation::updateComboFromParameter_hook(ComboBox* combo) {
 	comboBoxChanged(combo, false);
 }
 

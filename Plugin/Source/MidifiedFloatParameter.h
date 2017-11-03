@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Xavier Hosxe
+ * Copyright 2017 Xavier Hosxe
  *
  * Author: Xavier Hosxe (xavier <dot> hosxe
  *                      (at) g m a i l <dot> com)
@@ -29,9 +29,7 @@
 class Pfm2AudioProcessor;
 
 
-
-
-class MidifiedFloatParameter: public AudioProcessorParameterWithID {
+class MidifiedFloatParameter: public AudioProcessorParameter {
 public:
 
 	MidifiedFloatParameter (std::map<int , AudioProcessorParameter* > *nrpmParameterMap,
@@ -42,18 +40,17 @@ public:
 							float maxValue,
 							float defaultValue
 							) 
-		: AudioProcessorParameterWithID(componentName.replaceCharacter(' ', '_'), componentName),
+		: AudioProcessorParameter(),
 		 range(minValue, maxValue), value(defaultValue), defaultValue(defaultValue)
 	{
 		this->componentName = componentName;
 		nrpmParameterMap->insert(std::pair<int , AudioProcessorParameter* > (nrpnParam, this));
 		rangeFloat = maxValue - minValue;
 		sendRealValue = false;
-
+		
 		this->pfm2MinValue = minValue;
 		this->valueMultiplier = valueMultipler;
 		this->nrpnParam = nrpnParam;
-
 
 		bias = 0;
 		paramIndex = paramIndexCounter++;
@@ -87,16 +84,12 @@ public:
 	}
 
 
-	float getValueFromNrpn(int value) const {
+	float getValueFromNrpn(int nrpnValue) const {
 		if (!sendRealValue) {
-			return (float)value / this->valueMultiplier + this->pfm2MinValue - bias;
+			return ((float)nrpnValue) / this->valueMultiplier + this->pfm2MinValue - bias;
 		} else {
-			return value - bias;
+			return nrpnValue - bias;
 		}
-	}
-
-	float getScaledValueFromNrpn(int value) const {
-		return (float)value / this->valueMultiplier / rangeFloat - bias;
 	}
 
 	void setSendRealValue(bool srv) {
@@ -111,7 +104,7 @@ public:
 		this->audioProcessor = audioProcessor;
 	}
 
-	void addNrpn(juce::MidiMessageCollector& midiMessageCollector, const int midiChannel);
+	void addNrpn(MidiBuffer& midiBuffer, const int midiChannel);
 
 	static void resetParamIndexCounter() { 
 		paramIndexCounter = 0; 
@@ -129,16 +122,11 @@ public:
 		return this->bias;
 	}
 
-	int getNrpn() const {
-		return this->nrpnParam;
-	}
-
-
+	void setValueFromNrpn(int nrpnValue);
 
 	// parameter float
 	float get() const noexcept { return value; }
 	operator float() const noexcept { return value; }
-	AudioParameterFloat& operator= (float newValue);
 
 	void setValue(float newValue);
 	void setRealValue(float newValue);
@@ -146,7 +134,6 @@ public:
 	float getValue() const { return range.convertTo0to1(value); }
 	float getRealValue() const { return value; }
 	float getDefaultValue() const { return range.convertTo0to1(defaultValue); }
-	int getNumSteps() const { return AudioProcessorParameterWithID::getNumSteps(); }
 	float getValueForText(const String& text) const { return range.convertTo0to1(text.getFloatValue()); }
 
 	String getText(float v, int length) const
@@ -162,11 +149,11 @@ public:
 	// From terragon audio parameter makeSafeName()
 	String getNameForXML() {
 		String result;
-		for (size_t i = 0; i < name.length(); ++i) {
-			if (((name[i] >= 'a' && name[i] <= 'z') ||
-				(name[i] >= '0' && name[i] <= '9') ||
-				(name[i] >= 'A' && name[i] <= 'Z'))) {
-				result += name[i];
+		for (size_t i = 0; i < componentName.length(); ++i) {
+			if (((componentName[i] >= 'a' && componentName[i] <= 'z') ||
+				(componentName[i] >= '0' && componentName[i] <= '9') ||
+				(componentName[i] >= 'A' && componentName[i] <= 'Z'))) {
+				result += componentName[i];
 			}
 		}
 		return result;
@@ -180,15 +167,21 @@ public:
 		return range.getRange().getEnd();
 	}
 
-protected:
+	String getName(int maximumStringLength) const { 
+		return componentName.substring(0, maximumStringLength);
+	}
+	String getLabel() const { 
+		return componentName; 
+	}
+
+
+private:
 	static int paramIndexCounter;
 	float pfm2MinValue;
 	float valueMultiplier;
 	int nrpnParam;
 	int paramIndex;
 	float bias;
-
-private:
 	String componentName;
 	NormalisableRange<float> range;
 	float value, defaultValue;

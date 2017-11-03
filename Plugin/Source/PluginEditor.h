@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Xavier Hosxe
+ * Copyright 2017 Xavier Hosxe
  *
  * Author: Xavier Hosxe (xavier <dot> hosxe
  *                      (at) g m a i l <dot> com)
@@ -31,6 +31,7 @@ class MainTabs;
 */
 class Pfm2AudioProcessorEditor  : public AudioProcessorEditor, public Timer
 {
+	friend class Pfm2AudioProcessor;
 public:
     Pfm2AudioProcessorEditor (Pfm2AudioProcessor* ownerFilter);
     ~Pfm2AudioProcessorEditor();
@@ -43,11 +44,9 @@ public:
     void updateUIWith(std::unordered_set<String> &paramSet);
     void removeParamToUpdateUI(String paramName);
     void newNrpnParam(int nrpn, int value);
-    void setMidiMessageCollector(MidiMessageCollector &midiMessageCollector);
+	void setMidiOutBuffer(MidiBuffer *midiOutBuffer);
 	void setMidiChannel(int newMidiChannel);
-    void setPresetName(const char* presetName);
-    void setPresetNamePtr(char* presetName);
-	void setPushButtonEnabled(bool enabled);
+    void setPresetName(String presetName);
 
 private:
 	bool uiOutOfSync;

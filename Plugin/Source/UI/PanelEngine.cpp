@@ -1,20 +1,19 @@
 /*
-  ==============================================================================
-
-  This is an automatically generated GUI class created by the Projucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
-  Created with Projucer version: 5.1.2
-
-  ------------------------------------------------------------------------------
-
-  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright (c) 2015 - ROLI Ltd.
-
-  ==============================================================================
+* Copyright 2017 Xavier Hosxe
+*
+* Author: Xavier Hosxe (xavier <dot> hosxe
+*                      (at) g m a i l <dot> com)
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 //[Headers] You can add your own extra header files here...
@@ -623,28 +622,28 @@ void PanelEngine::buttonClicked (Button* buttonThatWasClicked)
 
 
 void PanelEngine::buildParameters() {
-    updateSliderParameter(algoChooser);
-    updateSliderParameter(velocity);
-    updateSliderParameter(voices);
-    updateSliderParameter(glide);
+    updateSliderFromParameter(algoChooser);
+    updateSliderFromParameter(velocity);
+    updateSliderFromParameter(voices);
+    updateSliderFromParameter(glide);
 
     for (int k=0; k<NUMBER_OF_MIX; k++) {
-        updateSliderParameter(volumeKnob[k]);
-        updateSliderParameter(panKnob[k]);
+        updateSliderFromParameter(volumeKnob[k]);
+        updateSliderFromParameter(panKnob[k]);
     }
     for (int k=0; k<NUMBER_OF_IM; k++) {
-        updateSliderParameter(IMKnob[k]);
-        updateSliderParameter(IMVelocityKnob[k]);
+        updateSliderFromParameter(IMKnob[k]);
+        updateSliderFromParameter(IMVelocityKnob[k]);
     }
     for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
-        updateComboParameter(opShape[k]);
-        updateComboParameter(opFrequencyType[k]);
-        updateSliderParameter(opFrequency[k]);
-        updateSliderParameter(opFrequencyFineTune[k]);
+        updateComboFromParameter(opShape[k]);
+        updateComboFromParameter(opFrequencyType[k]);
+        updateSliderFromParameter(opFrequency[k]);
+        updateSliderFromParameter(opFrequencyFineTune[k]);
     }
 
 	// To fill map with all points
-	updateUIEnveloppe("##");
+	updateUIEnveloppe("#INITIALIZE#");
 
     for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
         // Let listen to enveloppe
@@ -669,20 +668,14 @@ void PanelEngine::updateUIEnveloppe(String paramName) {
         for (int p=2; p < enveloppe[k]->getNumberOfPoints() * 2; p++) {
             String name = pString + String(pointName[p - 2]);
 
-            if (name != String(paramName)) {
-                continue;
-            }
-
 			MidifiedFloatParameter* param = checkParamExistence(name);
-            // Will remove that later but dont' BUG for the moment if that doesn't fit
-            if (param == nullptr) {
-                printf("Enveloppe point %s does not exist...\r\n", name);
-                return;
+			
+			if (param == nullptr || name != String(paramName)) {
+                continue;
             }
 
             // And let's update the value and update the UI Without sending modification !!!
             // No modification : we dont want sliderValueChanged to be called in the different panels
-
 
             if ((p & 0x1) == 0) {
                 if (param->getValue() != enveloppe[k]->getX(p / 2)) {
@@ -701,7 +694,7 @@ void PanelEngine::updateUIEnveloppe(String paramName) {
 }
 
 
-void PanelEngine::updateSliderParameter_hook(Slider* slider) {
+void PanelEngine::updateSliderFromParameter_hook(Slider* slider) {
 	sliderValueChanged(slider, false);
 }
 
