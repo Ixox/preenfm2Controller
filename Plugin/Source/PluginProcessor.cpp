@@ -22,23 +22,15 @@
 #include "UI/PreenLookAndFeel.h"
 
 
-
 //==============================================================================
 Pfm2AudioProcessor::Pfm2AudioProcessor()
 {
-
-
-	if (pfm2MidiDevice->getMidiInput() == nullptr || pfm2MidiDevice->getMidiOutput() == nullptr) {
-		AlertWindow::showMessageBox(AlertWindow::WarningIcon,
-			":-(",
-			"Cannot find your preenfm2 on the USB port");
-	}
-	else {
-		pfm2MidiDevice->addListener(this);
-	}
-
-    myLookAndFeel = new preenfmLookAndFeel();
+	myLookAndFeel = new preenfmLookAndFeel();
 	LookAndFeel::setDefaultLookAndFeel(myLookAndFeel);
+	
+
+	// Register to midi device even if not initialized correctly
+	pfm2MidiDevice->addListener(this);
 
     // Important !!!! reset paramIndexCounter.
 	MidifiedFloatParameter::resetParamIndexCounter();
@@ -136,18 +128,18 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 
     }
     for (int k=0; k<6; k++) {
-        for (int p=0; p<4; p++) {
-            const char* pointName[] = { " Attk", " Deca", " Sust", " Rele" };
+		const char* pointName[] = { " Attk", " Deca", " Sust", " Rele" };
+		for (int p=0; p<4; p++) {
             nrpmParam = PREENFM2_NRPN_ENV1_ATTK + k * 8 + p * 2;
             newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Op"+String(k+1)+" Env"+ pointName[p]), nrpmParam, 100, 0, 16, 1);
 			addMidifiedParameter(newParam);
 			nrpmIndex[nrpmParam] = parameterIndex++;
         }
-        for (int p=0; p<4; p++) {
-            const char* pointName[] = { " Attk lvl", " Deca lvl", " Sust lvl", " Rele lvl" };
+		const char* pointNameLvl[] = { " Attk lvl", " Deca lvl", " Sust lvl", " Rele lvl" };
+		for (int p=0; p<4; p++) {
             float level[] = { 1.0, 1.0, 1.0, 0.0 };
             nrpmParam = PREENFM2_NRPN_ENV1_ATTK_LEVEL + k * 8 + p * 2;
-            newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Op"+String(k+1)+" Env"+ pointName[p]), nrpmParam, 100, 0, 1, level[p]);
+            newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Op"+String(k+1)+" Env"+ pointNameLvl[p]), nrpmParam, 100, 0, 1, level[p]);
 			addMidifiedParameter(newParam);
 			nrpmIndex[nrpmParam] = parameterIndex++;
         }
@@ -675,7 +667,8 @@ void Pfm2AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 				MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)parameterSet[p];
 				if (xmlState->hasAttribute(midifiedFP->getNameForXML())) {
                     value  = (float) xmlState->getDoubleAttribute (midifiedFP->getNameForXML());
-					midifiedFP->setRealValue(value);
+					midifiedFP->setRealValueNoNotification(value);
+					DBG(String(p) << " '" << midifiedFP->getName() << "'  value " << (midifiedFP->getRealValue()));
                 }
             }
 
@@ -713,12 +706,10 @@ void Pfm2AudioProcessor::flushAllParametrsToNrpn() {
         }
          MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)parameterSet[p];
         if (midifiedFP != nullptr) {
-			//DBG(String(p) << " " << parameterSet[p]->getName(256) << " Add Nrpn " << String(midifiedFP->getNrpnParamMSB() * 127 + midifiedFP->getNrpnParamLSB()) << " value " << String(midifiedFP->getNrpnValueMSB(midifiedFP->getValue()) * 127 + midifiedFP->getNrpnValueLSB(midifiedFP->getValue())));
             midifiedFP->addNrpn(midiOutBuffer, currentMidiChannel);
-        }
+		}
     }
 	flushMidiOut();
-
 }
 
 
@@ -846,9 +837,7 @@ void Pfm2AudioProcessor::onParameterUpdated(AudioProcessorParameter *parameter) 
 }
 
 void Pfm2AudioProcessor::flushMidiOut() {
-	if (pfm2MidiDevice->getMidiOutput() != nullptr) {
-		pfm2MidiDevice->getMidiOutput()->sendBlockOfMessagesNow(midiOutBuffer);
-	}
+	pfm2MidiDevice->sendBlockOfMessagesNow(midiOutBuffer);
 	midiOutBuffer.clear();
 }
 
@@ -881,9 +870,9 @@ void Pfm2AudioProcessor::sendNrpnPresetName() {
         MidiMessage byte4 = MidiMessage::controllerEvent(currentMidiChannel, 38, letter & 0xff);
         byte4.setTimeStamp(timeNow);
 		midiOutBuffer.addEvent(byte4, 512);
+		flushMidiOut();
 	}
 
-	flushMidiOut();
 }
 
 void Pfm2AudioProcessor::addMidifiedParameter(MidifiedFloatParameter *param) {

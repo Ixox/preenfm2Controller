@@ -570,7 +570,7 @@ void PanelModulation::buildParameters() {
         updateSliderFromParameter(stepSeqBPM[k]);
         updateSliderFromParameter(stepSeqGate[k]);
     }
-	updateUIEnveloppe("#INITIALIZE#");
+	updateUIEnveloppe("");
 
     // Let listen to enveloppe
     if (!initialized) {
@@ -590,13 +590,8 @@ void PanelModulation::updateUIEnveloppe(String paramName) {
         String name = pString + String(pointName[p-1]);
 
 		MidifiedFloatParameter* param = checkParamExistence(name);
-		// Will remove that later but dont' BUG for the moment if that doesn't fit
-		// Will remove that later but dont' BUG for the moment if that doesn't fit
-		if (param == nullptr) {
-			return;
-		}
 
-		if (name != String(paramName)) {
+		if (paramName.length() > 0 && (param == nullptr || name != String(paramName))) {
 			continue;
 		}
 
@@ -624,15 +619,10 @@ void PanelModulation::updateUIEnveloppe(String paramName) {
 
 		MidifiedFloatParameter* param = checkParamExistence(name);
 
-		// Will remove that later but dont' BUG for the moment if that doesn't fit
-		if (param == nullptr) {
-			return;
-		}
-
-		if (name != String(paramName)) {
+		if (paramName.length() > 0 && (param == nullptr || name != String(paramName))) {
 			continue;
 		}
-		
+
 		// And let's update the value and update the UI Without sending modification !!!
         // No modification : we dont want sliderValueChanged to be called in the different panels
         if (param->getValue() != enveloppeFree2->getX(p)) {

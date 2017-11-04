@@ -122,6 +122,11 @@ void StepSequencer::resized()
 
 }
 
+void StepSequencer::setValuesNoNotify(int x, int y) {
+	values[x] = y;
+}
+
+
 void StepSequencer::setValues(int x, int y) {
     if (values[x] != y && y >= 0 && y < maxValue) {
         values[x] = y;

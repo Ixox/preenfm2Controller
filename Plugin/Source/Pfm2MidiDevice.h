@@ -40,16 +40,18 @@ public:
 	MidiInput* getMidiInput() {
 		return pfm2MidiInput;
 	}
-
+	void sendBlockOfMessagesNow(MidiBuffer& midiBuffer);
 	// == MidiInputCallback
 	void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message);
 	void handlePartialSysexMessage(MidiInput *source, const uint8 *messageData, int numBytesSoFar, double timestamp);
 	// Listeners
 	void addListener(MidiInputCallback *listener);
 	void removeListener(MidiInputCallback *listener);
-
+	
 
 private :
+	bool showErrorMEssage;
+	CriticalSection messageLock;
 	MidiOutput* pfm2MidiOutput;
 	MidiInput* pfm2MidiInput;
 	MidiInputCallbackList listeners;

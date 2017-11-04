@@ -39,6 +39,7 @@ public:
     int  limitY(int y);
     void updateValues(const MouseEvent& event);
     void setValues(int x, int y);
+	void setValuesNoNotify(int x, int y);
     int getValue(int step) const { if (step <numberOfValues) return values[step]; else return 0; }
 
     void paint (Graphics&);

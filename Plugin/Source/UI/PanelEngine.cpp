@@ -643,7 +643,7 @@ void PanelEngine::buildParameters() {
     }
 
 	// To fill map with all points
-	updateUIEnveloppe("#INITIALIZE#");
+	updateUIEnveloppe("");
 
     for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
         // Let listen to enveloppe
@@ -670,9 +670,9 @@ void PanelEngine::updateUIEnveloppe(String paramName) {
 
 			MidifiedFloatParameter* param = checkParamExistence(name);
 			
-			if (param == nullptr || name != String(paramName)) {
-                continue;
-            }
+			if (paramName.length() > 0 && (param == nullptr || name != String(paramName))) {
+				continue;
+			}
 
             // And let's update the value and update the UI Without sending modification !!!
             // No modification : we dont want sliderValueChanged to be called in the different panels

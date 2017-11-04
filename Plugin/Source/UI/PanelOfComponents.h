@@ -114,7 +114,6 @@ public:
             String stepName = String(String(stepSeq->getName().toRawUTF8()) + " Step " + String(k+1)).toRawUTF8();
 			MidifiedFloatParameter * parameter = checkParamExistence(stepName);
 
-
             // Will remove that later but dont' BUG for the moment if that doesn't fit
             if (parameter == nullptr) {
                 return;
@@ -123,9 +122,10 @@ public:
             // And let's update the value and update the UI Without sending modification !!!
             // No modification : we dont want sliderValueChanged to be called in the different panels
             if (stepSeq->getValue(k) != parameter->getRealValue()) {
-                stepSeq->setValues(k, parameter->getRealValue());
+                stepSeq->setValuesNoNotify(k, parameter->getRealValue());
             }
         }
+		stepSeq->repaint();
     }
 
     // Can be overriden by sub classes

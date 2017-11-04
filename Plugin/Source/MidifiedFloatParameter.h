@@ -130,6 +130,7 @@ public:
 
 	void setValue(float newValue);
 	void setRealValue(float newValue);
+	void setRealValueNoNotification(float newValue) { value = newValue; }
 
 	float getValue() const { return range.convertTo0to1(value); }
 	float getRealValue() const { return value; }

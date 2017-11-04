@@ -40,7 +40,8 @@ public:
 	Font getComboBoxFont(ComboBox& box);
 	void positionComboBoxText(ComboBox& box, Label& label);
 
-private:
+	bool isUsingNativeAlertWindows() { return false;  }
+
 };
 
 

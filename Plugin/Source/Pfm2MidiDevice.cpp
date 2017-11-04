@@ -58,6 +58,47 @@ Pfm2MidiDevice::~Pfm2MidiDevice() {
 	}
 }
 
+
+
+void Pfm2MidiDevice::sendBlockOfMessagesNow(MidiBuffer& midiBuffer) {
+	if (pfm2MidiOutput != nullptr && pfm2MidiInput != nullptr) {
+		pfm2MidiOutput->sendBlockOfMessagesNow(midiBuffer);
+	} else {
+		const ScopedLock myScopedLock(messageLock);
+		if (showErrorMEssage) {
+			showErrorMEssage = false;
+
+
+			AlertWindow midiWindow("No preenfm2 found",
+				"Select your preenfm2 midi ports", 
+				AlertWindow::QuestionIcon);
+
+			StringArray devicesFrom = MidiInput::getDevices();
+			midiWindow.addComboBox("PortsFrom", devicesFrom, "From your preenfm2 :");
+
+
+			StringArray devicesTo = MidiOutput::getDevices();
+			midiWindow.addComboBox("PortsTo", devicesTo, "To your preenfm2 :");
+
+			//void addButton(const String &name, int returnValue, const KeyPress &shortcutKey1 = KeyPress(), const KeyPress &shortcutKey2 = KeyPress())
+			midiWindow.addButton("Cancel", 0);
+			midiWindow.addButton("OK", 1);
+
+			const int result = midiWindow.runModalLoop();
+
+			if (result == 1) {
+				int deviceFrom = midiWindow.getComboBoxComponent("PortsFrom")->getSelectedId() - 1;
+				pfm2MidiInput = MidiInput::openDevice(deviceFrom, this);
+				if (pfm2MidiInput != nullptr) {
+					pfm2MidiInput->start();
+				}
+				int deviceTo = midiWindow.getComboBoxComponent("PortsTo")->getSelectedId() - 1;
+				pfm2MidiOutput = MidiOutput::openDevice(deviceTo);
+			}
+		}
+	}
+}
+
 void Pfm2MidiDevice::addListener(MidiInputCallback *listener) {
 	listeners.push_back(listener);
 }
@@ -83,4 +124,7 @@ void Pfm2MidiDevice::handleIncomingMidiMessage(MidiInput *source, const MidiMess
 void Pfm2MidiDevice::handlePartialSysexMessage(MidiInput *source, const uint8 *messageData, int numBytesSoFar, double timestamp) {
 
 }
+
+
+
 
