@@ -292,12 +292,14 @@ PanelArpAndFilter::PanelArpAndFilter ()
     filterComboBox->setJustificationType (Justification::centredLeft);
     filterComboBox->setTextWhenNothingSelected (TRANS("Off"));
     filterComboBox->setTextWhenNoChoicesAvailable (TRANS("Off"));
-    filterComboBox->addItem (TRANS("Off"), 1);
-    filterComboBox->addItem (TRANS("Mix"), 2);
-    filterComboBox->addItem (TRANS("Low Pass"), 3);
-    filterComboBox->addItem (TRANS("High Pass"), 4);
-    filterComboBox->addItem (TRANS("Bass Boost"), 5);
-    filterComboBox->addListener (this);
+    filterComboBox->addItem(TRANS("Off"), 1);
+    filterComboBox->addItem(TRANS("Mix"), 2);
+    filterComboBox->addItem(TRANS("Low Pass"), 3);
+    filterComboBox->addItem(TRANS("High Pass"), 4);
+	filterComboBox->addItem(TRANS("Band Pass"), 6);
+	filterComboBox->addItem(TRANS("Bass Boost"), 5);
+	filterComboBox->addItem(TRANS("Crusher"), 7);
+	filterComboBox->addListener (this);
 
 
     //[UserPreSize]
