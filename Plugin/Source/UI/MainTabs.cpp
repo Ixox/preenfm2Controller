@@ -306,7 +306,7 @@ MidifiedFloatParameter* MainTabs::getParameterFromName(String componentName) {
 			return (MidifiedFloatParameter*) parameters[p];
 		}
 	}
-
+	return nullptr;
 }
 
 
