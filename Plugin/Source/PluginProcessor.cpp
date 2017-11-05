@@ -913,7 +913,9 @@ void Pfm2AudioProcessor::handlePartialSysexMessage(MidiInput *source, const uint
 
 }
 
-
+void Pfm2AudioProcessor::choseNewMidiDevice() {
+	pfm2MidiDevice->forceChoseNewDevices();
+}
 
 //==============================================================================
 // This creates new instances of the plugin..

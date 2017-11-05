@@ -1,5 +1,27 @@
 /*
-* Copyright 2017 Xavier Hosxe
+  ==============================================================================
+
+  This is an automatically generated GUI class created by the Projucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Projucer version: 5.1.2
+
+  ------------------------------------------------------------------------------
+
+  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright (c) 2015 - ROLI Ltd.
+
+  ==============================================================================
+*/
+
+#pragma once
+
+//[Headers]     -- You can add your own extra header files here --
+/*
+* Copyright 2014 Xavier Hosxe
 *
 * Author: Xavier Hosxe (xavier <dot> hosxe
 *                      (at) g m a i l <dot> com)
@@ -15,11 +37,6 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-
-#pragma once
-
-//[Headers]     -- You can add your own extra header files here --
 #include <unordered_set>
 class MidifiedFloatParameter;
 class PanelEngine;
@@ -57,6 +74,7 @@ public:
 	void setPresetNamePtr(char* presetNamePtr);
     void setMidiOutBuffer(MidiBuffer *midiOutBuffer);
 	void setMidiChannel(int newMidiChannel);
+	MidifiedFloatParameter* getParameterFromName(String componentName);
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -64,7 +82,7 @@ public:
     void buttonClicked (Button* buttonThatWasClicked) override;
     void labelTextChanged (Label* labelThatHasChanged) override;
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
-	MidifiedFloatParameter* getParameterFromName(String componentName);
+
 
 
 private:
@@ -87,10 +105,10 @@ private:
     ScopedPointer<Label> presetNameLabel;
     ScopedPointer<TextButton> pushButton;
     ScopedPointer<ComboBox> midiChannelCombo;
-    ScopedPointer<Label> midiChannelLabel;
     ScopedPointer<Label> versionLabel;
     ScopedPointer<Label> midiInputLabel2;
     ScopedPointer<Label> midiInputLabel;
+    ScopedPointer<TextButton> deviceButton;
 
 
     //==============================================================================

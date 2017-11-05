@@ -18,7 +18,30 @@
 
 #include "Pfm2MidiDevice.h"
 
+#define MIDI_INPUT "midiInput"
+#define MIDI_OUTPUT "midiOutput"
+
 Pfm2MidiDevice::Pfm2MidiDevice() {
+	String pfm2InputDevice = "PreenFM mk2";
+	String pfm2OutputDevice = "PreenFM mk2";
+
+	PropertiesFile::Options options;
+	options.applicationName = ProjectInfo::projectName;
+	options.osxLibrarySubFolder = "Library/Application Support";
+	options.filenameSuffix = ".settings";
+	options.storageFormat = PropertiesFile::StorageFormat::storeAsXML;
+	pfm2AppProps.setStorageParameters(options);
+
+	PropertiesFile* pfm2Settings = pfm2AppProps.getCommonSettings(true);
+
+	if (pfm2Settings->containsKey(MIDI_INPUT)) {
+		pfm2InputDevice = pfm2Settings->getValue(MIDI_INPUT);
+	} 
+
+	if (pfm2Settings->containsKey(MIDI_OUTPUT)) {
+		pfm2OutputDevice = pfm2Settings->getValue(MIDI_OUTPUT);
+	}
+
 	pfm2MidiOutput = nullptr;
 	pfm2MidiInput = nullptr;
 
@@ -26,9 +49,10 @@ Pfm2MidiDevice::Pfm2MidiDevice() {
 
 	for (int d = 0; d < devices.size(); d++) {
 		DBG("Output : " << devices[d]);
-		if (devices[d] == "PreenFM mk2") {
+		if (devices[d] == pfm2OutputDevice) {
 			if ((pfm2MidiOutput = MidiOutput::openDevice(d)) != nullptr) {
 				DBG("Output found :)");
+				currentMidiOutputDevice = devices[d];
 			}
 			break;
 		}
@@ -37,9 +61,10 @@ Pfm2MidiDevice::Pfm2MidiDevice() {
 	devices = MidiInput::getDevices();
 	for (int d = 0; d < devices.size(); d++) {
 		DBG("Input : " << devices[d]);
-		if (devices[d] == "PreenFM mk2") {
+		if (devices[d] == pfm2InputDevice) {
 			if ((pfm2MidiInput = MidiInput::openDevice(d, this)) != nullptr) {
 				pfm2MidiInput->start();
+				currentMidiInputDevice = devices[d];
 				DBG("Input found :)");
 			}
 			break;
@@ -49,53 +74,128 @@ Pfm2MidiDevice::Pfm2MidiDevice() {
 }
 
 Pfm2MidiDevice::~Pfm2MidiDevice() {
+	resetDevices();
+}
+
+void Pfm2MidiDevice::resetDevices() {
+
 	if (pfm2MidiInput) {
 		pfm2MidiInput->stop();
 		delete pfm2MidiInput;
+		pfm2MidiInput = nullptr;
 	}
 	if (pfm2MidiOutput) {
 		delete pfm2MidiOutput;
+		pfm2MidiOutput = nullptr;
 	}
 }
-
 
 
 void Pfm2MidiDevice::sendBlockOfMessagesNow(MidiBuffer& midiBuffer) {
 	if (pfm2MidiOutput != nullptr && pfm2MidiInput != nullptr) {
 		pfm2MidiOutput->sendBlockOfMessagesNow(midiBuffer);
 	} else {
-		const ScopedLock myScopedLock(messageLock);
-		if (showErrorMEssage) {
-			showErrorMEssage = false;
+		choseNewDevices();
+	}
+}
 
 
-			AlertWindow midiWindow("No preenfm2 found",
-				"Select your preenfm2 midi ports", 
-				AlertWindow::QuestionIcon);
+void Pfm2MidiDevice::forceChoseNewDevices() {
+	showErrorMEssage = true;
+	choseNewDevices();
+}
 
-			StringArray devicesFrom = MidiInput::getDevices();
-			midiWindow.addComboBox("PortsFrom", devicesFrom, "From your preenfm2 :");
+void Pfm2MidiDevice::choseNewDevices() {
+	const ScopedTryLock myScopedTryLock(messageLock);
 
+	if (!myScopedTryLock.isLocked()) {
+		return;
+	}
 
-			StringArray devicesTo = MidiOutput::getDevices();
-			midiWindow.addComboBox("PortsTo", devicesTo, "To your preenfm2 :");
+	if (showErrorMEssage) {
+		showErrorMEssage = false;
 
-			//void addButton(const String &name, int returnValue, const KeyPress &shortcutKey1 = KeyPress(), const KeyPress &shortcutKey2 = KeyPress())
-			midiWindow.addButton("Cancel", 0);
-			midiWindow.addButton("OK", 1);
+		AlertWindow midiWindow("Where is your preenfm2 ?",
+			"",
+			AlertWindow::QuestionIcon);
 
-			const int result = midiWindow.runModalLoop();
+		Label errorMessage("");
+		errorMessage.setColour(Label::textColourId, Colour::fromRGB(200, 80, 80));
+		errorMessage.setSize(400, 20);
+		midiWindow.addCustomComponent(&errorMessage);
+
+		StringArray devicesFrom = MidiInput::getDevices();
+		devicesFrom.insert(0, "<Select>");
+		midiWindow.addComboBox("From", devicesFrom, "Input from preenfm2");
+		int currentInput = devicesFrom.indexOf(currentMidiInputDevice);
+		if (currentInput > -1) {
+			midiWindow.getComboBoxComponent("From")->setSelectedId(currentInput + 1);
+		}
+
+		StringArray devicesTo = MidiOutput::getDevices();
+		devicesTo.insert(0, "<Select>");
+		midiWindow.addComboBox("To", devicesTo, "Output to preenfm2");
+		int currentOutput = devicesTo.indexOf(currentMidiOutputDevice);
+		if (currentOutput > -1) {
+			midiWindow.getComboBoxComponent("To")->setSelectedId(currentOutput+1);
+		}
+
+		//void addButton(const String &name, int returnValue, const KeyPress &shortcutKey1 = KeyPress(), const KeyPress &shortcutKey2 = KeyPress())
+		midiWindow.addButton("Cancel", 0);
+		midiWindow.addButton("OK", 1);
+
+		int result = 1;
+		do {
+
+			do {
+				result = midiWindow.runModalLoop();
+				errorMessage.setText("You must select both input and output", NotificationType::sendNotification);
+				midiWindow.repaint();
+			} while ((midiWindow.getComboBoxComponent("From")->getSelectedId() == 1 || midiWindow.getComboBoxComponent("To")->getSelectedId() == 1) && result == 1);
 
 			if (result == 1) {
-				int deviceFrom = midiWindow.getComboBoxComponent("PortsFrom")->getSelectedId() - 1;
+
+				if (pfm2MidiOutput != nullptr) {
+					delete pfm2MidiOutput;
+					pfm2MidiOutput = nullptr;
+				}
+				if (pfm2MidiInput != nullptr) {
+					pfm2MidiInput->stop();
+					delete pfm2MidiInput;
+					pfm2MidiInput = nullptr;
+				}
+
+				// -2 because of the <Select>.
+				int deviceFrom = midiWindow.getComboBoxComponent("From")->getSelectedId() - 2;
+				currentMidiInputDevice = devicesFrom[deviceFrom+1];
+				int deviceTo = midiWindow.getComboBoxComponent("To")->getSelectedId() - 2;
+				currentMidiOutputDevice = devicesTo[deviceTo+1];
+
 				pfm2MidiInput = MidiInput::openDevice(deviceFrom, this);
 				if (pfm2MidiInput != nullptr) {
 					pfm2MidiInput->start();
 				}
-				int deviceTo = midiWindow.getComboBoxComponent("PortsTo")->getSelectedId() - 1;
-				pfm2MidiOutput = MidiOutput::openDevice(deviceTo);
+				else {
+					errorMessage.setText("Input cannot be open", NotificationType::dontSendNotification);
+				}
+				// No need to test output if input did not work
+				if (pfm2MidiInput != nullptr) {
+					pfm2MidiOutput = MidiOutput::openDevice(deviceTo);
+					if (pfm2MidiOutput == nullptr) {
+						errorMessage.setText("Output cannot be open", NotificationType::dontSendNotification);
+						// let's close input before rexiting
+						resetDevices();
+					}
+					else {
+						// We're good
+						PropertiesFile* pfm2Settings = pfm2AppProps.getCommonSettings(true);
+						pfm2Settings->setValue(MIDI_INPUT, currentMidiInputDevice);
+						pfm2Settings->setValue(MIDI_OUTPUT, currentMidiOutputDevice);
+						pfm2AppProps.saveIfNeeded();
+					}
+				}
 			}
-		}
+		} while ((pfm2MidiInput == nullptr || pfm2MidiOutput == nullptr) && result == 1);
 	}
 }
 

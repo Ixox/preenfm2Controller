@@ -40,6 +40,9 @@ public:
 	MidiInput* getMidiInput() {
 		return pfm2MidiInput;
 	}
+	void resetDevices();
+	void choseNewDevices();
+	void forceChoseNewDevices();
 	void sendBlockOfMessagesNow(MidiBuffer& midiBuffer);
 	// == MidiInputCallback
 	void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message);
@@ -50,10 +53,13 @@ public:
 	
 
 private :
+	ApplicationProperties pfm2AppProps;
 	bool showErrorMEssage;
 	CriticalSection messageLock;
 	MidiOutput* pfm2MidiOutput;
+	String currentMidiOutputDevice;
 	MidiInput* pfm2MidiInput;
+	String currentMidiInputDevice;
 	MidiInputCallbackList listeners;
 };
 

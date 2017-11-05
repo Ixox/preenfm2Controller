@@ -1,5 +1,25 @@
 /*
-* Copyright 2017 Xavier Hosxe
+  ==============================================================================
+
+  This is an automatically generated GUI class created by the Projucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Projucer version: 5.1.2
+
+  ------------------------------------------------------------------------------
+
+  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright (c) 2015 - ROLI Ltd.
+
+  ==============================================================================
+*/
+
+//[Headers] You can add your own extra header files here...
+/*
+* Copyright 2014 Xavier Hosxe
 *
 * Author: Xavier Hosxe (xavier <dot> hosxe
 *                      (at) g m a i l <dot> com)
@@ -15,8 +35,6 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-//[Headers] You can add your own extra header files here...
 #include "JuceHeader.h"
 #include "../PluginProcessor.h"
 #include "PanelEngine.h"
@@ -90,15 +108,6 @@ MainTabs::MainTabs ()
     midiChannelCombo->addSeparator();
     midiChannelCombo->addListener (this);
 
-    addAndMakeVisible (midiChannelLabel = new Label ("Midi Channel Label",
-                                                     TRANS("Midi :")));
-    midiChannelLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    midiChannelLabel->setJustificationType (Justification::centred);
-    midiChannelLabel->setEditable (false, false, false);
-    midiChannelLabel->setColour (Label::textColourId, Colours::aliceblue);
-    midiChannelLabel->setColour (TextEditor::textColourId, Colours::black);
-    midiChannelLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
     addAndMakeVisible (versionLabel = new Label ("Version Label",
                                                  TRANS("v?.?\n")));
     versionLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
@@ -125,6 +134,12 @@ MainTabs::MainTabs ()
     midiInputLabel->setColour (Label::textColourId, Colours::beige);
     midiInputLabel->setColour (TextEditor::textColourId, Colours::black);
     midiInputLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (deviceButton = new TextButton ("Device Button"));
+    deviceButton->setButtonText (TRANS("Midi"));
+    deviceButton->addListener (this);
+    deviceButton->setColour (TextButton::buttonColourId, Colour (0x005c5da4));
+    deviceButton->setColour (TextButton::buttonOnColourId, Colours::aliceblue);
 
 
     //[UserPreSize]
@@ -157,10 +172,10 @@ MainTabs::~MainTabs()
     presetNameLabel = nullptr;
     pushButton = nullptr;
     midiChannelCombo = nullptr;
-    midiChannelLabel = nullptr;
     versionLabel = nullptr;
     midiInputLabel2 = nullptr;
     midiInputLabel = nullptr;
+    deviceButton = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -189,10 +204,10 @@ void MainTabs::resized()
     presetNameLabel->setBounds (proportionOfWidth (0.4003f), proportionOfHeight (0.0033f), 200, 32);
     pushButton->setBounds (getWidth() - 184, 8, 55, 24);
     midiChannelCombo->setBounds (getWidth() - 268, 8, 55, 24);
-    midiChannelLabel->setBounds (getWidth() - 364, 8, 103, 24);
     versionLabel->setBounds (getWidth() - 58, 8, 55, 24);
     midiInputLabel2->setBounds (proportionOfWidth (0.3557f), 21, 48, 12);
     midiInputLabel->setBounds (proportionOfWidth (0.3557f), 5, 36, 12);
+    deviceButton->setBounds (getWidth() - 340, 8, 60, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -221,6 +236,15 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
 		 param->setRealValue(pushButtonValue);
 
         //[/UserButtonCode_pushButton]
+    }
+    else if (buttonThatWasClicked == deviceButton)
+    {
+        //[UserButtonCode_deviceButton] -- add your button handler code here..
+		Pfm2AudioProcessor* pfm2Processor = dynamic_cast<Pfm2AudioProcessor*>(audioProcessor);
+		if (pfm2Processor) {
+			pfm2Processor->choseNewMidiDevice();
+		}
+        //[/UserButtonCode_deviceButton]
     }
 
     //[UserbuttonClicked_Post]
@@ -258,7 +282,7 @@ void MainTabs::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
         //[UserComboBoxCode_midiChannelCombo] -- add your combo box handling code here..
 
 		MidifiedFloatParameter* param = getParameterFromName("Midi Channel");
-		
+
         if (currentMidiChannel != midiChannelCombo->getSelectedId()) {
             currentMidiChannel = midiChannelCombo->getSelectedId();
 			param->setRealValue(currentMidiChannel);
@@ -279,10 +303,10 @@ MidifiedFloatParameter* MainTabs::getParameterFromName(String componentName) {
 	const OwnedArray<AudioProcessorParameter>& parameters = audioProcessor->getParameters();
 	for (int p = 0; p < parameters.size(); p++) {
 		if (parameters[p]->getName(256) == componentName) {
-			return (MidifiedFloatParameter*) parameters[p];		
+			return (MidifiedFloatParameter*) parameters[p];
 		}
 	}
-	
+
 }
 
 
@@ -391,11 +415,6 @@ BEGIN_JUCER_METADATA
             virtualName="" explicitFocusOrder="0" pos="268R 8 55 24" tooltip="Midi Channel"
             editable="0" layout="36" items="1&#10;2&#10;3&#10;4&#10;5&#10;6&#10;7&#10;8&#10;9&#10;10&#10;11&#10;12&#10;13&#10;14&#10;15&#10;16&#10;"
             textWhenNonSelected="1" textWhenNoItems="1"/>
-  <LABEL name="Midi Channel Label" id="6b9a0088a5f5afa" memberName="midiChannelLabel"
-         virtualName="" explicitFocusOrder="0" pos="364R 8 103 24" textCol="fff0f8ff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Midi :" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" kerning="0" bold="0" italic="0" justification="36"/>
   <LABEL name="Version Label" id="c8880c204a60b679" memberName="versionLabel"
          virtualName="" explicitFocusOrder="0" pos="58R 8 55 24" textCol="fff5f5dc"
          edTextCol="ff000000" edBkgCol="0" labelText="v?.?&#10;" editableSingleClick="0"
@@ -412,6 +431,10 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="0" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12" kerning="0" bold="0" italic="0" justification="33"/>
+  <TEXTBUTTON name="Device Button" id="69cb4ea6d744571b" memberName="deviceButton"
+              virtualName="" explicitFocusOrder="0" pos="340R 8 60 24" bgColOff="5c5da4"
+              bgColOn="fff0f8ff" buttonText="Midi" connectedEdges="0" needsCallback="1"
+              radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

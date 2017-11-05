@@ -217,23 +217,21 @@ public:
     //==============================================================================
     void quickHelp()
     {
+		AlertWindow helpWindow("Quick Configuration Help",
+			"Check your preenfm2 settings : \r\n"
+			"(Menu->Tools->Set)\r\n"
+			". Midi channels 1, 2, 3 & 4\r\n"
+			". Midi thru : No\r\n"
+			". Receives : NRPN\r\n"
+			". Send : NRPN\r\n\r\n"
+			"In the main editor window :\r\n"
+			". Click on 'Midi' button to select your midi device\r\n"
+			". Select the midi channel (1-16) of the preenfm2 instrument               \r\n"
+			"   you want to talk to. \r\n\r\n",
+			AlertWindow::InfoIcon);
 
-        AlertWindow::showMessageBox(AlertWindow::InfoIcon,
-            "Quick Configuration Help",
-            "Click on Options > Midi Settings\r\n"
-			". Select any working audio output\r\n"
-			". Do not select preenfm2 anywhere"
-            ". Select your keyboard in midi input\r\n"
-            "Close the windows and start playing...\r\n"
-            "\r\n"
-            "If it does not work, check your preenfm2 settings : \r\n"
-            ". Usb Midi : In/Out\r\n"
-            ". Check midi channels 1, 2, 3 & 4\r\n"
-            ". Midi thru : No\r\n"
-            ". Receives : NRPN\r\n"
-            ". Send : NRPN\r\n",			
-            "Close");
-
+		helpWindow.addButton("OK", 1);
+		helpWindow.runModalLoop();
     }
 
     //==============================================================================
@@ -245,9 +243,9 @@ public:
 private:
     void setupAudioDevices()
     {
-        deviceManager.addAudioCallback (&player);
+		reloadAudioDeviceState();
+		deviceManager.addAudioCallback (&player);
         deviceManager.addMidiInputCallback (String::empty, &player);
-        reloadAudioDeviceState();
     }
 
     void shutDownAudioDevices()
@@ -369,7 +367,7 @@ public:
         PopupMenu m;
 		m.addItem (5, TRANS("Quick Help"));
         m.addSeparator();
-        m.addItem (1, TRANS("Midi Settings"));
+        m.addItem (1, TRANS("Keyboard input"));
         m.addSeparator();
 		m.addItem (2, TRANS("Save current state"));
         m.addItem (3, TRANS("Load a saved state"));

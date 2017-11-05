@@ -65,10 +65,6 @@
               file="../Plugin/Source/UI/StepSequencer.cpp"/>
         <FILE id="s9fzsf" name="StepSequencer.h" compile="0" resource="0" file="../Plugin/Source/UI/StepSequencer.h"/>
       </GROUP>
-      <FILE id="K7kPuZ" name="AudioProcessorPlayerWithMidiOutput.cpp" compile="1"
-            resource="0" file="Source/AudioProcessorPlayerWithMidiOutput.cpp"/>
-      <FILE id="VbFC8a" name="AudioProcessorPlayerWithMidiOutput.h" compile="0"
-            resource="0" file="Source/AudioProcessorPlayerWithMidiOutput.h"/>
       <FILE id="jG72uk" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="f6aqq8" name="pfm2Window.h" compile="0" resource="0" file="Source/pfm2Window.h"/>
     </GROUP>
