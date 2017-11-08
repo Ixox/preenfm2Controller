@@ -641,6 +641,14 @@ void PanelModulation::updateUIStepSequencer(String paramName) {
 }
 
 
+bool PanelModulation::containsThisParameterAsStepSequencer(String name) {
+	return (name.startsWith("Step Seq") && name.indexOf(" Step ") == 10);
+}
+
+bool PanelModulation::containsThisParameterAsEnveloppe(String name) {
+	return name.startsWith("Free Env ");
+}
+
 
 void PanelModulation::updateSliderFromParameter_hook(Slider* slider) {
 	sliderValueChanged(slider, false);

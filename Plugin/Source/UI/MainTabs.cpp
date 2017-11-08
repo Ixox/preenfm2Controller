@@ -117,24 +117,6 @@ MainTabs::MainTabs ()
     versionLabel->setColour (TextEditor::textColourId, Colours::black);
     versionLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (midiInputLabel2 = new Label ("midi input label",
-                                                    TRANS("0")));
-    midiInputLabel2->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    midiInputLabel2->setJustificationType (Justification::centredLeft);
-    midiInputLabel2->setEditable (false, false, false);
-    midiInputLabel2->setColour (Label::textColourId, Colours::beige);
-    midiInputLabel2->setColour (TextEditor::textColourId, Colours::black);
-    midiInputLabel2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (midiInputLabel = new Label ("midi input label",
-                                                   TRANS("0")));
-    midiInputLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    midiInputLabel->setJustificationType (Justification::centredLeft);
-    midiInputLabel->setEditable (false, false, false);
-    midiInputLabel->setColour (Label::textColourId, Colours::beige);
-    midiInputLabel->setColour (TextEditor::textColourId, Colours::black);
-    midiInputLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
     addAndMakeVisible (deviceButton = new TextButton ("Device Button"));
     deviceButton->setButtonText (TRANS("Midi"));
     deviceButton->addListener (this);
@@ -173,8 +155,6 @@ MainTabs::~MainTabs()
     pushButton = nullptr;
     midiChannelCombo = nullptr;
     versionLabel = nullptr;
-    midiInputLabel2 = nullptr;
-    midiInputLabel = nullptr;
     deviceButton = nullptr;
 
 
@@ -205,8 +185,6 @@ void MainTabs::resized()
     pushButton->setBounds (getWidth() - 184, 8, 55, 24);
     midiChannelCombo->setBounds (getWidth() - 268, 8, 55, 24);
     versionLabel->setBounds (getWidth() - 58, 8, 55, 24);
-    midiInputLabel2->setBounds (proportionOfWidth (0.3557f), 21, 48, 12);
-    midiInputLabel->setBounds (proportionOfWidth (0.3557f), 5, 36, 12);
     deviceButton->setBounds (getWidth() - 340, 8, 60, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
@@ -302,8 +280,9 @@ void MainTabs::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 MidifiedFloatParameter* MainTabs::getParameterFromName(String componentName) {
 	const OwnedArray<AudioProcessorParameter>& parameters = audioProcessor->getParameters();
 	for (int p = 0; p < parameters.size(); p++) {
-		if (parameters[p]->getName(256) == componentName) {
-			return (MidifiedFloatParameter*) parameters[p];
+		MidifiedFloatParameter* midiFP = (MidifiedFloatParameter*)parameters[p];
+		if (midiFP->getName() == componentName) {
+			return midiFP;
 		}
 	}
 	return nullptr;
@@ -324,31 +303,16 @@ void MainTabs::buildParameters(AudioProcessor *audioProcessor) {
 }
 
 void MainTabs::updateUI(std::unordered_set<String> &paramSet) {
-    /*
-    printf("====================================================\r\n");
-    printf("====> %d\r\n", paramSet.size());
-    for(std::unordered_set<const char*>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
-        printf("'%s'\r\n", (*it));
+
+	std::unordered_set<String>::const_iterator midiChannel = paramSet.find("Midi Channel");
+	if (midiChannel != paramSet.end()) {
+		MidifiedFloatParameter* param = getParameterFromName("Midi Channel");
+		midiChannelCombo->setSelectedId(param->getRealValue());
     }
-    printf("====================================================\r\n");
-    */
 
-    for(std::unordered_set<String>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
-        if (*it == "Midi Channel") {
-			MidifiedFloatParameter* param = getParameterFromName("Midi Channel");
-			midiChannelCombo->setSelectedId(param->getRealValue());
-		}
-    }
-    panelEngine->updateUI(paramSet);
-    panelModulation->updateUI(paramSet);
-    panelArpAndFilter->updateUI(paramSet);
-
-}
-
-
-void MainTabs::newNrpnParam(int nrpn, int value) {
-    midiInputLabel->setText(String(nrpn), dontSendNotification);
-    midiInputLabel2->setText(String(value), dontSendNotification);
+	panelEngine->updateUI(paramSet);
+	panelModulation->updateUI(paramSet);
+	panelArpAndFilter->updateUI(paramSet);
 }
 
 
@@ -420,17 +384,6 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="v?.?&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" kerning="0" bold="0" italic="0" justification="33"/>
-  <LABEL name="midi input label" id="f5bde9938974ba9f" memberName="midiInputLabel2"
-         virtualName="" explicitFocusOrder="0" pos="35.572% 21 48 12"
-         textCol="fff5f5dc" edTextCol="ff000000" edBkgCol="0" labelText="0"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="12" kerning="0" bold="0" italic="0"
-         justification="33"/>
-  <LABEL name="midi input label" id="f77b232960a175fb" memberName="midiInputLabel"
-         virtualName="" explicitFocusOrder="0" pos="35.572% 5 36 12" textCol="fff5f5dc"
-         edTextCol="ff000000" edBkgCol="0" labelText="0" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12" kerning="0" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="Device Button" id="69cb4ea6d744571b" memberName="deviceButton"
               virtualName="" explicitFocusOrder="0" pos="340R 8 60 24" bgColOff="5c5da4"
               bgColOn="fff0f8ff" buttonText="Midi" connectedEdges="0" needsCallback="1"

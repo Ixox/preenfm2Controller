@@ -63,6 +63,7 @@ public:
     void buildParameters();
     void updateSliderFromParameter_hook(Slider* slider);
     void updateUIEnveloppe(String paramName);
+	bool containsThisParameterAsEnveloppe(String name);
     //[/UserMethods]
 
     void paint (Graphics& g) override;

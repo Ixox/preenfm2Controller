@@ -64,6 +64,8 @@ public:
     void updateComboFromParameter_hook(ComboBox* combo);
     void updateUIEnveloppe(String paramName);
     void updateUIStepSequencer(String paramName);
+	bool containsThisParameterAsStepSequencer(String name);
+	bool containsThisParameterAsEnveloppe(String name);
     //[/UserMethods]
 
     void paint (Graphics& g) override;

@@ -43,7 +43,6 @@ public:
     void timerCallback ();
     void updateUIWith(std::unordered_set<String> &paramSet);
     void removeParamToUpdateUI(String paramName);
-    void newNrpnParam(int nrpn, int value);
 	void setMidiOutBuffer(MidiBuffer *midiOutBuffer);
 	void setMidiChannel(int newMidiChannel);
     void setPresetName(String presetName);

@@ -101,7 +101,7 @@ void EnveloppeAbstract::paint (Graphics& g)
             g.fillEllipse((int)pointList[p].get()->getPositionOnScreenX() - CIRCLE_RAY,
                     (int)pointList[p].get()->getPositionOnScreenY() - CIRCLE_RAY ,
                     CIRCLE_RAY*2, CIRCLE_RAY*2);
-//            g.setColour (Colours::black);
+
             if (!pointList[p].get()->isYConstrained()) {
             	g.drawVerticalLine((int)pointList[p].get()->getPositionOnScreenX(), MARGIN_TOP, getHeight() - MARGIN_BOTTOM);
             }
@@ -117,12 +117,15 @@ void EnveloppeAbstract::paint (Graphics& g)
                 if (!pointList[p].get()->isXConstrained()) {
                 	g.drawHorizontalLine((int)pointList[p].get()->getPositionOnScreenY(), MARGIN_LEFT, getWidth() - MARGIN_RIGHT);
                 }
-            } else {
-                g.setColour (Colours::grey);
-            }
-            g.drawEllipse((int)pointList[p].get()->getPositionOnScreenX() - CIRCLE_RAY,
-                    (int)pointList[p].get()->getPositionOnScreenY() - CIRCLE_RAY ,
-                    CIRCLE_RAY*2, CIRCLE_RAY*2, 1);
+				g.drawEllipse((int)pointList[p].get()->getPositionOnScreenX() - CIRCLE_RAY,
+					(int)pointList[p].get()->getPositionOnScreenY() - CIRCLE_RAY,
+					CIRCLE_RAY * 2, CIRCLE_RAY * 2, 1);
+			} else {
+                g.setColour (Colours::whitesmoke);
+				g.fillEllipse((int)pointList[p].get()->getPositionOnScreenX() - 2,
+					(int)pointList[p].get()->getPositionOnScreenY() - 2,
+					4, 4 );
+			}
         }
     }
 
@@ -132,8 +135,8 @@ void EnveloppeAbstract::paint (Graphics& g)
 void EnveloppeAbstract::mouseMove(const MouseEvent &event)  {
 
     for (int p = pointList.size() - 1; p >= 0; p--) {
-        if (abs(event.x - pointList[p].get()->getPositionOnScreenX()) < (CIRCLE_RAY+1)
-                && abs(event.y - pointList[p].get()->getPositionOnScreenY()) < (CIRCLE_RAY+1)) {
+        if (abs(event.x - pointList[p].get()->getPositionOnScreenX()) < (CIRCLE_RAY+2)
+                && abs(event.y - pointList[p].get()->getPositionOnScreenY()) < (CIRCLE_RAY + 2)) {
             if (overPointIndex != p) {
                 overPointIndex = p;
                 setMouseCursor(MouseCursor::PointingHandCursor);
@@ -148,14 +151,25 @@ void EnveloppeAbstract::mouseMove(const MouseEvent &event)  {
         repaint();
     }
     return;
+}
 
+void EnveloppeAbstract::mouseExit(const MouseEvent &event) {
+	overPointIndex = -1;
+	setMouseCursor(MouseCursor::NormalCursor);
+	repaint();
 }
 
 void EnveloppeAbstract::mouseDown (const MouseEvent &event)  {
-    for (int p = pointList.size() - 1; p >= 0; p--) {
-        
-        if (abs(event.x - pointList[p].get()->getPositionOnScreenX()) < 5
-                && abs(event.y - pointList[p].get()->getPositionOnScreenY()) < 5) {
+	if (overPointIndex != -1) {
+		draggingPointIndex = overPointIndex;
+		startDragX = event.x;
+		startDragY = event.y;
+		repaint();
+		return;
+	}
+    for (int p = pointList.size() - 1; p >= 0; p--) {       
+        if (abs(event.x - pointList[p].get()->getPositionOnScreenX()) < (CIRCLE_RAY + 2)
+                && abs(event.y - pointList[p].get()->getPositionOnScreenY()) < (CIRCLE_RAY + 2)) {
             draggingPointIndex = p  ;
             startDragX = event.x;
             startDragY = event.y;

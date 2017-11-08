@@ -69,7 +69,6 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     void buildParameters(AudioProcessor *audioProcessor);
 	void updateUI(std::unordered_set<String> &paramSet);
-	void newNrpnParam(int nrpn, int value);
 	void setPresetName(String presetName);
 	void setPresetNamePtr(char* presetNamePtr);
     void setMidiOutBuffer(MidiBuffer *midiOutBuffer);
@@ -106,8 +105,6 @@ private:
     ScopedPointer<TextButton> pushButton;
     ScopedPointer<ComboBox> midiChannelCombo;
     ScopedPointer<Label> versionLabel;
-    ScopedPointer<Label> midiInputLabel2;
-    ScopedPointer<Label> midiInputLabel;
     ScopedPointer<TextButton> deviceButton;
 
 

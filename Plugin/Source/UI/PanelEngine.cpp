@@ -693,6 +693,11 @@ void PanelEngine::updateUIEnveloppe(String paramName) {
     }
 }
 
+bool PanelEngine::containsThisParameterAsEnveloppe(String name) {
+	return (name.startsWith("Op") && name.indexOf(" Env") == 3);
+}
+
+
 
 void PanelEngine::updateSliderFromParameter_hook(Slider* slider) {
 	sliderValueChanged(slider, false);

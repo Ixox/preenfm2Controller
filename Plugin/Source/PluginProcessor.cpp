@@ -789,13 +789,14 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int nrpnValue, int forceI
         // Set the value 
 		midifiedFP->setValueFromNrpn(nrpnValue);
         // Notify host
-        sendParamChangeMessageToListeners(index, midifiedFP->getValue());
-       
-		// update nrpn labels
-		if (pfm2Editor) {
-            pfm2Editor->newNrpnParam(param, nrpnValue);
-        }
+		DBG("NRPN Current Thread : " << (int)Thread::getCurrentThreadId());
 
+		MessageManager::callAsync(
+			[=]() {
+				sendParamChangeMessageToListeners(index, midifiedFP->getValue());
+			}
+		);
+       
 		parameterUpdatedForUI(index);
     }
 }
@@ -827,7 +828,8 @@ void Pfm2AudioProcessor::onParameterUpdated(AudioProcessorParameter *parameter) 
 			flushMidiOut();
 		} else {
             // Notify host
-            sendParamChangeMessageToListeners(index, midifiedFP->getValue());
+			DBG("UI Current Thread : " << (int)Thread::getCurrentThreadId());
+			sendParamChangeMessageToListeners(index, midifiedFP->getValue());
 
 			// send nrpn
             midifiedFP->addNrpn(midiOutBuffer, currentMidiChannel);

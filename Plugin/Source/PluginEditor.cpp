@@ -80,10 +80,6 @@ void Pfm2AudioProcessorEditor::timerCallback () {
 	}
 }
 
-void Pfm2AudioProcessorEditor::newNrpnParam(int nrpn, int value) {
-    mainTabs->newNrpnParam(nrpn, value);
-}
-
 
 void Pfm2AudioProcessorEditor::setMidiOutBuffer(MidiBuffer *midiOutBuffer) {
 	mainTabs->setMidiOutBuffer(midiOutBuffer);

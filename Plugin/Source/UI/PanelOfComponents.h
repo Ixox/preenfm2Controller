@@ -28,6 +28,13 @@
 #include "StepSequencerListener.h"
 #include "../MidifiedFloatParameter.h"
 
+#define TYPE_NOT_HERE  0
+#define TYPE_COMBO     1
+#define TYPE_SLIDER    2
+#define TYPE_STEP_SEQ  3
+#define TYPE_ENVELOPPE 4
+
+
 class PanelOfComponents : public EnveloppeListener, 
 						  public StepSequencerListener,
 						  public Slider::Listener
@@ -173,36 +180,63 @@ public:
     }
 
     void updateUI(std::unordered_set<String> &paramSet) {
-    	for(std::unordered_set<String>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
-    		Component* component = componentMap[*it];
+    	for(std::unordered_set<String>::iterator it = paramSet.begin(); it != paramSet.end();) {
+			String name = *it;
 
-    		Slider* slider = dynamic_cast<Slider*>(component);
-    		if (slider != nullptr) {
-    			updateSliderFromParameter(slider);
-                continue;
-    		}
-
-    		ComboBox* combo = dynamic_cast<ComboBox*>(component);
-    		if (combo != nullptr) {
-    			updateComboFromParameter(combo);
-                continue;
-    		}
-
-			if ((*it).startsWith("Step Seq") && (*it).indexOf(" Step ") == 10) {
-				updateUIStepSequencer(*it);
-				continue;
+			if (!componentType.contains(name)) {
+				Component* component = componentMap[name];
+				Slider* slider = dynamic_cast<Slider*>(component);
+				ComboBox* combo = dynamic_cast<ComboBox*>(component);
+				if (slider != nullptr) {
+					componentType.set(*it, TYPE_SLIDER);
+				} else if (combo != nullptr) {
+					componentType.set(*it, TYPE_COMBO);
+				} else if (containsThisParameterAsStepSequencer(name)) {
+					componentType.set(*it, TYPE_STEP_SEQ);
+				} else if (containsThisParameterAsEnveloppe(name)) {
+					componentType.set(*it, TYPE_ENVELOPPE);
+				} else {
+					componentType.set(*it, TYPE_NOT_HERE);
+				}
 			}
 
-			if (((*it).startsWith("Op") && (*it).indexOf(" Env") == 3)
-				|| (*it).startsWith("Free Env ")) {
-				updateUIEnveloppe((*it));
+			int otherType = componentType[name];
+			switch(otherType) {
+			case TYPE_SLIDER: {
+				Component* component = componentMap[name];
+				Slider* slider = dynamic_cast<Slider*>(component);
+				updateSliderFromParameter(slider);
+				it = paramSet.erase(it);
+				break;
+			}
+			case TYPE_COMBO: {
+				Component* component = componentMap[name];
+				ComboBox* combo = dynamic_cast<ComboBox*>(component);
+				updateComboFromParameter(combo);
+				it = paramSet.erase(it);
 				continue;
+				break;
+			}
+			case TYPE_STEP_SEQ:
+				updateUIStepSequencer(name);
+				it = paramSet.erase(it);
+				break;
+			case TYPE_ENVELOPPE:
+				updateUIEnveloppe(name);
+				it = paramSet.erase(it);
+				break;
+			case TYPE_NOT_HERE:
+				// Look next
+				++it;
+				break;
 			}
 
     	}
     }
-
-    virtual void updateUIEnveloppe(String paramName) { }
+	virtual bool containsThisParameterAsEnveloppe(String paramName) { return false; }
+	virtual bool containsThisParameterAsStepSequencer(String paramName) { return false; }
+	virtual void updateUIEnveloppe(String paramName) {
+	}
     virtual void updateUIStepSequencer(String paramName) {
     }
 
@@ -223,6 +257,7 @@ public:
 protected:
     HashMap<const String, MidifiedFloatParameter *> parameterMap;
     HashMap<const String, Component*> componentMap;
+	HashMap<const String, int> componentType;
 	AudioProcessor* audioProcessor;
 };
 

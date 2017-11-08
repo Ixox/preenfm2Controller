@@ -55,6 +55,7 @@ public:
     void mouseDrag (const MouseEvent &event);
     void mouseDown(const MouseEvent &event);
     void mouseUp(const MouseEvent &event);
+	void mouseExit(const MouseEvent &event);
 
     // Can be implemented to deal with point value modification
     virtual void newXValue(int draggingPointIndex, float newX) {};
