@@ -42,7 +42,7 @@
 namespace ProjectInfo
 {
     const char* const  projectName    = "pfm2Plugin";
-    const char* const  versionString  = "2.08.2";
-    const int          versionNumber  = 0x20802;
+    const char* const  versionString  = "2.08.3";
+    const int          versionNumber  = 0x20803;
 }
 #endif

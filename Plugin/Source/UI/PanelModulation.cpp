@@ -1,4 +1,25 @@
 /*
+  ==============================================================================
+
+  This is an automatically generated GUI class created by the Projucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Projucer version: 5.1.2
+
+  ------------------------------------------------------------------------------
+
+  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright (c) 2015 - ROLI Ltd.
+
+  ==============================================================================
+*/
+
+//[Headers] You can add your own extra header files here...
+
+/*
 * Copyright 2017 Xavier Hosxe
 *
 * Author: Xavier Hosxe (xavier <dot> hosxe
@@ -15,7 +36,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-//[Headers] You can add your own extra header files here...
+
 #include "JuceHeader.h"
 #include "SliderPfm2.h"
 #include "../MidifiedFloatParameter.h"
@@ -27,7 +48,7 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 const char* matrixSourceNames [] = { "None", "lfo 1", "lfo 2", "lfo 3", "Free Env 1", "Free Env 2", "Step Seq 1", "Step Seq 2",
         "Mod Wheel", "Pit Bend", "After touch",  "Velocity", "Note1", "Note2", "Breath CC2",  "Performance 1  ", "Performance 2", "Performance 3", "Performance 4",
-		
+
         nullptr
 } ;
 
@@ -38,12 +59,12 @@ const char* matrixDestNames [] = {
 	        "None", "Gate", "Modulation Index 1", "Modulation Index 2", "Modulation Index 3", "Modulation index 4", "All Mod. Indexes",
 /*7*/        "Mix 1", "Pan 1", "Mix 2", "Pan 2", "Mix 3", "Pan 3", "Mix 4", "Pan 4", "All Mixes", "All Pans",
 /*17*/       "Op1 Frequency", "Op2 Frequency", "Op3 Frequency", "Op4 Frequency", "Op5 Frequency", "Op6 Frequency", "All Op Frequencies", "All Op Freq Harmonic",
-/*24*/       "Op1 Attack", "Op2 Attack", "Op3 Attack", "Op4 Attack", "Op5 Attack", "Op6 Attack", 
+/*24*/       "Op1 Attack", "Op2 Attack", "Op3 Attack", "Op4 Attack", "Op5 Attack", "Op6 Attack",
 /*30*/		 "Carrier Attacks", "Carrier Decays", "Carrier Releases", "Modulator Attacks", "Modulator Decays", "Modulator Releases",
 /*32*/        "Mtx Multiplier 1", "Mtx Multiplier 2", "Mtx Multiplier 3", "Mtx Multiplier 4",
 /*36*/        "lfo 1 Frequency", "lfo 2 Frequency", "lfo 3 Frequency", "Free Env2 Silence", "Step Seq 1 gate", "Step Seq 2 gate",
-/*42*/        "Filter frequency", 
-		
+/*42*/        "Filter frequency",
+
 		nullptr
 } ;
 
@@ -184,7 +205,7 @@ PanelModulation::PanelModulation ()
 
     addAndMakeVisible(lfoFrequencyLabel = new Label("LFO freq label", "Frequency"));
     lfoFrequencyLabel->setJustificationType(Justification::centredTop);
-	
+
     addAndMakeVisible(lfoBiasLabel = new Label("LFO bias label", "Bias"));
     lfoBiasLabel->setJustificationType(Justification::centredTop);
 
@@ -297,6 +318,9 @@ PanelModulation::PanelModulation ()
     enveloppeFree2Loop->setSelectedId(1);
     enveloppeFree2Loop->addListener (this);
     //[/UserPreSize]
+
+    setSize (900, 700);
+
 
     //[Constructor] You can add your own custom stuff here..
     eventsToAdd = nullptr;
@@ -597,7 +621,7 @@ void PanelModulation::updateUIEnveloppe(String paramName) {
 
         // And let's update the value and update the UI Without sending modification !!!
         // No modification : we dont want sliderValueChanged to be called in the different panels
-		
+
         if (p  == 3) {
             if (param->getValue() != enveloppeFree1->getY(p)) {
                 enveloppeFree1->setY(p, param->getRealValue());
@@ -671,7 +695,7 @@ void PanelModulation::updateComboFromParameter_hook(ComboBox* combo) {
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="PanelModulation" componentName=""
-                 parentClasses="public Component, public Slider::Listener, public Button::Listener, public ComboBox::Listener, public PanelOfParameters"
+                 parentClasses="public Component, public Slider::Listener, public Button::Listener, public ComboBox::Listener, public PanelOfComponents"
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="900"
                  initialHeight="700">

@@ -69,7 +69,8 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 
     for (int k=0; k<6; k++) {
         nrpmParam = PREENFM2_NRPN_MIX1 + k * 2;
-        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Volume "+String(k+1)), nrpmParam, 100, 0,1,1);
+        newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Mix "+String(k+1)), nrpmParam, 100, 0,1,1);
+		newParam->setOldName(String("Volume " + String(k + 1)));
 		addMidifiedParameter(newParam);
 		nrpmIndex[nrpmParam] = parameterIndex++;
     }
@@ -310,64 +311,76 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 
 
     nrpmParam = PREENFM2_NRPN_ARP_CLOCK ;
-    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Clock Combo"), nrpmParam, 1, 1, 3, 1);
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Arp clock"), nrpmParam, 1, 1, 3, 1);
+	newParam->setOldName("Clock Combo");
 	addMidifiedParameter(newParam);
 	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_ARP_BPM ;
-    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp bpm slider"), nrpmParam, 1, 10, 240, 60);
-    ((MidifiedFloatParameter*)newParam)->setBias(10);
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Arp bpm"), nrpmParam, 1, 10, 240, 60);
+	newParam->setOldName("arp bpm slider");
+	((MidifiedFloatParameter*)newParam)->setBias(10);
 	addMidifiedParameter(newParam);
 	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_ARP_DIRECTION ;
-    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp dir combo box"), nrpmParam, 1, 1, 13, 1);
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Arp direction"), nrpmParam, 1, 1, 13, 1);
+	newParam->setOldName("arp dir combo box");
 	addMidifiedParameter(newParam);
 	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_ARP_OCTAVE ;
-    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp octave slider"), nrpmParam, 1, 1, 3, 1);
-    ((MidifiedFloatParameter*)newParam)->setBias(1);
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Arp octave"), nrpmParam, 1, 1, 3, 1);
+	newParam->setOldName("arp octave slider");
+	((MidifiedFloatParameter*)newParam)->setBias(1);
 	addMidifiedParameter(newParam);
 	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_ARP_PATTERN;
-    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp pattern combo box"), nrpmParam, 1, 1, 25, 1);
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Arp pattern"), nrpmParam, 1, 1, 25, 1);
+	newParam->setOldName("arp pattern combo box");
 	addMidifiedParameter(newParam);
 	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_ARP_DIVISION;
-    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp division combo box"), nrpmParam, 1, 1, 17, 1);
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Arp division"), nrpmParam, 1, 1, 17, 1);
+	newParam->setOldName("arp division combo box");
 	addMidifiedParameter(newParam);
 	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_ARP_DURATION;
-    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp duration combo box"), nrpmParam, 1, 1, 17, 1);
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Arp duration"), nrpmParam, 1, 1, 17, 1);
+	newParam->setOldName("arp duration combo box");
 	addMidifiedParameter(newParam);
 	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_ARP_LATCH;
-    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("arp latch combo box"), nrpmParam, 1, 1, 2, 1);
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Arp latch"), nrpmParam, 1, 1, 2, 1);
+	newParam->setOldName("arp latch combo box");
 	addMidifiedParameter(newParam);
 	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_FILTER_TYPE;
-    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Filter Combo"), nrpmParam, 1, 1, 7, 1);
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Filter type"), nrpmParam, 1, 1, 7, 1);
+	newParam->setOldName("Filter Combo");
 	addMidifiedParameter(newParam);
 	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_FILTER_PARAM1;
-    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("filter param1 slider"), nrpmParam, 100, 0, 1, .5);
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Filter param1"), nrpmParam, 100, 0, 1, .5);
+	newParam->setOldName("filter param1 slider");
 	addMidifiedParameter(newParam);
 	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_FILTER_PARAM2;
-    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("filter param2 slider"), nrpmParam, 100, 0, 1, .5);
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Filter param2"), nrpmParam, 100, 0, 1, .5);
+	newParam->setOldName("filter param2 slider");
 	addMidifiedParameter(newParam);
 	nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_FILTER_GAIN;
-    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("filter gain slider"), nrpmParam, 100, 0, 2, .9);
+    newParam = new MidifiedFloatParameter(&nrpmParameterMap, String("Filter gain"), nrpmParam, 100, 0, 2, .9);
+	newParam->setOldName("filter gain slider");
 	addMidifiedParameter(newParam);
 	nrpmIndex[nrpmParam] = parameterIndex++;
 
@@ -442,17 +455,20 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     currentMidiChannel = 1;
     nrpmParam = 127 * 128 + 126;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, "Midi Channel", nrpmParam, 1, 0, 16,1);
+	newParam->setIsAutomatable(false);
 	addMidifiedParameter(newParam);
 	nrpmIndex[2045] = parameterIndex++;
     
     nrpmParam = 127 * 128 + 126;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, "push button", nrpmParam, 1, 0, 127, 0);
+	newParam->setIsAutomatable(false);
 	addMidifiedParameter(newParam);
 	// Put in last slot
     nrpmIndex[2046] = parameterIndex++;
 
     nrpmParam = 127 * 128 + 127;
     newParam = new MidifiedFloatParameter(&nrpmParameterMap, "pull button", nrpmParam, 1, 0, 127, 0);
+	newParam->setIsAutomatable(false);
 	addMidifiedParameter(newParam);
 	// Put in last slot
     nrpmIndex[2047] = parameterIndex++;

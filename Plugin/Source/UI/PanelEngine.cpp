@@ -1,4 +1,25 @@
 /*
+  ==============================================================================
+
+  This is an automatically generated GUI class created by the Projucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Projucer version: 5.1.2
+
+  ------------------------------------------------------------------------------
+
+  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright (c) 2015 - ROLI Ltd.
+
+  ==============================================================================
+*/
+
+//[Headers] You can add your own extra header files here...
+
+/*
 * Copyright 2017 Xavier Hosxe
 *
 * Author: Xavier Hosxe (xavier <dot> hosxe
@@ -16,7 +37,6 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//[Headers] You can add your own extra header files here...
 #include "JuceHeader.h"
 #include "png/AlgoPNG.h"
 #include "SliderPfm2.h"
@@ -101,13 +121,13 @@ PanelEngine::PanelEngine ()
 
     //[UserPreSize]
     for (int k=0; k<NUMBER_OF_MIX; k++) {
-        addAndMakeVisible(volumeKnob[k] = new SliderPfm2("Volume " + String(k+1)));
-        volumeKnob[k]->setRange (0, 1, .01f);
-        volumeKnob[k]->setSliderStyle (Slider::RotaryVerticalDrag);
-        volumeKnob[k]->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
-        volumeKnob[k]->setDoubleClickReturnValue(true, 1.0f);
-        volumeKnob[k]->setValue(1.0f, dontSendNotification);
-        volumeKnob[k]->addListener (this);
+        addAndMakeVisible(mixKnob[k] = new SliderPfm2("Mix " + String(k+1)));
+        mixKnob[k]->setRange (0, 1, .01f);
+        mixKnob[k]->setSliderStyle (Slider::RotaryVerticalDrag);
+        mixKnob[k]->setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
+        mixKnob[k]->setDoubleClickReturnValue(true, 1.0f);
+        mixKnob[k]->setValue(1.0f, dontSendNotification);
+        mixKnob[k]->addListener (this);
 
         addAndMakeVisible(panKnob[k] = new SliderPfm2("Pan " + String(k+1)));
         panKnob[k]->setRange (-1, 1, .01f);
@@ -314,6 +334,7 @@ PanelEngine::PanelEngine ()
 
     //[/UserPreSize]
 
+    setSize (900, 700);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -416,7 +437,7 @@ void PanelEngine::resized()
 
     // MIX !
 	for (int k = 0; k<NUMBER_OF_MIX; k++) {
-        volumeKnob[k]->setBounds(proportionOfWidth (0.09f * k + .04f)   ,proportionOfHeight (0.34f) , proportionOfWidth(0.08f), proportionOfHeight(0.08f));
+        mixKnob[k]->setBounds(proportionOfWidth (0.09f * k + .04f)   ,proportionOfHeight (0.34f) , proportionOfWidth(0.08f), proportionOfHeight(0.08f));
         mixLabel[k]->setBounds(proportionOfWidth (0.09f * k + .04f)   ,proportionOfHeight (0.42f) , proportionOfWidth(0.08f), proportionOfHeight(0.025f));
         panKnob[k]->setBounds(proportionOfWidth (0.09f * k + .04f)   ,proportionOfHeight (0.44f) , proportionOfWidth(0.08f), proportionOfHeight(.043f));
     }
@@ -467,17 +488,17 @@ void PanelEngine::newAlgo(int algoNumber) {
 	int numberOfMixer = algoInformation[algoNumber].mix;
 	for (int m=0; m<6; m++) {
 		if (m < numberOfMixer) {
-			volumeKnob[m]->setEnabled(true);
+			mixKnob[m]->setEnabled(true);
 			panKnob[m]->setEnabled(true);
 			mixLabel[m]->setEnabled(true);
-			volumeKnob[m]->setAlpha(1.0f);
+			mixKnob[m]->setAlpha(1.0f);
 			panKnob[m]->setAlpha(1.0f);
 			mixLabel[m]->setAlpha(1.0f);
 		} else {
-			volumeKnob[m]->setEnabled(false);
+			mixKnob[m]->setEnabled(false);
 			panKnob[m]->setEnabled(false);
 			mixLabel[m]->setEnabled(false);
-			volumeKnob[m]->setAlpha(.2f);
+			mixKnob[m]->setAlpha(.2f);
 			panKnob[m]->setAlpha(.2f);
 			mixLabel[m]->setAlpha(.2f);
 		}
@@ -600,7 +621,7 @@ void PanelEngine::buttonClicked (Button* buttonThatWasClicked)
 				enveloppe[envSelected]->setX(k, enveloppe[envToCopy]->getX(k));
 				enveloppe[envSelected]->setY(k, enveloppe[envToCopy]->getY(k));
 			}
-			// Point 0 is not a real point. 
+			// Point 0 is not a real point.
 			for (int k = 1; k < enveloppe[envToCopy]->getNumberOfPoints(); k++) {
 				enveloppe[envSelected]->notifyObservers(k, true);
 				enveloppe[envSelected]->notifyObservers(k, false);
@@ -628,7 +649,7 @@ void PanelEngine::buildParameters() {
     updateSliderFromParameter(glide);
 
     for (int k=0; k<NUMBER_OF_MIX; k++) {
-        updateSliderFromParameter(volumeKnob[k]);
+        updateSliderFromParameter(mixKnob[k]);
         updateSliderFromParameter(panKnob[k]);
     }
     for (int k=0; k<NUMBER_OF_IM; k++) {
@@ -669,7 +690,7 @@ void PanelEngine::updateUIEnveloppe(String paramName) {
             String name = pString + String(pointName[p - 2]);
 
 			MidifiedFloatParameter* param = checkParamExistence(name);
-			
+
 			if (paramName.length() > 0 && (param == nullptr || name != String(paramName))) {
 				continue;
 			}
@@ -718,7 +739,7 @@ void PanelEngine::updateSliderFromParameter_hook(Slider* slider) {
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="PanelEngine" componentName=""
-                 parentClasses="public Component, public Slider::Listener, public Button::Listener, public ComboBox::Listener, public PanelOfParameters"
+                 parentClasses="public Component, public Slider::Listener, public Button::Listener, public ComboBox::Listener, public PanelOfComponents"
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="900"
                  initialHeight="700">

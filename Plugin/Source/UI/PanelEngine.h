@@ -1,4 +1,27 @@
 /*
+  ==============================================================================
+
+  This is an automatically generated GUI class created by the Projucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Projucer version: 5.1.2
+
+  ------------------------------------------------------------------------------
+
+  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright (c) 2015 - ROLI Ltd.
+
+  ==============================================================================
+*/
+
+#pragma once
+
+//[Headers]     -- You can add your own extra header files here --
+
+/*
 * Copyright 2017 Xavier Hosxe
 *
 * Author: Xavier Hosxe (xavier <dot> hosxe
@@ -16,9 +39,6 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
-
-//[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
 #include "Enveloppe.h"
 #include "PanelOfComponents.h"
@@ -41,6 +61,7 @@
                                                                     //[/Comments]
 */
 class PanelEngine  : public Component,
+                     public Slider::Listener,
                      public Button::Listener,
                      public ComboBox::Listener,
                      public PanelOfComponents
@@ -77,7 +98,7 @@ private:
 	ScopedPointer<TextButton> envCopyButton, envPasteButton;
 	int envToCopy, envSelected;
     ScopedPointer<TextButton> enveloppeButton [NUMBER_OF_OPERATORS];
-    ScopedPointer<Slider> volumeKnob[NUMBER_OF_MIX];
+    ScopedPointer<Slider> mixKnob[NUMBER_OF_MIX];
     ScopedPointer<Slider> panKnob[NUMBER_OF_MIX];
     ScopedPointer<Label> mixLabel[NUMBER_OF_MIX];
     ScopedPointer<Label> IMLabel;

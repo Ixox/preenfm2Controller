@@ -41,7 +41,8 @@ public:
 							float defaultValue
 							) 
 		: AudioProcessorParameter(),
-		 range(minValue, maxValue), value(defaultValue), defaultValue(defaultValue)
+		 range(minValue, maxValue), value(defaultValue), defaultValue(defaultValue),
+		 oldXmlName("")
 	{
 		this->componentName = componentName;
 		nrpmParameterMap->insert(std::pair<int , AudioProcessorParameter* > (nrpnParam, this));
@@ -54,6 +55,7 @@ public:
 
 		bias = 0;
 		paramIndex = paramIndexCounter++;
+		bIsAutomatable = true;
 	}
 
 
@@ -147,17 +149,22 @@ public:
 		return componentName;
 	}
 
-	// From terragon audio parameter makeSafeName()
-	String getNameForXML() {
-		String result;
-		for (size_t i = 0; i < componentName.length(); ++i) {
-			if (((componentName[i] >= 'a' && componentName[i] <= 'z') ||
-				(componentName[i] >= '0' && componentName[i] <= '9') ||
-				(componentName[i] >= 'A' && componentName[i] <= 'Z'))) {
-				result += componentName[i];
+	void setOldName(String oldName) {
+		for (size_t i = 0; i < oldName.length(); ++i) {
+			if (((oldName[i] >= 'a' && oldName[i] <= 'z') ||
+				(oldName[i] >= '0' && oldName[i] <= '9') ||
+				(oldName[i] >= 'A' && oldName[i] <= 'Z'))) {
+				oldXmlName += oldName[i];
 			}
 		}
-		return result;
+	}
+
+
+	String getNameForXML() {
+		if (oldXmlName.length() == 0) {
+			setOldName(componentName);
+		}
+		return oldXmlName;
 	}
 
 	float getMin() {
@@ -175,6 +182,13 @@ public:
 		return componentName; 
 	}
 
+	void setIsAutomatable(bool automatable)  {
+		bIsAutomatable = automatable;
+	}
+
+	bool isAutomatable() const {
+		return bIsAutomatable;
+	}
 
 private:
 	static int paramIndexCounter;
@@ -184,11 +198,13 @@ private:
 	int paramIndex;
 	float bias;
 	String componentName;
+	String oldXmlName; // To save XML for compatibility
 	NormalisableRange<float> range;
 	float value, defaultValue;
 	Pfm2AudioProcessor* audioProcessor;
 	bool sendRealValue;
 	float rangeFloat;
+	bool bIsAutomatable;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MidifiedFloatParameter)
 };

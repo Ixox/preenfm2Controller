@@ -1,4 +1,24 @@
 /*
+  ==============================================================================
+
+  This is an automatically generated GUI class created by the Projucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Projucer version: 5.1.2
+
+  ------------------------------------------------------------------------------
+
+  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright (c) 2015 - ROLI Ltd.
+
+  ==============================================================================
+*/
+
+//[Headers] You can add your own extra header files here...
+/*
 * Copyright 2017 Xavier Hosxe
 *
 * Author: Xavier Hosxe (xavier <dot> hosxe
@@ -16,8 +36,6 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-//[Headers] You can add your own extra header files here...
 #include "JuceHeader.h"
 #include "SliderPfm2.h"
 #include "../MidifiedFloatParameter.h"
@@ -41,7 +59,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
     arpGroupComponent->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
     arpGroupComponent->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
-    addAndMakeVisible (arpBPM = new Slider ("arp bpm slider"));
+    addAndMakeVisible (arpBPM = new Slider ("Arp bpm"));
     arpBPM->setRange (10, 240, 1);
     arpBPM->setSliderStyle (Slider::RotaryVerticalDrag);
     arpBPM->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
@@ -103,7 +121,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
     arpLatchLabel->setColour (TextEditor::textColourId, Colours::black);
     arpLatchLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (arpDirectionCombo = new ComboBox ("arp dir combo box"));
+    addAndMakeVisible (arpDirectionCombo = new ComboBox ("Arp direction"));
     arpDirectionCombo->setEditableText (false);
     arpDirectionCombo->setJustificationType (Justification::centredLeft);
     arpDirectionCombo->setTextWhenNothingSelected (String());
@@ -123,13 +141,13 @@ PanelArpAndFilter::PanelArpAndFilter ()
     arpDirectionCombo->addSeparator();
     arpDirectionCombo->addListener (this);
 
-    addAndMakeVisible (arpOctavleSlider = new Slider ("arp octave slider"));
+    addAndMakeVisible (arpOctavleSlider = new Slider ("Arp octave"));
     arpOctavleSlider->setRange (1, 3, 1);
     arpOctavleSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     arpOctavleSlider->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
     arpOctavleSlider->addListener (this);
 
-    addAndMakeVisible (arpPatternCombo = new ComboBox ("arp pattern combo box"));
+    addAndMakeVisible (arpPatternCombo = new ComboBox ("Arp pattern"));
     arpPatternCombo->setEditableText (false);
     arpPatternCombo->setJustificationType (Justification::centredLeft);
     arpPatternCombo->setTextWhenNothingSelected (String());
@@ -163,7 +181,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
     arpPatternCombo->addSeparator();
     arpPatternCombo->addListener (this);
 
-    addAndMakeVisible (arpDivisionCombo = new ComboBox ("arp division combo box"));
+    addAndMakeVisible (arpDivisionCombo = new ComboBox ("Arp division"));
     arpDivisionCombo->setEditableText (false);
     arpDivisionCombo->setJustificationType (Justification::centredLeft);
     arpDivisionCombo->setTextWhenNothingSelected (String());
@@ -187,7 +205,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
     arpDivisionCombo->addItem (TRANS("1/96"), 17);
     arpDivisionCombo->addListener (this);
 
-    addAndMakeVisible (arpDurationCombo = new ComboBox ("arp duration combo box"));
+    addAndMakeVisible (arpDurationCombo = new ComboBox ("Arp duration"));
     arpDurationCombo->setEditableText (false);
     arpDurationCombo->setJustificationType (Justification::centredLeft);
     arpDurationCombo->setTextWhenNothingSelected (String());
@@ -211,7 +229,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
     arpDurationCombo->addItem (TRANS("1/96"), 17);
     arpDurationCombo->addListener (this);
 
-    addAndMakeVisible (arpLatchCombo = new ComboBox ("arp latch combo box"));
+    addAndMakeVisible (arpLatchCombo = new ComboBox ("Arp latch"));
     arpLatchCombo->setEditableText (false);
     arpLatchCombo->setJustificationType (Justification::centredLeft);
     arpLatchCombo->setTextWhenNothingSelected (String());
@@ -234,7 +252,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
     filterParam1Label->setColour (TextEditor::textColourId, Colours::black);
     filterParam1Label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (filterParam1Slider = new Slider ("filter param1 slider"));
+    addAndMakeVisible (filterParam1Slider = new Slider ("Filter param1"));
     filterParam1Slider->setRange (0, 1, 0.01);
     filterParam1Slider->setSliderStyle (Slider::RotaryVerticalDrag);
     filterParam1Slider->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
@@ -248,7 +266,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
     filterParam2Label->setColour (TextEditor::textColourId, Colours::black);
     filterParam2Label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (filterParam2Slider = new Slider ("filter param2 slider"));
+    addAndMakeVisible (filterParam2Slider = new Slider ("Filter param2"));
     filterParam2Slider->setRange (0, 1, 0.01);
     filterParam2Slider->setSliderStyle (Slider::RotaryVerticalDrag);
     filterParam2Slider->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
@@ -262,13 +280,13 @@ PanelArpAndFilter::PanelArpAndFilter ()
     filterGainLabel->setColour (TextEditor::textColourId, Colours::black);
     filterGainLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (filterGainSlider = new Slider ("filter gain slider"));
+    addAndMakeVisible (filterGainSlider = new Slider ("Filter gain"));
     filterGainSlider->setRange (0, 2, 0.01);
     filterGainSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     filterGainSlider->setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
     filterGainSlider->addListener (this);
 
-    addAndMakeVisible (arpClockComboBox = new ComboBox ("Clock Combo"));
+    addAndMakeVisible (arpClockComboBox = new ComboBox ("Arp clock"));
     arpClockComboBox->setEditableText (false);
     arpClockComboBox->setJustificationType (Justification::centredLeft);
     arpClockComboBox->setTextWhenNothingSelected (TRANS("Off"));
@@ -287,22 +305,24 @@ PanelArpAndFilter::PanelArpAndFilter ()
     clockLabel->setColour (TextEditor::textColourId, Colours::black);
     clockLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (filterComboBox = new ComboBox ("Filter Combo"));
+    addAndMakeVisible (filterComboBox = new ComboBox ("Filter type"));
     filterComboBox->setEditableText (false);
     filterComboBox->setJustificationType (Justification::centredLeft);
     filterComboBox->setTextWhenNothingSelected (TRANS("Off"));
     filterComboBox->setTextWhenNoChoicesAvailable (TRANS("Off"));
-    filterComboBox->addItem(TRANS("Off"), 1);
-    filterComboBox->addItem(TRANS("Mix"), 2);
-    filterComboBox->addItem(TRANS("Low Pass"), 3);
-    filterComboBox->addItem(TRANS("High Pass"), 4);
-	filterComboBox->addItem(TRANS("Band Pass"), 6);
-	filterComboBox->addItem(TRANS("Bass Boost"), 5);
-	filterComboBox->addItem(TRANS("Crusher"), 7);
-	filterComboBox->addListener (this);
+    filterComboBox->addListener (this);
 
 
     //[UserPreSize]
+	filterComboBox->addItem(TRANS("Off"), 1);
+	filterComboBox->addItem(TRANS("Mix"), 2);
+	filterComboBox->addItem(TRANS("Low Pass"), 3);
+	filterComboBox->addItem(TRANS("High Pass"), 4);
+	filterComboBox->addItem(TRANS("Band Pass"), 6);
+	filterComboBox->addItem(TRANS("Bass Boost"), 5);
+	filterComboBox->addItem(TRANS("Crusher"), 7);
+
+
     for (int n=0; n < 2; n++) {
         addAndMakeVisible (noteGroupComponent[n] = new GroupComponent ("Note group" + String(n +1), TRANS("Note" + String(n+1)+ " Scaling")));
 		noteGroupComponent[n]->setColour(GroupComponent::textColourId, Colour(0xff749FAD));
@@ -365,6 +385,7 @@ PanelArpAndFilter::PanelArpAndFilter ()
 
     //[/UserPreSize]
 
+    setSize (900, 700);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -749,7 +770,7 @@ void PanelArpAndFilter::updateSliderFromParameter_hook(Slider* slider) {
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="PanelArpAndFilter" componentName=""
-                 parentClasses="public Component, public PanelOfParameters" constructorParams=""
+                 parentClasses="public Component, public PanelOfComponents" constructorParams=""
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="0" initialWidth="900" initialHeight="700">
   <BACKGROUND backgroundColour="0">
@@ -764,9 +785,9 @@ BEGIN_JUCER_METADATA
                   virtualName="GroupComponent" explicitFocusOrder="0" pos="6.032% 1.743% 88.485% 31.046%"
                   outlinecol="ff749fad" textcol="ff749fad" title="Arpeggiator"
                   textpos="33"/>
-  <SLIDER name="arp bpm slider" id="834b58daf5daacae" memberName="arpBPM"
-          virtualName="Slider" explicitFocusOrder="0" pos="10.007% 17.974% 8.979% 11.983%"
-          min="10" max="240" int="1" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
+  <SLIDER name="Arp bpm" id="834b58daf5daacae" memberName="arpBPM" virtualName="Slider"
+          explicitFocusOrder="0" pos="10.007% 17.974% 8.979% 11.983%" min="10"
+          max="240" int="1" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="40" textBoxHeight="20" skewFactor="1"
           needsCallback="1"/>
   <LABEL name="arp bpm label" id="ae9087ef378fcc73" memberName="arpBPMLabel"
@@ -804,28 +825,28 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Latch" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" kerning="0" bold="0" italic="0" justification="12"/>
-  <COMBOBOX name="arp dir combo box" id="5403f05ff830eb2e" memberName="arpDirectionCombo"
+  <COMBOBOX name="Arp direction" id="5403f05ff830eb2e" memberName="arpDirectionCombo"
             virtualName="ComboBox" explicitFocusOrder="0" pos="20.014% 20.261% 10.007% 20"
             editable="0" layout="33" items="Up&#10;Down&#10;Up &amp; Down&#10;As played&#10;Random&#10;Chord&#10;Rotate Up&#10;Rotate Down&#10;Rotate U&amp;D&#10;Shift Up&#10;Shift Down&#10;Shift U&amp;D&#10;"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <SLIDER name="arp octave slider" id="1cb995267258f0bb" memberName="arpOctavleSlider"
+  <SLIDER name="Arp octave" id="1cb995267258f0bb" memberName="arpOctavleSlider"
           virtualName="Slider" explicitFocusOrder="0" pos="30.98% 17.974% 8.979% 11.983%"
           min="1" max="3" int="1" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="40" textBoxHeight="20" skewFactor="1"
           needsCallback="1"/>
-  <COMBOBOX name="arp pattern combo box" id="4ab8dec3ec103766" memberName="arpPatternCombo"
+  <COMBOBOX name="Arp pattern" id="4ab8dec3ec103766" memberName="arpPatternCombo"
             virtualName="ComboBox" explicitFocusOrder="0" pos="42.975% 20.261% 8.019% 20"
             editable="0" layout="33" items="1&#10;2&#10;3&#10;4&#10;5&#10;6&#10;7&#10;8&#10;9&#10;10&#10;11&#10;12&#10;13&#10;14&#10;15&#10;16&#10;17&#10;18&#10;19&#10;20&#10;21&#10;22&#10;User 1&#10;User 2&#10;User 3&#10;User 4&#10;"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <COMBOBOX name="arp division combo box" id="40d9cbf865d21a6d" memberName="arpDivisionCombo"
+  <COMBOBOX name="Arp division" id="40d9cbf865d21a6d" memberName="arpDivisionCombo"
             virtualName="ComboBox" explicitFocusOrder="0" pos="55.997% 20.261% 8.019% 20"
             editable="0" layout="33" items="2/1&#10;3/2&#10;1/1&#10;3/4&#10;2/3&#10;1/2&#10;3/8&#10;1/3&#10;1/4&#10;1/6&#10;1/8&#10;1/12&#10;1/16&#10;1/24&#10;1/32&#10;1/48&#10;1/96"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <COMBOBOX name="arp duration combo box" id="40f06b2b6126c25d" memberName="arpDurationCombo"
+  <COMBOBOX name="Arp duration" id="40f06b2b6126c25d" memberName="arpDurationCombo"
             virtualName="ComboBox" explicitFocusOrder="0" pos="69.02% 20.261% 8.019% 20"
             editable="0" layout="33" items="2/1&#10;3/2&#10;1/1&#10;3/4&#10;2/3&#10;1/2&#10;3/8&#10;1/3&#10;1/4&#10;1/6&#10;1/8&#10;1/12&#10;1/16&#10;1/24&#10;1/32&#10;1/48&#10;1/96"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <COMBOBOX name="arp latch combo box" id="3072fb2928d8c8f4" memberName="arpLatchCombo"
+  <COMBOBOX name="Arp latch" id="3072fb2928d8c8f4" memberName="arpLatchCombo"
             virtualName="ComboBox" explicitFocusOrder="0" pos="83.002% 20.261% 8.019% 20"
             editable="0" layout="33" items="Off&#10;On" textWhenNonSelected=""
             textWhenNoItems="(no choices)"/>
@@ -837,7 +858,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Param1" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" kerning="0" bold="0" italic="0" justification="12"/>
-  <SLIDER name="filter param1 slider" id="c05a5ec6435b8dba" memberName="filterParam1Slider"
+  <SLIDER name="Filter param1" id="c05a5ec6435b8dba" memberName="filterParam1Slider"
           virtualName="Slider" explicitFocusOrder="0" pos="35.984% 42.484% 8.979% 11.983%"
           min="0" max="1" int="0.010000000000000000208" style="RotaryVerticalDrag"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="40"
@@ -847,7 +868,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Param2" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" kerning="0" bold="0" italic="0" justification="12"/>
-  <SLIDER name="filter param2 slider" id="d542ada05f27098e" memberName="filterParam2Slider"
+  <SLIDER name="Filter param2" id="d542ada05f27098e" memberName="filterParam2Slider"
           virtualName="Slider" explicitFocusOrder="0" pos="49.006% 42.593% 8.979% 11.983%"
           min="0" max="1" int="0.010000000000000000208" style="RotaryVerticalDrag"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="40"
@@ -857,12 +878,12 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Gain" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" kerning="0" bold="0" italic="0" justification="12"/>
-  <SLIDER name="filter gain slider" id="4d28a9c9b11da6ce" memberName="filterGainSlider"
+  <SLIDER name="Filter gain" id="4d28a9c9b11da6ce" memberName="filterGainSlider"
           virtualName="Slider" explicitFocusOrder="0" pos="62.988% 42.484% 8.979% 11.983%"
           min="0" max="2" int="0.010000000000000000208" style="RotaryVerticalDrag"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="40"
           textBoxHeight="20" skewFactor="1" needsCallback="1"/>
-  <COMBOBOX name="Clock Combo" id="1b23d19ebc4cb655" memberName="arpClockComboBox"
+  <COMBOBOX name="Arp clock" id="1b23d19ebc4cb655" memberName="arpClockComboBox"
             virtualName="" explicitFocusOrder="0" pos="16.45% 6.972% 8.019% 20"
             editable="0" layout="33" items="Off&#10;Internal&#10;External&#10;"
             textWhenNonSelected="Off" textWhenNoItems="Off"/>
@@ -871,10 +892,9 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Clock:&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" kerning="0" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="Filter Combo" id="599ad67e6f27bfd7" memberName="filterComboBox"
+  <COMBOBOX name="Filter type" id="599ad67e6f27bfd7" memberName="filterComboBox"
             virtualName="" explicitFocusOrder="0" pos="20.288% 44.444% 10.007% 20"
-            editable="0" layout="33" items="Off&#10;Mix&#10;Low Pass&#10;High Pass&#10;Bass Boost"
-            textWhenNonSelected="Off" textWhenNoItems="Off"/>
+            editable="0" layout="33" items="" textWhenNonSelected="Off" textWhenNoItems="Off"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
