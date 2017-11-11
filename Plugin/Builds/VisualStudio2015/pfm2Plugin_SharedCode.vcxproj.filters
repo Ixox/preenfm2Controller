@@ -2,24 +2,6 @@
 
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="pfm2Plugin\Source\PluginParameters\include\readerwriterqueue">
-      <UniqueIdentifier>{55A1A537-7D3A-3025-81A0-7ACFC191D36F}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="pfm2Plugin\Source\PluginParameters\include\tinythread\doc">
-      <UniqueIdentifier>{E4F9CE57-D14E-8A5A-60F0-7D2122B7FA5B}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="pfm2Plugin\Source\PluginParameters\include\tinythread\source">
-      <UniqueIdentifier>{1A5A7015-B53A-8F2E-1BD2-762A22828827}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="pfm2Plugin\Source\PluginParameters\include\tinythread">
-      <UniqueIdentifier>{D9A6D329-DBE3-2DE1-D222-08FB8981293B}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="pfm2Plugin\Source\PluginParameters\include">
-      <UniqueIdentifier>{F3F2A3E7-52BE-F3E4-1697-BD6A719F9349}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="pfm2Plugin\Source\PluginParameters">
-      <UniqueIdentifier>{BB29C43B-B528-1DE3-D855-FF1F4942147F}</UniqueIdentifier>
-    </Filter>
     <Filter Include="pfm2Plugin\Source\UI\png">
       <UniqueIdentifier>{F6EFBDF0-5310-5E0B-D2E0-0F9CF16F3D4D}</UniqueIdentifier>
     </Filter>
@@ -160,6 +142,21 @@
     </Filter>
     <Filter Include="Juce Modules\juce_audio_processors">
       <UniqueIdentifier>{0B0E7392-324B-088C-FBEB-5FE999D61782}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Modules\juce_audio_utils\audio_cd">
+      <UniqueIdentifier>{C396369E-8C55-88E9-5D19-5D3772B773D3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Modules\juce_audio_utils\gui">
+      <UniqueIdentifier>{8167E753-09C7-5D1C-EF2B-32D297557443}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Modules\juce_audio_utils\native">
+      <UniqueIdentifier>{B48C883A-8483-AF6D-808C-1D9A749048D8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Modules\juce_audio_utils\players">
+      <UniqueIdentifier>{AEDCB7F7-7A36-5392-8E9A-715F5BDE35CB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Modules\juce_audio_utils">
+      <UniqueIdentifier>{B63F69FD-8A40-8E1E-E7ED-419B8DC1C12B}</UniqueIdentifier>
     </Filter>
     <Filter Include="Juce Modules\juce_core\containers">
       <UniqueIdentifier>{0608ADE9-66EF-1A19-6D57-12D07F76EB53}</UniqueIdentifier>
@@ -400,9 +397,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\PluginParameters\include\tinythread\source\tinythread.cpp">
-      <Filter>pfm2Plugin\Source\PluginParameters\include\tinythread\source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\UI\Enveloppe.cpp">
       <Filter>pfm2Plugin\Source\UI</Filter>
     </ClCompile>
@@ -435,6 +429,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\UI\StepSequencer.cpp">
       <Filter>pfm2Plugin\Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\MidifiedFloatParameter.cpp">
+      <Filter>pfm2Plugin\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Pfm2MidiDevice.cpp">
+      <Filter>pfm2Plugin\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\PluginEditor.cpp">
       <Filter>pfm2Plugin\Source</Filter>
@@ -906,6 +906,69 @@
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_processors\juce_audio_processors.mm">
       <Filter>Juce Modules\juce_audio_processors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\audio_cd\juce_AudioCDReader.cpp">
+      <Filter>Juce Modules\juce_audio_utils\audio_cd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\gui\juce_AudioAppComponent.cpp">
+      <Filter>Juce Modules\juce_audio_utils\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\gui\juce_AudioDeviceSelectorComponent.cpp">
+      <Filter>Juce Modules\juce_audio_utils\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\gui\juce_AudioThumbnail.cpp">
+      <Filter>Juce Modules\juce_audio_utils\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\gui\juce_AudioThumbnailCache.cpp">
+      <Filter>Juce Modules\juce_audio_utils\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\gui\juce_AudioVisualiserComponent.cpp">
+      <Filter>Juce Modules\juce_audio_utils\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\gui\juce_MidiKeyboardComponent.cpp">
+      <Filter>Juce Modules\juce_audio_utils\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\native\juce_android_BluetoothMidiDevicePairingDialogue.cpp">
+      <Filter>Juce Modules\juce_audio_utils\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\native\juce_ios_BluetoothMidiDevicePairingDialogue.mm">
+      <Filter>Juce Modules\juce_audio_utils\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\native\juce_linux_AudioCDReader.cpp">
+      <Filter>Juce Modules\juce_audio_utils\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\native\juce_linux_BluetoothMidiDevicePairingDialogue.cpp">
+      <Filter>Juce Modules\juce_audio_utils\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\native\juce_mac_AudioCDBurner.mm">
+      <Filter>Juce Modules\juce_audio_utils\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\native\juce_mac_AudioCDReader.mm">
+      <Filter>Juce Modules\juce_audio_utils\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\native\juce_mac_BluetoothMidiDevicePairingDialogue.mm">
+      <Filter>Juce Modules\juce_audio_utils\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\native\juce_win_BluetoothMidiDevicePairingDialogue.cpp">
+      <Filter>Juce Modules\juce_audio_utils\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\native\juce_win32_AudioCDBurner.cpp">
+      <Filter>Juce Modules\juce_audio_utils\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\native\juce_win32_AudioCDReader.cpp">
+      <Filter>Juce Modules\juce_audio_utils\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\players\juce_AudioProcessorPlayer.cpp">
+      <Filter>Juce Modules\juce_audio_utils\players</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\players\juce_SoundPlayer.cpp">
+      <Filter>Juce Modules\juce_audio_utils\players</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\juce_audio_utils.cpp">
+      <Filter>Juce Modules\juce_audio_utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\juce_audio_utils.mm">
+      <Filter>Juce Modules\juce_audio_utils</Filter>
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_core\containers\juce_AbstractFifo.cpp">
       <Filter>Juce Modules\juce_core\containers</Filter>
@@ -2188,6 +2251,9 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_processors.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_utils.cpp">
+      <Filter>Juce Library Code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_core.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
@@ -2217,63 +2283,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\PluginParameters\include\BlobParameter.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\BooleanParameter.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\ConcurrentParameterSet.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\DataParameter.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\DecibelParameter.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\Event.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\EventDispatcher.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\FloatParameter.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\FrequencyParameter.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\IntegerParameter.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\Parameter.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\ParameterSet.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\PluginParameters.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\readerwriterqueue\atomicops.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include\readerwriterqueue</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\readerwriterqueue\readerwriterqueue.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include\readerwriterqueue</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\StringParameter.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\tinythread\source\fast_mutex.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include\tinythread\source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\tinythread\source\tinythread.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include\tinythread\source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PluginParameters\include\VoidParameter.h">
-      <Filter>pfm2Plugin\Source\PluginParameters\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\UI\Enveloppe.h">
       <Filter>pfm2Plugin\Source\UI</Filter>
     </ClInclude>
@@ -2289,9 +2298,6 @@
     <ClInclude Include="..\..\Source\UI\MainTabs.h">
       <Filter>pfm2Plugin\Source\UI</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\UI\MidifiedComponent.h">
-      <Filter>pfm2Plugin\Source\UI</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\UI\PanelArpAndFilter.h">
       <Filter>pfm2Plugin\Source\UI</Filter>
     </ClInclude>
@@ -2301,7 +2307,7 @@
     <ClInclude Include="..\..\Source\UI\PanelModulation.h">
       <Filter>pfm2Plugin\Source\UI</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\UI\PanelOfParameters.h">
+    <ClInclude Include="..\..\Source\UI\PanelOfComponents.h">
       <Filter>pfm2Plugin\Source\UI</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\UI\png\AlgoPNG.h">
@@ -2310,10 +2316,16 @@
     <ClInclude Include="..\..\Source\UI\PreenLookAndFeel.h">
       <Filter>pfm2Plugin\Source\UI</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\UI\SliderPfm2.h">
+      <Filter>pfm2Plugin\Source\UI</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\UI\StepSequencer.h">
       <Filter>pfm2Plugin\Source\UI</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\MidifiedParameter.h">
+    <ClInclude Include="..\..\Source\MidifiedFloatParameter.h">
+      <Filter>pfm2Plugin\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Pfm2MidiDevice.h">
       <Filter>pfm2Plugin\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\PluginEditor.h">
@@ -3011,6 +3023,48 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\JUCE\modules\juce_audio_processors\juce_audio_processors.h">
       <Filter>Juce Modules\juce_audio_processors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\audio_cd\juce_AudioCDBurner.h">
+      <Filter>Juce Modules\juce_audio_utils\audio_cd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\audio_cd\juce_AudioCDReader.h">
+      <Filter>Juce Modules\juce_audio_utils\audio_cd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\gui\juce_AudioAppComponent.h">
+      <Filter>Juce Modules\juce_audio_utils\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\gui\juce_AudioDeviceSelectorComponent.h">
+      <Filter>Juce Modules\juce_audio_utils\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\gui\juce_AudioThumbnail.h">
+      <Filter>Juce Modules\juce_audio_utils\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\gui\juce_AudioThumbnailBase.h">
+      <Filter>Juce Modules\juce_audio_utils\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\gui\juce_AudioThumbnailCache.h">
+      <Filter>Juce Modules\juce_audio_utils\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\gui\juce_AudioVisualiserComponent.h">
+      <Filter>Juce Modules\juce_audio_utils\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\gui\juce_BluetoothMidiDevicePairingDialogue.h">
+      <Filter>Juce Modules\juce_audio_utils\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\gui\juce_MidiKeyboardComponent.h">
+      <Filter>Juce Modules\juce_audio_utils\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\players\juce_AudioProcessorPlayer.h">
+      <Filter>Juce Modules\juce_audio_utils\players</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\players\juce_SoundPlayer.h">
+      <Filter>Juce Modules\juce_audio_utils\players</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\juce_audio_utils.h">
+      <Filter>Juce Modules\juce_audio_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\JUCE\modules\juce_audio_utils\juce_audio_utils.h">
+      <Filter>Juce Modules\juce_audio_utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\containers\juce_AbstractFifo.h">
       <Filter>Juce Modules\juce_core\containers</Filter>
@@ -4304,27 +4358,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Source\PluginParameters\include\readerwriterqueue\LICENSE.md">
-      <Filter>pfm2Plugin\Source\PluginParameters\include\readerwriterqueue</Filter>
-    </None>
-    <None Include="..\..\Source\PluginParameters\include\readerwriterqueue\README.md">
-      <Filter>pfm2Plugin\Source\PluginParameters\include\readerwriterqueue</Filter>
-    </None>
-    <None Include="..\..\Source\PluginParameters\include\tinythread\doc\Doxyfile">
-      <Filter>pfm2Plugin\Source\PluginParameters\include\tinythread\doc</Filter>
-    </None>
-    <None Include="..\..\Source\PluginParameters\include\tinythread\mkbuild.sh">
-      <Filter>pfm2Plugin\Source\PluginParameters\include\tinythread</Filter>
-    </None>
-    <None Include="..\..\Source\PluginParameters\include\tinythread\README.txt">
-      <Filter>pfm2Plugin\Source\PluginParameters\include\tinythread</Filter>
-    </None>
-    <None Include="..\..\Source\PluginParameters\LICENSE.txt">
-      <Filter>pfm2Plugin\Source\PluginParameters</Filter>
-    </None>
-    <None Include="..\..\Source\PluginParameters\README.md">
-      <Filter>pfm2Plugin\Source\PluginParameters</Filter>
-    </None>
     <None Include="..\..\..\iconpfm2Ed.PNG">
       <Filter>pfm2Plugin</Filter>
     </None>

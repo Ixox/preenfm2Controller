@@ -776,9 +776,7 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int nrpnValue, int forceI
 		}
 		// Set the value 
 		midifiedFP->setValueFromNrpn(nrpnValue);
-		// Notify host
-		DBG("NRPN Current Thread : " << (int)Thread::getCurrentThreadId());
-
+		// Notify host we're not in the message thread so :
 		MessageManager::callAsync(
 			[=]() {
 			sendParamChangeMessageToListeners(index, midifiedFP->getValue());
@@ -818,7 +816,6 @@ void Pfm2AudioProcessor::onParameterUpdated(AudioProcessorParameter *parameter) 
 		}
 		else {
 			// Notify host
-			DBG("UI Current Thread : " << (int)Thread::getCurrentThreadId());
 			sendParamChangeMessageToListeners(index, midifiedFP->getValue());
 
 			// send nrpn
