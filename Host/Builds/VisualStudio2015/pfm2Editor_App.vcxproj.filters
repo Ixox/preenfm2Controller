@@ -394,6 +394,9 @@
     <ClCompile Include="..\..\..\Plugin\Source\UI\PanelModulation.cpp">
       <Filter>pfm2Editor\Source\Plugin</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Plugin\Source\Pfm2MidiDevice.cpp">
+      <Filter>pfm2Editor\Source\Plugin</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\PluginEditor.cpp">
       <Filter>pfm2Editor\Source\Plugin</Filter>
     </ClCompile>
@@ -405,9 +408,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\UI\StepSequencer.cpp">
       <Filter>pfm2Editor\Source\Plugin</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\AudioProcessorPlayerWithMidiOutput.cpp">
-      <Filter>pfm2Editor\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Main.cpp">
       <Filter>pfm2Editor\Source</Filter>
@@ -2193,6 +2193,9 @@
     <ClInclude Include="..\..\..\Plugin\Source\UI\PanelOfComponents.h">
       <Filter>pfm2Editor\Source\Plugin</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Plugin\Source\Pfm2MidiDevice.h">
+      <Filter>pfm2Editor\Source\Plugin</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\PluginEditor.h">
       <Filter>pfm2Editor\Source\Plugin</Filter>
     </ClInclude>
@@ -2210,9 +2213,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\StepSequencer.h">
       <Filter>pfm2Editor\Source\Plugin</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\AudioProcessorPlayerWithMidiOutput.h">
-      <Filter>pfm2Editor\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\pfm2Window.h">
       <Filter>pfm2Editor\Source</Filter>

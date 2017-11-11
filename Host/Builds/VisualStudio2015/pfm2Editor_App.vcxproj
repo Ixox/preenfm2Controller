@@ -71,7 +71,7 @@
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=2.08.2;JUCE_APP_VERSION_HEX=0x20802;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=2.08.3;JUCE_APP_VERSION_HEX=0x20803;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -111,9 +111,9 @@
       <HeaderFileName/>
     </Midl>
     <ClCompile>
-      <Optimization>MinSpace</Optimization>
+      <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=2.08.2;JUCE_APP_VERSION_HEX=0x20802;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=2.08.3;JUCE_APP_VERSION_HEX=0x20803;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -156,11 +156,11 @@
     <ClCompile Include="..\..\..\Plugin\Source\UI\PanelArpAndFilter.cpp"/>
     <ClCompile Include="..\..\..\Plugin\Source\UI\PanelEngine.cpp"/>
     <ClCompile Include="..\..\..\Plugin\Source\UI\PanelModulation.cpp"/>
+    <ClCompile Include="..\..\..\Plugin\Source\Pfm2MidiDevice.cpp"/>
     <ClCompile Include="..\..\..\Plugin\Source\PluginEditor.cpp"/>
     <ClCompile Include="..\..\..\Plugin\Source\PluginProcessor.cpp"/>
     <ClCompile Include="..\..\..\Plugin\Source\UI\PreenLookAndFeel.cpp"/>
     <ClCompile Include="..\..\..\Plugin\Source\UI\StepSequencer.cpp"/>
-    <ClCompile Include="..\..\Source\AudioProcessorPlayerWithMidiOutput.cpp"/>
     <ClCompile Include="..\..\Source\Main.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
@@ -1777,13 +1777,13 @@
     <ClInclude Include="..\..\..\Plugin\Source\UI\PanelEngine.h"/>
     <ClInclude Include="..\..\..\Plugin\Source\UI\PanelModulation.h"/>
     <ClInclude Include="..\..\..\Plugin\Source\UI\PanelOfComponents.h"/>
+    <ClInclude Include="..\..\..\Plugin\Source\Pfm2MidiDevice.h"/>
     <ClInclude Include="..\..\..\Plugin\Source\PluginEditor.h"/>
     <ClInclude Include="..\..\..\Plugin\Source\PluginProcessor.h"/>
     <ClInclude Include="..\..\..\Plugin\Source\UI\PreenLookAndFeel.h"/>
     <ClInclude Include="..\..\..\Plugin\Source\PreenNrpn.h"/>
     <ClInclude Include="..\..\..\Plugin\Source\UI\SliderPfm2.h"/>
     <ClInclude Include="..\..\..\Plugin\Source\UI\StepSequencer.h"/>
-    <ClInclude Include="..\..\Source\AudioProcessorPlayerWithMidiOutput.h"/>
     <ClInclude Include="..\..\Source\pfm2Window.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\buffers\juce_AudioChannelSet.h"/>
