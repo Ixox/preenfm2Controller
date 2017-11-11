@@ -35,9 +35,8 @@
 #define TYPE_ENVELOPPE 4
 
 
-class PanelOfComponents : public EnveloppeListener, 
-						  public StepSequencerListener,
-						  public Slider::Listener
+class PanelOfComponents : public EnveloppeListener,
+	public StepSequencerListener
 
 {
 public:
@@ -45,14 +44,14 @@ public:
 	}
 
 
-    void setParameterSet(AudioProcessor* audioProcessor) {
-        this->audioProcessor = audioProcessor;
+	void setParameterSet(AudioProcessor* audioProcessor) {
+		this->audioProcessor = audioProcessor;
 		parameterMap.clear();
-    }
+	}
 
-    virtual void buildParameters() = 0;
+	virtual void buildParameters() = 0;
 
-    void updateSliderFromParameter(Slider* slider) {
+	void updateSliderFromParameter(Slider* slider) {
 
 		String componentName = slider->getName();
 		if (componentMap[componentName] == nullptr) {
@@ -63,14 +62,14 @@ public:
 
 		// And let's update the value and update the UI Without sending modification !!!
 		// No modification : we dont want sliderValueChanged to be called in the different panels
-        slider->setValue(parameter->getRealValue(), dontSendNotification);
+		slider->setValue(parameter->getRealValue(), dontSendNotification);
 
 		// Will remove that later but dont' BUG for the moment if that doesn't fit
 		if (parameter == nullptr) {
-			return ;
+			return;
 		}
 
-        updateSliderFromParameter_hook(slider);
+		updateSliderFromParameter_hook(slider);
 	}
 
 	MidifiedFloatParameter* checkParamExistence(String componentName) {
@@ -89,10 +88,10 @@ public:
 		return parameter;
 	}
 
-    // Can be overriden by sub classes
-    virtual void updateSliderFromParameter_hook(Slider* slider) { }
+	// Can be overriden by sub classes
+	virtual void updateSliderFromParameter_hook(Slider* slider) { }
 
-    void updateComboFromParameter(ComboBox* combo) {
+	void updateComboFromParameter(ComboBox* combo) {
 
 		String componentName = combo->getName();
 		if (componentMap[componentName] == nullptr) {
@@ -109,78 +108,78 @@ public:
 		// And let's update the value and update the UI Without sending modification !!!
 		// No modification : we dont want sliderValueChanged to be called in the different panels
 		if (combo->getSelectedId() != parameter->getRealValue()) {
-			combo->setSelectedId(parameter->getRealValue() + .0001f, dontSendNotification);
+			combo->setSelectedId((int)(parameter->getRealValue() + .0001f), dontSendNotification);
 			updateComboFromParameter_hook(combo);
 		}
-    }
+	}
 
-    void updateStepSeqParameter(StepSequencer* stepSeq) {
+	void updateStepSeqParameter(StepSequencer* stepSeq) {
 
-        for (int k=0; k<16; k++) {
+		for (int k = 0; k < 16; k++) {
 
-            String stepName = String(String(stepSeq->getName().toRawUTF8()) + " Step " + String(k+1)).toRawUTF8();
+			String stepName = String(String(stepSeq->getName().toRawUTF8()) + " Step " + String(k + 1)).toRawUTF8();
 			MidifiedFloatParameter * parameter = checkParamExistence(stepName);
 
-            // Will remove that later but dont' BUG for the moment if that doesn't fit
-            if (parameter == nullptr) {
-                return;
-            }
-
-            // And let's update the value and update the UI Without sending modification !!!
-            // No modification : we dont want sliderValueChanged to be called in the different panels
-            if (stepSeq->getValue(k) != parameter->getRealValue()) {
-                stepSeq->setValuesNoNotify(k, parameter->getRealValue());
-            }
-        }
-		stepSeq->repaint();
-    }
-
-    // Can be overriden by sub classes
-    virtual void updateComboFromParameter_hook(ComboBox* combo) { }
-
-
-    // Enveloppe Listener
-    void enveloppeValueChanged(const EnveloppeAbstract* enveloppeThatWasMoved, int pointNumber, bool isX)
-    {
-    	enveloppeValueChanged(enveloppeThatWasMoved, pointNumber, isX, true);
-    }
-
-    void enveloppeValueChanged(const EnveloppeAbstract* enveloppeThatWasMoved, int pointNumber, bool isX, bool fromPluginUI)
-    {
-        // Update the value if the change comes from the UI
-        if (fromPluginUI) {
-        	const char* suffix = enveloppeThatWasMoved->getPointSuffix(pointNumber, isX);
-			MidifiedFloatParameter * parameterReady = parameterMap[enveloppeThatWasMoved->getName() + suffix];
-            if (parameterReady != nullptr) {
-                float value;
-                if (isX) {
-                	value = enveloppeThatWasMoved->getX(pointNumber);
-                } else {
-                	value = enveloppeThatWasMoved->getY(pointNumber);
-                }
-				parameterReady->setRealValue(value);
+			// Will remove that later but dont' BUG for the moment if that doesn't fit
+			if (parameter == nullptr) {
+				return;
 			}
-        }
-    }
 
-    void stepSeqSequencerChanged(const StepSequencer* stepSeqThatChanged, int stepNumber) {
-        stepSeqSequencerChanged(stepSeqThatChanged, stepNumber, true);
-    }
+			// And let's update the value and update the UI Without sending modification !!!
+			// No modification : we dont want sliderValueChanged to be called in the different panels
+			if (stepSeq->getValue(k) != parameter->getRealValue()) {
+				stepSeq->setValuesNoNotify(k, (int)parameter->getRealValue());
+			}
+		}
+		stepSeq->repaint();
+	}
 
-    void stepSeqSequencerChanged(const StepSequencer* stepSeqThatChanged, int stepNumber, bool fromPluginUI) {
-        // Update the value if the change comes from the UI
-        if (fromPluginUI) {
-			MidifiedFloatParameter * parameterReady = parameterMap[stepSeqThatChanged->getName()+" Step "+ String(stepNumber +1)];
-            if (parameterReady != nullptr) {
-                int value;
-                value = stepSeqThatChanged->getValue(stepNumber);
-				parameterReady->setRealValue(value);
-            }
-        }
-    }
+	// Can be overriden by sub classes
+	virtual void updateComboFromParameter_hook(ComboBox* combo) { }
 
-    void updateUI(std::unordered_set<String> &paramSet) {
-    	for(std::unordered_set<String>::iterator it = paramSet.begin(); it != paramSet.end();) {
+
+	// Enveloppe Listener
+	void enveloppeValueChanged(const EnveloppeAbstract* enveloppeThatWasMoved, int pointNumber, bool isX)
+	{
+		enveloppeValueChanged(enveloppeThatWasMoved, pointNumber, isX, true);
+	}
+
+	void enveloppeValueChanged(const EnveloppeAbstract* enveloppeThatWasMoved, int pointNumber, bool isX, bool fromPluginUI)
+	{
+		// Update the value if the change comes from the UI
+		if (fromPluginUI) {
+			const char* suffix = enveloppeThatWasMoved->getPointSuffix(pointNumber, isX);
+			MidifiedFloatParameter * parameterReady = parameterMap[enveloppeThatWasMoved->getName() + suffix];
+			if (parameterReady != nullptr) {
+				double value;
+				if (isX) {
+					value = enveloppeThatWasMoved->getX(pointNumber);
+				}
+				else {
+					value = enveloppeThatWasMoved->getY(pointNumber);
+				}
+				parameterReady->setRealValue((float)value);
+			}
+		}
+	}
+
+	void stepSeqSequencerChanged(const StepSequencer* stepSeqThatChanged, int stepNumber) {
+		stepSeqSequencerChanged(stepSeqThatChanged, stepNumber, true);
+	}
+
+	void stepSeqSequencerChanged(const StepSequencer* stepSeqThatChanged, int stepNumber, bool fromPluginUI) {
+		// Update the value if the change comes from the UI
+		if (fromPluginUI) {
+			MidifiedFloatParameter * parameterReady = parameterMap[stepSeqThatChanged->getName() + " Step " + String(stepNumber + 1)];
+			if (parameterReady != nullptr) {
+				int value = stepSeqThatChanged->getValue(stepNumber);
+				parameterReady->setRealValue((float)value);
+			}
+		}
+	}
+
+	void updateUI(std::unordered_set<String> &paramSet) {
+		for (std::unordered_set<String>::iterator it = paramSet.begin(); it != paramSet.end();) {
 			String name = *it;
 
 			if (!componentType.contains(name)) {
@@ -189,19 +188,23 @@ public:
 				ComboBox* combo = dynamic_cast<ComboBox*>(component);
 				if (slider != nullptr) {
 					componentType.set(*it, TYPE_SLIDER);
-				} else if (combo != nullptr) {
+				}
+				else if (combo != nullptr) {
 					componentType.set(*it, TYPE_COMBO);
-				} else if (containsThisParameterAsStepSequencer(name)) {
+				}
+				else if (containsThisParameterAsStepSequencer(name)) {
 					componentType.set(*it, TYPE_STEP_SEQ);
-				} else if (containsThisParameterAsEnveloppe(name)) {
+				}
+				else if (containsThisParameterAsEnveloppe(name)) {
 					componentType.set(*it, TYPE_ENVELOPPE);
-				} else {
+				}
+				else {
 					componentType.set(*it, TYPE_NOT_HERE);
 				}
 			}
 
 			int otherType = componentType[name];
-			switch(otherType) {
+			switch (otherType) {
 			case TYPE_SLIDER: {
 				Component* component = componentMap[name];
 				Slider* slider = dynamic_cast<Slider*>(component);
@@ -231,32 +234,20 @@ public:
 				break;
 			}
 
-    	}
-    }
+		}
+	}
 	virtual bool containsThisParameterAsEnveloppe(String paramName) { return false; }
 	virtual bool containsThisParameterAsStepSequencer(String paramName) { return false; }
 	virtual void updateUIEnveloppe(String paramName) {
 	}
-    virtual void updateUIStepSequencer(String paramName) {
-    }
+	virtual void updateUIStepSequencer(String paramName) {
+	}
 
 
-	void sliderDragStarted(Slider* slider)	override {
-		AudioProcessorParameter * param = parameterMap[slider->getName()];
-		if (param != nullptr) {
-			param->beginChangeGesture();
-		}
-	}
-	void sliderDragEnded(Slider* slider) override {
-		AudioProcessorParameter * param = parameterMap[slider->getName()];
-		if (param != nullptr) {
-			param->endChangeGesture();
-		}
-	}
 
 protected:
-    HashMap<const String, MidifiedFloatParameter *> parameterMap;
-    HashMap<const String, Component*> componentMap;
+	HashMap<const String, MidifiedFloatParameter *> parameterMap;
+	HashMap<const String, Component*> componentMap;
 	HashMap<const String, int> componentType;
 	AudioProcessor* audioProcessor;
 };

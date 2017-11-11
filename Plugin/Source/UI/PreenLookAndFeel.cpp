@@ -21,12 +21,12 @@
 
 preenfmLookAndFeel::preenfmLookAndFeel() : LookAndFeel_V4() {
 
-	setUsingNativeAlertWindows(true);
+	setUsingNativeAlertWindows(false);
 	setColourScheme(
-		{	0xff505050, 0xff424242, 0xff606060,
-			0xffa6a6a6, 0xffffffff, 
-			0xff21ba90, 0xff000000, 
-			0xffffffff, 0xffffffff }	
+	{ 0xff505050, 0xff424242, 0xff606060,
+		0xffa6a6a6, 0xffffffff,
+		0xff21ba90, 0xff000000,
+		0xffffffff, 0xffffffff }
 	);
 }
 
@@ -126,7 +126,8 @@ void preenfmLookAndFeel::drawLinearSlider(Graphics& g, int x, int y, int width, 
 	float knobHeight = trackWidth;
 	if (slider.isHorizontal()) {
 		knobHeight *= 3.0f;
-	} else {
+	}
+	else {
 		knobWidth *= 3.0f;
 
 	}

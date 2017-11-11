@@ -29,26 +29,26 @@
 class Pfm2AudioProcessor;
 
 
-class MidifiedFloatParameter: public AudioProcessorParameter {
+class MidifiedFloatParameter : public AudioProcessorParameter {
 public:
 
-	MidifiedFloatParameter (std::map<int , AudioProcessorParameter* > *nrpmParameterMap,
-							String componentName, 
-							int nrpnParam, 
-							float valueMultipler, 
-							float minValue,
-							float maxValue,
-							float defaultValue
-							) 
+	MidifiedFloatParameter(std::map<int, AudioProcessorParameter* > *nrpmParameterMap,
+		String componentName,
+		int nrpnParam,
+		float valueMultipler,
+		float minValue,
+		float maxValue,
+		float defaultValue
+	)
 		: AudioProcessorParameter(),
-		 range(minValue, maxValue), value(defaultValue), defaultValue(defaultValue),
-		 oldXmlName("")
+		range(minValue, maxValue), value(defaultValue), defaultValue(defaultValue),
+		oldXmlName("")
 	{
 		this->componentName = componentName;
-		nrpmParameterMap->insert(std::pair<int , AudioProcessorParameter* > (nrpnParam, this));
+		nrpmParameterMap->insert(std::pair<int, AudioProcessorParameter* >(nrpnParam, this));
 		rangeFloat = maxValue - minValue;
 		sendRealValue = false;
-		
+
 		this->pfm2MinValue = minValue;
 		this->valueMultiplier = valueMultipler;
 		this->nrpnParam = nrpnParam;
@@ -61,20 +61,21 @@ public:
 
 	int getNrpnValueLSB() const {
 		if (!sendRealValue) {
-			int iv = (value - pfm2MinValue + bias) * valueMultiplier + .005f;
+			int iv = (int)((value - pfm2MinValue + bias) * valueMultiplier + .005f);
 			return iv & 0x7f;
-		} else {
-			int iv = value + .005f + bias;
+		}
+		else {
+			int iv = (int)(value + .005f + bias);
 			return iv & 0x7f;
 		}
 	}
 	int getNrpnValueMSB() const {
 		if (!sendRealValue) {
-			int iv = (value - pfm2MinValue + bias) * valueMultiplier + .005f;
+			int iv = (int)((value - pfm2MinValue + bias) * valueMultiplier + .005f);
 			return iv >> 7;
 		}
 		else {
-			int iv = value + .005f + bias;
+			int iv = (int)(value + .005f + bias);
 			return iv >> 7;
 		}
 	}
@@ -89,8 +90,9 @@ public:
 	float getValueFromNrpn(int nrpnValue) const {
 		if (!sendRealValue) {
 			return ((float)nrpnValue) / this->valueMultiplier + this->pfm2MinValue - bias;
-		} else {
-			return nrpnValue - bias;
+		}
+		else {
+			return (float)nrpnValue - bias;
 		}
 	}
 
@@ -108,22 +110,20 @@ public:
 
 	void addNrpn(MidiBuffer& midiBuffer, const int midiChannel);
 
-	static void resetParamIndexCounter() { 
-		paramIndexCounter = 0; 
+	static void resetParamIndexCounter() {
+		paramIndexCounter = 0;
 	}
 
-	int getParamIndex() const { return 
-		paramIndex; 
+	int getParamIndex() const {
+		return paramIndex;
 	}
-
 	void setBias(float b) {
 		this->bias = b;
 	}
 
-	bool getBias() const {
+	float getBias() const {
 		return this->bias;
 	}
-
 	void setValueFromNrpn(int nrpnValue);
 
 	// parameter float
@@ -150,7 +150,7 @@ public:
 	}
 
 	void setOldName(String oldName) {
-		for (size_t i = 0; i < oldName.length(); ++i) {
+		for (int i = 0; i < oldName.length(); ++i) {
 			if (((oldName[i] >= 'a' && oldName[i] <= 'z') ||
 				(oldName[i] >= '0' && oldName[i] <= '9') ||
 				(oldName[i] >= 'A' && oldName[i] <= 'Z'))) {
@@ -175,14 +175,14 @@ public:
 		return range.getRange().getEnd();
 	}
 
-	String getName(int maximumStringLength) const { 
+	String getName(int maximumStringLength) const {
 		return componentName.substring(0, maximumStringLength);
 	}
-	String getLabel() const { 
-		return componentName; 
+	String getLabel() const {
+		return componentName;
 	}
 
-	void setIsAutomatable(bool automatable)  {
+	void setIsAutomatable(bool automatable) {
 		bIsAutomatable = automatable;
 	}
 

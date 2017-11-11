@@ -25,22 +25,21 @@ class preenfmLookAndFeel : public LookAndFeel_V4 {
 public:
 	preenfmLookAndFeel();
 	void drawRotarySlider(Graphics& g, int x, int y, int width, int height, float sliderPos,
-		const float rotaryStartAngle, const float rotaryEndAngle, Slider& slider);
+		float rotaryStartAngle, float rotaryEndAngle, Slider& slider) override;
 
 	void drawLinearSlider(Graphics& g, int x, int y, int width, int height,
 		float sliderPos,
 		float minSliderPos,
 		float maxSliderPos,
-		const Slider::SliderStyle style, Slider& slider);
+		const Slider::SliderStyle style, Slider& slider) override;
 
 	void drawComboBox(Graphics& g, int width, int height, bool,
-		int, int, int, int, ComboBox& box);
+		int, int, int, int, ComboBox& box) override;
 
 
-	Font getComboBoxFont(ComboBox& box);
-	void positionComboBoxText(ComboBox& box, Label& label);
+	Font getComboBoxFont(ComboBox& box) override;
+	void positionComboBoxText(ComboBox& box, Label& label) override;
 
-	bool isUsingNativeAlertWindows() { return false;  }
 
 };
 

@@ -21,26 +21,26 @@
 
 #include "JuceHeader.h"
 #include "EnveloppeAbstract.h"
-//==============================================================================
-/*
-*/
-class Enveloppe    : public  EnveloppeAbstract
+ //==============================================================================
+ /*
+ */
+class Enveloppe : public  EnveloppeAbstract
 {
 public:
-    Enveloppe();
-    ~Enveloppe();
+	Enveloppe();
+	~Enveloppe();
 
-    void paint (Graphics&);
-    // Must be implemented to deal with point value modification
-    void newXValue(int draggingPointIndex, float newX);
-    void newYValue(int draggingPointIndex, float newY);
-    const char ** getPointSuffix() const;
-    const char *getPointSuffix(int pointNumber, bool isX) const;
+	void paint(Graphics&);
+	// Must be implemented to deal with point value modification
+	void newXValue(int draggingPointIndex, float newX);
+	void newYValue(int draggingPointIndex, float newY);
+	const char ** getPointSuffix() const;
+	const char *getPointSuffix(int pointNumber, bool isX) const;
 
 
 private:
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Enveloppe)
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Enveloppe)
 
 };
 

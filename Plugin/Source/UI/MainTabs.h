@@ -50,9 +50,9 @@ class PanelArpAndFilter;
 //==============================================================================
 /**
                                                                     //[Comments]
-    An auto-generated component, created by the Introjucer.
+	An auto-generated component, created by the Introjucer.
 
-    Describe your class and how it works here!
+	Describe your class and how it works here!
                                                                     //[/Comments]
 */
 class MainTabs  : public Component,
@@ -67,11 +67,11 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void buildParameters(AudioProcessor *audioProcessor);
+	void buildParameters(AudioProcessor *audioProcessor);
 	void updateUI(std::unordered_set<String> &paramSet);
 	void setPresetName(String presetName);
 	void setPresetNamePtr(char* presetNamePtr);
-    void setMidiOutBuffer(MidiBuffer *midiOutBuffer);
+	void setMidiOutBuffer(MidiBuffer *midiOutBuffer);
 	void setMidiChannel(int newMidiChannel);
 	MidifiedFloatParameter* getParameterFromName(String componentName);
     //[/UserMethods]
@@ -86,15 +86,15 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    int midiInfo;
+	int midiInfo;
 	AudioProcessor* audioProcessor;
-    PanelEngine* panelEngine;
-    PanelModulation* panelModulation;
-    PanelArpAndFilter* panelArpAndFilter;
-    float pullButtonValue;
-    float pushButtonValue;
-    int currentMidiChannel;
-    MidiBuffer *midiOutBuffer;
+	PanelEngine* panelEngine;
+	PanelModulation* panelModulation;
+	PanelArpAndFilter* panelArpAndFilter;
+	float pullButtonValue;
+	float pushButtonValue;
+	int currentMidiChannel;
+	MidiBuffer *midiOutBuffer;
 	char *presetNamePtr;
     //[/UserVariables]
 

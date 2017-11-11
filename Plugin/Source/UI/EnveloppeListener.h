@@ -24,12 +24,12 @@ class EnveloppeAbstract;
 
 class EnveloppeListener {
 public:
-    virtual ~EnveloppeListener() {}
+	virtual ~EnveloppeListener() {}
 
-    /**
-     * Method to be called when a enveloppe's value has been updated.
-     */
-    virtual void enveloppeValueChanged(const EnveloppeAbstract* enveloppeThatWasMoved, int pointNumber, bool isX) = 0;
+	/**
+	 * Method to be called when a enveloppe's value has been updated.
+	 */
+	virtual void enveloppeValueChanged(const EnveloppeAbstract* enveloppeThatWasMoved, int pointNumber, bool isX) = 0;
 };
 
 typedef std::vector<EnveloppeListener *> EnveloppeListenerList;

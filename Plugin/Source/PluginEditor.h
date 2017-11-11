@@ -29,28 +29,28 @@ class MainTabs;
 //==============================================================================
 /**
 */
-class Pfm2AudioProcessorEditor  : public AudioProcessorEditor, public Timer
+class Pfm2AudioProcessorEditor : public AudioProcessorEditor, public Timer
 {
 	friend class Pfm2AudioProcessor;
 public:
-    Pfm2AudioProcessorEditor (Pfm2AudioProcessor* ownerFilter);
-    ~Pfm2AudioProcessorEditor();
+	Pfm2AudioProcessorEditor(Pfm2AudioProcessor* ownerFilter);
+	~Pfm2AudioProcessorEditor();
 
-    //==============================================================================
-    // This is just a standard Juce paint method...
-    void paint (Graphics& g);
+	//==============================================================================
+	// This is just a standard Juce paint method...
+	void paint(Graphics& g);
 	void resized();
-    void timerCallback ();
-    void updateUIWith(std::unordered_set<String> &paramSet);
-    void removeParamToUpdateUI(String paramName);
+	void timerCallback();
+	void updateUIWith(std::unordered_set<String> &paramSet);
+	void removeParamToUpdateUI(String paramName);
 	void setMidiOutBuffer(MidiBuffer *midiOutBuffer);
 	void setMidiChannel(int newMidiChannel);
-    void setPresetName(String presetName);
+	void setPresetName(String presetName);
 
 private:
 	bool uiOutOfSync;
-    MainTabs * mainTabs;
-    std::unordered_set<String> parametersToUpdate;
+	MainTabs * mainTabs;
+	std::unordered_set<String> parametersToUpdate;
 	std::mutex parametersToUpdateMutex;
 	Pfm2AudioProcessor* ownerFilter;
 };

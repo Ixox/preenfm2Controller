@@ -125,8 +125,8 @@ MainTabs::MainTabs ()
 
 
     //[UserPreSize]
-    midiChannelCombo->setSelectedId(1);
-    versionLabel->setText(String("v") + ProjectInfo::versionString, dontSendNotification);
+	midiChannelCombo->setSelectedId(1);
+	versionLabel->setText(String("v") + ProjectInfo::versionString, dontSendNotification);
     //[/UserPreSize]
 
     setSize (900, 710);
@@ -137,7 +137,7 @@ MainTabs::MainTabs ()
 	panelModulation = ((PanelModulation*)tabbedComponent->getTabContentComponent(1));
 	panelArpAndFilter = ((PanelArpAndFilter*)tabbedComponent->getTabContentComponent(2));
 	pullButtonValue = 0;
-    currentMidiChannel = 1;
+	currentMidiChannel = 1;
 	pullButtonValue = 0;
 	pushButtonValue = 0;
 	// SET null !
@@ -200,7 +200,7 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_pullButton] -- add your button handler code here..
 
 		MidifiedFloatParameter* param = getParameterFromName("pull button");
-        pullButtonValue = (pullButtonValue == 1 ? 0 : 1) ;
+		pullButtonValue = (pullButtonValue == 1.0f ? 0.0f : 1.0f);
 		param->setRealValue(pullButtonValue);
 
         //[/UserButtonCode_pullButton]
@@ -209,9 +209,9 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_pushButton] -- add your button handler code here..
 
-		 MidifiedFloatParameter* param = getParameterFromName("push button");
-		 pushButtonValue = (pushButtonValue == 1 ? 0 : 1);
-		 param->setRealValue(pushButtonValue);
+		MidifiedFloatParameter* param = getParameterFromName("push button");
+		pushButtonValue = (pushButtonValue == 1.0f ? 0.0f : 1.0f);
+		param->setRealValue(pushButtonValue);
 
         //[/UserButtonCode_pushButton]
     }
@@ -261,10 +261,10 @@ void MainTabs::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 		MidifiedFloatParameter* param = getParameterFromName("Midi Channel");
 
-        if (currentMidiChannel != midiChannelCombo->getSelectedId()) {
-            currentMidiChannel = midiChannelCombo->getSelectedId();
-			param->setRealValue(currentMidiChannel);
-        }
+		if (currentMidiChannel != midiChannelCombo->getSelectedId()) {
+			currentMidiChannel = midiChannelCombo->getSelectedId();
+			param->setRealValue((float)currentMidiChannel);
+		}
 
         //[/UserComboBoxCode_midiChannelCombo]
     }
@@ -290,16 +290,16 @@ MidifiedFloatParameter* MainTabs::getParameterFromName(String componentName) {
 
 
 void MainTabs::buildParameters(AudioProcessor *audioProcessor) {
-    this->audioProcessor = audioProcessor;
+	this->audioProcessor = audioProcessor;
 
-    panelEngine->setParameterSet(audioProcessor);
-    panelEngine->buildParameters();
+	panelEngine->setParameterSet(audioProcessor);
+	panelEngine->buildParameters();
 
-    panelModulation->setParameterSet(audioProcessor);
-    panelModulation->buildParameters();
+	panelModulation->setParameterSet(audioProcessor);
+	panelModulation->buildParameters();
 
-    panelArpAndFilter->setParameterSet(audioProcessor);
-    panelArpAndFilter->buildParameters();
+	panelArpAndFilter->setParameterSet(audioProcessor);
+	panelArpAndFilter->buildParameters();
 }
 
 void MainTabs::updateUI(std::unordered_set<String> &paramSet) {
@@ -307,8 +307,8 @@ void MainTabs::updateUI(std::unordered_set<String> &paramSet) {
 	std::unordered_set<String>::const_iterator midiChannel = paramSet.find("Midi Channel");
 	if (midiChannel != paramSet.end()) {
 		MidifiedFloatParameter* param = getParameterFromName("Midi Channel");
-		midiChannelCombo->setSelectedId(param->getRealValue());
-    }
+		midiChannelCombo->setSelectedId((int)param->getRealValue());
+	}
 
 	panelEngine->updateUI(paramSet);
 	panelModulation->updateUI(paramSet);
@@ -317,7 +317,7 @@ void MainTabs::updateUI(std::unordered_set<String> &paramSet) {
 
 
 void MainTabs::setPresetName(String presetName) {
-    presetNameLabel->setText(presetName, dontSendNotification);
+	presetNameLabel->setText(presetName, dontSendNotification);
 }
 
 void MainTabs::setPresetNamePtr(char* presetNamePtr) {
@@ -325,7 +325,7 @@ void MainTabs::setPresetNamePtr(char* presetNamePtr) {
 }
 
 void MainTabs::setMidiOutBuffer(MidiBuffer *midiOutBuffer) {
-    this->midiOutBuffer = midiOutBuffer;
+	this->midiOutBuffer = midiOutBuffer;
 }
 
 

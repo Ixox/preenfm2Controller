@@ -22,14 +22,14 @@
 //==============================================================================
 StepSequencer::StepSequencer(int numberOfValues, int maxValue, int nrpnBase)
 {
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
+	// In your constructor, you should add any child components, and
+	// initialise any special settings that your component needs.
 
 	this->numberOfValues = numberOfValues;
 	this->maxValue = maxValue;
 	this->values = new int[numberOfValues];
-	for (int k=0; k < numberOfValues; k++) {
-		this->values[k] = (float) maxValue / numberOfValues * k;
+	for (int k = 0; k < numberOfValues; k++) {
+		this->values[k] = (int)((float)maxValue / numberOfValues * k);
 	}
 }
 
@@ -40,29 +40,31 @@ StepSequencer::~StepSequencer()
 	}
 }
 
-void StepSequencer::paint (Graphics& g)
+void StepSequencer::paint(Graphics& g)
 {
 	float width = (float)getWidth() / numberOfValues;
+
 	for (int k = 0; k < numberOfValues; k++) {
-	    float height = (float)getHeight() * values[k] / (maxValue - 1) ;
-        uint8 alpha = 100 + height * 70 / getHeight();
-        g.setColour (Colour::fromRGBA(180.0f, 200.0f, 220.0f, alpha));
+		float height = (float)getHeight() * values[k] / (maxValue - 1);
+		uint8 alpha = (uint8)(100.0f + height * 70.0f / getHeight());
+		g.setColour(Colour::fromRGBA(180, 200, 220, alpha));
 		g.fillRect((float)k * width, (float)getHeight() - height, width, height);
 	}
-    for (int k = 0; k < numberOfValues; k++) {
-		g.setColour (Colours::grey);
-		g.drawVerticalLine(width * (k +1), 0, getHeight());
 
-		g.setColour (Colours::whitesmoke);
-		g.drawText(String(values[k]), (float) k * width, getHeight() - 20, width, 10, Justification::centred, true);
+	for (int k = 0; k < numberOfValues; k++) {
+		g.setColour(Colours::grey);
+		g.drawVerticalLine((int)(width * (1.0f + k)), 0.0f, (float)getHeight());
+
+		g.setColour(Colours::whitesmoke);
+		g.drawText(String(values[k]), (int)(k * width), getHeight() - 20, (int)width, 10, Justification::centred, true);
 	}
 
-    g.setColour (Colours::grey);
-    g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
+	g.setColour(Colours::grey);
+	g.drawRect(getLocalBounds(), 1);   // draw an outline around the component
 }
 
 int  StepSequencer::limitX(int x) {
-	return x < 0 ? 0 : (x >= numberOfValues ? numberOfValues - 1: x);
+	return x < 0 ? 0 : (x >= numberOfValues ? numberOfValues - 1 : x);
 }
 int  StepSequencer::limitY(int y) {
 	return y < 0 ? 0 : (y > maxValue ? maxValue : y);
@@ -73,29 +75,30 @@ void StepSequencer::updateValues(const MouseEvent& event) {
 	if (event.mods.isRightButtonDown()) {
 		int x = limitX(event.x * numberOfValues / getWidth());
 		setValues(x, 0);
-	} else {
+	}
+	else {
 		int x = limitX(event.x * numberOfValues / getWidth());
-		int y = limitY((float) maxValue * (getHeight() - event.y) / getHeight() + .5);
+		int y = limitY((int)((float)maxValue * (getHeight() - event.y) / getHeight()));
 		setValues(x, y);
 	}
-	return ;
+	return;
 }
 
-void StepSequencer::mouseDown (const MouseEvent &event)  {
+void StepSequencer::mouseDown(const MouseEvent &event) {
 	if (event.getNumberOfClicks() != 1) {
 		return;
 	}
 	updateValues(event);
 }
 
-void StepSequencer::mouseUp (const MouseEvent &event)  {
+void StepSequencer::mouseUp(const MouseEvent &event) {
 }
 
-void StepSequencer::mouseDrag (const MouseEvent &event)  {
+void StepSequencer::mouseDrag(const MouseEvent &event) {
 	updateValues(event);
 }
 
-void StepSequencer::mouseDoubleClick (const MouseEvent& event) {
+void StepSequencer::mouseDoubleClick(const MouseEvent& event) {
 	if (!event.mods.isLeftButtonDown()) {
 		return;
 	}
@@ -103,8 +106,8 @@ void StepSequencer::mouseDoubleClick (const MouseEvent& event) {
 	setValues(x, maxValue);
 }
 
-void StepSequencer::mouseWheelMove (const MouseEvent& event, const MouseWheelDetails& wheel) {
-//	debugValue = wheel.deltaY;
+void StepSequencer::mouseWheelMove(const MouseEvent& event, const MouseWheelDetails& wheel) {
+	//	debugValue = wheel.deltaY;
 	if (wheel.deltaY == 0) {
 		return;
 	}
@@ -117,8 +120,8 @@ void StepSequencer::mouseWheelMove (const MouseEvent& event, const MouseWheelDet
 
 void StepSequencer::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
+	// This method is where you should set the bounds of any child
+	// components that your component contains..
 
 }
 
@@ -128,10 +131,10 @@ void StepSequencer::setValuesNoNotify(int x, int y) {
 
 
 void StepSequencer::setValues(int x, int y) {
-    if (values[x] != y && y >= 0 && y < maxValue) {
-        values[x] = y;
-        notifyObservers(x);
-        repaint();
-    }
+	if (values[x] != y && y >= 0 && y < maxValue) {
+		values[x] = y;
+		notifyObservers(x);
+		repaint();
+	}
 }
 

@@ -36,7 +36,7 @@ Pfm2MidiDevice::Pfm2MidiDevice() {
 
 	if (pfm2Settings->containsKey(MIDI_INPUT)) {
 		pfm2InputDevice = pfm2Settings->getValue(MIDI_INPUT);
-	} 
+	}
 
 	if (pfm2Settings->containsKey(MIDI_OUTPUT)) {
 		pfm2OutputDevice = pfm2Settings->getValue(MIDI_OUTPUT);
@@ -94,7 +94,8 @@ void Pfm2MidiDevice::resetDevices() {
 void Pfm2MidiDevice::sendBlockOfMessagesNow(MidiBuffer& midiBuffer) {
 	if (pfm2MidiOutput != nullptr && pfm2MidiInput != nullptr) {
 		pfm2MidiOutput->sendBlockOfMessagesNow(midiBuffer);
-	} else {
+	}
+	else {
 		choseNewDevices();
 	}
 }
@@ -137,7 +138,7 @@ void Pfm2MidiDevice::choseNewDevices() {
 		midiWindow.addComboBox("To", devicesTo, "Output to preenfm2");
 		int currentOutput = devicesTo.indexOf(currentMidiOutputDevice);
 		if (currentOutput > -1) {
-			midiWindow.getComboBoxComponent("To")->setSelectedId(currentOutput+1);
+			midiWindow.getComboBoxComponent("To")->setSelectedId(currentOutput + 1);
 		}
 
 		//void addButton(const String &name, int returnValue, const KeyPress &shortcutKey1 = KeyPress(), const KeyPress &shortcutKey2 = KeyPress())
@@ -167,9 +168,9 @@ void Pfm2MidiDevice::choseNewDevices() {
 
 				// -2 because of the <Select>.
 				int deviceFrom = midiWindow.getComboBoxComponent("From")->getSelectedId() - 2;
-				currentMidiInputDevice = devicesFrom[deviceFrom+1];
+				currentMidiInputDevice = devicesFrom[deviceFrom + 1];
 				int deviceTo = midiWindow.getComboBoxComponent("To")->getSelectedId() - 2;
-				currentMidiOutputDevice = devicesTo[deviceTo+1];
+				currentMidiOutputDevice = devicesTo[deviceTo + 1];
 
 				pfm2MidiInput = MidiInput::openDevice(deviceFrom, this);
 				if (pfm2MidiInput != nullptr) {

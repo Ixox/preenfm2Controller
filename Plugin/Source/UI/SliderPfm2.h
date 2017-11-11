@@ -34,8 +34,7 @@ public:
             return;
         }
     	if (wheel.deltaY != 0) {
-			float y = getValue() + (wheel.deltaY > 0 ? getInterval() : -1 * getInterval() ) * (wheel.isReversed ? -1.0f : 1.0f);
-
+			double y = getValue() + (wheel.deltaY > 0 ? getInterval() : -1 * getInterval() ) * (wheel.isReversed ? -1.0f : 1.0f);
 			setValue (y);
     	}
     }

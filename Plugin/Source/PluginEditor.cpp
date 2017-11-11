@@ -22,16 +22,16 @@
 #include "UI/MainTabs.h"
 
 //==============================================================================
-Pfm2AudioProcessorEditor::Pfm2AudioProcessorEditor (Pfm2AudioProcessor* ownerFilter)
-    : AudioProcessorEditor (ownerFilter)
+Pfm2AudioProcessorEditor::Pfm2AudioProcessorEditor(Pfm2AudioProcessor* ownerFilter)
+	: AudioProcessorEditor(ownerFilter)
 {
 	this->ownerFilter = ownerFilter;
-    addAndMakeVisible (mainTabs = new MainTabs());
-    mainTabs->buildParameters(getAudioProcessor());
-    // This is where our plugin's editor size is set.
+	addAndMakeVisible(mainTabs = new MainTabs());
+	mainTabs->buildParameters(getAudioProcessor());
+	// This is where our plugin's editor size is set.
 
-	setSize (1000, 750);
-	
+	setSize(1000, 750);
+
 	startTimer(100);
 	uiOutOfSync = false;
 }
@@ -39,11 +39,11 @@ Pfm2AudioProcessorEditor::Pfm2AudioProcessorEditor (Pfm2AudioProcessor* ownerFil
 Pfm2AudioProcessorEditor::~Pfm2AudioProcessorEditor()
 {
 	this->ownerFilter->editorClosed();
-    delete mainTabs;
+	delete mainTabs;
 }
 
 //==============================================================================
-void Pfm2AudioProcessorEditor::paint (Graphics& g)
+void Pfm2AudioProcessorEditor::paint(Graphics& g)
 {
 }
 
@@ -55,7 +55,7 @@ void Pfm2AudioProcessorEditor::resized() {
 
 void Pfm2AudioProcessorEditor::updateUIWith(std::unordered_set<String> &paramSet) {
 	this->parametersToUpdateMutex.lock();
-	for(std::unordered_set<String>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
+	for (std::unordered_set<String>::iterator it = paramSet.begin(); it != paramSet.end(); ++it) {
 		this->parametersToUpdate.insert(*it);
 	}
 	this->parametersToUpdateMutex.unlock();
@@ -65,12 +65,12 @@ void Pfm2AudioProcessorEditor::updateUIWith(std::unordered_set<String> &paramSet
 void Pfm2AudioProcessorEditor::removeParamToUpdateUI(String paramName) {
 	this->parametersToUpdateMutex.lock();
 	if (this->parametersToUpdate.count(paramName) > 0) {
-        this->parametersToUpdate.erase(paramName);
+		this->parametersToUpdate.erase(paramName);
 	}
 	this->parametersToUpdateMutex.unlock();
 }
 
-void Pfm2AudioProcessorEditor::timerCallback () {
+void Pfm2AudioProcessorEditor::timerCallback() {
 	if (this->parametersToUpdate.size() > 0) {
 		std::unordered_set<String> newSet;
 		this->parametersToUpdateMutex.lock();
@@ -92,7 +92,7 @@ void Pfm2AudioProcessorEditor::setMidiChannel(int newMidiChannel) {
 
 
 void Pfm2AudioProcessorEditor::setPresetName(String presetName) {
-    mainTabs->setPresetName(presetName);
+	mainTabs->setPresetName(presetName);
 }
 
 

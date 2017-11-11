@@ -50,9 +50,9 @@ public:
 	// Listeners
 	void addListener(MidiInputCallback *listener);
 	void removeListener(MidiInputCallback *listener);
-	
 
-private :
+
+private:
 	ApplicationProperties pfm2AppProps;
 	bool showErrorMEssage;
 	CriticalSection messageLock;

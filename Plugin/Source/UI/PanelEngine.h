@@ -54,100 +54,103 @@
 
 //==============================================================================
 /**
-                                                                    //[Comments]
-    An auto-generated component, created by the Introjucer.
+																	//[Comments]
+	An auto-generated component, created by the Introjucer.
 
-    Describe your class and how it works here!
-                                                                    //[/Comments]
+	Describe your class and how it works here!
+																	//[/Comments]
 */
-class PanelEngine  : public Component,
-                     public Slider::Listener,
-                     public Button::Listener,
-                     public ComboBox::Listener,
-                     public PanelOfComponents
+class PanelEngine : public Component,
+	public Slider::Listener,
+	public Button::Listener,
+	public ComboBox::Listener,
+	public PanelOfComponents
 {
 public:
-    //==============================================================================
-    PanelEngine ();
-    ~PanelEngine();
+	//==============================================================================
+	PanelEngine();
+	~PanelEngine();
 
-    //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
-    void buttonClicked (Button* buttonThatWasClicked);
-    void sliderValueChanged (Slider* sliderThatWasMoved);
-    void sliderValueChanged (Slider* sliderThatWasMoved, bool fromPluginUI);
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPluginUI);
-    void newAlgo(int algoNumber);
-    void resizeAlgoDrawableImage();
-    // Panel of parameters
-    void buildParameters();
-    void updateSliderFromParameter_hook(Slider* slider);
-    void updateUIEnveloppe(String paramName);
+	//==============================================================================
+	//[UserMethods]     -- You can add your own custom methods in this section.
+	void buttonClicked(Button* buttonThatWasClicked);
+	void sliderDragStarted(Slider* slider)	override;
+	void sliderDragEnded(Slider* slider) override;
+	void sliderValueChanged(Slider* sliderThatWasMoved);
+	void sliderValueChanged(Slider* sliderThatWasMoved, bool fromPluginUI);
+	void comboBoxChanged(ComboBox* comboBoxThatHasChanged);
+	void comboBoxChanged(ComboBox* comboBoxThatHasChanged, bool fromPluginUI);
+	void newAlgo(int algoNumber);
+	void resizeAlgoDrawableImage();
+	// Panel of parameters
+	void buildParameters();
+	void updateSliderFromParameter_hook(Slider* slider);
+	void updateUIEnveloppe(String paramName);
 	bool containsThisParameterAsEnveloppe(String name);
-    //[/UserMethods]
 
-    void paint (Graphics& g) override;
-    void resized() override;
+	//[/UserMethods]
+
+	void paint(Graphics& g) override;
+	void resized() override;
 
 
 
 private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
-    ScopedPointer<Enveloppe> enveloppe[NUMBER_OF_OPERATORS];
+	//[UserVariables]   -- You can add your own custom variables in this section.
+	ScopedPointer<Enveloppe> enveloppe[NUMBER_OF_OPERATORS];
 	ScopedPointer<TextButton> envCopyButton, envPasteButton;
 	int envToCopy, envSelected;
-    ScopedPointer<TextButton> enveloppeButton [NUMBER_OF_OPERATORS];
-    ScopedPointer<Slider> mixKnob[NUMBER_OF_MIX];
-    ScopedPointer<Slider> panKnob[NUMBER_OF_MIX];
-    ScopedPointer<Label> mixLabel[NUMBER_OF_MIX];
-    ScopedPointer<Label> IMLabel;
-    ScopedPointer<Label> IMVelocityLabel;
-    ScopedPointer<Label> IMNumber[NUMBER_OF_IM];
-    ScopedPointer<Slider> IMKnob[NUMBER_OF_IM];
-    ScopedPointer<Slider> IMVelocityKnob[NUMBER_OF_IM];
-    ScopedPointer<Label> algoChooserLabel;
-    ScopedPointer<Slider> algoChooser;
-    ScopedPointer<DrawableImage> algoDrawableImage;
-    Image algoImages[NUMBER_OF_ALGO];
-    ScopedPointer<Label> velocityLabel;
-    ScopedPointer<Slider> velocity;
-    ScopedPointer<Label> voicesLabel;
-    ScopedPointer<Slider> voices;
-    ScopedPointer<Label> glideLabel;
-    ScopedPointer<Slider> glide;
+	ScopedPointer<TextButton> enveloppeButton[NUMBER_OF_OPERATORS];
+	ScopedPointer<Slider> mixKnob[NUMBER_OF_MIX];
+	ScopedPointer<Slider> panKnob[NUMBER_OF_MIX];
+	ScopedPointer<Label> mixLabel[NUMBER_OF_MIX];
+	ScopedPointer<Label> IMLabel;
+	ScopedPointer<Label> IMVelocityLabel;
+	ScopedPointer<Label> IMNumber[NUMBER_OF_IM];
+	ScopedPointer<Slider> IMKnob[NUMBER_OF_IM];
+	ScopedPointer<Slider> IMVelocityKnob[NUMBER_OF_IM];
+	ScopedPointer<Label> algoChooserLabel;
+	ScopedPointer<Slider> algoChooser;
+	ScopedPointer<DrawableImage> algoDrawableImage;
+	Image algoImages[NUMBER_OF_ALGO];
+	ScopedPointer<Label> velocityLabel;
+	ScopedPointer<Slider> velocity;
+	ScopedPointer<Label> voicesLabel;
+	ScopedPointer<Slider> voices;
+	ScopedPointer<Label> glideLabel;
+	ScopedPointer<Slider> glide;
 
-    ScopedPointer<Label> opShapeLabel;
-    ScopedPointer<ComboBox> opShape[NUMBER_OF_OPERATORS];
+	ScopedPointer<Label> opShapeLabel;
+	ScopedPointer<ComboBox> opShape[NUMBER_OF_OPERATORS];
 
-    ScopedPointer<Label> opFrequencyTypeLabel;
-    ScopedPointer<ComboBox> opFrequencyType[NUMBER_OF_OPERATORS];
+	ScopedPointer<Label> opFrequencyTypeLabel;
+	ScopedPointer<ComboBox> opFrequencyType[NUMBER_OF_OPERATORS];
 
-    ScopedPointer<Label> opFrequencyLabel;
-    ScopedPointer<Slider> opFrequency[NUMBER_OF_OPERATORS];
+	ScopedPointer<Label> opFrequencyLabel;
+	ScopedPointer<Slider> opFrequency[NUMBER_OF_OPERATORS];
 
-    ScopedPointer<Label> opFrequencyFineTuneLabel;
-    ScopedPointer<Slider> opFrequencyFineTune[NUMBER_OF_OPERATORS];
+	ScopedPointer<Label> opFrequencyFineTuneLabel;
+	ScopedPointer<Slider> opFrequencyFineTune[NUMBER_OF_OPERATORS];
 
-    MidiBuffer* eventsToAdd;
+	MidiBuffer* eventsToAdd;
 
-    bool initialized;
-    //[/UserVariables]
+	bool initialized;
+	//[/UserVariables]
 
-    //==============================================================================
-    ScopedPointer<GroupComponent> operatorGroup;
-    ScopedPointer<GroupComponent> mixerGroup;
-    ScopedPointer<GroupComponent> imGroup;
+	//==============================================================================
+	ScopedPointer<GroupComponent> operatorGroup;
+	ScopedPointer<GroupComponent> mixerGroup;
+	ScopedPointer<GroupComponent> imGroup;
 
 
-    //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PanelEngine)
+	//==============================================================================
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PanelEngine)
 };
 
 //[EndFile] You can add extra defines here...
 struct AlgoInformation {
-    unsigned char osc;
-    unsigned char im;
-    unsigned char mix;
+	unsigned char osc;
+	unsigned char im;
+	unsigned char mix;
 };
 //[/EndFile]

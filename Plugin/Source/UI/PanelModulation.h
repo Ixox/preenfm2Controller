@@ -57,14 +57,14 @@
 //==============================================================================
 /**
                                                                     //[Comments]
-    An auto-generated component, created by the Introjucer.
+	An auto-generated component, created by the Introjucer.
 
-    Describe your class and how it works here!
+	Describe your class and how it works here!
                                                                     //[/Comments]
 */
 class PanelModulation  : public Component,
-                         public Slider::Listener,
                          public Button::Listener,
+                         public Slider::Listener,
                          public ComboBox::Listener,
                          public PanelOfComponents
 {
@@ -75,18 +75,21 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void buttonClicked (Button* buttonThatWasClicked);
-    void sliderValueChanged (Slider* sliderThatWasMoved);
-    void sliderValueChanged(Slider* sliderThatWasMoved, bool fromPluginUI);
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged, bool fromPluginUI);
-    void buildParameters();
-    void updateSliderFromParameter_hook(Slider* slider);
-    void updateComboFromParameter_hook(ComboBox* combo);
-    void updateUIEnveloppe(String paramName);
-    void updateUIStepSequencer(String paramName);
+	void buttonClicked(Button* buttonThatWasClicked);
+	void sliderValueChanged(Slider* sliderThatWasMoved);
+	void sliderValueChanged(Slider* sliderThatWasMoved, bool fromPluginUI);
+	void comboBoxChanged(ComboBox* comboBoxThatHasChanged);
+	void comboBoxChanged(ComboBox* comboBoxThatHasChanged, bool fromPluginUI);
+	void buildParameters();
+	void updateSliderFromParameter_hook(Slider* slider);
+	void updateComboFromParameter_hook(ComboBox* combo);
+	void updateUIEnveloppe(String paramName);
+	void updateUIStepSequencer(String paramName);
 	bool containsThisParameterAsStepSequencer(String name);
 	bool containsThisParameterAsEnveloppe(String name);
+	void sliderDragStarted(Slider* slider)	override;
+	void sliderDragEnded(Slider* slider) override;
+
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -98,46 +101,46 @@ private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
 
-    // LFO
-    ScopedPointer<TextButton> lfoButton [NUMBER_OF_LFO];
-    ScopedPointer<Label> lfoPhaseLabel;
-    ScopedPointer<Slider> lfoPhase[NUMBER_OF_LFO];
-    ScopedPointer<ComboBox> lfoShape[NUMBER_OF_LFO];
-    ScopedPointer<ComboBox> lfoExtMidiSync[NUMBER_OF_LFO];
-    ScopedPointer<Slider> lfoFrequency[NUMBER_OF_LFO];
-    ScopedPointer<Slider> lfoBias[NUMBER_OF_LFO];
-    ScopedPointer<ComboBox> lfoKsynOnOff[NUMBER_OF_LFO];
-    ScopedPointer<Slider> lfoKSync[NUMBER_OF_LFO];
-    ScopedPointer<Label> lfoFrequencyLabel;
-    ScopedPointer<Label> lfoBiasLabel;
-    ScopedPointer<Label> lfoKSynLabel;
-    ScopedPointer<ComboBox> enveloppeFree2Loop;
-    ScopedPointer<Label> enveloppeFree2LoopLabel;
+	// LFO
+	ScopedPointer<TextButton> lfoButton[NUMBER_OF_LFO];
+	ScopedPointer<Label> lfoPhaseLabel;
+	ScopedPointer<Slider> lfoPhase[NUMBER_OF_LFO];
+	ScopedPointer<ComboBox> lfoShape[NUMBER_OF_LFO];
+	ScopedPointer<ComboBox> lfoExtMidiSync[NUMBER_OF_LFO];
+	ScopedPointer<Slider> lfoFrequency[NUMBER_OF_LFO];
+	ScopedPointer<Slider> lfoBias[NUMBER_OF_LFO];
+	ScopedPointer<ComboBox> lfoKsynOnOff[NUMBER_OF_LFO];
+	ScopedPointer<Slider> lfoKSync[NUMBER_OF_LFO];
+	ScopedPointer<Label> lfoFrequencyLabel;
+	ScopedPointer<Label> lfoBiasLabel;
+	ScopedPointer<Label> lfoKSynLabel;
+	ScopedPointer<ComboBox> enveloppeFree2Loop;
+	ScopedPointer<Label> enveloppeFree2LoopLabel;
 
 
-    // MATRIX
-    ScopedPointer<Label> matrixRowLabel [NUMBER_OF_MATRIX_ROW];
-    ScopedPointer<ComboBox> matrixSource[NUMBER_OF_MATRIX_ROW];
-    ScopedPointer<Slider> matrixMultipler[NUMBER_OF_MATRIX_ROW];
-    ScopedPointer<ComboBox> matrixDestination[NUMBER_OF_MATRIX_ROW];
+	// MATRIX
+	ScopedPointer<Label> matrixRowLabel[NUMBER_OF_MATRIX_ROW];
+	ScopedPointer<ComboBox> matrixSource[NUMBER_OF_MATRIX_ROW];
+	ScopedPointer<Slider> matrixMultipler[NUMBER_OF_MATRIX_ROW];
+	ScopedPointer<ComboBox> matrixDestination[NUMBER_OF_MATRIX_ROW];
 
-    // ENVELOPPES
-    ScopedPointer<EnveloppeFree1> enveloppeFree1;
-    ScopedPointer<EnveloppeFree2> enveloppeFree2;
+	// ENVELOPPES
+	ScopedPointer<EnveloppeFree1> enveloppeFree1;
+	ScopedPointer<EnveloppeFree2> enveloppeFree2;
 
 
-    // STEP SEQUENCER
-    ScopedPointer<TextButton> stepSeqButton [NUMBER_OF_STEP_SEQ];
-    ScopedPointer<StepSequencer> stepSequencer[NUMBER_OF_STEP_SEQ];
+	// STEP SEQUENCER
+	ScopedPointer<TextButton> stepSeqButton[NUMBER_OF_STEP_SEQ];
+	ScopedPointer<StepSequencer> stepSequencer[NUMBER_OF_STEP_SEQ];
 
-    ScopedPointer<Label> stepSeqBPMLabel;
-    ScopedPointer<ComboBox> stepSeqExtMidiSync[NUMBER_OF_STEP_SEQ];
-    ScopedPointer<Slider> stepSeqBPM[NUMBER_OF_STEP_SEQ];
-    ScopedPointer<Label> stepSeqGateLabel;
-    ScopedPointer<Slider> stepSeqGate[NUMBER_OF_STEP_SEQ];
+	ScopedPointer<Label> stepSeqBPMLabel;
+	ScopedPointer<ComboBox> stepSeqExtMidiSync[NUMBER_OF_STEP_SEQ];
+	ScopedPointer<Slider> stepSeqBPM[NUMBER_OF_STEP_SEQ];
+	ScopedPointer<Label> stepSeqGateLabel;
+	ScopedPointer<Slider> stepSeqGate[NUMBER_OF_STEP_SEQ];
 
-    MidiBuffer* eventsToAdd;
-    bool initialized;
+	MidiBuffer* eventsToAdd;
+	bool initialized;
     //[/UserVariables]
 
     //==============================================================================
