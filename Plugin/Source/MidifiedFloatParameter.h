@@ -32,8 +32,7 @@ class Pfm2AudioProcessor;
 class MidifiedFloatParameter : public AudioProcessorParameter {
 public:
 
-	MidifiedFloatParameter(std::map<int, AudioProcessorParameter* > *nrpmParameterMap,
-		String componentName,
+	MidifiedFloatParameter(String componentName,
 		int nrpnParam,
 		float valueMultipler,
 		float minValue,
@@ -45,7 +44,6 @@ public:
 		oldXmlName("")
 	{
 		this->componentName = componentName;
-		nrpmParameterMap->insert(std::pair<int, AudioProcessorParameter* >(nrpnParam, this));
 		rangeFloat = maxValue - minValue;
 		sendRealValue = false;
 

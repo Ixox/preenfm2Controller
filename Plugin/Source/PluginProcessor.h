@@ -101,7 +101,6 @@ public:
 	void choseNewMidiDevice();
 
 private:
-	std::map<int, AudioProcessorParameter* > nrpmParameterMap;
 	int nrpmIndex[2048];
 	int parameterIndex;
 	String presetName;
