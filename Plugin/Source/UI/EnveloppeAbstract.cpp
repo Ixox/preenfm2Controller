@@ -162,8 +162,8 @@ void EnveloppeAbstract::mouseMove(const MouseEvent &event) {
         // Handicap for far distance
         float distance = sqrt(distanceX * distanceX + distanceY * distanceY) / getWidth();
         DBG("distance : " << distance);
-        distanceX += distance * 10;
-        distanceY += distance * 10;
+        distanceX += distance * 20;
+        distanceY += distance * 20;
 
         if (distanceX < smallestDistance) {
             if (!pointList[p].get()->isYLocked()) {
