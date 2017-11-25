@@ -454,30 +454,30 @@ void PanelArpAndFilter::paint (Graphics& g)
     //[/UserPrePaint]
 
     {
-        int x = 0, y = proportionOfHeight (0.2000f), width = getWidth() - 0, height = proportionOfHeight (0.2000f);
+        int x = 2, y = proportionOfHeight (0.2000f), width = getWidth() - 4, height = proportionOfHeight (0.2000f);
         Colour fillColour1 = Colour (0xff14576c), fillColour2 = Colour (0xff083543);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setGradientFill (ColourGradient (fillColour1,
-                                       50.0f - 0.0f + x,
+                                       50.0f - 2.0f + x,
                                        static_cast<float> (proportionOfHeight (0.4000f)) - static_cast<float> (proportionOfHeight (0.2000f)) + y,
                                        fillColour2,
-                                       50.0f - 0.0f + x,
+                                       50.0f - 2.0f + x,
                                        static_cast<float> (proportionOfHeight (0.2000f)) - static_cast<float> (proportionOfHeight (0.2000f)) + y,
                                        false));
         g.fillRect (x, y, width, height);
     }
 
     {
-        int x = 0, y = proportionOfHeight (0.3900f), width = getWidth() - 0, height = proportionOfHeight (0.2100f);
+        int x = 2, y = proportionOfHeight (0.3900f), width = getWidth() - 4, height = proportionOfHeight (0.2100f);
         Colour fillColour1 = Colour (0xff14576c), fillColour2 = Colour (0xff083543);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setGradientFill (ColourGradient (fillColour1,
-                                       50.0f - 0.0f + x,
+                                       50.0f - 2.0f + x,
                                        static_cast<float> (proportionOfHeight (0.4000f)) - static_cast<float> (proportionOfHeight (0.3900f)) + y,
                                        fillColour2,
-                                       50.0f - 0.0f + x,
+                                       50.0f - 2.0f + x,
                                        static_cast<float> (proportionOfHeight (0.6000f)) - static_cast<float> (proportionOfHeight (0.3900f)) + y,
                                        false));
         g.fillRect (x, y, width, height);
@@ -790,9 +790,9 @@ BEGIN_JUCER_METADATA
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="0" initialWidth="900" initialHeight="700">
   <BACKGROUND backgroundColour="0">
-    <RECT pos="0 20% 0M 20%" fill="linear: 50 40%, 50 20%, 0=ff14576c, 1=ff083543"
+    <RECT pos="2 20% 4M 20%" fill="linear: 50 40%, 50 20%, 0=ff14576c, 1=ff083543"
           hasStroke="0"/>
-    <RECT pos="0 39% 0M 21%" fill="linear: 50 40%, 50 60%, 0=ff14576c, 1=ff083543"
+    <RECT pos="2 39% 4M 21%" fill="linear: 50 40%, 50 60%, 0=ff14576c, 1=ff083543"
           hasStroke="0"/>
     <ROUNDRECT pos="6.5% 3.486% 87.5% 28.5%" cornerSize="10" fill="solid: 8d499e5e"
                hasStroke="0"/>

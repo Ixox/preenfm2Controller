@@ -359,16 +359,16 @@ void PanelEngine::paint (Graphics& g)
     //[/UserPrePaint]
 
     {
-        int x = proportionOfWidth (0.5000f), y = proportionOfHeight (0.0000f), width = proportionOfWidth (0.5000f), height = proportionOfHeight (0.6000f);
+        int x = proportionOfWidth (0.4800f), y = proportionOfHeight (0.0200f), width = proportionOfWidth (0.5000f), height = proportionOfHeight (0.6000f);
         Colour fillColour1 = Colour (0xff125368), fillColour2 = Colour (0xff083543);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setGradientFill (ColourGradient (fillColour1,
-                                       static_cast<float> (proportionOfWidth (0.8000f)) - static_cast<float> (proportionOfWidth (0.5000f)) + x,
-                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0000f)) + y,
+                                       static_cast<float> (proportionOfWidth (0.8000f)) - static_cast<float> (proportionOfWidth (0.4800f)) + x,
+                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0200f)) + y,
                                        fillColour2,
-                                       static_cast<float> (proportionOfWidth (0.5100f)) - static_cast<float> (proportionOfWidth (0.5000f)) + x,
-                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0000f)) + y,
+                                       static_cast<float> (proportionOfWidth (0.5100f)) - static_cast<float> (proportionOfWidth (0.4800f)) + x,
+                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0200f)) + y,
                                        true));
         g.fillRect (x, y, width, height);
     }
@@ -746,7 +746,7 @@ BEGIN_JUCER_METADATA
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="900"
                  initialHeight="700">
   <BACKGROUND backgroundColour="62934">
-    <RECT pos="50% 0% 50% 60%" fill=" radial: 80% 5%, 51% 5%, 0=ff125368, 1=ff083543"
+    <RECT pos="48% 2% 50% 60%" fill=" radial: 80% 5%, 51% 5%, 0=ff125368, 1=ff083543"
           hasStroke="0"/>
     <ROUNDRECT pos="14.119% 0.654% 34% 30.937%" cornerSize="10" fill=" radial: 29.609% 6.1%, 29.609% 44.444%, 0=ff1ca5cf, 1=ff0b3d4d"
                hasStroke="1" stroke="2.5, mitered, butt" strokeColour="solid: ff000000"/>
