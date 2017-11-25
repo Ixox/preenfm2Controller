@@ -54,25 +54,25 @@
 
 //==============================================================================
 /**
-																	//[Comments]
+                                                                    //[Comments]
 	An auto-generated component, created by the Introjucer.
 
 	Describe your class and how it works here!
-																	//[/Comments]
+                                                                    //[/Comments]
 */
-class PanelEngine : public Component,
-	public Slider::Listener,
-	public Button::Listener,
-	public ComboBox::Listener,
-	public PanelOfComponents
+class PanelEngine  : public Component,
+                     public Slider::Listener,
+                     public Button::Listener,
+                     public ComboBox::Listener,
+                     public PanelOfComponents
 {
 public:
-	//==============================================================================
-	PanelEngine();
-	~PanelEngine();
+    //==============================================================================
+    PanelEngine ();
+    ~PanelEngine();
 
-	//==============================================================================
-	//[UserMethods]     -- You can add your own custom methods in this section.
+    //==============================================================================
+    //[UserMethods]     -- You can add your own custom methods in this section.
 	void buttonClicked(Button* buttonThatWasClicked);
 	void sliderDragStarted(Slider* slider)	override;
 	void sliderDragEnded(Slider* slider) override;
@@ -88,15 +88,15 @@ public:
 	void updateUIEnveloppe(String paramName);
 	bool containsThisParameterAsEnveloppe(String name);
 
-	//[/UserMethods]
+    //[/UserMethods]
 
-	void paint(Graphics& g) override;
-	void resized() override;
+    void paint (Graphics& g) override;
+    void resized() override;
 
 
 
 private:
-	//[UserVariables]   -- You can add your own custom variables in this section.
+    //[UserVariables]   -- You can add your own custom variables in this section.
 	ScopedPointer<Enveloppe> enveloppe[NUMBER_OF_OPERATORS];
 	ScopedPointer<TextButton> envCopyButton, envPasteButton;
 	int envToCopy, envSelected;
@@ -133,18 +133,16 @@ private:
 	ScopedPointer<Slider> opFrequencyFineTune[NUMBER_OF_OPERATORS];
 
 	MidiBuffer* eventsToAdd;
+    //[/UserVariables]
 
-	bool initialized;
-	//[/UserVariables]
-
-	//==============================================================================
-	ScopedPointer<GroupComponent> operatorGroup;
-	ScopedPointer<GroupComponent> mixerGroup;
-	ScopedPointer<GroupComponent> imGroup;
+    //==============================================================================
+    ScopedPointer<GroupComponent> operatorGroup;
+    ScopedPointer<GroupComponent> mixerGroup;
+    ScopedPointer<GroupComponent> imGroup;
 
 
-	//==============================================================================
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PanelEngine)
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PanelEngine)
 };
 
 //[EndFile] You can add extra defines here...

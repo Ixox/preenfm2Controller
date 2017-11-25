@@ -93,33 +93,33 @@ const int algo4_png_sizes[] = {
 //[/MiscUserDefs]
 
 //==============================================================================
-PanelEngine::PanelEngine()
+PanelEngine::PanelEngine ()
 {
-	//[Constructor_pre] You can add your own custom stuff here..
+    //[Constructor_pre] You can add your own custom stuff here..
 	envToCopy = -1;
 	envSelected = 0;
-	//[/Constructor_pre]
+    //[/Constructor_pre]
 
-	addAndMakeVisible(operatorGroup = new GroupComponent("operator group",
-		String()));
-	operatorGroup->setTextLabelPosition(Justification::centredLeft);
-	operatorGroup->setColour(GroupComponent::outlineColourId, Colour(0xff749fad));
-	operatorGroup->setColour(GroupComponent::textColourId, Colour(0xff749fad));
+    addAndMakeVisible (operatorGroup = new GroupComponent ("operator group",
+                                                           String()));
+    operatorGroup->setTextLabelPosition (Justification::centredLeft);
+    operatorGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
+    operatorGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
-	addAndMakeVisible(mixerGroup = new GroupComponent("mixer group",
-		TRANS("Mixer")));
-	mixerGroup->setTextLabelPosition(Justification::centredLeft);
-	mixerGroup->setColour(GroupComponent::outlineColourId, Colour(0xff749fad));
-	mixerGroup->setColour(GroupComponent::textColourId, Colour(0xff749fad));
+    addAndMakeVisible (mixerGroup = new GroupComponent ("mixer group",
+                                                        TRANS("Mixer")));
+    mixerGroup->setTextLabelPosition (Justification::centredLeft);
+    mixerGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
+    mixerGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
-	addAndMakeVisible(imGroup = new GroupComponent("IM group",
-		TRANS("Modulation indexes")));
-	imGroup->setTextLabelPosition(Justification::centredLeft);
-	imGroup->setColour(GroupComponent::outlineColourId, Colour(0xff749fad));
-	imGroup->setColour(GroupComponent::textColourId, Colour(0xff749fad));
+    addAndMakeVisible (imGroup = new GroupComponent ("IM group",
+                                                     TRANS("Modulation indexes")));
+    imGroup->setTextLabelPosition (Justification::centredLeft);
+    imGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
+    imGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
 
-	//[UserPreSize]
+    //[UserPreSize]
 	for (int k = 0; k < NUMBER_OF_MIX; k++) {
 		addAndMakeVisible(mixKnob[k] = new SliderPfm2("Mix " + String(k + 1)));
 		mixKnob[k]->setRange(0, 1, .01f);
@@ -325,88 +325,85 @@ PanelEngine::PanelEngine()
 
 
 
-	//[/UserPreSize]
+    //[/UserPreSize]
 
-	setSize(900, 700);
+    setSize (900, 700);
 
 
-	//[Constructor] You can add your own custom stuff here..
+    //[Constructor] You can add your own custom stuff here..
 	eventsToAdd = nullptr;
 	voices->setValue(4.0f, sendNotification);
 	sliderValueChanged(voices);
 	sliderValueChanged(algoChooser);
-	initialized = false;
-	//[/Constructor]
+    //[/Constructor]
 }
 
 PanelEngine::~PanelEngine()
 {
-	//[Destructor_pre]. You can add your own custom destruction code here..
-	//[/Destructor_pre]
+    //[Destructor_pre]. You can add your own custom destruction code here..
+    //[/Destructor_pre]
 
-	operatorGroup = nullptr;
-	mixerGroup = nullptr;
-	imGroup = nullptr;
+    operatorGroup = nullptr;
+    mixerGroup = nullptr;
+    imGroup = nullptr;
 
 
-	//[Destructor]. You can add your own custom destruction code here..
-	//[/Destructor]
+    //[Destructor]. You can add your own custom destruction code here..
+    //[/Destructor]
 }
 
 //==============================================================================
-void PanelEngine::paint(Graphics& g)
+void PanelEngine::paint (Graphics& g)
 {
-	//[UserPrePaint] Add your own custom painting code here..
-	//[/UserPrePaint]
+    //[UserPrePaint] Add your own custom painting code here..
+    //[/UserPrePaint]
 
-	g.fillAll(Colour(0xff062934));
+    {
+        int x = proportionOfWidth (0.5000f), y = proportionOfHeight (0.0000f), width = proportionOfWidth (0.5000f), height = proportionOfHeight (0.6000f);
+        Colour fillColour1 = Colour (0xff125368), fillColour2 = Colour (0xff083543);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setGradientFill (ColourGradient (fillColour1,
+                                       static_cast<float> (proportionOfWidth (0.8000f)) - static_cast<float> (proportionOfWidth (0.5000f)) + x,
+                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0000f)) + y,
+                                       fillColour2,
+                                       static_cast<float> (proportionOfWidth (0.5100f)) - static_cast<float> (proportionOfWidth (0.5000f)) + x,
+                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0000f)) + y,
+                                       true));
+        g.fillRect (x, y, width, height);
+    }
 
-	{
-		int x = 4, y = -4, width = getWidth() - 0, height = getHeight() - 0;
-		Colour fillColour1 = Colour(0xff0b3f50), fillColour2 = Colour(0xff062934);
-		//[UserPaintCustomArguments] Customize the painting arguments here..
-		//[/UserPaintCustomArguments]
-		g.setGradientFill(ColourGradient(fillColour1,
-			static_cast<float> (proportionOfWidth(0.3016f)) - 4.0f + x,
-			static_cast<float> (proportionOfHeight(0.1220f)) - static_cast<float> (-4) + y,
-			fillColour2,
-			static_cast<float> (proportionOfWidth(0.0340f)) - 4.0f + x,
-			static_cast<float> (proportionOfHeight(0.9000f)) - static_cast<float> (-4) + y,
-			true));
-		g.fillRect(x, y, width, height);
-	}
+    {
+        float x = static_cast<float> (proportionOfWidth (0.1412f)), y = static_cast<float> (proportionOfHeight (0.0065f)), width = static_cast<float> (proportionOfWidth (0.3400f)), height = static_cast<float> (proportionOfHeight (0.3094f));
+        Colour fillColour1 = Colour (0xff1ca5cf), fillColour2 = Colour (0xff0b3d4d);
+        Colour strokeColour = Colours::black;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setGradientFill (ColourGradient (fillColour1,
+                                       static_cast<float> (proportionOfWidth (0.2961f)) - static_cast<float> (proportionOfWidth (0.1412f)) + x,
+                                       static_cast<float> (proportionOfHeight (0.0610f)) - static_cast<float> (proportionOfHeight (0.0065f)) + y,
+                                       fillColour2,
+                                       static_cast<float> (proportionOfWidth (0.2961f)) - static_cast<float> (proportionOfWidth (0.1412f)) + x,
+                                       static_cast<float> (proportionOfHeight (0.4444f)) - static_cast<float> (proportionOfHeight (0.0065f)) + y,
+                                       true));
+        g.fillRoundedRectangle (x, y, width, height, 10.000f);
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 10.000f, 2.500f);
+    }
 
-	{
-		float x = static_cast<float> (proportionOfWidth(0.1412f)), y = static_cast<float> (proportionOfHeight(0.0065f)), width = static_cast<float> (proportionOfWidth(0.3400f)), height = static_cast<float> (proportionOfHeight(0.3094f));
-		Colour fillColour1 = Colour(0xff1ca5cf), fillColour2 = Colour(0xff0b3d4d);
-		Colour strokeColour = Colours::black;
-		//[UserPaintCustomArguments] Customize the painting arguments here..
-		//[/UserPaintCustomArguments]
-		g.setGradientFill(ColourGradient(fillColour1,
-			static_cast<float> (proportionOfWidth(0.2961f)) - static_cast<float> (proportionOfWidth(0.1412f)) + x,
-			static_cast<float> (proportionOfHeight(0.0610f)) - static_cast<float> (proportionOfHeight(0.0065f)) + y,
-			fillColour2,
-			static_cast<float> (proportionOfWidth(0.2961f)) - static_cast<float> (proportionOfWidth(0.1412f)) + x,
-			static_cast<float> (proportionOfHeight(0.4444f)) - static_cast<float> (proportionOfHeight(0.0065f)) + y,
-			true));
-		g.fillRoundedRectangle(x, y, width, height, 10.000f);
-		g.setColour(strokeColour);
-		g.drawRoundedRectangle(x, y, width, height, 10.000f, 2.500f);
-	}
-
-	//[UserPaint] Add your own custom painting code here..
-	//[/UserPaint]
+    //[UserPaint] Add your own custom painting code here..
+    //[/UserPaint]
 }
 
 void PanelEngine::resized()
 {
-	//[UserPreResize] Add your own custom resize code here..
-	//[/UserPreResize]
+    //[UserPreResize] Add your own custom resize code here..
+    //[/UserPreResize]
 
-	operatorGroup->setBounds(proportionOfWidth(0.0103f), proportionOfHeight(0.5000f), proportionOfWidth(0.9801f), proportionOfHeight(0.4804f));
-	mixerGroup->setBounds(proportionOfWidth(0.0117f), proportionOfHeight(0.3116f), proportionOfWidth(0.5963f), proportionOfHeight(0.1852f));
-	imGroup->setBounds(proportionOfWidth(0.6121f), proportionOfHeight(0.0000f), proportionOfWidth(0.3729f), proportionOfHeight(0.4967f));
-	//[UserResized] Add your own custom resize handling here..
+    operatorGroup->setBounds (proportionOfWidth (0.0103f), proportionOfHeight (0.5000f), proportionOfWidth (0.9801f), proportionOfHeight (0.4804f));
+    mixerGroup->setBounds (proportionOfWidth (0.0117f), proportionOfHeight (0.3116f), proportionOfWidth (0.5963f), proportionOfHeight (0.1852f));
+    imGroup->setBounds (proportionOfWidth (0.6121f), proportionOfHeight (0.0000f), proportionOfWidth (0.3729f), proportionOfHeight (0.4967f));
+    //[UserResized] Add your own custom resize handling here..
 
 	envCopyButton->setBounds(proportionOfWidth(0.023f), proportionOfHeight(0.645f), proportionOfWidth(0.06f), proportionOfHeight(0.03f));
 	envPasteButton->setBounds(proportionOfWidth(0.09f), proportionOfHeight(0.645f), proportionOfWidth(0.06f), proportionOfHeight(0.03f));
@@ -459,7 +456,7 @@ void PanelEngine::resized()
 
 	resizeAlgoDrawableImage();
 
-	//[/UserResized]
+    //[/UserResized]
 }
 
 
@@ -667,17 +664,10 @@ void PanelEngine::buildParameters() {
 
 	for (int k = 0; k < NUMBER_OF_OPERATORS; k++) {
 		// Let listen to enveloppe
-		if (!initialized) {
-			enveloppe[k]->addListener((EnveloppeListener*)this);
-		}
+		enveloppe[k]->addListener((EnveloppeListener*)this);
 	}
 
 
-	/*
-	for (int k=0; k<NUMBER_OF_OPERATORS; k++) {
-		addComboBoxParameter(opShape[k]);
-	}*/
-	initialized = true;
 }
 
 void PanelEngine::updateUIEnveloppe(String paramName) {
@@ -745,31 +735,31 @@ void PanelEngine::sliderDragEnded(Slider* slider) {
 #if 0
 /*  -- Projucer information section --
 
-	This is where the Projucer stores the metadata that describe this GUI layout, so
-	make changes in here at your peril!
+    This is where the Projucer stores the metadata that describe this GUI layout, so
+    make changes in here at your peril!
 
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="PanelEngine" componentName=""
-				 parentClasses="public Component, public Slider::Listener, public Button::Listener, public ComboBox::Listener, public PanelOfComponents"
-				 constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
-				 snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="900"
-				 initialHeight="700">
-  <BACKGROUND backgroundColour="ff062934">
-	<RECT pos="4 -4 0M 0M" fill=" radial: 30.158% 12.2%, 3.4% 90%, 0=ff0b3f50, 1=ff062934"
-		  hasStroke="0"/>
-	<ROUNDRECT pos="14.119% 0.654% 34% 30.937%" cornerSize="10" fill=" radial: 29.609% 6.1%, 29.609% 44.444%, 0=ff1ca5cf, 1=ff0b3d4d"
-			   hasStroke="1" stroke="2.5, mitered, butt" strokeColour="solid: ff000000"/>
+                 parentClasses="public Component, public Slider::Listener, public Button::Listener, public ComboBox::Listener, public PanelOfComponents"
+                 constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
+                 snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="900"
+                 initialHeight="700">
+  <BACKGROUND backgroundColour="62934">
+    <RECT pos="50% 0% 50% 60%" fill=" radial: 80% 5%, 51% 5%, 0=ff125368, 1=ff083543"
+          hasStroke="0"/>
+    <ROUNDRECT pos="14.119% 0.654% 34% 30.937%" cornerSize="10" fill=" radial: 29.609% 6.1%, 29.609% 44.444%, 0=ff1ca5cf, 1=ff0b3d4d"
+               hasStroke="1" stroke="2.5, mitered, butt" strokeColour="solid: ff000000"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="operator group" id="3a99a017e94aaaf5" memberName="operatorGroup"
-				  virtualName="" explicitFocusOrder="0" pos="1.028% 50% 98.012% 48.039%"
-				  outlinecol="ff749fad" textcol="ff749fad" title="" textpos="33"/>
+                  virtualName="" explicitFocusOrder="0" pos="1.028% 50% 98.012% 48.039%"
+                  outlinecol="ff749fad" textcol="ff749fad" title="" textpos="33"/>
   <GROUPCOMPONENT name="mixer group" id="a41fc3891a2af464" memberName="mixerGroup"
-				  virtualName="" explicitFocusOrder="0" pos="1.165% 31.155% 59.63% 18.519%"
-				  outlinecol="ff749fad" textcol="ff749fad" title="Mixer" textpos="33"/>
+                  virtualName="" explicitFocusOrder="0" pos="1.165% 31.155% 59.63% 18.519%"
+                  outlinecol="ff749fad" textcol="ff749fad" title="Mixer" textpos="33"/>
   <GROUPCOMPONENT name="IM group" id="249d6ec6feb3696f" memberName="imGroup" virtualName=""
-				  explicitFocusOrder="0" pos="61.206% 0% 37.286% 49.673%" outlinecol="ff749fad"
-				  textcol="ff749fad" title="Modulation indexes" textpos="33"/>
+                  explicitFocusOrder="0" pos="61.206% 0% 37.286% 49.673%" outlinecol="ff749fad"
+                  textcol="ff749fad" title="Modulation indexes" textpos="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

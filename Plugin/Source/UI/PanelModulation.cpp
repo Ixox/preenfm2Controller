@@ -355,16 +355,16 @@ void PanelModulation::paint (Graphics& g)
     //[/UserPrePaint]
 
     {
-        int x = 0, y = 0, width = getWidth() - 0, height = getHeight() - 0;
-        Colour fillColour1 = Colour (0xff0b3e4e), fillColour2 = Colour (0xff061e26);
+        int x = proportionOfWidth (0.5620f), y = -4, width = proportionOfWidth (0.4407f), height = getHeight() - 182;
+        Colour fillColour1 = Colour (0xff155163), fillColour2 = Colour (0xff083543);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setGradientFill (ColourGradient (fillColour1,
-                                       static_cast<float> (proportionOfWidth (0.7622f)) - 0.0f + x,
-                                       static_cast<float> (proportionOfHeight (0.4532f)) - 0.0f + y,
+                                       static_cast<float> (proportionOfWidth (0.9000f)) - static_cast<float> (proportionOfWidth (0.5620f)) + x,
+                                       static_cast<float> (proportionOfHeight (0.2500f)) - static_cast<float> (-4) + y,
                                        fillColour2,
-                                       static_cast<float> (proportionOfWidth (0.1590f)) - 0.0f + x,
-                                       static_cast<float> (proportionOfHeight (0.8976f)) - 0.0f + y,
+                                       static_cast<float> (proportionOfWidth (0.6000f)) - static_cast<float> (proportionOfWidth (0.5620f)) + x,
+                                       static_cast<float> (proportionOfHeight (0.2500f)) - static_cast<float> (-4) + y,
                                        true));
         g.fillRect (x, y, width, height);
     }
@@ -725,7 +725,7 @@ BEGIN_JUCER_METADATA
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="900"
                  initialHeight="700">
   <BACKGROUND backgroundColour="62934">
-    <RECT pos="0 0 0M 0M" fill=" radial: 76.217% 45.316%, 15.901% 89.76%, 0=ff0b3e4e, 1=ff061e26"
+    <RECT pos="56.203% -4 44.071% 182M" fill=" radial: 90% 25%, 60% 25%, 0=ff155163, 1=ff083543"
           hasStroke="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="matrix group" id="f5fd2d041b369fc" memberName="matrixGroup"

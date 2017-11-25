@@ -56,9 +56,9 @@ MainTabs::MainTabs ()
 
     addAndMakeVisible (tabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtTop));
     tabbedComponent->setTabBarDepth (40);
-    tabbedComponent->addTab (TRANS("Engine"), Colour (0xff062934), new PanelEngine(), true);
-    tabbedComponent->addTab (TRANS("Modulation"), Colour (0xff062934), new PanelModulation(), true);
-    tabbedComponent->addTab (TRANS("Arp & Filter"), Colour (0xff062934), new PanelArpAndFilter(), true);
+    tabbedComponent->addTab (TRANS("Engine"), Colour (0xff083543), new PanelEngine(), true);
+    tabbedComponent->addTab (TRANS("Modulation"), Colour (0xff083543), new PanelModulation(), true);
+    tabbedComponent->addTab (TRANS("Arp & Filter"), Colour (0xff083543), new PanelArpAndFilter(), true);
     tabbedComponent->setCurrentTabIndex (0);
 
     addAndMakeVisible (pullButton = new TextButton ("pull button"));
@@ -355,11 +355,11 @@ BEGIN_JUCER_METADATA
   <TABBEDCOMPONENT name="new tabbed component" id="f175981f6c34a740" memberName="tabbedComponent"
                    virtualName="TabbedComponent" explicitFocusOrder="0" pos="0 0 0M 0M"
                    orientation="top" tabBarDepth="40" initialTab="0">
-    <TAB name="Engine" colour="ff062934" useJucerComp="0" contentClassName="PanelEngine"
+    <TAB name="Engine" colour="ff083543" useJucerComp="0" contentClassName="PanelEngine"
          constructorParams="" jucerComponentFile=""/>
-    <TAB name="Modulation" colour="ff062934" useJucerComp="0" contentClassName="PanelModulation"
+    <TAB name="Modulation" colour="ff083543" useJucerComp="0" contentClassName="PanelModulation"
          constructorParams="" jucerComponentFile=""/>
-    <TAB name="Arp &amp; Filter" colour="ff062934" useJucerComp="0" contentClassName="PanelArpAndFilter"
+    <TAB name="Arp &amp; Filter" colour="ff083543" useJucerComp="0" contentClassName="PanelArpAndFilter"
          constructorParams="" jucerComponentFile=""/>
   </TABBEDCOMPONENT>
   <TEXTBUTTON name="pull button" id="9da85c0691256028" memberName="pullButton"
