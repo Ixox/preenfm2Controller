@@ -27,14 +27,16 @@
 namespace juce { class MouseEvent; }
 
 #define CIRCLE_RAY 5
-#define MARGIN_TOP CIRCLE_RAY
-#define MARGIN_BOTTOM CIRCLE_RAY
-#define MARGIN_LEFT CIRCLE_RAY
-#define MARGIN_RIGHT CIRCLE_RAY
+#define MARGIN_VERTICAL 8
+#define MARGIN_HORIZONTAL 8
 
 #define RIGHT_TEXT_SIZE  120
 
-
+enum MouseOverEnum {
+    MOUSE_OVER_NONE = 0,
+    MOUSE_OVER_X,
+    MOUSE_OVER_Y,
+};
 
 class EnveloppePoint;
 
@@ -51,13 +53,14 @@ public:
 	virtual void resized();
 	void updatePointPositions();
 	void setXMax(float x) { xMax = x; }
-	void mouseMove(const MouseEvent &event);
-	void mouseDrag(const MouseEvent &event);
-	void mouseDown(const MouseEvent &event);
-	void mouseUp(const MouseEvent &event);
-	void mouseExit(const MouseEvent &event);
+	void mouseMove(const MouseEvent &event) override;
+    void mouseDrag(const MouseEvent &event) override;
+	void mouseDown(const MouseEvent &event) override;
+	void mouseUp(const MouseEvent &event) override;
+	void mouseExit(const MouseEvent &event) override;
+    void mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) override;
 
-	// Can be implemented to deal with point value modification
+    // Can be implemented to deal with point value modification
 	virtual void newXValue(int draggingPointIndex, float newX) {};
 	virtual void newYValue(int draggingPointIndex, float newY) {};
 
@@ -101,12 +104,14 @@ protected:
 	volatile int draggingPointIndex;
 	int overPointIndex;
 	EnveloppeListenerList listeners;
-
+    bool isMouseOverX() { return mouseOver == MOUSE_OVER_X;  }
+    bool isMouseOverY() { return mouseOver == MOUSE_OVER_Y; }
 private:
-
+    int oldMouseX, oldMouseY;
 	float xMax;
 	float scaleX, scaleY;
 	float startDragX, startDragY;
+    MouseOverEnum mouseOver;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EnveloppeAbstract)
 
@@ -141,10 +146,10 @@ public:
 		}
 	}
 
-	void setXFixedValue(float value) { this->x = value; this->xMax = value; this->xMin = value; }
-	void setYFixedValue(float value) { this->y = value; this->yMax = value; this->yMin = value; }
-	bool isXConstrained() { return this->xMax == this->xMin; };
-	bool isYConstrained() { return this->yMax == this->yMin; };
+	void setXLockedValue(float value) { this->x = value; this->xMax = value; this->xMin = value; }
+	void setYLockedValue(float value) { this->y = value; this->yMax = value; this->yMin = value; }
+	bool isXLocked() { return this->xMax == this->xMin; };
+	bool isYLocked() { return this->yMax == this->yMin; };
 	float getX() { return this->x; }
 	float getY() { return this->y; }
 	float getPositionOnScreenX() { return this->positionInComponentX; }

@@ -17,7 +17,6 @@
  */
 
 
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "EnveloppeAbstract.h"
 
  //==============================================================================
@@ -30,6 +29,7 @@ EnveloppeAbstract::EnveloppeAbstract()
 	this->draggingPointIndex = -1;
 	this->overPointIndex = -1;
 	this->xMax = 4.0;
+    this->mouseOver = MOUSE_OVER_NONE;
 }
 
 EnveloppeAbstract::~EnveloppeAbstract()
@@ -43,13 +43,12 @@ void EnveloppeAbstract::updatePointPositions() {
 	}
 
 	allX = allX < this->xMax ? this->xMax : allX;
-	scaleX = (getWidth() - MARGIN_LEFT - MARGIN_RIGHT) / allX;
-	// y is always 0 to 1
-	scaleY = (float)(getHeight() - MARGIN_TOP - MARGIN_BOTTOM);
-	float offsetX = MARGIN_LEFT;
+	scaleX = (getWidth() - MARGIN_HORIZONTAL - MARGIN_HORIZONTAL) / allX;
+    scaleY = (float)(getHeight() - MARGIN_VERTICAL - MARGIN_VERTICAL);
+	float offsetX = MARGIN_HORIZONTAL;
 	for (int k = 0; k < pointList.size(); k++) {
 		float xPositionOnScreen = offsetX + pointList[k].get()->getX() * scaleX;
-		float yPositionOnScreen = getHeight() - pointList[k].get()->getY() * scaleY - MARGIN_BOTTOM;
+		float yPositionOnScreen = getHeight() - pointList[k].get()->getY() * scaleY - MARGIN_VERTICAL;
 		pointList[k].get()->setPositionOnScreen(xPositionOnScreen, yPositionOnScreen);
 		offsetX = xPositionOnScreen;
 	}
@@ -57,20 +56,21 @@ void EnveloppeAbstract::updatePointPositions() {
 
 void EnveloppeAbstract::paint(Graphics& g)
 {
-	updatePointPositions();
+    updatePointPositions();
+
 
 	float lineX = scaleX;
 	g.setColour(Colours::grey);
-	while (lineX < getWidth() - MARGIN_RIGHT) {
-		g.drawVerticalLine((int)(lineX + MARGIN_LEFT), MARGIN_TOP, (float)getHeight() - MARGIN_BOTTOM);
+	while (lineX < getWidth() - MARGIN_HORIZONTAL) {
+		g.drawVerticalLine((int)(lineX + MARGIN_HORIZONTAL), MARGIN_VERTICAL, (float)getHeight() - MARGIN_VERTICAL);
 		lineX += scaleX;
 	}
-	g.drawVerticalLine(MARGIN_LEFT, (float)MARGIN_TOP, (float)getHeight() - MARGIN_BOTTOM);
-	g.drawVerticalLine(getWidth() - MARGIN_RIGHT, (float)MARGIN_TOP, (float)getHeight() - MARGIN_BOTTOM);
-	g.drawHorizontalLine(MARGIN_TOP, (float)MARGIN_LEFT, (float)getWidth() - MARGIN_RIGHT);
-	g.drawHorizontalLine(getHeight() - MARGIN_BOTTOM, (float)MARGIN_LEFT, (float)getWidth() - MARGIN_RIGHT);
+	g.drawVerticalLine(MARGIN_HORIZONTAL, (float)MARGIN_VERTICAL, (float)getHeight() - MARGIN_VERTICAL);
+	g.drawVerticalLine(getWidth() - MARGIN_HORIZONTAL, (float)MARGIN_VERTICAL, (float)getHeight() - MARGIN_VERTICAL);
+	g.drawHorizontalLine(MARGIN_VERTICAL, (float)MARGIN_HORIZONTAL, (float)getWidth() - MARGIN_HORIZONTAL);
+	g.drawHorizontalLine(getHeight() - MARGIN_VERTICAL, (float)MARGIN_HORIZONTAL, (float)getWidth() - MARGIN_HORIZONTAL);
 
-	// Draw main enveloppe shapr
+	// Draw main enveloppe shape
 	g.setColour(Colours::whitesmoke);
 	Path path;
 	path.startNewSubPath(pointList[0].get()->getPositionOnScreenX(),
@@ -93,71 +93,116 @@ void EnveloppeAbstract::paint(Graphics& g)
 	g.fillPath(path);
 
 
+    for (int p = 1; p < pointList.size(); p++) {
+        if (draggingPointIndex == p || overPointIndex == p) {
 
+            if (isMouseOverX() || (draggingPointIndex == p && !pointList[p].get()->isXLocked())) {
+                g.setColour(Colours::yellow);
+            }
+            else {
+                g.setColour(Colours::whitesmoke);
+            }
+            g.drawHorizontalLine((int)pointList[p].get()->getPositionOnScreenY(), (float)MARGIN_HORIZONTAL, (float)getWidth() - MARGIN_HORIZONTAL);
 
-	for (int p = 0; p < pointList.size(); p++) {
-		if (draggingPointIndex == p) {
-			g.setColour(Colours::yellow);
-			g.fillEllipse((float)pointList[p].get()->getPositionOnScreenX() - CIRCLE_RAY,
-				(float)pointList[p].get()->getPositionOnScreenY() - CIRCLE_RAY,
-				CIRCLE_RAY*2.0f, CIRCLE_RAY*2.0f);
+            if (isMouseOverY() || (draggingPointIndex == p && !pointList[p].get()->isYLocked())) {
+                g.setColour(Colours::yellow);
+            }
+            else {
+                g.setColour(Colours::whitesmoke);
+            }
+            g.drawVerticalLine((int)pointList[p].get()->getPositionOnScreenX(), (float)MARGIN_VERTICAL, (float)getHeight() - MARGIN_VERTICAL);
 
-			if (!pointList[p].get()->isYConstrained()) {
-				g.drawVerticalLine((int)pointList[p].get()->getPositionOnScreenX(), (float)MARGIN_TOP, (float)getHeight() - MARGIN_BOTTOM);
-			}
-			if (!pointList[p].get()->isXConstrained()) {
-				g.drawHorizontalLine((int)pointList[p].get()->getPositionOnScreenY(), (float)MARGIN_LEFT, (float)getWidth() - MARGIN_RIGHT);
-			}
+            g.setColour(Colours::yellow);
+            if (draggingPointIndex == p) {
+                g.fillEllipse((float)pointList[p].get()->getPositionOnScreenX() - CIRCLE_RAY,
+                    (float)pointList[p].get()->getPositionOnScreenY() - CIRCLE_RAY,
+                    CIRCLE_RAY*2.0f, CIRCLE_RAY*2.0f);
+            }
+            else {
+                g.drawEllipse((float)pointList[p].get()->getPositionOnScreenX() - CIRCLE_RAY,
+                    (float)pointList[p].get()->getPositionOnScreenY() - CIRCLE_RAY,
+                    CIRCLE_RAY * 2.0f, CIRCLE_RAY * 2.0f, 1.0f);
+            }
 		}
-		else {
-			if (overPointIndex == p) {
-				g.setColour(Colours::yellow);
-				if (!pointList[p].get()->isYConstrained()) {
-					g.drawVerticalLine((int)pointList[p].get()->getPositionOnScreenX(), (float)MARGIN_TOP, (float)getHeight() - MARGIN_BOTTOM);
-				}
-				if (!pointList[p].get()->isXConstrained()) {
-					g.drawHorizontalLine((int)pointList[p].get()->getPositionOnScreenY(), (float)MARGIN_LEFT, (float)getWidth() - MARGIN_RIGHT);
-				}
-				g.drawEllipse((float)pointList[p].get()->getPositionOnScreenX() - CIRCLE_RAY,
-					(float)pointList[p].get()->getPositionOnScreenY() - CIRCLE_RAY,
-					CIRCLE_RAY * 2.0f, CIRCLE_RAY * 2.0f, 1.0f);
-			}
-			else {
-				g.setColour(Colours::whitesmoke);
-				g.fillEllipse((float)pointList[p].get()->getPositionOnScreenX() - 2,
-					(float)pointList[p].get()->getPositionOnScreenY() - 2,
-					4.0f, 4.0f);
-			}
-		}
+        else {
+            g.setColour(Colours::whitesmoke);
+
+            g.fillEllipse((float)pointList[p].get()->getPositionOnScreenX() - 2,
+                (float)pointList[p].get()->getPositionOnScreenY() - 2,
+                5.0f, 5.0f);
+        }
 	}
-
 }
 
 
 void EnveloppeAbstract::mouseMove(const MouseEvent &event) {
+    if (abs(oldMouseX - event.x) <= 2 && abs(oldMouseY - event.y) <= 2) {
+        // Prevent switching point when mouse wheel
+        return;
+    }
 
-	for (int p = pointList.size() - 1; p >= 0; p--) {
-		if (abs(event.x - pointList[p].get()->getPositionOnScreenX()) < (CIRCLE_RAY + 2)
-			&& abs(event.y - pointList[p].get()->getPositionOnScreenY()) < (CIRCLE_RAY + 2)) {
-			if (overPointIndex != p) {
-				overPointIndex = p;
-				setMouseCursor(MouseCursor::PointingHandCursor);
-				repaint();
-			}
-			return;
-		}
-	}
-	if (overPointIndex != -1) {
-		overPointIndex = -1;
-		setMouseCursor(MouseCursor::NormalCursor);
+    oldMouseX = event.x;
+    oldMouseY = event.y;
+
+    float smallestDistance = 999999999999;
+    MouseOverEnum oldMouseOver = mouseOver;
+    int oldOverPointIndex = overPointIndex;
+    int closestPoint = 0;
+
+
+    // Distance to lines
+    for (int p = 0; p < pointList.size(); p++) {
+
+        if (pointList[p].get()->isXLocked() && pointList[p].get()->isYLocked()) {
+            continue;
+        }
+
+        float distanceX = abs(event.x - pointList[p].get()->getPositionOnScreenX());
+        float distanceY = abs(event.y - pointList[p].get()->getPositionOnScreenY());
+        // Handicap for far distance
+        float distance = sqrt(distanceX * distanceX + distanceY * distanceY) / getWidth();
+        DBG("distance : " << distance);
+        distanceX += distance * 10;
+        distanceY += distance * 10;
+
+        if (distanceX < smallestDistance) {
+            if (!pointList[p].get()->isYLocked()) {
+                mouseOver = MOUSE_OVER_Y;
+            }
+            else {
+                mouseOver = MOUSE_OVER_X;
+            }
+            overPointIndex = p;
+            closestPoint = p;
+            smallestDistance = distanceX;
+        }
+
+        if (distanceY < smallestDistance) {
+            //if (distanceY == smallestDistance && distanceX <= abs(event.x - pointList[closestPoint].get()->getPositionOnScreenX())) {
+            //    DBG("ICI");
+            //}
+            if (!pointList[p].get()->isXLocked()) {
+                mouseOver = MOUSE_OVER_X;
+            }
+            else {
+                mouseOver = MOUSE_OVER_Y;
+            }
+            overPointIndex = p;
+            closestPoint = p;
+            smallestDistance = distanceY;
+        }
+    }
+
+    if (oldOverPointIndex != overPointIndex || oldMouseOver != mouseOver) {
 		repaint();
 	}
-	return;
+    return;
 }
 
 void EnveloppeAbstract::mouseExit(const MouseEvent &event) {
+    this->mouseOver = MOUSE_OVER_NONE;
 	overPointIndex = -1;
-	setMouseCursor(MouseCursor::NormalCursor);
+    draggingPointIndex = -1;
 	repaint();
 }
 
@@ -169,22 +214,10 @@ void EnveloppeAbstract::mouseDown(const MouseEvent &event) {
 		repaint();
 		return;
 	}
-	for (int p = pointList.size() - 1; p >= 0; p--) {
-		if (abs(event.x - pointList[p].get()->getPositionOnScreenX()) < (CIRCLE_RAY + 2)
-			&& abs(event.y - pointList[p].get()->getPositionOnScreenY()) < (CIRCLE_RAY + 2)) {
-			draggingPointIndex = p;
-			startDragX = (float)event.x;
-			startDragY = (float)event.y;
-			repaint();
-			return;
-		}
-	}
 }
 
 void EnveloppeAbstract::mouseUp(const MouseEvent &event) {
 	if (draggingPointIndex != -1) {
-		Desktop::setMousePosition(Point<int>((int)(getScreenX() + pointList[draggingPointIndex].get()->getPositionOnScreenX()),
-			(int)(getScreenY() + pointList[draggingPointIndex].get()->getPositionOnScreenY())));
 		draggingPointIndex = -1;
 	}
 	setMouseCursor(MouseCursor::NormalCursor);
@@ -211,6 +244,22 @@ void EnveloppeAbstract::mouseDrag(const MouseEvent &event) {
 		startDragY = (float)event.y;
 	}
 	repaint();
+}
+
+void EnveloppeAbstract::mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) {
+    if (overPointIndex != -1) {
+        float delta = e.mods.isCtrlDown() ? .01f : .05f;
+        if (isMouseOverX()) {
+            pointList[overPointIndex].get()->setX(pointList[overPointIndex].get()->getX() + (wheel.deltaY < 0 ? -delta : delta));
+            notifyObservers(overPointIndex, true);
+            repaint();
+        }
+        else if (isMouseOverY()) {
+            pointList[overPointIndex].get()->setY(pointList[overPointIndex].get()->getY() + (wheel.deltaY < 0 ? -delta : delta));
+            notifyObservers(overPointIndex, false);
+            repaint();
+        }
+    }
 }
 
 void EnveloppeAbstract::resized()

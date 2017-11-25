@@ -99,7 +99,7 @@ void EnveloppeFree1::newXValue(int draggingPointIndex, float newX) {
 
 void EnveloppeFree1::newYValue(int draggingPointIndex, float newY) {
 	if (draggingPointIndex == 3) {
-		pointList[2].get()->setYFixedValue(newY);
+		pointList[2].get()->setYLockedValue(newY);
 	}
 }
 

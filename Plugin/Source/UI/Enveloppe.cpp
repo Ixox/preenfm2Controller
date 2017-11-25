@@ -60,21 +60,25 @@ void Enveloppe::paint(Graphics& g)
 		g.setColour(Colours::whitesmoke);
 		g.drawText(adsr[v], getWidth() - RIGHT_TEXT_SIZE, 20 + v * 20, 50, 10, Justification::centred, true);
 
-		if (draggingPointIndex == v + 1) {
+
+        if (overPointIndex == v + 1 && isMouseOverX()) {
 			g.setColour(Colours::yellow);
 		}
 		else {
 			g.setColour(Colours::whitesmoke);
 		}
-
 		String posisionX = String(pointList[v + 1].get()->getX(), 2);
 		g.drawText(posisionX, getWidth() - RIGHT_TEXT_SIZE / 3 * 2 - 10, 20 + v * 20, 50, 10, Justification::centred, true);
-		posisionX = String(pointList[v + 1].get()->getY(), 2);
+        if (overPointIndex == v + 1 && !isMouseOverX()) {
+            g.setColour(Colours::yellow);
+        }
+        else {
+            g.setColour(Colours::whitesmoke);
+        }
+        posisionX = String(pointList[v + 1].get()->getY(), 2);
 		g.drawText(posisionX, getWidth() - RIGHT_TEXT_SIZE / 3 - 10, 20 + v * 20, 50, 10, Justification::centred, true);
 	}
 }
-
-
 
 void Enveloppe::newXValue(int draggingPointIndex, float newX) {
 }
@@ -90,3 +94,4 @@ const char ** Enveloppe::getPointSuffix() const {
 const char* Enveloppe::getPointSuffix(int pointNumber, bool isX) const {
 	return __enveloppePointSuffix[(pointNumber - 1) * 2 + (isX ? 0 : 1)];
 }
+
