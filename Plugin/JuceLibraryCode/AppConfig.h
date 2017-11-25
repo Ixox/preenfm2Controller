@@ -273,7 +273,7 @@
  #define JucePlugin_Build_VST3             0
 #endif
 #ifndef  JucePlugin_Build_AU
- #define JucePlugin_Build_AU               0
+ #define JucePlugin_Build_AU               1
 #endif
 #ifndef  JucePlugin_Build_AUv3
  #define JucePlugin_Build_AUv3             0
@@ -291,7 +291,7 @@
  #define JucePlugin_Enable_IAA             0
 #endif
 #ifndef  JucePlugin_Name
- #define JucePlugin_Name                   "pfm2"
+ #define JucePlugin_Name                   "Preenfm2 Editor"
 #endif
 #ifndef  JucePlugin_Desc
  #define JucePlugin_Desc                   "PreenFM2 patch editor"
@@ -300,16 +300,16 @@
  #define JucePlugin_Manufacturer           "Ixox"
 #endif
 #ifndef  JucePlugin_ManufacturerWebsite
- #define JucePlugin_ManufacturerWebsite    "http://www.preenfm.net"
+ #define JucePlugin_ManufacturerWebsite    "https://github.com/Ixox/"
 #endif
 #ifndef  JucePlugin_ManufacturerEmail
- #define JucePlugin_ManufacturerEmail      "prenfm1@gmail.com"
+ #define JucePlugin_ManufacturerEmail      "xavier.hosxe@gmail.com"
 #endif
 #ifndef  JucePlugin_ManufacturerCode
- #define JucePlugin_ManufacturerCode       0x49584f58 // 'IXOX'
+ #define JucePlugin_ManufacturerCode       0x49786f78 // 'Ixox'
 #endif
 #ifndef  JucePlugin_PluginCode
- #define JucePlugin_PluginCode             0x506c7567 // 'Plug'
+ #define JucePlugin_PluginCode             0x49785032 // 'IxP2'
 #endif
 #ifndef  JucePlugin_IsSynth
  #define JucePlugin_IsSynth                1
@@ -327,13 +327,13 @@
  #define JucePlugin_EditorRequiresKeyboardFocus  0
 #endif
 #ifndef  JucePlugin_Version
- #define JucePlugin_Version                2.08.3
+ #define JucePlugin_Version                2.08.4
 #endif
 #ifndef  JucePlugin_VersionCode
- #define JucePlugin_VersionCode            0x20803
+ #define JucePlugin_VersionCode            0x20804
 #endif
 #ifndef  JucePlugin_VersionString
- #define JucePlugin_VersionString          "2.08.3"
+ #define JucePlugin_VersionString          "2.08.4"
 #endif
 #ifndef  JucePlugin_VSTUniqueID
  #define JucePlugin_VSTUniqueID            JucePlugin_PluginCode
@@ -357,7 +357,7 @@
  #define JucePlugin_AUManufacturerCode     JucePlugin_ManufacturerCode
 #endif
 #ifndef  JucePlugin_CFBundleIdentifier
- #define JucePlugin_CFBundleIdentifier     com.ixox.pfm2
+ #define JucePlugin_CFBundleIdentifier     com.ixox.Preenfm2Editor
 #endif
 #ifndef  JucePlugin_RTASCategory
  #define JucePlugin_RTASCategory           ePlugInCategory_SWGenerators
@@ -399,7 +399,7 @@
  #define JucePlugin_IAASubType             JucePlugin_PluginCode
 #endif
 #ifndef  JucePlugin_IAAName
- #define JucePlugin_IAAName                "Ixox: pfm2"
+ #define JucePlugin_IAAName                "Ixox: Preenfm2 Editor"
 #endif
 #ifndef  JucePlugin_MaxNumInputChannels
  #define JucePlugin_MaxNumInputChannels    2

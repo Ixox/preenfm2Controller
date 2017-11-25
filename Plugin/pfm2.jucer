@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="nWJaEw" name="pfm2Plugin" projectType="audioplug" version="2.08.3"
-              bundleIdentifier="com.ixox.pfm2" includeBinaryInAppConfig="1"
-              buildVST="1" buildVST3="0" buildAU="0" buildRTAS="0" buildAAX="0"
-              pluginName="pfm2" pluginDesc="PreenFM2 patch editor" pluginManufacturer="Ixox"
-              pluginManufacturerCode="IXOX" pluginCode="Plug" pluginChannelConfigs="{1, 1}, {2, 2}"
-              pluginIsSynth="1" pluginWantsMidiIn="1" pluginProducesMidiOut="0"
-              pluginSilenceInIsSilenceOut="1" pluginEditorRequiresKeys="0"
+<JUCERPROJECT id="nWJaEw" name="pfm2Plugin" projectType="audioplug" version="2.08.4"
+              bundleIdentifier="com.ixox.Preenfm2Editor" includeBinaryInAppConfig="1"
+              buildVST="1" buildVST3="0" buildAU="1" buildRTAS="0" buildAAX="0"
+              pluginName="Preenfm2 Editor" pluginDesc="PreenFM2 patch editor"
+              pluginManufacturer="Ixox" pluginManufacturerCode="Ixox" pluginCode="IxP2"
+              pluginChannelConfigs="{1, 1}, {2, 2}" pluginIsSynth="1" pluginWantsMidiIn="1"
+              pluginProducesMidiOut="0" pluginSilenceInIsSilenceOut="1" pluginEditorRequiresKeys="0"
               pluginAUExportPrefix="pfm2" pluginRTASCategory="" aaxIdentifier="com.yourcompany.pfm2"
               pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="5.1.2"
-              companyName="Xavier Hosxe" companyWebsite="http://www.preenfm.net"
-              companyEmail="prenfm1@gmail.com" displaySplashScreen="1" reportAppUsage="1"
-              splashScreenColour="Dark" buildAUv3="0" buildStandalone="0" enableIAA="0"
-              pluginIsMidiEffectPlugin="0" cppLanguageStandard="11">
+              companyName="Ixox" companyWebsite="https://github.com/Ixox/"
+              companyEmail="xavier.hosxe@gmail.com" displaySplashScreen="1"
+              reportAppUsage="1" splashScreenColour="Dark" buildAUv3="0" buildStandalone="0"
+              enableIAA="0" pluginIsMidiEffectPlugin="0" cppLanguageStandard="11">
   <MAINGROUP id="vhKV8J" name="pfm2Plugin">
     <GROUP id="{C1BB27D8-689D-95C2-2F2A-98449E82469F}" name="Source">
       <GROUP id="{98E9ADF3-34F5-56D9-9C70-85258E9238C7}" name="UI">
@@ -77,12 +77,13 @@
     <FILE id="ehPiCf" name="iconpfm2Ed.PNG" compile="0" resource="1" file="../iconpfm2Ed.PNG"/>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" extraCompilerFlags="">
+    <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" extraCompilerFlags=""
+                bigIcon="ehPiCf">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
-                       targetName="pfm2"/>
+                       targetName="preenfm2Editor"/>
         <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="2"
-                       targetName="pfm2"/>
+                       targetName="preenfm2Editor"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../JUCE/modules"/>
@@ -107,11 +108,10 @@
                vst3Folder="~/SDKs/VST3 SDK" extraCompilerFlags="-std=c++11&#10;-stdlib=libc++"
                extraLinkerFlags="-std=c++11&#10;-stdlib=libc++">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" osxSDK="10.8 SDK" osxCompatibility="10.7 SDK" osxArchitecture="64BitUniversal"
-                       isDebug="1" optimisation="1" targetName="pfm2Editor" headerPath="/Users/xhosxe/dev/VST3 SDK"/>
-        <CONFIGURATION name="Release" osxSDK="10.8 SDK" osxCompatibility="10.7 SDK"
-                       osxArchitecture="64BitUniversal" isDebug="0" optimisation="2"
-                       targetName="pfm2Editor" headerPath="/Users/xhosxe/dev/VST3 SDK"/>
+        <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="10.7 SDK" osxArchitecture="64BitUniversal"
+                       isDebug="1" optimisation="1" targetName="Preenfm2Editor" headerPath="/Users/xhosxe/dev/VST3 SDK"/>
+        <CONFIGURATION name="Release" osxSDK="default" osxCompatibility="10.7 SDK" osxArchitecture="64BitUniversal"
+                       isDebug="0" optimisation="2" targetName="Preenfm2Editor" headerPath="/Users/xhosxe/dev/VST3 SDK"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_video" path="../../juce"/>
@@ -134,13 +134,13 @@
     <VS2015 targetFolder="Builds/VisualStudio2015" bigIcon="ehPiCf">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug 64" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
-                       isDebug="1" optimisation="1" targetName="pfm2Plugin_x64"/>
+                       isDebug="1" optimisation="1" targetName="Preenfm2Editor_x64"/>
         <CONFIGURATION name="Release 64" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
-                       isDebug="0" optimisation="3" targetName="pfm2Plugin_x64"/>
+                       isDebug="0" optimisation="3" targetName="Preenfm2Editor_x64"/>
         <CONFIGURATION name="Debug 32" winWarningLevel="4" generateManifest="1" winArchitecture="Win32"
-                       isDebug="1" optimisation="1" targetName="pfm2Plugin_w32"/>
+                       isDebug="1" optimisation="1" targetName="Preenfm2Editor_w32"/>
         <CONFIGURATION name="Release 32" winWarningLevel="4" generateManifest="1" winArchitecture="Win32"
-                       isDebug="0" optimisation="3" targetName="pfm2Plugin_w32"/>
+                       isDebug="0" optimisation="3" targetName="Preenfm2Editor_w32"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_video" path="JuceLibraryCode\modules"/>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="I4cnWy" name="pfm2Editor" projectType="guiapp" version="2.08.3"
+<JUCERPROJECT id="I4cnWy" name="pfm2Editor" projectType="guiapp" version="2.08.4"
               bundleIdentifier="com.ixox.pfm2Editor" includeBinaryInAppConfig="1"
-              jucerVersion="5.1.2" defines="" companyName="Xavier Hosxe" companyWebsite="http://www.preenfm.net"
+              jucerVersion="5.1.2" defines="" companyName="Xavier Hosxe" companyWebsite="http://github.com/Ixox"
               companyEmail="preenfm1@gmail.com" displaySplashScreen="1" reportAppUsage="1"
               splashScreenColour="Dark" cppLanguageStandard="11">
   <MAINGROUP id="c6LJM5" name="pfm2Editor">
@@ -74,9 +74,9 @@
     <LINUX_MAKE targetFolder="Builds/Linux" extraCompilerFlags="-I ~/SDKs -std=gnu++11&#10;">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
-                       targetName="pfm2Editor"/>
+                       targetName="Preenfm2Editor"/>
         <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="2"
-                       targetName="pfm2Editor"/>
+                       targetName="Preenfm2Editor"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../JUCE/modules"/>
@@ -98,9 +98,9 @@
                extraCompilerFlags="-std=c++11&#10;-stdlib=libc++" bigIcon="OvK51g">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="10.7 SDK" osxArchitecture="32BitUniversal"
-                       isDebug="1" optimisation="1" targetName="pfm2Editor"/>
+                       isDebug="1" optimisation="1" targetName="Preenfm2Editor"/>
         <CONFIGURATION name="Release" osxSDK="default" osxCompatibility="10.7 SDK" osxArchitecture="32BitUniversal"
-                       isDebug="0" optimisation="2" targetName="pfm2Editor"/>
+                       isDebug="0" optimisation="2" targetName="Preenfm2Editor"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_opengl" path="../../juce"/>
@@ -122,9 +122,9 @@
             smallIcon="" bigIcon="OvK51g">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="Win32"
-                       isDebug="1" optimisation="1" targetName="pfm2Editor"/>
+                       isDebug="1" optimisation="1" targetName="Preenfm2Editor"/>
         <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="Win32"
-                       isDebug="0" optimisation="3" targetName="pfm2Editor"/>
+                       isDebug="0" optimisation="3" targetName="Preenfm2Editor"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_opengl" path="..\..\JUCE\modules"/>
@@ -144,8 +144,8 @@
     </VS2015>
     <XCODE_IPHONE targetFolder="Builds/iOS" iosScreenOrientation="landscape" bigIcon="OvK51g">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="pfm2Editor"/>
-        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="pfm2Editor"/>
+        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="Preenfm2Editor"/>
+        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="Preenfm2Editor"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_opengl" path="../../juce"/>
