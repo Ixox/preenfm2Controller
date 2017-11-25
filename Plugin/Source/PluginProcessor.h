@@ -90,7 +90,7 @@ public:
 	void flushAllParametrsToNrpn();
 	void sendNrpnPresetName();
 	void setPresetName(String newName);
-	void editorClosed() { pfm2Editor = nullptr; }
+    void editorClosed();
 
 	void addMidifiedParameter(MidifiedFloatParameter *param);
 	void flushMidiOut();
@@ -109,6 +109,8 @@ private:
 	MidiBuffer newMidiNotes;
 	// Shared by all plugin instances
 	SharedResourcePointer<Pfm2MidiDevice> pfm2MidiDevice;
+    int editorWidth;
+    int editorHeight;
 
 
 	Pfm2AudioProcessorEditor* pfm2Editor;
