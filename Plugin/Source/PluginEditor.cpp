@@ -25,6 +25,7 @@
 Pfm2AudioProcessorEditor::Pfm2AudioProcessorEditor(Pfm2AudioProcessor* ownerFilter)
 	: AudioProcessorEditor(ownerFilter)
 {
+    setResizable(true, true);
 	this->ownerFilter = ownerFilter;
 	addAndMakeVisible(mainTabs = new MainTabs());
 	mainTabs->buildParameters(getAudioProcessor());
