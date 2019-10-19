@@ -27,7 +27,7 @@ Pfm2MidiDevice::Pfm2MidiDevice() {
 
 	PropertiesFile::Options options;
 	options.applicationName = ProjectInfo::projectName;
-	options.osxLibrarySubFolder = "Library/Application Support";
+	options.osxLibrarySubFolder = "Application Support/Ixox";
 	options.filenameSuffix = ".settings";
 	options.storageFormat = PropertiesFile::StorageFormat::storeAsXML;
 	pfm2AppProps.setStorageParameters(options);
