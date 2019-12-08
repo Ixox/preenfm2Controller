@@ -28,7 +28,7 @@ Pfm2MidiDevice::Pfm2MidiDevice() {
 	PropertiesFile::Options options;
 	options.commonToAllUsers = true;
 	options.applicationName = ProjectInfo::projectName;
-	options.osxLibrarySubFolder = "Library/Application Support";
+	options.osxLibrarySubFolder = "Application Support/Ixox";
 	options.filenameSuffix = ".midi.xml";
 	options.storageFormat = PropertiesFile::StorageFormat::storeAsXML;
 	pfm2AppProps.setStorageParameters(options);

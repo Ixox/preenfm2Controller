@@ -573,15 +573,14 @@ void Pfm2AudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& mid
         int now = Time::getMillisecondCounter();
 
         while (i.getNextEvent(message, samplePosition)) {
-            if (message.getChannel() == currentMidiChannel) {
-                //				DBG(message.getDescription());
-                //				DBG("timestamp : " << message.getTimeStamp() << " / " << buffer.getNumSamples());
+                // DBG(message.getDescription());
+                // DBG("timestamp : " << message.getTimeStamp() << " / " << buffer.getNumSamples());
+                message.setChannel(currentMidiChannel);
                 newMidiNotes.addEvent(message, now);
-            }
         }
         if (newMidiNotes.getNumEvents() > 0) {
             if (newMidiNotes.getNumEvents() > 1) {
-                DBG("MIDI NOTES : " << newMidiNotes.getNumEvents());
+                // DBG("MIDI NOTES : " << newMidiNotes.getNumEvents());
             }
             pfm2MidiDevice->getMidiOutput()->sendBlockOfMessagesNow(newMidiNotes);
         }
