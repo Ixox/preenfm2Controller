@@ -76,7 +76,7 @@ public:
 
 		MidifiedFloatParameter* parameter = parameterMap[componentName];
 		if (parameter == nullptr) {
-			const OwnedArray<AudioProcessorParameter>& parameters = audioProcessor->getParameters();
+			Array<AudioProcessorParameter*> parameters = audioProcessor->getParameters();
 			for (int p = 0; p < parameters.size(); p++) {
 				parameter = (MidifiedFloatParameter*)parameters[p];
 				if (parameter->getName() == componentName) {

@@ -161,7 +161,6 @@ void EnveloppeAbstract::mouseMove(const MouseEvent &event) {
         float distanceY = abs(event.y - pointList[p].get()->getPositionOnScreenY());
         // Handicap for far distance
         float distance = sqrt(distanceX * distanceX + distanceY * distanceY) / getWidth();
-        DBG("distance : " << distance);
         distanceX += distance * 20;
         distanceY += distance * 20;
 

@@ -96,8 +96,8 @@ public:
 	void flushMidiOut();
 
 	void parameterUpdatedForUI(int p);
-	void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message);
-	void handlePartialSysexMessage(MidiInput *source, const uint8 *messageData, int numBytesSoFar, double timestamp);
+	void handleIncomingMidiMessage(MidiInput* source, const MidiMessage &message);
+	void handlePartialSysexMessage(MidiInput* source, const uint8 *messageData, int numBytesSoFar, double timestamp);
 	void choseNewMidiDevice();
 
 private:

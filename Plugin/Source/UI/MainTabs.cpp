@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.1.2
+  Created with Projucer version: 5.4.5
 
   ------------------------------------------------------------------------------
 
-  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright (c) 2015 - ROLI Ltd.
+  The Projucer is part of the JUCE library.
+  Copyright (c) 2017 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -54,20 +54,23 @@ MainTabs::MainTabs ()
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (tabbedComponent = new TabbedComponent (TabbedButtonBar::TabsAtTop));
+    tabbedComponent.reset (new TabbedComponent (TabbedButtonBar::TabsAtTop));
+    addAndMakeVisible (tabbedComponent.get());
     tabbedComponent->setTabBarDepth (40);
     tabbedComponent->addTab (TRANS("Engine"), Colour (0xff083543), new PanelEngine(), true);
     tabbedComponent->addTab (TRANS("Modulation"), Colour (0xff083543), new PanelModulation(), true);
     tabbedComponent->addTab (TRANS("Arp & Filter"), Colour (0xff083543), new PanelArpAndFilter(), true);
     tabbedComponent->setCurrentTabIndex (0);
 
-    addAndMakeVisible (pullButton = new TextButton ("pull button"));
+    pullButton.reset (new TextButton ("pull button"));
+    addAndMakeVisible (pullButton.get());
     pullButton->setTooltip (TRANS("Pull all parameters from the preenfm2 to this plugin"));
     pullButton->setButtonText (TRANS("Pull"));
     pullButton->addListener (this);
 
-    addAndMakeVisible (presetNameLabel = new Label ("preset name label",
-                                                    TRANS("preset")));
+    presetNameLabel.reset (new Label ("preset name label",
+                                      TRANS("preset")));
+    addAndMakeVisible (presetNameLabel.get());
     presetNameLabel->setTooltip (TRANS("Click to edit"));
     presetNameLabel->setFont (Font (25.90f, Font::plain).withTypefaceStyle ("Bold"));
     presetNameLabel->setJustificationType (Justification::centredLeft);
@@ -78,12 +81,14 @@ MainTabs::MainTabs ()
     presetNameLabel->setColour (TextEditor::highlightColourId, Colours::coral);
     presetNameLabel->addListener (this);
 
-    addAndMakeVisible (pushButton = new TextButton ("push button"));
+    pushButton.reset (new TextButton ("push button"));
+    addAndMakeVisible (pushButton.get());
     pushButton->setTooltip (TRANS("Push all parameters from plugin to preenfm2"));
     pushButton->setButtonText (TRANS("Push"));
     pushButton->addListener (this);
 
-    addAndMakeVisible (midiChannelCombo = new ComboBox ("Midi Channel"));
+    midiChannelCombo.reset (new ComboBox ("Midi Channel"));
+    addAndMakeVisible (midiChannelCombo.get());
     midiChannelCombo->setTooltip (TRANS("Midi Channel"));
     midiChannelCombo->setEditableText (false);
     midiChannelCombo->setJustificationType (Justification::centred);
@@ -108,25 +113,24 @@ MainTabs::MainTabs ()
     midiChannelCombo->addSeparator();
     midiChannelCombo->addListener (this);
 
-    addAndMakeVisible (versionLabel = new Label ("Version Label",
-                                                 TRANS("v?.?\n")));
-    versionLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    versionLabel->setJustificationType (Justification::centredLeft);
-    versionLabel->setEditable (false, false, false);
-    versionLabel->setColour (Label::textColourId, Colours::beige);
-    versionLabel->setColour (TextEditor::textColourId, Colours::black);
-    versionLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (deviceButton = new TextButton ("Device Button"));
+    deviceButton.reset (new TextButton ("Device Button"));
+    addAndMakeVisible (deviceButton.get());
     deviceButton->setButtonText (TRANS("Midi"));
     deviceButton->addListener (this);
     deviceButton->setColour (TextButton::buttonColourId, Colour (0x005c5da4));
     deviceButton->setColour (TextButton::buttonOnColourId, Colours::aliceblue);
 
+    versionButton.reset (new HyperlinkButton (TRANS("v?.?.?"),
+                                              URL ("https://github.com/Ixox/preenfm2Controller")));
+    addAndMakeVisible (versionButton.get());
+    versionButton->setTooltip (TRANS("https://github.com/Ixox/preenfm2Controller"));
+    versionButton->setButtonText (TRANS("v?.?.?"));
+    versionButton->setColour (HyperlinkButton::textColourId, Colours::beige);
+
 
     //[UserPreSize]
 	midiChannelCombo->setSelectedId(1);
-	versionLabel->setText(String("v") + ProjectInfo::versionString, dontSendNotification);
+    versionButton->setButtonText(String("v") + ProjectInfo::versionString);
     //[/UserPreSize]
 
     setSize (900, 710);
@@ -154,8 +158,8 @@ MainTabs::~MainTabs()
     presetNameLabel = nullptr;
     pushButton = nullptr;
     midiChannelCombo = nullptr;
-    versionLabel = nullptr;
     deviceButton = nullptr;
+    versionButton = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -181,11 +185,11 @@ void MainTabs::resized()
 
     tabbedComponent->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
     pullButton->setBounds (getWidth() - 116, 8, 55, 24);
-    presetNameLabel->setBounds (proportionOfWidth (0.4003f), proportionOfHeight (0.0033f), 200, 32);
+    presetNameLabel->setBounds (proportionOfWidth (0.4003f), proportionOfHeight (0.0038f), 200, 32);
     pushButton->setBounds (getWidth() - 184, 8, 55, 24);
     midiChannelCombo->setBounds (getWidth() - 268, 8, 55, 24);
-    versionLabel->setBounds (getWidth() - 58, 8, 55, 24);
     deviceButton->setBounds (getWidth() - 340, 8, 60, 24);
+    versionButton->setBounds (getWidth() - 60, 9, 56, 20);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -195,7 +199,7 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == pullButton)
+    if (buttonThatWasClicked == pullButton.get())
     {
         //[UserButtonCode_pullButton] -- add your button handler code here..
 
@@ -205,7 +209,7 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_pullButton]
     }
-    else if (buttonThatWasClicked == pushButton)
+    else if (buttonThatWasClicked == pushButton.get())
     {
         //[UserButtonCode_pushButton] -- add your button handler code here..
 
@@ -215,7 +219,7 @@ void MainTabs::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_pushButton]
     }
-    else if (buttonThatWasClicked == deviceButton)
+    else if (buttonThatWasClicked == deviceButton.get())
     {
         //[UserButtonCode_deviceButton] -- add your button handler code here..
 		Pfm2AudioProcessor* pfm2Processor = dynamic_cast<Pfm2AudioProcessor*>(audioProcessor);
@@ -234,7 +238,7 @@ void MainTabs::labelTextChanged (Label* labelThatHasChanged)
     //[UserlabelTextChanged_Pre]
     //[/UserlabelTextChanged_Pre]
 
-    if (labelThatHasChanged == presetNameLabel)
+    if (labelThatHasChanged == presetNameLabel.get())
     {
         //[UserLabelCode_presetNameLabel] -- add your label text handling code here..
 		Pfm2AudioProcessor* pfm2Processor = dynamic_cast<Pfm2AudioProcessor*>(audioProcessor);
@@ -255,7 +259,7 @@ void MainTabs::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
 
-    if (comboBoxThatHasChanged == midiChannelCombo)
+    if (comboBoxThatHasChanged == midiChannelCombo.get())
     {
         //[UserComboBoxCode_midiChannelCombo] -- add your combo box handling code here..
 
@@ -278,7 +282,7 @@ void MainTabs::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
 MidifiedFloatParameter* MainTabs::getParameterFromName(String componentName) {
-	const OwnedArray<AudioProcessorParameter>& parameters = audioProcessor->getParameters();
+	const Array<AudioProcessorParameter *> parameters = audioProcessor->getParameters();
 	for (int p = 0; p < parameters.size(); p++) {
 		MidifiedFloatParameter* midiFP = (MidifiedFloatParameter*)parameters[p];
 		if (midiFP->getName() == componentName) {
@@ -366,12 +370,12 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="116R 8 55 24" tooltip="Pull all parameters from the preenfm2 to this plugin"
               buttonText="Pull" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="preset name label" id="4201f054ae2edbe" memberName="presetNameLabel"
-         virtualName="" explicitFocusOrder="0" pos="40.027% 0.327% 200 32"
+         virtualName="" explicitFocusOrder="0" pos="40.027% 0.376% 200 32"
          tooltip="Click to edit" textCol="fff0f8ff" edTextCol="fff0f8ff"
          edBkgCol="0" hiliteCol="ffff7f50" labelText="preset" editableSingleClick="1"
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="25.899999999999998579" kerning="0" bold="1" italic="0"
-         justification="33" typefaceStyle="Bold"/>
+         fontsize="25.9" kerning="0.0" bold="1" italic="0" justification="33"
+         typefaceStyle="Bold"/>
   <TEXTBUTTON name="push button" id="52c3034a926a2609" memberName="pushButton"
               virtualName="" explicitFocusOrder="0" pos="184R 8 55 24" tooltip="Push all parameters from plugin to preenfm2"
               buttonText="Push" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
@@ -379,15 +383,14 @@ BEGIN_JUCER_METADATA
             virtualName="" explicitFocusOrder="0" pos="268R 8 55 24" tooltip="Midi Channel"
             editable="0" layout="36" items="1&#10;2&#10;3&#10;4&#10;5&#10;6&#10;7&#10;8&#10;9&#10;10&#10;11&#10;12&#10;13&#10;14&#10;15&#10;16&#10;"
             textWhenNonSelected="1" textWhenNoItems="1"/>
-  <LABEL name="Version Label" id="c8880c204a60b679" memberName="versionLabel"
-         virtualName="" explicitFocusOrder="0" pos="58R 8 55 24" textCol="fff5f5dc"
-         edTextCol="ff000000" edBkgCol="0" labelText="v?.?&#10;" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" kerning="0" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="Device Button" id="69cb4ea6d744571b" memberName="deviceButton"
               virtualName="" explicitFocusOrder="0" pos="340R 8 60 24" bgColOff="5c5da4"
               bgColOn="fff0f8ff" buttonText="Midi" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
+  <HYPERLINKBUTTON name="Version Button" id="9900f519cfc9db3b" memberName="versionButton"
+                   virtualName="" explicitFocusOrder="0" pos="60R 9 56 20" tooltip="https://github.com/Ixox/preenfm2Controller"
+                   textCol="fff5f5dc" buttonText="v?.?.?" connectedEdges="0" needsCallback="0"
+                   radioGroupId="0" url="https://github.com/Ixox/preenfm2Controller"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
@@ -397,3 +400,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

@@ -152,7 +152,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     }
     for (int k = 0; k < 12; k++) {
         nrpmParam = PREENFM2_NRPN_MTX1_SOURCE + k * 4;
-        newParam = new MidifiedFloatParameter(String("Mtx" + String(k + 1) + " Source"), nrpmParam, 1, 1, 19, 1);
+        newParam = new MidifiedFloatParameter(String("Mtx" + String(k + 1) + " Source"), nrpmParam, 1, 1, 20, 1);
         addMidifiedParameter(newParam);
         nrpmIndex[nrpmParam] = parameterIndex++;
 
@@ -210,7 +210,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //        lfoKsynOnOff[k]->addItem("Off", 1);
         //        lfoKsynOnOff[k]->addItem("On", 2);
         nrpmParam = PREENFM2_NRPN_LFO1_KSYN + k * 4;
-        newParam = new MidifiedFloatParameter(String("LFO" + String(k + 1) + " KeySync"), nrpmParam, 1, 0, 1, 0);
+        newParam = new MidifiedFloatParameter(String("LFO" + String(k + 1) + " KeySync"), nrpmParam, 1, 1, 2, 1);
         ((MidifiedFloatParameter*)newParam)->setBias(-1);
         ((MidifiedFloatParameter*)newParam)->setSendRealValue(true);
         addMidifiedParameter(newParam);
@@ -364,7 +364,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_FILTER_TYPE;
-    newParam = new MidifiedFloatParameter(String("Filter type"), nrpmParam, 1, 1, 7, 1);
+    newParam = new MidifiedFloatParameter(String("Filter type"), nrpmParam, 1, 1, 49, 1);
     newParam->setOldName("Filter Combo");
     addMidifiedParameter(newParam);
     nrpmIndex[nrpmParam] = parameterIndex++;
@@ -629,10 +629,12 @@ void Pfm2AudioProcessor::getStateInformation(MemoryBlock& destData)
     xml.setAttribute("presetName", presetName);
 
     // add some attributes to it..
-    const OwnedArray< AudioProcessorParameter >&parameterSet = getParameters();
+    const Array<AudioProcessorParameter* >parameterSet = getParameters();
     for (int p = 0; p < parameterSet.size(); p++) {
         MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)parameterSet[p];
         xml.setAttribute(midifiedFP->getNameForXML(), midifiedFP->getRealValue());
+        DBG(String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()));
+
     }
     // Update editorWidth and editorHeight
     if (pfm2Editor != nullptr) {
@@ -654,7 +656,7 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes)
     // whose contents will have been created by the getStateInformation() call.
 
     // This getXmlFromBinary() helper function retrieves our XML from the binary blob..
-    ScopedPointer<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+    std::unique_ptr<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
 
     if (xmlState != nullptr)
     {
@@ -666,7 +668,7 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 
 
         if (xmlState->hasTagName("PreenFM2AppStatus")) {
-            const OwnedArray< AudioProcessorParameter >&parameterSet = getParameters();
+            const Array< AudioProcessorParameter* >parameterSet = getParameters();
 
             float value;
             for (int p = 0; p < parameterSet.size(); p++) {
@@ -677,7 +679,7 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes)
                 if (xmlState->hasAttribute(midifiedFP->getNameForXML())) {
                     value = (float)xmlState->getDoubleAttribute(midifiedFP->getNameForXML());
                     midifiedFP->setRealValueNoNotification(value);
-                    DBG(String(p) << " '" << midifiedFP->getName() << "'  value " << (midifiedFP->getRealValue()));
+                    DBG(String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()));
                 }
             }
 
@@ -716,7 +718,7 @@ void Pfm2AudioProcessor::parameterUpdatedForUI(int p) {
 void Pfm2AudioProcessor::flushAllParametrsToNrpn() {
     sendNrpnPresetName();
 
-    const OwnedArray< AudioProcessorParameter >&parameterSet = getParameters();
+    const Array< AudioProcessorParameter* >parameterSet = getParameters();
     int p;
     for (p = 0; p < parameterSet.size(); p++) {
         // Pull/push button midi channel
@@ -725,10 +727,13 @@ void Pfm2AudioProcessor::flushAllParametrsToNrpn() {
         }
         MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)parameterSet[p];
         if (midifiedFP != nullptr) {
+            if (midifiedFP->getNameForXML().startsWith("arp")) {
+                DBG("ARP VALUE '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()));
+            } 
             midifiedFP->addNrpn(midiOutBuffer, currentMidiChannel);
         }
+        flushMidiOut();
     }
-    flushMidiOut();
 }
 
 
@@ -788,7 +793,7 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int nrpnValue, int forceI
         return;
     }
 
-    const OwnedArray< AudioProcessorParameter >&parameters = getParameters();
+    const Array< AudioProcessorParameter* >parameters = getParameters();
     MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)parameters[index];
     if (midifiedFP != nullptr) {
         float newFloatValue = midifiedFP->getValueFromNrpn(nrpnValue);
@@ -851,6 +856,8 @@ void Pfm2AudioProcessor::onParameterUpdated(AudioProcessorParameter *parameter) 
 
             // send nrpn
             midifiedFP->addNrpn(midiOutBuffer, currentMidiChannel);
+            DBG("onParameterUpdated '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()));
+
             flushMidiOut();
         }
     }
@@ -868,7 +875,7 @@ void Pfm2AudioProcessor::setPresetName(String newName) {
 
 void Pfm2AudioProcessor::sendNrpnPresetName() {
     char nameToSend[13] = "\0\0\0\0\0\0\0\0\0\0\0\0";
-    for (int k = 0; k < presetName.length(); k++) {
+    for (int k = 0; k < presetName.length() && k < 12; k++) {
         nameToSend[k] = presetName[k];
     }
     for (int k = 0; k < 12; k++) {
@@ -901,7 +908,7 @@ void Pfm2AudioProcessor::addMidifiedParameter(MidifiedFloatParameter *param) {
 }
 
 
-void Pfm2AudioProcessor::handleIncomingMidiMessage(MidiInput *source, const MidiMessage &midiMessage) {
+void Pfm2AudioProcessor::handleIncomingMidiMessage(MidiInput* source, const MidiMessage &midiMessage) {
 
     if (midiMessage.isController() && midiMessage.getChannel() == currentMidiChannel) {
         //		DBG("Midi message " << midiMessage.getControllerNumber() << " , " << midiMessage.getControllerValue() << "\n");
@@ -929,7 +936,7 @@ void Pfm2AudioProcessor::handleIncomingMidiMessage(MidiInput *source, const Midi
     }
 }
 
-void Pfm2AudioProcessor::handlePartialSysexMessage(MidiInput *source, const uint8 *messageData, int numBytesSoFar, double timestamp) {
+void Pfm2AudioProcessor::handlePartialSysexMessage(MidiInput* source, const uint8 *messageData, int numBytesSoFar, double timestamp) {
 
 }
 

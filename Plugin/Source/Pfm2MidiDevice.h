@@ -34,19 +34,19 @@ public:
 	~Pfm2MidiDevice();
 
 	MidiOutput* getMidiOutput() {
-		return pfm2MidiOutput;
+		return pfm2MidiOutput.get();
 	}
 
-	MidiInput* getMidiInput() {
-		return pfm2MidiInput;
+	MidiInput * getMidiInput() {
+		return pfm2MidiInput.get();
 	}
 	void resetDevices();
 	void choseNewDevices();
 	void forceChoseNewDevices();
 	void sendBlockOfMessagesNow(MidiBuffer& midiBuffer);
 	// == MidiInputCallback
-	void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message);
-	void handlePartialSysexMessage(MidiInput *source, const uint8 *messageData, int numBytesSoFar, double timestamp);
+	void handleIncomingMidiMessage(MidiInput* source, const MidiMessage &message);
+	void handlePartialSysexMessage(MidiInput* source, const uint8 *messageData, int numBytesSoFar, double timestamp);
 	// Listeners
 	void addListener(MidiInputCallback *listener);
 	void removeListener(MidiInputCallback *listener);
@@ -56,9 +56,9 @@ private:
 	ApplicationProperties pfm2AppProps;
 	bool showErrorMEssage;
 	CriticalSection messageLock;
-	MidiOutput* pfm2MidiOutput;
+	std::unique_ptr<MidiOutput> pfm2MidiOutput;
 	String currentMidiOutputDevice;
-	MidiInput* pfm2MidiInput;
+	std::unique_ptr<MidiInput> pfm2MidiInput;
 	String currentMidiInputDevice;
 	MidiInputCallbackList listeners;
 };

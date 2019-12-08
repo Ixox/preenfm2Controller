@@ -26,9 +26,10 @@ Pfm2MidiDevice::Pfm2MidiDevice() {
 	String pfm2OutputDevice = "PreenFM mk2";
 
 	PropertiesFile::Options options;
+	options.commonToAllUsers = true;
 	options.applicationName = ProjectInfo::projectName;
 	options.osxLibrarySubFolder = "Library/Application Support";
-	options.filenameSuffix = ".settings";
+	options.filenameSuffix = ".midi.xml";
 	options.storageFormat = PropertiesFile::StorageFormat::storeAsXML;
 	pfm2AppProps.setStorageParameters(options);
 
@@ -50,9 +51,13 @@ Pfm2MidiDevice::Pfm2MidiDevice() {
 	for (int d = 0; d < devices.size(); d++) {
 		DBG("Output : " << devices[d]);
 		if (devices[d] == pfm2OutputDevice) {
-			if ((pfm2MidiOutput = MidiOutput::openDevice(d)) != nullptr) {
+			pfm2MidiOutput = MidiOutput::openDevice(d);
+			if (pfm2MidiOutput.get() != nullptr) {
 				DBG("Output found :)");
 				currentMidiOutputDevice = devices[d];
+			}
+			else {
+				DBG("Output could not be open)");
 			}
 			break;
 		}
@@ -62,10 +67,14 @@ Pfm2MidiDevice::Pfm2MidiDevice() {
 	for (int d = 0; d < devices.size(); d++) {
 		DBG("Input : " << devices[d]);
 		if (devices[d] == pfm2InputDevice) {
-			if ((pfm2MidiInput = MidiInput::openDevice(d, this)) != nullptr) {
+			pfm2MidiInput = MidiInput::openDevice(d, this);
+			if (pfm2MidiInput.get() != nullptr) {
 				pfm2MidiInput->start();
 				currentMidiInputDevice = devices[d];
 				DBG("Input found :)");
+			}
+			else {
+				DBG("Input could not be open)");
 			}
 			break;
 		}
@@ -81,12 +90,10 @@ void Pfm2MidiDevice::resetDevices() {
 
 	if (pfm2MidiInput) {
 		pfm2MidiInput->stop();
-		delete pfm2MidiInput;
-		pfm2MidiInput = nullptr;
+		pfm2MidiInput.reset();
 	}
 	if (pfm2MidiOutput) {
-		delete pfm2MidiOutput;
-		pfm2MidiOutput = nullptr;
+		pfm2MidiOutput.reset();
 	}
 }
 
@@ -156,14 +163,12 @@ void Pfm2MidiDevice::choseNewDevices() {
 
 			if (result == 1) {
 
-				if (pfm2MidiOutput != nullptr) {
-					delete pfm2MidiOutput;
-					pfm2MidiOutput = nullptr;
+				if (pfm2MidiOutput.get() != nullptr) {
+					pfm2MidiOutput.reset();
 				}
-				if (pfm2MidiInput != nullptr) {
+				if (pfm2MidiInput.get() != nullptr) {
 					pfm2MidiInput->stop();
-					delete pfm2MidiInput;
-					pfm2MidiInput = nullptr;
+					pfm2MidiInput.reset();
 				}
 
 				// -2 because of the <Select>.
@@ -173,16 +178,16 @@ void Pfm2MidiDevice::choseNewDevices() {
 				currentMidiOutputDevice = devicesTo[deviceTo + 1];
 
 				pfm2MidiInput = MidiInput::openDevice(deviceFrom, this);
-				if (pfm2MidiInput != nullptr) {
+				if (pfm2MidiInput.get() != nullptr) {
 					pfm2MidiInput->start();
 				}
 				else {
 					errorMessage.setText("Input cannot be open", NotificationType::dontSendNotification);
 				}
 				// No need to test output if input did not work
-				if (pfm2MidiInput != nullptr) {
+				if (pfm2MidiInput.get() != nullptr) {
 					pfm2MidiOutput = MidiOutput::openDevice(deviceTo);
-					if (pfm2MidiOutput == nullptr) {
+					if (pfm2MidiOutput.get() == nullptr) {
 						errorMessage.setText("Output cannot be open", NotificationType::dontSendNotification);
 						// let's close input before rexiting
 						resetDevices();
@@ -196,7 +201,7 @@ void Pfm2MidiDevice::choseNewDevices() {
 					}
 				}
 			}
-		} while ((pfm2MidiInput == nullptr || pfm2MidiOutput == nullptr) && result == 1);
+		} while ((pfm2MidiInput.get() == nullptr || pfm2MidiOutput.get() == nullptr) && result == 1);
 	}
 }
 
@@ -216,7 +221,7 @@ void Pfm2MidiDevice::removeListener(MidiInputCallback *listener) {
 	}
 }
 
-void Pfm2MidiDevice::handleIncomingMidiMessage(MidiInput *source, const MidiMessage &midiMessage) {
+void Pfm2MidiDevice::handleIncomingMidiMessage(MidiInput * source, const MidiMessage &midiMessage) {
 	for (MidiInputCallbackList::const_iterator iterator = listeners.begin(); iterator != listeners.end(); ++iterator) {
 		(*iterator)->handleIncomingMidiMessage(source, midiMessage);
 	}

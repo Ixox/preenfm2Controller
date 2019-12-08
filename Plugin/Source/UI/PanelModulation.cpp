@@ -40,44 +40,90 @@
 #include "JuceHeader.h"
 #include "SliderPfm2.h"
 #include "../MidifiedFloatParameter.h"
+#include "../ListProperty.h"
 //[/Headers]
 
 #include "PanelModulation.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
-const char* matrixSourceNames[] = { "None", "lfo 1", "lfo 2", "lfo 3", "Free Env 1", "Free Env 2", "Step Seq 1", "Step Seq 2",
-		"Mod Wheel", "Pit Bend", "After touch",  "Velocity", "Note1", "Note2", "Breath CC2",  "Performance 1  ", "Performance 2", "Performance 3", "Performance 4",
 
-		nullptr
+
+struct NameAndId sourceNameInit[] = { { "None",	0 },
+	{ "lfo 1",	1 },
+	{ "lfo 1",	2 },
+	{ "lfo 1",	3 },
+	{ "Free Env 1",	4 },
+	{ "Free Env 2",	5 },
+	{ "Step Seq 1",	6 },
+	{ "Step Seq 2",	7 },
+	{ "Mod Wheel",	8 },
+	{ "Pitch Bend",	9 },
+	{ "After touch",	10 },
+	{ "Velocity",	11 },
+	{ "Note1",	12 },
+	{ "Note2",	17 },
+	{ "Breath CC2",	18 },
+	{ "Performance 1",	13 },
+	{ "Performance 2",	14 },
+	{ "Performance 3",	15 },
+	{ "Performance 4",	16 },
+	{ "MPE CC74",	19 },
+	{ "", 0}
 };
 
-const int matrixSourceIds[] = { 0, 1, 2, 3, 4 , 5, 6, 7, 8, 9, 10, 11, 12, 17, 18, 13, 14, 15, 16 };
-
-
-const char* matrixDestNames[] = {
-			"None", "Gate", "Modulation Index 1", "Modulation Index 2", "Modulation Index 3", "Modulation index 4", "All Mod. Indexes",
-			/*7*/        "Mix 1", "Pan 1", "Mix 2", "Pan 2", "Mix 3", "Pan 3", "Mix 4", "Pan 4", "All Mixes", "All Pans",
-			/*17*/       "Op1 Frequency", "Op2 Frequency", "Op3 Frequency", "Op4 Frequency", "Op5 Frequency", "Op6 Frequency", "All Op Frequencies", "All Op Freq Harmonic",
-			/*24*/       "Op1 Attack", "Op2 Attack", "Op3 Attack", "Op4 Attack", "Op5 Attack", "Op6 Attack",
-			/*30*/		 "Carrier Attacks", "Carrier Decays", "Carrier Releases", "Modulator Attacks", "Modulator Decays", "Modulator Releases",
-			/*32*/        "Mtx Multiplier 1", "Mtx Multiplier 2", "Mtx Multiplier 3", "Mtx Multiplier 4",
-			/*36*/        "lfo 1 Frequency", "lfo 2 Frequency", "lfo 3 Frequency", "Free Env2 Silence", "Step Seq 1 gate", "Step Seq 2 gate",
-			/*42*/        "Filter frequency",
-
-					nullptr
+struct NameAndId destNameInit[] = {
+	{ "None", 0},
+	{ "Gate",1 },
+	{ "Modulation Index 1",2 },
+	{ "Modulation Index 2",3 },
+	{ "Modulation Index 3",4 },
+	{ "Modulation index 4",5 },
+	{ "All Mod. Indexes",6 },
+	{ "Mix 1",7 },
+	{ "Pan 1",8 },
+	{ "Mix 2",9 },
+	{ "Pan 2",10 },
+	{ "Mix 3",11 },
+	{ "Pan 3",12 },
+	{ "Mix 4",13 },
+	{ "Pan 4",14 },
+	{ "All Mixes",15 },
+	{ "All Pans",16 },
+	{ "Op1 Frequency",17 },
+	{ "Op2 Frequency",18 },
+	{ "Op3 Frequency",19 },
+	{ "Op4 Frequency",20 },
+	{ "Op5 Frequency",21 },
+	{ "Op6 Frequency",22 },
+	{ "All Op Frequencies",23 },
+	{ "All Op Freq Harmonic",43 },
+	{ "Op1 Attack",24 },
+	{ "Op2 Attack",25 },
+	{ "Op3 Attack",26 },
+	{ "Op4 Attack",27 },
+	{ "Op5 Attack",28 },
+	{ "Op6 Attack",29 },
+	{ "Carrier Attacks",30 },
+	{ "Carrier Decays",44 },
+	{ "Carrier Releases",31 },
+	{ "Modulator Attacks",45 },
+	{ "Modulator Decays",46 },
+	{ "Modulator Releases",47 },
+	{ "Mtx Multiplier 1",32 },
+	{ "Mtx Multiplier 2",33 },
+	{ "Mtx Multiplier 3",34 },
+	{ "Mtx Multiplier 4",35 },
+	{ "lfo 1 Frequency",36 },
+	{ "lfo 2 Frequency",37 },
+	{ "lfo 3 Frequency",38 },
+	{ "Free Env2 Silence",39 },
+	{ "Step Seq 1 gate",40 },
+	{ "Step Seq 2 gate",41 },
+	{ "Filter frequency",42 },
+	{ "", 0 } 
 };
 
-const int matrixDestIds[] = { 0, 1, 2, 3, 4, 5, 6,
-	7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-	17, 18, 19, 20, 21, 22, 23, 43,
-	24, 25, 26, 27, 28, 29,
-	30, 44, 31, 45, 46, 47,
-	32, 33, 34, 35,
-	36, 37, 38, 39, 40, 41,
-	42
-
-};
 
 
 //[/MiscUserDefs]
@@ -86,6 +132,12 @@ const int matrixDestIds[] = { 0, 1, 2, 3, 4, 5, 6,
 PanelModulation::PanelModulation ()
 {
     //[Constructor_pre] You can add your own custom stuff here..
+	ListProperty sourceList("sources", ".sources.xml", sourceNameInit);
+	NameAndId* sourcesNameAndId = sourceList.getList();
+
+	ListProperty destList("dest", ".dest.xml", destNameInit);
+	NameAndId* destNameAndId = destList.getList();
+
     //[/Constructor_pre]
 
     addAndMakeVisible (matrixGroup = new GroupComponent ("matrix group",
@@ -277,7 +329,7 @@ PanelModulation::PanelModulation ()
 		addAndMakeVisible(matrixMultipler[r] = new SliderPfm2("Mtx" + String(r + 1) + " Multiplier"));
 		matrixMultipler[r]->setRange(-10.0f, 10.0f, .01f);
 		matrixMultipler[r]->setSliderStyle(Slider::RotaryVerticalDrag);
-		matrixMultipler[r]->setTextBoxStyle(Slider::TextBoxLeft, false, 35, 16);
+		matrixMultipler[r]->setTextBoxStyle(Slider::TextBoxLeft, false, 40, 18);
 		matrixMultipler[r]->setDoubleClickReturnValue(true, 0.0f);
 		matrixMultipler[r]->setValue(0.0f, dontSendNotification);
 		matrixMultipler[r]->addListener(this);
@@ -286,8 +338,8 @@ PanelModulation::PanelModulation ()
 		matrixSource[r]->setEditableText(false);
 		matrixSource[r]->setJustificationType(Justification::centred);
 		matrixSource[r]->setColour(ComboBox::buttonColourId, Colours::blue);
-		for (int i = 0; matrixSourceNames[i] != nullptr; i++) {
-			matrixSource[r]->addItem(matrixSourceNames[i], matrixSourceIds[i] + 1);
+		for (int i = 0; sourcesNameAndId[i].name != ""; i++) {
+			matrixSource[r]->addItem(sourcesNameAndId[i].name, (sourcesNameAndId[i].id + 1));
 		}
 		matrixSource[r]->setSelectedId(1);
 		matrixSource[r]->setScrollWheelEnabled(true);
@@ -297,8 +349,10 @@ PanelModulation::PanelModulation ()
 		matrixDestination[r]->setEditableText(false);
 		matrixDestination[r]->setJustificationType(Justification::centred);
 		matrixDestination[r]->setColour(ComboBox::buttonColourId, Colours::blue);
-		for (int i = 0; matrixDestNames[i] != nullptr; i++) {
-			matrixDestination[r]->addItem(matrixDestNames[i], matrixDestIds[i] + 1);
+		for (int i = 0; destNameAndId[i].name != ""; i++) {
+			matrixDestination[r]->addItem(destNameAndId[i].name, (destNameAndId[i].id + 1));
+//			DBG("{ \"" << matrixDestNames[i]  << "\"," << matrixDestIds[i] << "},");
+
 		}
 		matrixDestination[r]->setSelectedId(1);
 		matrixDestination[r]->setScrollWheelEnabled(true);

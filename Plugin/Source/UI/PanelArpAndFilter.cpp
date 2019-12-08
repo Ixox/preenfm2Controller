@@ -39,18 +39,81 @@
 #include "JuceHeader.h"
 #include "SliderPfm2.h"
 #include "../MidifiedFloatParameter.h"
+#include "../ListProperty.h"
+
 //[/Headers]
 
 #include "PanelArpAndFilter.h"
 
-
 //[MiscUserDefs] You can add your own user definitions and misc code here...
+
+
+struct NameAndId effectNameInit[] = { { "Off",	1 },
+    { "Mix simple mixer",	2 },
+    { "LP low pass",	3 },
+    { "HP high pass",	4 },
+    { "Bass",	5 },
+    { "BP band pass",	6 },
+    { "Crush ",	7 },
+    { "LP2 Low pass flavour 2",	8 },
+    { "HP2 High pass flavour 2",	9 },
+    { "BP2 Band pass flavour 2",	10 },
+    { "Lp3 state variable Low pass",	11 },
+    { "Hp3 state variable High pass",	12 },
+    { "Bp3 state variable band pass",	13 },
+    { "Peak state variable peak",	14 },
+    { "Notc state variable notchmode",	15 },
+    { "Bell state variable EQ",	16 },
+    { "LowS state variable low shelf",	17 },
+    { "HigS state variable high shelf",	18 },
+    { "LpHp Distortion from LP to HP",	19 },
+    { "BpDs saturated band pass",	20 },
+    { "LPws distorted low pass and presence",	21 },
+    { "Tilt frequency emphasis",	22 },
+    { "Pann stereo placement tool",	23 },
+    { "Sat guitare saturation",	24 },
+    { "Sigm tanh waveshaper saturation",	25 },
+    { "Fold amplifier and folder",	26 },
+    { "Wrap amplifier and wrapper",	27 },
+    { "Xor xored ober threshold",	28 },
+    { "Txr1 bitmangling texture 1",	29 },
+    { "Txr2 bitmangling texture 2",	30 },
+    { "LPx1 xor low pass + fold",	31 },
+    { "LPx2 xor low pass + fold",	32 },
+    { "LpSn saturated low pass",	33 },
+    { "HpSn saturated high pass",	34 },
+    { "Not4 quad notch filter",	35 },
+    { "Ap4 all pass quad filter",	36 },
+    { "Ap4b resonant all pass quad filter",	37 },
+    { "Ap4D diffusion all pass quad filter",	38 },
+    { "Oryx 2 peaks format",	39 },
+    { "Orx2 3 peaks formant",	40 },
+    { "Orx3 3 peaks format and distortion",	41 },
+    { "18db 3 pole soft low pass",	42 },
+    { "La+d ladder 1",	43 },
+    { "Lad+ ladder 2",	44 },
+    { "Diod ladder 3",	45 },
+    { "L+d+ ladder 4",	46 },
+    { "h3o+ tb303 filter",	47 },
+    { "h3o*",	48 },
+    { "Bits",	49 },
+    { "", 50 }
+};
+
+
 //[/MiscUserDefs]
 
 //==============================================================================
 PanelArpAndFilter::PanelArpAndFilter ()
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    
+        //[UserPreSize]
+    ListProperty filterList("filters", ".filters.xml", effectNameInit);
+    NameAndId* fxNames = filterList.getList();
+
+
+
     //[/Constructor_pre]
 
     addAndMakeVisible (arpGroupComponent = new GroupComponent ("Arp group",
@@ -313,14 +376,9 @@ PanelArpAndFilter::PanelArpAndFilter ()
     filterComboBox->addListener (this);
 
 
-    //[UserPreSize]
-	filterComboBox->addItem(TRANS("Off"), 1);
-	filterComboBox->addItem(TRANS("Mix"), 2);
-	filterComboBox->addItem(TRANS("Low Pass"), 3);
-	filterComboBox->addItem(TRANS("High Pass"), 4);
-	filterComboBox->addItem(TRANS("Band Pass"), 6);
-	filterComboBox->addItem(TRANS("Bass Boost"), 5);
-	filterComboBox->addItem(TRANS("Crusher"), 7);
+    for (int n = 0; fxNames[n].name != ""; n++) {
+        filterComboBox->addItem(TRANS(fxNames[n].name), fxNames[n].id);
+    }
 
 
 	for (int n = 0; n < 2; n++) {
