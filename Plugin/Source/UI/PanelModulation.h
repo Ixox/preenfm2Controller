@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.1.2
+  Created with Projucer version: 5.4.5
 
   ------------------------------------------------------------------------------
 
-  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright (c) 2015 - ROLI Ltd.
+  The Projucer is part of the JUCE library.
+  Copyright (c) 2017 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -144,11 +144,11 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<GroupComponent> matrixGroup;
-    ScopedPointer<GroupComponent> lfoGroup;
-    ScopedPointer<GroupComponent> env1Group;
-    ScopedPointer<GroupComponent> env2Group;
-    ScopedPointer<GroupComponent> stepSeqGroup;
+    std::unique_ptr<GroupComponent> matrixGroup;
+    std::unique_ptr<GroupComponent> lfoGroup;
+    std::unique_ptr<GroupComponent> env1Group;
+    std::unique_ptr<GroupComponent> env2Group;
+    std::unique_ptr<GroupComponent> stepSeqGroup;
 
 
     //==============================================================================
@@ -157,3 +157,4 @@ private:
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

@@ -22,9 +22,13 @@
 ListProperty::ListProperty(String listName, String suffix, NameAndId* initList) {
 
     PropertiesFile::Options options;
+#if JUCE_MAC
+    options.commonToAllUsers = false;
+#else
     options.commonToAllUsers = true;
+#endif
     options.applicationName = ProjectInfo::projectName;
-    options.osxLibrarySubFolder = "Library/Application Support";
+    options.osxLibrarySubFolder = "Application Support/Ixox";
     options.filenameSuffix = suffix;
     options.storageFormat = PropertiesFile::StorageFormat::storeAsXML;
     options.doNotSave = true;
@@ -72,7 +76,7 @@ ListProperty::ListProperty(String listName, String suffix, NameAndId* initList) 
         }
     }
     else {
-        myItems[0].name = "ERROR Loading filter list";
+        myItems[0].name = "ERROR Loading " + listName;
     }
 
 }

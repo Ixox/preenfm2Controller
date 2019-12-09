@@ -32,7 +32,7 @@ class ListProperty
 {
 public:
     ListProperty(String listName, String suffix, NameAndId* initList);
-    NameAndId* ListProperty::getList();
+    NameAndId* getList();
 
 private:
     NameAndId myItems[NUMBER_MAX_OF_FILTER];

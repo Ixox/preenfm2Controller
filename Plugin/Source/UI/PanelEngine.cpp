@@ -403,9 +403,9 @@ void PanelEngine::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    operatorGroup->setBounds (proportionOfWidth (0.0100f), proportionOfHeight (0.5000f), proportionOfWidth (0.9800f), proportionOfHeight (0.4900f));
-    mixerGroup->setBounds (proportionOfWidth (0.0100f), proportionOfHeight (0.3115f), proportionOfWidth (0.5900f), proportionOfHeight (0.1852f));
-    imGroup->setBounds (proportionOfWidth (0.6100f), proportionOfHeight (0.0000f), proportionOfWidth (0.3800f), proportionOfHeight (0.4967f));
+    operatorGroup->setBounds (proportionOfWidth (0.0100f), proportionOfHeight (0.5000f), proportionOfWidth (0.9801f), proportionOfHeight (0.4903f));
+    mixerGroup->setBounds (proportionOfWidth (0.0100f), proportionOfHeight (0.3120f), proportionOfWidth (0.5903f), proportionOfHeight (0.1851f));
+    imGroup->setBounds (proportionOfWidth (0.6102f), proportionOfHeight (0.0000f), proportionOfWidth (0.3798f), proportionOfHeight (0.4971f));
     //[UserResized] Add your own custom resize handling here..
 
 	envCopyButton->setBounds(proportionOfWidth(0.023f), proportionOfHeight(0.645f), proportionOfWidth(0.06f), proportionOfHeight(0.03f));
@@ -755,13 +755,13 @@ BEGIN_JUCER_METADATA
                hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff5f9ea0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="operator group" id="3a99a017e94aaaf5" memberName="operatorGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0.996% 50% 98.007% 49.031%"
+                  virtualName="" explicitFocusOrder="0" pos="1.013% 50% 97.974% 49.097%"
                   outlinecol="ff749fad" textcol="ff749fad" title="" textpos="33"/>
   <GROUPCOMPONENT name="mixer group" id="a41fc3891a2af464" memberName="mixerGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0.996% 31.202% 59.029% 18.508%"
+                  virtualName="" explicitFocusOrder="0" pos="1.013% 31.227% 59.045% 18.592%"
                   outlinecol="ff749fad" textcol="ff749fad" title="Mixer" textpos="33"/>
   <GROUPCOMPONENT name="IM group" id="249d6ec6feb3696f" memberName="imGroup" virtualName=""
-                  explicitFocusOrder="0" pos="61.021% 0% 37.983% 49.709%" outlinecol="ff749fad"
+                  explicitFocusOrder="0" pos="61.071% 0% 37.916% 49.639%" outlinecol="ff749fad"
                   textcol="ff749fad" title="Modulation indexes" textpos="33"/>
 </JUCER_COMPONENT>
 

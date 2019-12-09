@@ -565,17 +565,17 @@ void PanelArpAndFilter::paint (Graphics& g)
     }
 
     {
-        float x = static_cast<float> (proportionOfWidth (0.1656f)), y = static_cast<float> (proportionOfHeight (0.3609f)), width = static_cast<float> (proportionOfWidth (0.6791f)), height = static_cast<float> (proportionOfHeight (0.2139f));
+        float x = static_cast<float> (proportionOfWidth (0.0964f)), y = static_cast<float> (proportionOfHeight (0.3616f)), width = static_cast<float> (proportionOfWidth (0.8132f)), height = static_cast<float> (proportionOfHeight (0.2137f));
         Colour fillColour1 = Colour (0x8fa52a2a), fillColour2 = Colour (0xb6a5462a);
         Colour strokeColour = Colours::cadetblue;
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setGradientFill (ColourGradient (fillColour1,
-                                       static_cast<float> (proportionOfWidth (0.5878f)) - static_cast<float> (proportionOfWidth (0.1656f)) + x,
-                                       static_cast<float> (proportionOfHeight (0.3566f)) - static_cast<float> (proportionOfHeight (0.3609f)) + y,
+                                       static_cast<float> (proportionOfWidth (0.5878f)) - static_cast<float> (proportionOfWidth (0.0964f)) + x,
+                                       static_cast<float> (proportionOfHeight (0.3566f)) - static_cast<float> (proportionOfHeight (0.3616f)) + y,
                                        fillColour2,
-                                       static_cast<float> (proportionOfWidth (0.7123f)) - static_cast<float> (proportionOfWidth (0.1656f)) + x,
-                                       static_cast<float> (proportionOfHeight (0.5736f)) - static_cast<float> (proportionOfHeight (0.3609f)) + y,
+                                       static_cast<float> (proportionOfWidth (0.7123f)) - static_cast<float> (proportionOfWidth (0.0964f)) + x,
+                                       static_cast<float> (proportionOfHeight (0.5736f)) - static_cast<float> (proportionOfHeight (0.3616f)) + y,
                                        false));
         g.fillRoundedRectangle (x, y, width, height, 10.000f);
         g.setColour (strokeColour);
@@ -591,31 +591,31 @@ void PanelArpAndFilter::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    arpGroupComponent->setBounds (proportionOfWidth (0.0604f), proportionOfHeight (0.0233f), proportionOfWidth (0.8811f), proportionOfHeight (0.3014f));
-    arpBPM->setBounds (proportionOfWidth (0.1003f), proportionOfHeight (0.1793f), proportionOfWidth (0.0897f), proportionOfHeight (0.1202f));
-    arpBPMLabel->setBounds (proportionOfWidth (0.1003f), proportionOfHeight (0.1405f), proportionOfWidth (0.0897f), 20);
-    arpDirectionLabel->setBounds (proportionOfWidth (0.2098f), proportionOfHeight (0.1405f), proportionOfWidth (0.0803f), 20);
-    arpOctaveLabel->setBounds (proportionOfWidth (0.3101f), proportionOfHeight (0.1405f), proportionOfWidth (0.0897f), 20);
-    arpPatternLabel->setBounds (proportionOfWidth (0.4296f), proportionOfHeight (0.1405f), proportionOfWidth (0.0697f), 20);
-    arpDivisionLabel->setBounds (proportionOfWidth (0.5598f), proportionOfHeight (0.1405f), proportionOfWidth (0.0697f), 20);
-    arpDurationLabel->setBounds (proportionOfWidth (0.6899f), proportionOfHeight (0.1405f), proportionOfWidth (0.0697f), 20);
-    arpLatchLabel->setBounds (proportionOfWidth (0.8300f), proportionOfHeight (0.1405f), proportionOfWidth (0.0697f), 20);
-    arpDirectionCombo->setBounds (proportionOfWidth (0.1999f), proportionOfHeight (0.2025f), proportionOfWidth (0.1003f), 20);
-    arpOctavleSlider->setBounds (proportionOfWidth (0.3101f), proportionOfHeight (0.1793f), proportionOfWidth (0.0897f), proportionOfHeight (0.1202f));
-    arpPatternCombo->setBounds (proportionOfWidth (0.4296f), proportionOfHeight (0.2025f), proportionOfWidth (0.0803f), 20);
-    arpDivisionCombo->setBounds (proportionOfWidth (0.5598f), proportionOfHeight (0.2025f), proportionOfWidth (0.0803f), 20);
-    arpDurationCombo->setBounds (proportionOfWidth (0.6899f), proportionOfHeight (0.2025f), proportionOfWidth (0.0803f), 20);
-    arpLatchCombo->setBounds (proportionOfWidth (0.8300f), proportionOfHeight (0.2025f), proportionOfWidth (0.0803f), 20);
-    filterGroupComponent->setBounds (proportionOfWidth (0.1656f), proportionOfHeight (0.3643f), proportionOfWidth (0.6800f), proportionOfHeight (0.2083f));
-    filterParam1Label->setBounds (proportionOfWidth (0.3599f), proportionOfHeight (0.3924f), proportionOfWidth (0.0897f), 20);
-    filterParam1Slider->setBounds (proportionOfWidth (0.3599f), proportionOfHeight (0.4244f), proportionOfWidth (0.0897f), proportionOfHeight (0.1202f));
-    filterParam2Label->setBounds (proportionOfWidth (0.4900f), proportionOfHeight (0.3895f), proportionOfWidth (0.0897f), 20);
-    filterParam2Slider->setBounds (proportionOfWidth (0.4900f), proportionOfHeight (0.4264f), proportionOfWidth (0.0897f), proportionOfHeight (0.1202f));
-    filterGainLabel->setBounds (proportionOfWidth (0.6301f), proportionOfHeight (0.3895f), proportionOfWidth (0.0897f), 20);
-    filterGainSlider->setBounds (proportionOfWidth (0.6301f), proportionOfHeight (0.4244f), proportionOfWidth (0.0897f), proportionOfHeight (0.1202f));
-    arpClockComboBox->setBounds (proportionOfWidth (0.1644f), proportionOfHeight (0.0698f), proportionOfWidth (0.0803f), 20);
-    clockLabel->setBounds (proportionOfWidth (0.0990f), proportionOfHeight (0.0698f), 64, 24);
-    filterComboBox->setBounds (proportionOfWidth (0.2030f), proportionOfHeight (0.4448f), proportionOfWidth (0.1003f), 20);
+    arpGroupComponent->setBounds (proportionOfWidth (0.0611f), proportionOfHeight (0.0229f), proportionOfWidth (0.8813f), proportionOfHeight (0.3012f));
+    arpBPM->setBounds (proportionOfWidth (0.0999f), proportionOfHeight (0.1789f), proportionOfWidth (0.0905f), proportionOfHeight (0.1208f));
+    arpBPMLabel->setBounds (proportionOfWidth (0.0999f), proportionOfHeight (0.1407f), proportionOfWidth (0.0905f), 20);
+    arpDirectionLabel->setBounds (proportionOfWidth (0.2103f), proportionOfHeight (0.1407f), proportionOfWidth (0.0811f), 20);
+    arpOctaveLabel->setBounds (proportionOfWidth (0.3102f), proportionOfHeight (0.1407f), proportionOfWidth (0.0905f), 20);
+    arpPatternLabel->setBounds (proportionOfWidth (0.4301f), proportionOfHeight (0.1407f), proportionOfWidth (0.0705f), 20);
+    arpDivisionLabel->setBounds (proportionOfWidth (0.5605f), proportionOfHeight (0.1407f), proportionOfWidth (0.0705f), 20);
+    arpDurationLabel->setBounds (proportionOfWidth (0.6898f), proportionOfHeight (0.1407f), proportionOfWidth (0.0705f), 20);
+    arpLatchLabel->setBounds (proportionOfWidth (0.8320f), proportionOfHeight (0.1407f), proportionOfWidth (0.0705f), 20);
+    arpDirectionCombo->setBounds (proportionOfWidth (0.1998f), proportionOfHeight (0.2018f), proportionOfWidth (0.0999f), 20);
+    arpOctavleSlider->setBounds (proportionOfWidth (0.3102f), proportionOfHeight (0.1789f), proportionOfWidth (0.0905f), proportionOfHeight (0.1208f));
+    arpPatternCombo->setBounds (proportionOfWidth (0.4301f), proportionOfHeight (0.2018f), proportionOfWidth (0.0811f), 20);
+    arpDivisionCombo->setBounds (proportionOfWidth (0.5605f), proportionOfHeight (0.2018f), proportionOfWidth (0.0811f), 20);
+    arpDurationCombo->setBounds (proportionOfWidth (0.6898f), proportionOfHeight (0.2018f), proportionOfWidth (0.0811f), 20);
+    arpLatchCombo->setBounds (proportionOfWidth (0.8320f), proportionOfHeight (0.2018f), proportionOfWidth (0.0811f), 20);
+    filterGroupComponent->setBounds (proportionOfWidth (0.1034f), proportionOfHeight (0.3639f), proportionOfWidth (0.8085f), proportionOfHeight (0.2064f));
+    filterParam1Label->setBounds (proportionOfWidth (0.4548f), proportionOfHeight (0.3807f), proportionOfWidth (0.0905f), 20);
+    filterParam1Slider->setBounds (proportionOfWidth (0.4548f), proportionOfHeight (0.4144f), proportionOfWidth (0.0905f), proportionOfHeight (0.1208f));
+    filterParam2Label->setBounds (proportionOfWidth (0.5840f), proportionOfHeight (0.3792f), proportionOfWidth (0.0905f), 20);
+    filterParam2Slider->setBounds (proportionOfWidth (0.5840f), proportionOfHeight (0.4174f), proportionOfWidth (0.0905f), proportionOfHeight (0.1208f));
+    filterGainLabel->setBounds (proportionOfWidth (0.7239f), proportionOfHeight (0.3792f), proportionOfWidth (0.0905f), 20);
+    filterGainSlider->setBounds (proportionOfWidth (0.7239f), proportionOfHeight (0.4144f), proportionOfWidth (0.0905f), proportionOfHeight (0.1208f));
+    arpClockComboBox->setBounds (proportionOfWidth (0.1645f), proportionOfHeight (0.0703f), proportionOfWidth (0.0811f), 20);
+    clockLabel->setBounds (proportionOfWidth (0.0987f), proportionOfHeight (0.0703f), 64, 24);
+    filterComboBox->setBounds (proportionOfWidth (0.1598f), proportionOfHeight (0.4511f), proportionOfWidth (0.2197f), 20);
     //[UserResized] Add your own custom resize handling here..
 
 	float h = 0.7f;
@@ -863,122 +863,122 @@ BEGIN_JUCER_METADATA
           hasStroke="0"/>
     <RECT pos="2 39% 4M 21%" fill="linear: 50 40%, 50 60%, 0=ff14576c, 1=ff083543"
           hasStroke="0"/>
-    <ROUNDRECT pos="16.556% 36.09% 67.906% 21.387%" cornerSize="10.0" fill="linear: 58.78% 35.659%, 71.233% 57.364%, 0=8fa52a2a, 1=b6a5462a"
+    <ROUNDRECT pos="9.636% 36.156% 81.316% 21.371%" cornerSize="10.0" fill="linear: 58.78% 35.659%, 71.233% 57.364%, 0=8fa52a2a, 1=b6a5462a"
                hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff5f9ea0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="Arp group" id="13e5d1a66afb37f8" memberName="arpGroupComponent"
-                  virtualName="GroupComponent" explicitFocusOrder="0" pos="6.04% 2.326% 88.107% 30.136%"
+                  virtualName="GroupComponent" explicitFocusOrder="0" pos="6.143% 2.358% 88.143% 30.189%"
                   outlinecol="ff5f9ea0" textcol="ff5f9ea0" title="Arpeggiator"
                   textpos="33"/>
   <SLIDER name="Arp bpm" id="834b58daf5daacae" memberName="arpBPM" virtualName="Slider"
-          explicitFocusOrder="0" pos="10.025% 17.926% 8.966% 12.016%" min="10.0"
+          explicitFocusOrder="0" pos="10% 17.925% 9% 12.107%" min="10.0"
           max="240.0" int="1.0" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="40" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="arp bpm label" id="ae9087ef378fcc73" memberName="arpBPMLabel"
-         virtualName="" explicitFocusOrder="0" pos="10.025% 14.05% 8.966% 20"
+         virtualName="" explicitFocusOrder="0" pos="10% 13.994% 9% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="BPM" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <LABEL name="arp direction label" id="dd08708728c535e1" memberName="arpDirectionLabel"
-         virtualName="" explicitFocusOrder="0" pos="20.984% 14.05% 8.032% 20"
+         virtualName="" explicitFocusOrder="0" pos="21% 13.994% 8.143% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Direction" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <LABEL name="arp octave label" id="a1efff324e6fc45a" memberName="arpOctaveLabel"
-         virtualName="" explicitFocusOrder="0" pos="31.009% 14.05% 8.966% 20"
+         virtualName="" explicitFocusOrder="0" pos="31% 13.994% 9% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Octave" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <LABEL name="arp pattern label" id="81abe99d3c3b9cb" memberName="arpPatternLabel"
-         virtualName="" explicitFocusOrder="0" pos="42.964% 14.05% 6.974% 20"
+         virtualName="" explicitFocusOrder="0" pos="43% 13.994% 7% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Pattern" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <LABEL name="arp division label" id="bc6d9b8d07143332" memberName="arpDivisionLabel"
-         virtualName="" explicitFocusOrder="0" pos="55.978% 14.05% 6.974% 20"
+         virtualName="" explicitFocusOrder="0" pos="56% 13.994% 7% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Division" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <LABEL name="arp Duration label" id="6e39565df396e160" memberName="arpDurationLabel"
-         virtualName="" explicitFocusOrder="0" pos="68.991% 14.05% 6.974% 20"
+         virtualName="" explicitFocusOrder="0" pos="69% 13.994% 7% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Duration" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <LABEL name="arp Latch label" id="4bba356716a40a00" memberName="arpLatchLabel"
-         virtualName="" explicitFocusOrder="0" pos="83.001% 14.05% 6.974% 20"
+         virtualName="" explicitFocusOrder="0" pos="83.143% 13.994% 7% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Latch" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <COMBOBOX name="Arp direction" id="5403f05ff830eb2e" memberName="arpDirectionCombo"
-            virtualName="ComboBox" explicitFocusOrder="0" pos="19.988% 20.252% 10.025% 20"
+            virtualName="ComboBox" explicitFocusOrder="0" pos="20% 20.126% 10% 20"
             editable="0" layout="33" items="Up&#10;Down&#10;Up &amp; Down&#10;As played&#10;Random&#10;Chord&#10;Rotate Up&#10;Rotate Down&#10;Rotate U&amp;D&#10;Shift Up&#10;Shift Down&#10;Shift U&amp;D&#10;"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <SLIDER name="Arp octave" id="1cb995267258f0bb" memberName="arpOctavleSlider"
-          virtualName="Slider" explicitFocusOrder="0" pos="31.009% 17.926% 8.966% 12.016%"
+          virtualName="Slider" explicitFocusOrder="0" pos="31% 17.925% 9% 12.107%"
           min="1.0" max="3.0" int="1.0" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="40" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <COMBOBOX name="Arp pattern" id="4ab8dec3ec103766" memberName="arpPatternCombo"
-            virtualName="ComboBox" explicitFocusOrder="0" pos="42.964% 20.252% 8.032% 20"
+            virtualName="ComboBox" explicitFocusOrder="0" pos="43% 20.126% 8.143% 20"
             editable="0" layout="33" items="1&#10;2&#10;3&#10;4&#10;5&#10;6&#10;7&#10;8&#10;9&#10;10&#10;11&#10;12&#10;13&#10;14&#10;15&#10;16&#10;17&#10;18&#10;19&#10;20&#10;21&#10;22&#10;User 1&#10;User 2&#10;User 3&#10;User 4&#10;"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="Arp division" id="40d9cbf865d21a6d" memberName="arpDivisionCombo"
-            virtualName="ComboBox" explicitFocusOrder="0" pos="55.978% 20.252% 8.032% 20"
+            virtualName="ComboBox" explicitFocusOrder="0" pos="56% 20.126% 8.143% 20"
             editable="0" layout="33" items="2/1&#10;3/2&#10;1/1&#10;3/4&#10;2/3&#10;1/2&#10;3/8&#10;1/3&#10;1/4&#10;1/6&#10;1/8&#10;1/12&#10;1/16&#10;1/24&#10;1/32&#10;1/48&#10;1/96"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="Arp duration" id="40f06b2b6126c25d" memberName="arpDurationCombo"
-            virtualName="ComboBox" explicitFocusOrder="0" pos="68.991% 20.252% 8.032% 20"
+            virtualName="ComboBox" explicitFocusOrder="0" pos="69% 20.126% 8.143% 20"
             editable="0" layout="33" items="2/1&#10;3/2&#10;1/1&#10;3/4&#10;2/3&#10;1/2&#10;3/8&#10;1/3&#10;1/4&#10;1/6&#10;1/8&#10;1/12&#10;1/16&#10;1/24&#10;1/32&#10;1/48&#10;1/96"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="Arp latch" id="3072fb2928d8c8f4" memberName="arpLatchCombo"
-            virtualName="ComboBox" explicitFocusOrder="0" pos="83.001% 20.252% 8.032% 20"
+            virtualName="ComboBox" explicitFocusOrder="0" pos="83.143% 20.126% 8.143% 20"
             editable="0" layout="33" items="Off&#10;On" textWhenNonSelected=""
             textWhenNoItems="(no choices)"/>
   <GROUPCOMPONENT name="Filter group" id="ef53faceed268e04" memberName="filterGroupComponent"
-                  virtualName="" explicitFocusOrder="0" pos="16.563% 36.434% 67.995% 20.833%"
+                  virtualName="" explicitFocusOrder="0" pos="10.286% 36.321% 80.857% 20.597%"
                   outlinecol="749fad" textcol="fff5f5dc" title="Filter" textpos="33"/>
   <LABEL name="filter param1 label" id="ad964c1a500045d4" memberName="filterParam1Label"
-         virtualName="" explicitFocusOrder="0" pos="35.99% 39.244% 8.966% 20"
+         virtualName="" explicitFocusOrder="0" pos="45.429% 38.05% 9% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Param1" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <SLIDER name="Filter param1" id="c05a5ec6435b8dba" memberName="filterParam1Slider"
-          virtualName="Slider" explicitFocusOrder="0" pos="35.99% 42.442% 8.966% 12.016%"
+          virtualName="Slider" explicitFocusOrder="0" pos="45.429% 41.509% 9% 12.107%"
           min="0.0" max="1.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="40" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="filter param2 label" id="8e05a7e79e0d078c" memberName="filterParam2Label"
-         virtualName="" explicitFocusOrder="0" pos="49.004% 38.953% 8.966% 20"
+         virtualName="" explicitFocusOrder="0" pos="58.429% 37.893% 9% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Param2" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <SLIDER name="Filter param2" id="d542ada05f27098e" memberName="filterParam2Slider"
-          virtualName="Slider" explicitFocusOrder="0" pos="49.004% 42.636% 8.966% 12.016%"
+          virtualName="Slider" explicitFocusOrder="0" pos="58.429% 41.667% 9% 12.107%"
           min="0.0" max="1.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="40" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="filter gain label" id="1739e718e2bf97c" memberName="filterGainLabel"
-         virtualName="" explicitFocusOrder="0" pos="63.014% 38.953% 8.966% 20"
+         virtualName="" explicitFocusOrder="0" pos="72.429% 37.893% 9% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Gain" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <SLIDER name="Filter gain" id="4d28a9c9b11da6ce" memberName="filterGainSlider"
-          virtualName="Slider" explicitFocusOrder="0" pos="63.014% 42.442% 8.966% 12.016%"
+          virtualName="Slider" explicitFocusOrder="0" pos="72.429% 41.509% 9% 12.107%"
           min="0.0" max="2.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="40" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <COMBOBOX name="Arp clock" id="1b23d19ebc4cb655" memberName="arpClockComboBox"
-            virtualName="" explicitFocusOrder="0" pos="16.438% 6.977% 8.032% 20"
+            virtualName="" explicitFocusOrder="0" pos="16.429% 7.075% 8.143% 20"
             editable="0" layout="33" items="Off&#10;Internal&#10;External&#10;"
             textWhenNonSelected="Off" textWhenNoItems="Off"/>
   <LABEL name="clock label" id="6a7e1148cc077687" memberName="clockLabel"
-         virtualName="" explicitFocusOrder="0" pos="9.9% 6.977% 64 24"
+         virtualName="" explicitFocusOrder="0" pos="9.857% 7.075% 64 24"
          edTextCol="ff000000" edBkgCol="0" labelText="Clock:&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="Filter type" id="599ad67e6f27bfd7" memberName="filterComboBox"
-            virtualName="" explicitFocusOrder="0" pos="20.299% 44.477% 10.025% 20"
+            virtualName="" explicitFocusOrder="0" pos="16% 45.126% 22% 20"
             editable="0" layout="33" items="" textWhenNonSelected="Off" textWhenNoItems="Off"/>
 </JUCER_COMPONENT>
 

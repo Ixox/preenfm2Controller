@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.1.2
+  Created with Projucer version: 5.4.5
 
   ------------------------------------------------------------------------------
 
-  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright (c) 2015 - ROLI Ltd.
+  The Projucer is part of the JUCE library.
+  Copyright (c) 2017 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -121,7 +121,7 @@ struct NameAndId destNameInit[] = {
 	{ "Step Seq 1 gate",40 },
 	{ "Step Seq 2 gate",41 },
 	{ "Filter frequency",42 },
-	{ "", 0 } 
+	{ "", 0 }
 };
 
 
@@ -140,28 +140,33 @@ PanelModulation::PanelModulation ()
 
     //[/Constructor_pre]
 
-    addAndMakeVisible (matrixGroup = new GroupComponent ("matrix group",
-                                                         TRANS("Matrix")));
+    matrixGroup.reset (new GroupComponent ("matrix group",
+                                           TRANS("Matrix")));
+    addAndMakeVisible (matrixGroup.get());
     matrixGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
     matrixGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
-    addAndMakeVisible (lfoGroup = new GroupComponent ("lfo group",
-                                                      String()));
+    lfoGroup.reset (new GroupComponent ("lfo group",
+                                        String()));
+    addAndMakeVisible (lfoGroup.get());
     lfoGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
     lfoGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
-    addAndMakeVisible (env1Group = new GroupComponent ("env 1 group",
-                                                       TRANS("Free Enveloppe 1")));
+    env1Group.reset (new GroupComponent ("env 1 group",
+                                         TRANS("Free Enveloppe 1")));
+    addAndMakeVisible (env1Group.get());
     env1Group->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
     env1Group->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
-    addAndMakeVisible (env2Group = new GroupComponent ("env 2 group",
-                                                       TRANS("Free Enveloppe 2")));
+    env2Group.reset (new GroupComponent ("env 2 group",
+                                         TRANS("Free Enveloppe 2")));
+    addAndMakeVisible (env2Group.get());
     env2Group->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
     env2Group->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
-    addAndMakeVisible (stepSeqGroup = new GroupComponent ("step sequencer group",
-                                                          String()));
+    stepSeqGroup.reset (new GroupComponent ("step sequencer group",
+                                            String()));
+    addAndMakeVisible (stepSeqGroup.get());
     stepSeqGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
     stepSeqGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
@@ -433,7 +438,7 @@ void PanelModulation::resized()
     //[/UserPreResize]
 
     matrixGroup->setBounds (proportionOfWidth (0.5977f), proportionOfHeight (0.0087f), proportionOfWidth (0.3948f), proportionOfHeight (0.9869f));
-    lfoGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.0098f), proportionOfWidth (0.5901f), proportionOfHeight (0.2299f));
+    lfoGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.0098f), proportionOfWidth (0.5901f), proportionOfHeight (0.2298f));
     env1Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.2440f), proportionOfWidth (0.5901f), proportionOfHeight (0.1852f));
     env2Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.4292f), proportionOfWidth (0.5901f), proportionOfHeight (0.1852f));
     stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6100f), proportionOfWidth (0.5901f), proportionOfHeight (0.3834f));
@@ -783,19 +788,19 @@ BEGIN_JUCER_METADATA
           hasStroke="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="matrix group" id="f5fd2d041b369fc" memberName="matrixGroup"
-                  virtualName="" explicitFocusOrder="0" pos="59.767% 0.871% 39.479% 98.693%"
+                  virtualName="" explicitFocusOrder="0" pos="59.768% 0.903% 39.508% 98.736%"
                   outlinecol="ff749fad" textcol="ff749fad" title="Matrix"/>
   <GROUPCOMPONENT name="lfo group" id="25551a3d7e81232d" memberName="lfoGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0% 0.98% 59.013% 22.985%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 0.903% 59.045% 22.924%"
                   outlinecol="ff749fad" textcol="ff749fad" title=""/>
   <GROUPCOMPONENT name="env 1 group" id="dc02178fe3e4a3e1" memberName="env1Group"
-                  virtualName="" explicitFocusOrder="0" pos="0% 24.401% 59.013% 18.519%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 24.368% 59.045% 18.592%"
                   outlinecol="ff749fad" textcol="ff749fad" title="Free Enveloppe 1"/>
   <GROUPCOMPONENT name="env 2 group" id="c35474bb62378ab6" memberName="env2Group"
-                  virtualName="" explicitFocusOrder="0" pos="0% 42.919% 59.013% 18.519%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 42.96% 59.045% 18.592%"
                   outlinecol="ff749fad" textcol="ff749fad" title="Free Enveloppe 2"/>
   <GROUPCOMPONENT name="step sequencer group" id="edf809d50c7eeefc" memberName="stepSeqGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0% 61.002% 59.013% 38.344%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 61.011% 59.045% 38.267%"
                   outlinecol="ff749fad" textcol="ff749fad" title=""/>
 </JUCER_COMPONENT>
 
@@ -806,3 +811,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+
