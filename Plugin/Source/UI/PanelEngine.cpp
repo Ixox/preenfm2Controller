@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.1.2
+  Created with Projucer version: 5.4.5
 
   ------------------------------------------------------------------------------
 
-  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright (c) 2015 - ROLI Ltd.
+  The Projucer is part of the JUCE library.
+  Copyright (c) 2017 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -100,20 +100,23 @@ PanelEngine::PanelEngine ()
 	envSelected = 0;
     //[/Constructor_pre]
 
-    addAndMakeVisible (operatorGroup = new GroupComponent ("operator group",
-                                                           String()));
+    operatorGroup.reset (new GroupComponent ("operator group",
+                                             String()));
+    addAndMakeVisible (operatorGroup.get());
     operatorGroup->setTextLabelPosition (Justification::centredLeft);
     operatorGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
     operatorGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
-    addAndMakeVisible (mixerGroup = new GroupComponent ("mixer group",
-                                                        TRANS("Mixer")));
+    mixerGroup.reset (new GroupComponent ("mixer group",
+                                          TRANS("Mixer")));
+    addAndMakeVisible (mixerGroup.get());
     mixerGroup->setTextLabelPosition (Justification::centredLeft);
     mixerGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
     mixerGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
 
-    addAndMakeVisible (imGroup = new GroupComponent ("IM group",
-                                                     TRANS("Modulation indexes")));
+    imGroup.reset (new GroupComponent ("IM group",
+                                       TRANS("Modulation indexes")));
+    addAndMakeVisible (imGroup.get());
     imGroup->setTextLabelPosition (Justification::centredLeft);
     imGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
     imGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
@@ -359,16 +362,16 @@ void PanelEngine::paint (Graphics& g)
     //[/UserPrePaint]
 
     {
-        int x = proportionOfWidth (0.4800f), y = proportionOfHeight (0.0200f), width = proportionOfWidth (0.5000f), height = proportionOfHeight (0.6000f);
+        int x = proportionOfWidth (0.5000f), y = proportionOfHeight (0.0000f), width = proportionOfWidth (0.5000f), height = proportionOfHeight (0.6000f);
         Colour fillColour1 = Colour (0xff125368), fillColour2 = Colour (0xff083543);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setGradientFill (ColourGradient (fillColour1,
-                                       static_cast<float> (proportionOfWidth (0.8000f)) - static_cast<float> (proportionOfWidth (0.4800f)) + x,
-                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0200f)) + y,
+                                       static_cast<float> (proportionOfWidth (0.8000f)) - static_cast<float> (proportionOfWidth (0.5000f)) + x,
+                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0000f)) + y,
                                        fillColour2,
-                                       static_cast<float> (proportionOfWidth (0.5100f)) - static_cast<float> (proportionOfWidth (0.4800f)) + x,
-                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0200f)) + y,
+                                       static_cast<float> (proportionOfWidth (0.5100f)) - static_cast<float> (proportionOfWidth (0.5000f)) + x,
+                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0000f)) + y,
                                        true));
         g.fillRect (x, y, width, height);
     }
@@ -376,7 +379,7 @@ void PanelEngine::paint (Graphics& g)
     {
         float x = static_cast<float> (proportionOfWidth (0.1412f)), y = static_cast<float> (proportionOfHeight (0.0065f)), width = static_cast<float> (proportionOfWidth (0.3400f)), height = static_cast<float> (proportionOfHeight (0.3094f));
         Colour fillColour1 = Colour (0xff1ca5cf), fillColour2 = Colour (0xff0b3d4d);
-        Colour strokeColour = Colours::black;
+        Colour strokeColour = Colours::cadetblue;
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setGradientFill (ColourGradient (fillColour1,
@@ -388,7 +391,7 @@ void PanelEngine::paint (Graphics& g)
                                        true));
         g.fillRoundedRectangle (x, y, width, height, 10.000f);
         g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 10.000f, 2.500f);
+        g.drawRoundedRectangle (x, y, width, height, 10.000f, 2.000f);
     }
 
     //[UserPaint] Add your own custom painting code here..
@@ -400,9 +403,9 @@ void PanelEngine::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    operatorGroup->setBounds (proportionOfWidth (0.0103f), proportionOfHeight (0.5000f), proportionOfWidth (0.9801f), proportionOfHeight (0.4804f));
-    mixerGroup->setBounds (proportionOfWidth (0.0117f), proportionOfHeight (0.3116f), proportionOfWidth (0.5963f), proportionOfHeight (0.1852f));
-    imGroup->setBounds (proportionOfWidth (0.6121f), proportionOfHeight (0.0000f), proportionOfWidth (0.3729f), proportionOfHeight (0.4967f));
+    operatorGroup->setBounds (proportionOfWidth (0.0100f), proportionOfHeight (0.5000f), proportionOfWidth (0.9800f), proportionOfHeight (0.4900f));
+    mixerGroup->setBounds (proportionOfWidth (0.0100f), proportionOfHeight (0.3115f), proportionOfWidth (0.5900f), proportionOfHeight (0.1852f));
+    imGroup->setBounds (proportionOfWidth (0.6100f), proportionOfHeight (0.0000f), proportionOfWidth (0.3800f), proportionOfHeight (0.4967f));
     //[UserResized] Add your own custom resize handling here..
 
 	envCopyButton->setBounds(proportionOfWidth(0.023f), proportionOfHeight(0.645f), proportionOfWidth(0.06f), proportionOfHeight(0.03f));
@@ -746,19 +749,19 @@ BEGIN_JUCER_METADATA
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="900"
                  initialHeight="700">
   <BACKGROUND backgroundColour="62934">
-    <RECT pos="48% 2% 50% 60%" fill=" radial: 80% 5%, 51% 5%, 0=ff125368, 1=ff083543"
+    <RECT pos="50% 0% 50% 60%" fill=" radial: 80% 5%, 51% 5%, 0=ff125368, 1=ff083543"
           hasStroke="0"/>
-    <ROUNDRECT pos="14.119% 0.654% 34% 30.937%" cornerSize="10" fill=" radial: 29.609% 6.1%, 29.609% 44.444%, 0=ff1ca5cf, 1=ff0b3d4d"
-               hasStroke="1" stroke="2.5, mitered, butt" strokeColour="solid: ff000000"/>
+    <ROUNDRECT pos="14.119% 0.654% 34% 30.937%" cornerSize="10.0" fill=" radial: 29.609% 6.1%, 29.609% 44.444%, 0=ff1ca5cf, 1=ff0b3d4d"
+               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff5f9ea0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="operator group" id="3a99a017e94aaaf5" memberName="operatorGroup"
-                  virtualName="" explicitFocusOrder="0" pos="1.028% 50% 98.012% 48.039%"
+                  virtualName="" explicitFocusOrder="0" pos="0.996% 50% 98.007% 49.031%"
                   outlinecol="ff749fad" textcol="ff749fad" title="" textpos="33"/>
   <GROUPCOMPONENT name="mixer group" id="a41fc3891a2af464" memberName="mixerGroup"
-                  virtualName="" explicitFocusOrder="0" pos="1.165% 31.155% 59.63% 18.519%"
+                  virtualName="" explicitFocusOrder="0" pos="0.996% 31.202% 59.029% 18.508%"
                   outlinecol="ff749fad" textcol="ff749fad" title="Mixer" textpos="33"/>
   <GROUPCOMPONENT name="IM group" id="249d6ec6feb3696f" memberName="imGroup" virtualName=""
-                  explicitFocusOrder="0" pos="61.206% 0% 37.286% 49.673%" outlinecol="ff749fad"
+                  explicitFocusOrder="0" pos="61.021% 0% 37.983% 49.709%" outlinecol="ff749fad"
                   textcol="ff749fad" title="Modulation indexes" textpos="33"/>
 </JUCER_COMPONENT>
 
@@ -769,3 +772,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.1.2
+  Created with Projucer version: 5.4.5
 
   ------------------------------------------------------------------------------
 
-  The Projucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright (c) 2015 - ROLI Ltd.
+  The Projucer is part of the JUCE library.
+  Copyright (c) 2017 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -103,31 +103,31 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<GroupComponent> arpGroupComponent;
-    ScopedPointer<Slider> arpBPM;
-    ScopedPointer<Label> arpBPMLabel;
-    ScopedPointer<Label> arpDirectionLabel;
-    ScopedPointer<Label> arpOctaveLabel;
-    ScopedPointer<Label> arpPatternLabel;
-    ScopedPointer<Label> arpDivisionLabel;
-    ScopedPointer<Label> arpDurationLabel;
-    ScopedPointer<Label> arpLatchLabel;
-    ScopedPointer<ComboBox> arpDirectionCombo;
-    ScopedPointer<Slider> arpOctavleSlider;
-    ScopedPointer<ComboBox> arpPatternCombo;
-    ScopedPointer<ComboBox> arpDivisionCombo;
-    ScopedPointer<ComboBox> arpDurationCombo;
-    ScopedPointer<ComboBox> arpLatchCombo;
-    ScopedPointer<GroupComponent> filterGroupComponent;
-    ScopedPointer<Label> filterParam1Label;
-    ScopedPointer<Slider> filterParam1Slider;
-    ScopedPointer<Label> filterParam2Label;
-    ScopedPointer<Slider> filterParam2Slider;
-    ScopedPointer<Label> filterGainLabel;
-    ScopedPointer<Slider> filterGainSlider;
-    ScopedPointer<ComboBox> arpClockComboBox;
-    ScopedPointer<Label> clockLabel;
-    ScopedPointer<ComboBox> filterComboBox;
+    std::unique_ptr<GroupComponent> arpGroupComponent;
+    std::unique_ptr<Slider> arpBPM;
+    std::unique_ptr<Label> arpBPMLabel;
+    std::unique_ptr<Label> arpDirectionLabel;
+    std::unique_ptr<Label> arpOctaveLabel;
+    std::unique_ptr<Label> arpPatternLabel;
+    std::unique_ptr<Label> arpDivisionLabel;
+    std::unique_ptr<Label> arpDurationLabel;
+    std::unique_ptr<Label> arpLatchLabel;
+    std::unique_ptr<ComboBox> arpDirectionCombo;
+    std::unique_ptr<Slider> arpOctavleSlider;
+    std::unique_ptr<ComboBox> arpPatternCombo;
+    std::unique_ptr<ComboBox> arpDivisionCombo;
+    std::unique_ptr<ComboBox> arpDurationCombo;
+    std::unique_ptr<ComboBox> arpLatchCombo;
+    std::unique_ptr<GroupComponent> filterGroupComponent;
+    std::unique_ptr<Label> filterParam1Label;
+    std::unique_ptr<Slider> filterParam1Slider;
+    std::unique_ptr<Label> filterParam2Label;
+    std::unique_ptr<Slider> filterParam2Slider;
+    std::unique_ptr<Label> filterGainLabel;
+    std::unique_ptr<Slider> filterGainSlider;
+    std::unique_ptr<ComboBox> arpClockComboBox;
+    std::unique_ptr<Label> clockLabel;
+    std::unique_ptr<ComboBox> filterComboBox;
 
 
     //==============================================================================
@@ -136,3 +136,4 @@ private:
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+
