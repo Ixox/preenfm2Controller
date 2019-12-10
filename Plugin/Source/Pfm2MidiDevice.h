@@ -53,7 +53,7 @@ public:
 
 
 private:
-	ApplicationProperties pfm2AppProps;
+	PropertiesFile* midiPropertyFile;
 	bool showErrorMEssage;
 	CriticalSection messageLock;
 	std::unique_ptr<MidiOutput> pfm2MidiOutput;

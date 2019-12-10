@@ -26,21 +26,22 @@ Pfm2MidiDevice::Pfm2MidiDevice() {
 	String pfm2OutputDevice = "PreenFM mk2";
 
 	PropertiesFile::Options options;
-	options.commonToAllUsers = true;
+	options.commonToAllUsers = false;
 	options.applicationName = ProjectInfo::projectName;
 	options.osxLibrarySubFolder = "Application Support/Ixox";
 	options.filenameSuffix = ".midi.xml";
 	options.storageFormat = PropertiesFile::StorageFormat::storeAsXML;
-	pfm2AppProps.setStorageParameters(options);
 
-	PropertiesFile* pfm2Settings = pfm2AppProps.getCommonSettings(true);
+	midiPropertyFile = new PropertiesFile(options);
 
-	if (pfm2Settings->containsKey(MIDI_INPUT)) {
-		pfm2InputDevice = pfm2Settings->getValue(MIDI_INPUT);
-	}
+	if (midiPropertyFile->getFile().exists()) {
+		if (midiPropertyFile->containsKey(MIDI_INPUT)) {
+			pfm2InputDevice = midiPropertyFile->getValue(MIDI_INPUT);
+		}
 
-	if (pfm2Settings->containsKey(MIDI_OUTPUT)) {
-		pfm2OutputDevice = pfm2Settings->getValue(MIDI_OUTPUT);
+		if (midiPropertyFile->containsKey(MIDI_OUTPUT)) {
+			pfm2OutputDevice = midiPropertyFile->getValue(MIDI_OUTPUT);
+		}
 	}
 
 	pfm2MidiOutput = nullptr;
@@ -79,11 +80,11 @@ Pfm2MidiDevice::Pfm2MidiDevice() {
 			break;
 		}
 	}
-
 }
 
 Pfm2MidiDevice::~Pfm2MidiDevice() {
 	resetDevices();
+	delete midiPropertyFile;
 }
 
 void Pfm2MidiDevice::resetDevices() {
@@ -194,10 +195,9 @@ void Pfm2MidiDevice::choseNewDevices() {
 					}
 					else {
 						// We're good
-						PropertiesFile* pfm2Settings = pfm2AppProps.getCommonSettings(true);
-						pfm2Settings->setValue(MIDI_INPUT, currentMidiInputDevice);
-						pfm2Settings->setValue(MIDI_OUTPUT, currentMidiOutputDevice);
-						pfm2AppProps.saveIfNeeded();
+						midiPropertyFile->setValue(MIDI_INPUT, currentMidiInputDevice);
+						midiPropertyFile->setValue(MIDI_OUTPUT, currentMidiOutputDevice);
+						midiPropertyFile->saveIfNeeded();
 					}
 				}
 			}

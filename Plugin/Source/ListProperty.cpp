@@ -22,11 +22,7 @@
 ListProperty::ListProperty(String listName, String suffix, NameAndId* initList) {
 
     PropertiesFile::Options options;
-#if JUCE_MAC
     options.commonToAllUsers = false;
-#else
-    options.commonToAllUsers = true;
-#endif
     options.applicationName = ProjectInfo::projectName;
     options.osxLibrarySubFolder = "Application Support/Ixox";
     options.filenameSuffix = suffix;
