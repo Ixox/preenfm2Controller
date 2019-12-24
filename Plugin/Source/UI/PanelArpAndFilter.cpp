@@ -96,8 +96,8 @@ struct NameAndId effectNameInit[] = { { "Off",	1 },
     { "Diod ladder 3",	45 },
     { "L+d+ ladder 4",	46 },
     { "h3o+ tb303 filter",	47 },
-    { "h3o*",	48 },
-    { "Bits",	49 },
+    { "Svh3 svf with hp in feedback loop",	48 },
+    { "Alkx double sample rate reduction",	49 },
     { "", 50 }
 };
 
@@ -591,31 +591,31 @@ void PanelArpAndFilter::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    arpGroupComponent->setBounds (proportionOfWidth (0.0614f), proportionOfHeight (0.0236f), proportionOfWidth (0.8814f), proportionOfHeight (0.3019f));
-    arpBPM->setBounds (proportionOfWidth (0.1000f), proportionOfHeight (0.1793f), proportionOfWidth (0.0900f), proportionOfHeight (0.1211f));
-    arpBPMLabel->setBounds (proportionOfWidth (0.1000f), proportionOfHeight (0.1399f), proportionOfWidth (0.0900f), 20);
-    arpDirectionLabel->setBounds (proportionOfWidth (0.2100f), proportionOfHeight (0.1399f), proportionOfWidth (0.0814f), 20);
-    arpOctaveLabel->setBounds (proportionOfWidth (0.3100f), proportionOfHeight (0.1399f), proportionOfWidth (0.0900f), 20);
-    arpPatternLabel->setBounds (proportionOfWidth (0.4300f), proportionOfHeight (0.1399f), proportionOfWidth (0.0700f), 20);
-    arpDivisionLabel->setBounds (proportionOfWidth (0.5600f), proportionOfHeight (0.1399f), proportionOfWidth (0.0700f), 20);
-    arpDurationLabel->setBounds (proportionOfWidth (0.6900f), proportionOfHeight (0.1399f), proportionOfWidth (0.0700f), 20);
-    arpLatchLabel->setBounds (proportionOfWidth (0.8314f), proportionOfHeight (0.1399f), proportionOfWidth (0.0700f), 20);
-    arpDirectionCombo->setBounds (proportionOfWidth (0.2000f), proportionOfHeight (0.2013f), proportionOfWidth (0.1000f), 20);
-    arpOctavleSlider->setBounds (proportionOfWidth (0.3100f), proportionOfHeight (0.1793f), proportionOfWidth (0.0900f), proportionOfHeight (0.1211f));
-    arpPatternCombo->setBounds (proportionOfWidth (0.4300f), proportionOfHeight (0.2013f), proportionOfWidth (0.0814f), 20);
-    arpDivisionCombo->setBounds (proportionOfWidth (0.5600f), proportionOfHeight (0.2013f), proportionOfWidth (0.0814f), 20);
-    arpDurationCombo->setBounds (proportionOfWidth (0.6900f), proportionOfHeight (0.2013f), proportionOfWidth (0.0814f), 20);
-    arpLatchCombo->setBounds (proportionOfWidth (0.8314f), proportionOfHeight (0.2013f), proportionOfWidth (0.0814f), 20);
-    filterGroupComponent->setBounds (proportionOfWidth (0.1029f), proportionOfHeight (0.3632f), proportionOfWidth (0.8086f), proportionOfHeight (0.2060f));
-    filterParam1Label->setBounds (proportionOfWidth (0.4543f), proportionOfHeight (0.3805f), proportionOfWidth (0.0900f), 20);
-    filterParam1Slider->setBounds (proportionOfWidth (0.4543f), proportionOfHeight (0.4151f), proportionOfWidth (0.0900f), proportionOfHeight (0.1211f));
-    filterParam2Label->setBounds (proportionOfWidth (0.5843f), proportionOfHeight (0.3789f), proportionOfWidth (0.0900f), 20);
-    filterParam2Slider->setBounds (proportionOfWidth (0.5843f), proportionOfHeight (0.4167f), proportionOfWidth (0.0900f), proportionOfHeight (0.1211f));
-    filterGainLabel->setBounds (proportionOfWidth (0.7243f), proportionOfHeight (0.3789f), proportionOfWidth (0.0900f), 20);
-    filterGainSlider->setBounds (proportionOfWidth (0.7243f), proportionOfHeight (0.4151f), proportionOfWidth (0.0900f), proportionOfHeight (0.1211f));
-    arpClockComboBox->setBounds (proportionOfWidth (0.1643f), proportionOfHeight (0.0708f), proportionOfWidth (0.0814f), 20);
-    clockLabel->setBounds (proportionOfWidth (0.0986f), proportionOfHeight (0.0708f), 64, 24);
-    filterComboBox->setBounds (proportionOfWidth (0.1600f), proportionOfHeight (0.4513f), proportionOfWidth (0.2200f), 20);
+    arpGroupComponent->setBounds (proportionOfWidth (0.0616f), proportionOfHeight (0.0233f), proportionOfWidth (0.8817f), proportionOfHeight (0.3023f));
+    arpBPM->setBounds (proportionOfWidth (0.1003f), proportionOfHeight (0.1793f), proportionOfWidth (0.0903f), proportionOfHeight (0.1211f));
+    arpBPMLabel->setBounds (proportionOfWidth (0.1003f), proportionOfHeight (0.1395f), proportionOfWidth (0.0903f), 20);
+    arpDirectionLabel->setBounds (proportionOfWidth (0.2098f), proportionOfHeight (0.1395f), proportionOfWidth (0.0816f), 20);
+    arpOctaveLabel->setBounds (proportionOfWidth (0.3101f), proportionOfHeight (0.1395f), proportionOfWidth (0.0903f), 20);
+    arpPatternLabel->setBounds (proportionOfWidth (0.4303f), proportionOfHeight (0.1395f), proportionOfWidth (0.0697f), 20);
+    arpDivisionLabel->setBounds (proportionOfWidth (0.5598f), proportionOfHeight (0.1395f), proportionOfWidth (0.0697f), 20);
+    arpDurationLabel->setBounds (proportionOfWidth (0.6899f), proportionOfHeight (0.1395f), proportionOfWidth (0.0697f), 20);
+    arpLatchLabel->setBounds (proportionOfWidth (0.8313f), proportionOfHeight (0.1395f), proportionOfWidth (0.0697f), 20);
+    arpDirectionCombo->setBounds (proportionOfWidth (0.1999f), proportionOfHeight (0.2016f), proportionOfWidth (0.1003f), 20);
+    arpOctavleSlider->setBounds (proportionOfWidth (0.3101f), proportionOfHeight (0.1793f), proportionOfWidth (0.0903f), proportionOfHeight (0.1211f));
+    arpPatternCombo->setBounds (proportionOfWidth (0.4303f), proportionOfHeight (0.2016f), proportionOfWidth (0.0816f), 20);
+    arpDivisionCombo->setBounds (proportionOfWidth (0.5598f), proportionOfHeight (0.2016f), proportionOfWidth (0.0816f), 20);
+    arpDurationCombo->setBounds (proportionOfWidth (0.6899f), proportionOfHeight (0.2016f), proportionOfWidth (0.0816f), 20);
+    arpLatchCombo->setBounds (proportionOfWidth (0.8313f), proportionOfHeight (0.2016f), proportionOfWidth (0.0816f), 20);
+    filterGroupComponent->setBounds (proportionOfWidth (0.1027f), proportionOfHeight (0.3634f), proportionOfWidth (0.8088f), proportionOfHeight (0.2064f));
+    filterParam1Label->setBounds (proportionOfWidth (0.4546f), proportionOfHeight (0.3808f), proportionOfWidth (0.0903f), 20);
+    filterParam1Slider->setBounds (proportionOfWidth (0.4546f), proportionOfHeight (0.4147f), proportionOfWidth (0.0903f), proportionOfHeight (0.1211f));
+    filterParam2Label->setBounds (proportionOfWidth (0.5841f), proportionOfHeight (0.3789f), proportionOfWidth (0.0903f), 20);
+    filterParam2Slider->setBounds (proportionOfWidth (0.5841f), proportionOfHeight (0.4167f), proportionOfWidth (0.0903f), proportionOfHeight (0.1211f));
+    filterGainLabel->setBounds (proportionOfWidth (0.7242f), proportionOfHeight (0.3789f), proportionOfWidth (0.0903f), 20);
+    filterGainSlider->setBounds (proportionOfWidth (0.7242f), proportionOfHeight (0.4147f), proportionOfWidth (0.0903f), proportionOfHeight (0.1211f));
+    arpClockComboBox->setBounds (proportionOfWidth (0.1644f), proportionOfHeight (0.0707f), proportionOfWidth (0.0816f), 20);
+    clockLabel->setBounds (proportionOfWidth (0.0984f), proportionOfHeight (0.0707f), 64, 24);
+    filterComboBox->setBounds (proportionOfWidth (0.1600f), proportionOfHeight (0.4516f), proportionOfWidth (0.2198f), 20);
     //[UserResized] Add your own custom resize handling here..
 
 	float h = 0.7f;
