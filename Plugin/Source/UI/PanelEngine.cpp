@@ -127,7 +127,7 @@ PanelEngine::PanelEngine ()
 		addAndMakeVisible(mixKnob[k] = new SliderPfm2("Mix " + String(k + 1)));
 		mixKnob[k]->setRange(0, 1, .01f);
 		mixKnob[k]->setSliderStyle(Slider::RotaryVerticalDrag);
-		mixKnob[k]->setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
+		mixKnob[k]->setTextBoxStyle(Slider::TextBoxBelow, false, 40, 16);
 		mixKnob[k]->setDoubleClickReturnValue(true, 1.0f);
 		mixKnob[k]->setValue(1.0f, dontSendNotification);
 		mixKnob[k]->addListener(this);
@@ -430,9 +430,9 @@ void PanelEngine::resized()
 
 	// MIX !
 	for (int k = 0; k < NUMBER_OF_MIX; k++) {
-		mixKnob[k]->setBounds(proportionOfWidth(0.09f * k + .04f), proportionOfHeight(0.34f), proportionOfWidth(0.08f), proportionOfHeight(0.08f));
-		mixLabel[k]->setBounds(proportionOfWidth(0.09f * k + .04f), proportionOfHeight(0.42f), proportionOfWidth(0.08f), proportionOfHeight(0.025f));
-		panKnob[k]->setBounds(proportionOfWidth(0.09f * k + .04f), proportionOfHeight(0.44f), proportionOfWidth(0.08f), proportionOfHeight(.043f));
+		mixKnob[k]->setBounds(proportionOfWidth(0.09f * k + .04f), proportionOfHeight(0.34f), proportionOfWidth(0.08f), proportionOfHeight(0.09f));
+		mixLabel[k]->setBounds(proportionOfWidth(0.09f * k + .04f), proportionOfHeight(0.435f), proportionOfWidth(0.08f), proportionOfHeight(0.025f));
+		panKnob[k]->setBounds(proportionOfWidth(0.09f * k + .04f), proportionOfHeight(0.45f), proportionOfWidth(0.08f), proportionOfHeight(.043f));
 	}
 
 	for (int k = 0; k < NUMBER_OF_IM; k++) {
@@ -691,14 +691,14 @@ void PanelEngine::updateUIEnveloppe(String paramName) {
 			// No modification : we dont want sliderValueChanged to be called in the different panels
 
 			if ((p & 0x1) == 0) {
-				if (param->getValue() != enveloppe[k]->getX(p / 2)) {
+				if (param->getRealValue() != enveloppe[k]->getX(p / 2)) {
 					enveloppe[k]->setX(p / 2, param->getRealValue());
 					enveloppe[k]->repaint();
 
 				}
 			}
 			else {
-				if (param->getValue() != enveloppe[k]->getY(p / 2)) {
+				if (param->getRealValue() != enveloppe[k]->getY(p / 2)) {
 					enveloppe[k]->setY(p / 2, param->getRealValue());
 					enveloppe[k]->repaint();
 				}

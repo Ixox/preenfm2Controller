@@ -51,8 +51,8 @@
 
 struct NameAndId sourceNameInit[] = { { "None",	0 },
 	{ "lfo 1",	1 },
-	{ "lfo 1",	2 },
-	{ "lfo 1",	3 },
+	{ "lfo 2",	2 },
+	{ "lfo 3",	3 },
 	{ "Free Env 1",	4 },
 	{ "Free Env 2",	5 },
 	{ "Step Seq 1",	6 },

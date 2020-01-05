@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="I4cnWy" name="pfm2Editor" projectType="guiapp" version="2.11.1"
+<JUCERPROJECT id="I4cnWy" name="pfm2Editor" projectType="guiapp" version="2.11.2"
               bundleIdentifier="com.ixox.pfm2Editor" includeBinaryInAppConfig="1"
               jucerVersion="5.4.5" defines="" companyName="Xavier Hosxe" companyWebsite="http://github.com/Ixox"
               companyEmail="preenfm1@gmail.com" displaySplashScreen="1" reportAppUsage="1"
@@ -145,7 +145,8 @@
     <VS2019 targetFolder="Builds/VisualStudio2019" bigIcon="OvK51g">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" headerPath="F:\dev\JUCE.5.4.5\modules"/>
-        <CONFIGURATION isDebug="0" name="Release" headerPath="F:\dev\JUCE.5.4.5\modules"/>
+        <CONFIGURATION isDebug="0" name="Release" headerPath="F:\dev\JUCE.5.4.5\modules"
+                       winArchitecture="Win32"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_opengl" path="..\..\JUCE.5.4.5\modules"/>
