@@ -472,6 +472,9 @@
     <ClCompile Include="..\..\Source\UI\StepSequencer.cpp">
       <Filter>pfm2Editor\Source\UI</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\ListProperty.cpp">
+      <Filter>pfm2Editor\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\MidifiedFloatParameter.cpp">
       <Filter>pfm2Editor\Source</Filter>
     </ClCompile>
@@ -2516,6 +2519,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\UI\StepSequencer.h">
       <Filter>pfm2Editor\Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ListProperty.h">
+      <Filter>pfm2Editor\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\MidifiedFloatParameter.h">
       <Filter>pfm2Editor\Source</Filter>
