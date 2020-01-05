@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="nWJaEw" name="pfm2Editor" projectType="audioplug" version="2.11.1"
+<JUCERPROJECT id="nWJaEw" name="pfm2Editor" projectType="audioplug" version="2.11.2"
               bundleIdentifier="com.ixox.Preenfm2Editor" includeBinaryInAppConfig="1"
               buildVST="1" buildVST3="1" buildAU="1" buildRTAS="0" buildAAX="0"
               pluginName="Preenfm2 Editor" pluginDesc="PreenFM2 patch editor"
