@@ -24,7 +24,7 @@ ListProperty::ListProperty(String listName, String suffix, NameAndId* initList) 
     PropertiesFile::Options options;
     options.commonToAllUsers = false;
     options.applicationName = ProjectInfo::projectName;
-    options.osxLibrarySubFolder = "Application Support/Ixox";
+    options.osxLibrarySubFolder = "Application Support/preenfm2 Editor";
     options.filenameSuffix = suffix;
     options.storageFormat = PropertiesFile::StorageFormat::storeAsXML;
     options.doNotSave = true;
