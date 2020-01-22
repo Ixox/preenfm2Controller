@@ -128,7 +128,9 @@ public:
 	float get() const noexcept { return value; }
 	operator float() const noexcept { return value; }
 
+	// setValue is in Juce 5.4.5 called when host modify a parameter value
 	void setValue(float newValue);
+
 	void setRealValue(float newValue);
 	void setRealValueNoNotification(float newValue) { value = newValue; }
 

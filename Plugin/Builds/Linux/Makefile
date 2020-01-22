@@ -35,7 +35,7 @@ ifeq ($(CONFIG),Debug)
     TARGET_ARCH := -march=native
   endif
 
-  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DDEBUG=1 -D_DEBUG=1 -DJUCER_LINUX_MAKE_7346DA2A=1 -DJUCE_APP_VERSION=2.11.1 -DJUCE_APP_VERSION_HEX=0x20b01 $(shell pkg-config --cflags alsa x11 xinerama xext freetype2 webkit2gtk-4.0 gtk+-x11-3.0 libcurl) -pthread -I../../../../JUCE.5.4.5/modules/juce_audio_processors/format_types/VST3_SDK -I../../JuceLibraryCode -I../../../../JUCE.5.4.5/modules $(CPPFLAGS)
+  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DDEBUG=1 -D_DEBUG=1 -DJUCER_LINUX_MAKE_7346DA2A=1 -DJUCE_APP_VERSION=2.11.3 -DJUCE_APP_VERSION_HEX=0x20b03 $(shell pkg-config --cflags alsa x11 xinerama xext freetype2 webkit2gtk-4.0 gtk+-x11-3.0 libcurl) -pthread -I../../../../JUCE.5.4.5/modules/juce_audio_processors/format_types/VST3_SDK -I../../JuceLibraryCode -I../../../../JUCE.5.4.5/modules $(CPPFLAGS)
 
   JUCE_CPPFLAGS_VST := -DJucePlugin_Build_VST=1 -DJucePlugin_Build_VST3=0 -DJucePlugin_Build_AU=0 -DJucePlugin_Build_AUv3=0 -DJucePlugin_Build_RTAS=0 -DJucePlugin_Build_AAX=0 -DJucePlugin_Build_Standalone=0 -DJucePlugin_Build_Unity=0
   JUCE_CFLAGS_VST := -fPIC -fvisibility=hidden
@@ -65,7 +65,7 @@ ifeq ($(CONFIG),Release)
     TARGET_ARCH := -march=native
   endif
 
-  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DNDEBUG=1 -DJUCER_LINUX_MAKE_7346DA2A=1 -DJUCE_APP_VERSION=2.11.1 -DJUCE_APP_VERSION_HEX=0x20b01 $(shell pkg-config --cflags alsa x11 xinerama xext freetype2 webkit2gtk-4.0 gtk+-x11-3.0 libcurl) -pthread -I../../../../JUCE.5.4.5/modules/juce_audio_processors/format_types/VST3_SDK -I../../JuceLibraryCode -I../../../../JUCE.5.4.5/modules $(CPPFLAGS)
+  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DNDEBUG=1 -DJUCER_LINUX_MAKE_7346DA2A=1 -DJUCE_APP_VERSION=2.11.3 -DJUCE_APP_VERSION_HEX=0x20b03 $(shell pkg-config --cflags alsa x11 xinerama xext freetype2 webkit2gtk-4.0 gtk+-x11-3.0 libcurl) -pthread -I../../../../JUCE.5.4.5/modules/juce_audio_processors/format_types/VST3_SDK -I../../JuceLibraryCode -I../../../../JUCE.5.4.5/modules $(CPPFLAGS)
 
   JUCE_CPPFLAGS_VST := -DJucePlugin_Build_VST=1 -DJucePlugin_Build_VST3=0 -DJucePlugin_Build_AU=0 -DJucePlugin_Build_AUv3=0 -DJucePlugin_Build_RTAS=0 -DJucePlugin_Build_AAX=0 -DJucePlugin_Build_Standalone=0 -DJucePlugin_Build_Unity=0
   JUCE_CFLAGS_VST := -fPIC -fvisibility=hidden
@@ -105,6 +105,7 @@ OBJECTS_SHARED_CODE := \
   $(JUCE_OBJDIR)/AlgoPNG_60eecabe.o \
   $(JUCE_OBJDIR)/PreenLookAndFeel_d8d8748e.o \
   $(JUCE_OBJDIR)/StepSequencer_13b10873.o \
+  $(JUCE_OBJDIR)/ListProperty_f3fc239c.o \
   $(JUCE_OBJDIR)/MidifiedFloatParameter_3b4aa259.o \
   $(JUCE_OBJDIR)/Pfm2MidiDevice_f993bf9b.o \
   $(JUCE_OBJDIR)/PluginEditor_94d4fb09.o \
@@ -223,6 +224,11 @@ $(JUCE_OBJDIR)/PreenLookAndFeel_d8d8748e.o: ../../Source/UI/PreenLookAndFeel.cpp
 $(JUCE_OBJDIR)/StepSequencer_13b10873.o: ../../Source/UI/StepSequencer.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling StepSequencer.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/ListProperty_f3fc239c.o: ../../Source/ListProperty.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling ListProperty.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_SHARED_CODE) $(JUCE_CFLAGS_SHARED_CODE) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/MidifiedFloatParameter_3b4aa259.o: ../../Source/MidifiedFloatParameter.cpp

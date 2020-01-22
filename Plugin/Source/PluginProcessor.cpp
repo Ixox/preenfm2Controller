@@ -753,7 +753,6 @@ void Pfm2AudioProcessor::setParameter(int index, float newValue)
 {
     MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)getParameters()[index];
 
-    midifiedFP->setValue(newValue);
     // send nrpn
     midifiedFP->addNrpn(midiOutBuffer, currentMidiChannel);
     flushMidiOut();

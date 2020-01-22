@@ -22,10 +22,13 @@
 
 int MidifiedFloatParameter::paramIndexCounter = 0;
 
+
+
 void MidifiedFloatParameter::setValue(float newValue) {
 	float tmpValue = range.convertFrom0to1(newValue);
 	if (value != tmpValue) {
 		value = tmpValue;
+		audioProcessor->setParameter(getParameterIndex(), newValue);
 	}
 }
 
