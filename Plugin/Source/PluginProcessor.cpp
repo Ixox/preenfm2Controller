@@ -152,7 +152,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     }
     for (int k = 0; k < 12; k++) {
         nrpmParam = PREENFM2_NRPN_MTX1_SOURCE + k * 4;
-        newParam = new MidifiedFloatParameter(String("Mtx" + String(k + 1) + " Source"), nrpmParam, 1, 1, 20, 1);
+        newParam = new MidifiedFloatParameter(String("Mtx" + String(k + 1) + " Source"), nrpmParam, 1, 1, 100, 1);
         addMidifiedParameter(newParam);
         nrpmIndex[nrpmParam] = parameterIndex++;
 
@@ -162,7 +162,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         nrpmIndex[nrpmParam] = parameterIndex++;
 
         nrpmParam = PREENFM2_NRPN_MTX1_DESTINATION + k * 4;
-        newParam = new MidifiedFloatParameter(String("Mtx" + String(k + 1) + " Destination"), nrpmParam, 1, 1, 47, 1);
+        newParam = new MidifiedFloatParameter(String("Mtx" + String(k + 1) + " Destination"), nrpmParam, 1, 1, 100, 1);
         addMidifiedParameter(newParam);
         nrpmIndex[nrpmParam] = parameterIndex++;
     }
@@ -364,7 +364,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     nrpmIndex[nrpmParam] = parameterIndex++;
 
     nrpmParam = PREENFM2_NRPN_FILTER_TYPE;
-    newParam = new MidifiedFloatParameter(String("Filter type"), nrpmParam, 1, 1, 49, 1);
+    newParam = new MidifiedFloatParameter(String("Filter type"), nrpmParam, 1, 1, 100, 1);
     newParam->setOldName("Filter Combo");
     addMidifiedParameter(newParam);
     nrpmIndex[nrpmParam] = parameterIndex++;
@@ -809,6 +809,8 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int nrpnValue, int forceI
             return;
         }
         // Set the value
+        DBG("New Value  '" << nrpnValue);
+
         midifiedFP->setValueFromNrpn(nrpnValue);
         // Notify host we're not in the message thread so :
         MessageManager::callAsync(
