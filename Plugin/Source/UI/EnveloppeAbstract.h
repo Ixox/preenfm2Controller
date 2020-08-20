@@ -49,8 +49,8 @@ public:
 	EnveloppeAbstract();
 	~EnveloppeAbstract();
 
-	void paint(Graphics&);
-	virtual void resized();
+	void paint(Graphics&) override;
+	virtual void resized() override;
 	void updatePointPositions();
 	void setXMax(float x) { xMax = x; }
 	void mouseMove(const MouseEvent &event) override;

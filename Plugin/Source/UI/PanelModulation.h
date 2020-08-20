@@ -75,18 +75,18 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-	void buttonClicked(Button* buttonThatWasClicked);
-	void sliderValueChanged(Slider* sliderThatWasMoved);
+	void buttonClicked(Button* buttonThatWasClicked) override;
+	void sliderValueChanged(Slider* sliderThatWasMoved) override;
 	void sliderValueChanged(Slider* sliderThatWasMoved, bool fromPluginUI);
-	void comboBoxChanged(ComboBox* comboBoxThatHasChanged);
+	void comboBoxChanged(ComboBox* comboBoxThatHasChanged) override;
 	void comboBoxChanged(ComboBox* comboBoxThatHasChanged, bool fromPluginUI);
-	void buildParameters();
-	void updateSliderFromParameter_hook(Slider* slider);
-	void updateComboFromParameter_hook(ComboBox* combo);
-	void updateUIEnveloppe(String paramName);
-	void updateUIStepSequencer(String paramName);
-	bool containsThisParameterAsStepSequencer(String name);
-	bool containsThisParameterAsEnveloppe(String name);
+	void buildParameters() override;
+	void updateSliderFromParameter_hook(Slider* slider) override;
+	void updateComboFromParameter_hook(ComboBox* combo) override;
+	void updateUIEnveloppe(String paramName) override;
+	void updateUIStepSequencer(String paramName) override;
+	bool containsThisParameterAsStepSequencer(String name) override;
+	bool containsThisParameterAsEnveloppe(String name) override;
 	void sliderDragStarted(Slider* slider)	override;
 	void sliderDragEnded(Slider* slider) override;
 
@@ -122,7 +122,8 @@ private:
 	ScopedPointer<Label> matrixRowLabel[NUMBER_OF_MATRIX_ROW];
 	ScopedPointer<ComboBox> matrixSource[NUMBER_OF_MATRIX_ROW];
 	ScopedPointer<Slider> matrixMultipler[NUMBER_OF_MATRIX_ROW];
-	ScopedPointer<ComboBox> matrixDestination[NUMBER_OF_MATRIX_ROW];
+	ScopedPointer<ComboBox> matrixDestination1[NUMBER_OF_MATRIX_ROW];
+    ScopedPointer<ComboBox> matrixDestination2[NUMBER_OF_MATRIX_ROW];
 
 	// ENVELOPPES
 	ScopedPointer<EnveloppeFree1> enveloppeFree1;

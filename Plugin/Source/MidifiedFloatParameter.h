@@ -31,182 +31,181 @@ class Pfm2AudioProcessor;
 
 class MidifiedFloatParameter : public AudioProcessorParameter {
 public:
+    MidifiedFloatParameter(String componentName,
+        int nrpnParam,
+        float valueMultipler,
+        float minValue,
+        float maxValue,
+        float defaultValueParam
+    )
+        : AudioProcessorParameter(),
+        oldXmlName(""), range(minValue, maxValue), value(defaultValueParam), defaultValue(defaultValueParam)
+    {
+        this->componentName = componentName;
+        rangeFloat = maxValue - minValue;
+        sendRealValue = false;
 
-	MidifiedFloatParameter(String componentName,
-		int nrpnParam,
-		float valueMultipler,
-		float minValue,
-		float maxValue,
-		float defaultValue
-	)
-		: AudioProcessorParameter(),
-		range(minValue, maxValue), value(defaultValue), defaultValue(defaultValue),
-		oldXmlName("")
-	{
-		this->componentName = componentName;
-		rangeFloat = maxValue - minValue;
-		sendRealValue = false;
+        this->pfm2MinValue = minValue;
+        this->valueMultiplier = valueMultipler;
+        this->nrpnParam = nrpnParam;
 
-		this->pfm2MinValue = minValue;
-		this->valueMultiplier = valueMultipler;
-		this->nrpnParam = nrpnParam;
-
-		bias = 0;
-		paramIndex = paramIndexCounter++;
-		bIsAutomatable = true;
-	}
+        bias = 0;
+        paramIndex = paramIndexCounter++;
+        bIsAutomatable = true;
+    }
 
 
-	int getNrpnValueLSB() const {
-		if (!sendRealValue) {
-			int iv = (int)((value - pfm2MinValue + bias) * valueMultiplier + .005f);
-			return iv & 0x7f;
-		}
-		else {
-			int iv = (int)(value + .005f + bias);
-			return iv & 0x7f;
-		}
-	}
-	int getNrpnValueMSB() const {
-		if (!sendRealValue) {
-			int iv = (int)((value - pfm2MinValue + bias) * valueMultiplier + .005f);
-			return iv >> 7;
-		}
-		else {
-			int iv = (int)(value + .005f + bias);
-			return iv >> 7;
-		}
-	}
-	int getNrpnParamMSB() const {
-		return nrpnParam >> 7;
-	}
-	int getNrpnParamLSB() const {
-		return nrpnParam & 0xff;
-	}
+    int getNrpnValueLSB() const {
+        if (!sendRealValue) {
+            int iv = (int)((value - pfm2MinValue + bias) * valueMultiplier + .005f);
+            return iv & 0x7f;
+        }
+        else {
+            int iv = (int)(value + .005f + bias);
+            return iv & 0x7f;
+        }
+    }
+    int getNrpnValueMSB() const {
+        if (!sendRealValue) {
+            int iv = (int)((value - pfm2MinValue + bias) * valueMultiplier + .005f);
+            return iv >> 7;
+        }
+        else {
+            int iv = (int)(value + .005f + bias);
+            return iv >> 7;
+        }
+    }
+    int getNrpnParamMSB() const {
+        return nrpnParam >> 7;
+    }
+    int getNrpnParamLSB() const {
+        return nrpnParam & 0xff;
+    }
 
 
-	float getValueFromNrpn(int nrpnValue) const {
-		if (!sendRealValue) {
-			return ((float)nrpnValue) / this->valueMultiplier + this->pfm2MinValue - bias;
-		}
-		else {
-			return (float)nrpnValue - bias;
-		}
-	}
+    float getValueFromNrpn(int nrpnValue) const {
+        if (!sendRealValue) {
+            return ((float)nrpnValue) / this->valueMultiplier + this->pfm2MinValue - bias;
+        }
+        else {
+            return (float)nrpnValue - bias;
+        }
+    }
 
-	void setSendRealValue(bool srv) {
-		this->sendRealValue = srv;
-	}
+    void setSendRealValue(bool srv) {
+        this->sendRealValue = srv;
+    }
 
-	bool getSendRealValue() const {
-		return this->sendRealValue;
-	}
+    bool getSendRealValue() const {
+        return this->sendRealValue;
+    }
 
-	void setProcessor(Pfm2AudioProcessor* audioProcessor) {
-		this->audioProcessor = audioProcessor;
-	}
+    void setProcessor(Pfm2AudioProcessor* audioProcessor) {
+        this->audioProcessor = audioProcessor;
+    }
 
-	void addNrpn(MidiBuffer& midiBuffer, const int midiChannel);
+    void addNrpn(MidiBuffer& midiBuffer, const int midiChannel);
 
-	static void resetParamIndexCounter() {
-		paramIndexCounter = 0;
-	}
+    static void resetParamIndexCounter() {
+        paramIndexCounter = 0;
+    }
 
-	int getParamIndex() const {
-		return paramIndex;
-	}
-	void setBias(float b) {
-		this->bias = b;
-	}
+    int getParamIndex() const {
+        return paramIndex;
+    }
+    void setBias(float b) {
+        this->bias = b;
+    }
 
-	float getBias() const {
-		return this->bias;
-	}
-	void setValueFromNrpn(int nrpnValue);
+    float getBias() const {
+        return this->bias;
+    }
+    void setValueFromNrpn(int nrpnValue);
 
-	// parameter float
-	float get() const noexcept { return value; }
-	operator float() const noexcept { return value; }
+    // parameter float
+    float get() const noexcept { return value; }
+    operator float() const noexcept { return value; }
 
-	// setValue is in Juce 5.4.5 called when host modify a parameter value
-	void setValue(float newValue);
+    // setValue is in Juce 5.4.5 called when host modify a parameter value
+    void setValue(float newValue);
 
-	void setRealValue(float newValue);
-	void setRealValueNoNotification(float newValue) { value = newValue; }
+    void setRealValue(float newValue);
+    void setRealValueNoNotification(float newValue) { value = newValue; }
 
-	float getValue() const { return range.convertTo0to1(value); }
-	float getRealValue() const { return value; }
-	float getDefaultValue() const { return range.convertTo0to1(defaultValue); }
-	float getValueForText(const String& text) const { return range.convertTo0to1(text.getFloatValue()); }
+    float getValue() const { return range.convertTo0to1(value); }
+    float getRealValue() const { return value; }
+    float getDefaultValue() const { return range.convertTo0to1(defaultValue); }
+    float getValueForText(const String& text) const { return range.convertTo0to1(text.getFloatValue()); }
 
-	String getText(float v, int length) const
-	{
-		String asText(range.convertFrom0to1(v), 2);
-		return length > 0 ? asText.substring(0, length) : asText;
-	}
+    String getText(float v, int length) const
+    {
+        String asText(range.convertFrom0to1(v), 2);
+        return length > 0 ? asText.substring(0, length) : asText;
+    }
 
-	String getName() {
-		return componentName;
-	}
+    String getName() {
+        return componentName;
+    }
 
-	void setOldName(String oldName) {
-		for (int i = 0; i < oldName.length(); ++i) {
-			if (((oldName[i] >= 'a' && oldName[i] <= 'z') ||
-				(oldName[i] >= '0' && oldName[i] <= '9') ||
-				(oldName[i] >= 'A' && oldName[i] <= 'Z'))) {
-				oldXmlName += oldName[i];
-			}
-		}
-	}
+    void setOldName(String oldName) {
+        for (int i = 0; i < oldName.length(); ++i) {
+            if (((oldName[i] >= 'a' && oldName[i] <= 'z') ||
+                (oldName[i] >= '0' && oldName[i] <= '9') ||
+                (oldName[i] >= 'A' && oldName[i] <= 'Z'))) {
+                oldXmlName += oldName[i];
+            }
+        }
+    }
 
 
-	String getNameForXML() {
-		if (oldXmlName.length() == 0) {
-			setOldName(componentName);
-		}
-		return oldXmlName;
-	}
+    String getNameForXML() {
+        if (oldXmlName.length() == 0) {
+            setOldName(componentName);
+        }
+        return oldXmlName;
+    }
 
-	float getMin() {
-		return range.getRange().getStart();
-	}
+    float getMin() {
+        return range.getRange().getStart();
+    }
 
-	float getMax() {
-		return range.getRange().getEnd();
-	}
+    float getMax() {
+        return range.getRange().getEnd();
+    }
 
-	String getName(int maximumStringLength) const {
-		return componentName.substring(0, maximumStringLength);
-	}
-	String getLabel() const {
-		return componentName;
-	}
+    String getName(int maximumStringLength) const {
+        return componentName.substring(0, maximumStringLength);
+    }
+    String getLabel() const {
+        return componentName;
+    }
 
-	void setIsAutomatable(bool automatable) {
-		bIsAutomatable = automatable;
-	}
+    void setIsAutomatable(bool automatable) {
+        bIsAutomatable = automatable;
+    }
 
-	bool isAutomatable() const {
-		return bIsAutomatable;
-	}
+    bool isAutomatable() const {
+        return bIsAutomatable;
+    }
 
 private:
-	static int paramIndexCounter;
-	float pfm2MinValue;
-	float valueMultiplier;
-	int nrpnParam;
-	int paramIndex;
-	float bias;
-	String componentName;
-	String oldXmlName; // To save XML for compatibility
-	NormalisableRange<float> range;
-	float value, defaultValue;
-	Pfm2AudioProcessor* audioProcessor;
-	bool sendRealValue;
-	float rangeFloat;
-	bool bIsAutomatable;
+    static int paramIndexCounter;
+    float pfm2MinValue;
+    float valueMultiplier;
+    int nrpnParam;
+    int paramIndex;
+    float bias;
+    String componentName;
+    String oldXmlName; // To save XML for compatibility
+    NormalisableRange<float> range;
+    float value, defaultValue;
+    Pfm2AudioProcessor* audioProcessor;
+    bool sendRealValue;
+    float rangeFloat;
+    bool bIsAutomatable;
 
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MidifiedFloatParameter)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MidifiedFloatParameter)
 };
 
 #endif  // MIDIFIEDPARAMETER_H_INCLUDED
+

@@ -73,20 +73,20 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-	void buttonClicked(Button* buttonThatWasClicked);
+	void buttonClicked(Button* buttonThatWasClicked) override;
 	void sliderDragStarted(Slider* slider)	override;
 	void sliderDragEnded(Slider* slider) override;
-	void sliderValueChanged(Slider* sliderThatWasMoved);
+	void sliderValueChanged(Slider* sliderThatWasMoved) override;
 	void sliderValueChanged(Slider* sliderThatWasMoved, bool fromPluginUI);
-	void comboBoxChanged(ComboBox* comboBoxThatHasChanged);
+	void comboBoxChanged(ComboBox* comboBoxThatHasChanged) override;
 	void comboBoxChanged(ComboBox* comboBoxThatHasChanged, bool fromPluginUI);
 	void newAlgo(int algoNumber);
 	void resizeAlgoDrawableImage();
 	// Panel of parameters
-	void buildParameters();
-	void updateSliderFromParameter_hook(Slider* slider);
-	void updateUIEnveloppe(String paramName);
-	bool containsThisParameterAsEnveloppe(String name);
+	void buildParameters() override;
+	void updateSliderFromParameter_hook(Slider* slider) override;
+	void updateUIEnveloppe(String paramName) override;
+	bool containsThisParameterAsEnveloppe(String name) override;
 
     //[/UserMethods]
 

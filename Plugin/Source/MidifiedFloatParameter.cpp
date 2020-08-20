@@ -44,8 +44,6 @@ void MidifiedFloatParameter::setRealValue(float newValue) {
 	}
 }
 
-
-
 void MidifiedFloatParameter::addNrpn(MidiBuffer& midiBuffer, const int midiChannel) {
 	double time = Time::getMillisecondCounterHiRes() * .001;
 	MidiMessage byte1 = MidiMessage::controllerEvent(midiChannel, 99, getNrpnParamMSB());

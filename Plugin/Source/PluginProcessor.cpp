@@ -161,8 +161,13 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         addMidifiedParameter(newParam);
         nrpmIndex[nrpmParam] = parameterIndex++;
 
-        nrpmParam = PREENFM2_NRPN_MTX1_DESTINATION + k * 4;
-        newParam = new MidifiedFloatParameter(String("Mtx" + String(k + 1) + " Destination"), nrpmParam, 1, 1, 100, 1);
+        nrpmParam = PREENFM2_NRPN_MTX1_DESTINATION1 + k * 4;
+        newParam = new MidifiedFloatParameter(String("Mtx" + String(k + 1) + " Destination1"), nrpmParam, 1, 1, 100, 1);
+        addMidifiedParameter(newParam);
+        nrpmIndex[nrpmParam] = parameterIndex++;
+
+        nrpmParam = PREENFM2_NRPN_MTX1_DESTINATION2 + k * 4;
+        newParam = new MidifiedFloatParameter(String("Mtx" + String(k + 1) + " Destination2"), nrpmParam, 1, 1, 100, 1);
         addMidifiedParameter(newParam);
         nrpmIndex[nrpmParam] = parameterIndex++;
     }

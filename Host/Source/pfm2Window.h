@@ -27,6 +27,8 @@
 #ifndef PFM2_WINDOW_H_INCLUDED
 #define PFM2_WINDOW_H_INCLUDED
 
+#define JUCE_NO_DEPRECATION_WARNINGS 1
+
 
 #if JUCE_MODULE_AVAILABLE_juce_audio_plugin_client
 extern juce::AudioProcessor* JUCE_API JUCE_CALLTYPE createPluginFilterOfType(juce::AudioProcessor::WrapperType type);

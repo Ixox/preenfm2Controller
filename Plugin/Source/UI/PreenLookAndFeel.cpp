@@ -73,8 +73,7 @@ void preenfmLookAndFeel::drawRotarySlider(Graphics& g, int x, int y, int width, 
 		g.setColour(fill);
 		g.strokePath(valueArc, PathStrokeType(lineW, PathStrokeType::curved, PathStrokeType::butt));
 
-		const auto thumbWidth = lineW * 2.0f;
-		const Point<float> thumbPoint(bounds.getCentreX() + arcRadius * std::cos(toAngle - float_Pi * 0.5f),
+        const juce::Point<float> thumbPoint(bounds.getCentreX() + arcRadius * std::cos(toAngle - float_Pi * 0.5f),
 			bounds.getCentreY() + arcRadius * std::sin(toAngle - float_Pi * 0.5f));
 
 		g.setColour(fill);
@@ -96,10 +95,10 @@ void preenfmLookAndFeel::drawLinearSlider(Graphics& g, int x, int y, int width, 
 
 	const auto trackWidth = jmin(4.0f, slider.isHorizontal() ? height * 0.25f : width * 0.25f);
 
-	const Point<float> startPoint(slider.isHorizontal() ? x : x + width * 0.5f,
+	const juce::Point<float> startPoint(slider.isHorizontal() ? x : x + width * 0.5f,
 		slider.isHorizontal() ? y + height * 0.5f : height + y);
 
-	const Point<float> endPoint(slider.isHorizontal() ? width + x : startPoint.x,
+	const juce::Point<float> endPoint(slider.isHorizontal() ? width + x : startPoint.x,
 		slider.isHorizontal() ? startPoint.y : y);
 
 	Path backgroundTrack;
@@ -110,8 +109,8 @@ void preenfmLookAndFeel::drawLinearSlider(Graphics& g, int x, int y, int width, 
 	g.strokePath(backgroundTrack, PathStrokeType(trackWidth, PathStrokeType::curved, PathStrokeType::butt));
 
 	Path valueTrack;
-	Point<float> minPoint, maxPoint, thumbPoint;
-	Point<float> midPoint = (endPoint + startPoint) / 2;
+	juce::Point<float> minPoint, maxPoint;
+	juce::Point<float> midPoint = (endPoint + startPoint) / 2;
 
 	const auto kx = slider.isHorizontal() ? sliderPos : (x + width * 0.5f);
 	const auto ky = slider.isHorizontal() ? (y + height * 0.5f) : sliderPos;

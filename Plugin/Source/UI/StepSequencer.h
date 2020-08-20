@@ -30,11 +30,11 @@ class StepSequencer : public Component
 public:
 	StepSequencer(int numberOfValues, int maxValue, int nrpnBase);
 	~StepSequencer();
-	void mouseDrag(const MouseEvent &event);
-	void mouseDown(const MouseEvent &event);
-	void mouseUp(const MouseEvent &event);
+	void mouseDrag(const MouseEvent &event) override;
+	void mouseDown(const MouseEvent &event) override;
+	void mouseUp(const MouseEvent &event) override;
 	void mouseDoubleClick(const MouseEvent& event) override;
-	void mouseWheelMove(const MouseEvent& event, const MouseWheelDetails& wheel);
+	void mouseWheelMove(const MouseEvent& event, const MouseWheelDetails& wheel) override;
 	int  limitX(int x);
 	int  limitY(int y);
 	void updateValues(const MouseEvent& event);
@@ -42,8 +42,8 @@ public:
 	void setValuesNoNotify(int x, int y);
 	int getValue(int step) const { if (step < numberOfValues) return values[step]; else return 0; }
 
-	void paint(Graphics&);
-	void resized();
+	void paint(Graphics&) override;
+	void resized() override;
 
 
 	/**

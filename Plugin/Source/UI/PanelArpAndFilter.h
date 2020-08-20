@@ -71,11 +71,11 @@ public:
 	void arpIsNow(bool arpOn, bool enableBPM);
 	void filterIsNow(bool paramOn1, bool paramOn2);
 	void setMidiBuffer(MidiBuffer& eventsToAdd) { this->eventsToAdd = &eventsToAdd; }
-	void buildParameters();
+    void buildParameters() override;
 	void comboBoxChanged(ComboBox* comboBoxThatHasChanged, bool fromPluginUI);
 	void sliderValueChanged(Slider* sliderThatWasMoved, bool fromPluginUI);
-	void updateComboFromParameter_hook(ComboBox* combo);
-	void updateSliderFromParameter_hook(Slider* slider);
+	void updateComboFromParameter_hook(ComboBox* combo) override;
+	void updateSliderFromParameter_hook(Slider* slider) override;
 	void sliderDragStarted(Slider* slider)	override;
 	void sliderDragEnded(Slider* slider) override;
     //[/UserMethods]

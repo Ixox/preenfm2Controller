@@ -350,19 +350,28 @@ PanelModulation::PanelModulation ()
 		matrixSource[r]->setScrollWheelEnabled(true);
 		matrixSource[r]->addListener(this);
 
-		addAndMakeVisible(matrixDestination[r] = new ComboBox("Mtx" + String(r + 1) + " Destination"));
-		matrixDestination[r]->setEditableText(false);
-		matrixDestination[r]->setJustificationType(Justification::centred);
-		matrixDestination[r]->setColour(ComboBox::buttonColourId, Colours::blue);
+		addAndMakeVisible(matrixDestination1[r] = new ComboBox("Mtx" + String(r + 1) + " Destination1"));
+		matrixDestination1[r]->setEditableText(false);
+		matrixDestination1[r]->setJustificationType(Justification::centred);
+		matrixDestination1[r]->setColour(ComboBox::buttonColourId, Colours::blue);
 		for (int i = 0; destNameAndId[i].name != ""; i++) {
-			matrixDestination[r]->addItem(destNameAndId[i].name, (destNameAndId[i].id + 1));
-//			DBG("{ \"" << matrixDestNames[i]  << "\"," << matrixDestIds[i] << "},");
-
+			matrixDestination1[r]->addItem(destNameAndId[i].name, (destNameAndId[i].id + 1));
 		}
-		matrixDestination[r]->setSelectedId(1);
-		matrixDestination[r]->setScrollWheelEnabled(true);
-		matrixDestination[r]->addListener(this);
-	}
+		matrixDestination1[r]->setSelectedId(1);
+		matrixDestination1[r]->setScrollWheelEnabled(true);
+		matrixDestination1[r]->addListener(this);
+
+        addAndMakeVisible(matrixDestination2[r] = new ComboBox("Mtx" + String(r + 1) + " Destination2"));
+        matrixDestination2[r]->setEditableText(false);
+        matrixDestination2[r]->setJustificationType(Justification::centred);
+        matrixDestination2[r]->setColour(ComboBox::buttonColourId, Colours::blue);
+        for (int i = 0; destNameAndId[i].name != ""; i++) {
+            matrixDestination2[r]->addItem(destNameAndId[i].name, (destNameAndId[i].id + 1));
+        }
+        matrixDestination2[r]->setSelectedId(1);
+        matrixDestination2[r]->setScrollWheelEnabled(true);
+        matrixDestination2[r]->addListener(this);
+    }
 
 	addAndMakeVisible(enveloppeFree1 = new EnveloppeFree1(127));
 	enveloppeFree1->setName(TRANS("Free Env 1"));
@@ -473,7 +482,8 @@ void PanelModulation::resized()
 		matrixRowLabel[r]->setBounds(proportionOfWidth(0.60f), proportionOfHeight(.06f + .08f * r), proportionOfWidth(0.03f), 20);
 		matrixSource[r]->setBounds(proportionOfWidth(0.63f), proportionOfHeight(.06f + .08f * r), proportionOfWidth(0.10f), 20);
 		matrixMultipler[r]->setBounds(proportionOfWidth(0.74f), proportionOfHeight(.034f + .08f * r), proportionOfWidth(0.12f), proportionOfHeight(0.088f));
-		matrixDestination[r]->setBounds(proportionOfWidth(0.86f), proportionOfHeight(.06f + .08f * r), proportionOfWidth(0.12f), 20);
+		matrixDestination1[r]->setBounds(proportionOfWidth(0.86f), proportionOfHeight(.042f + .08f * r), proportionOfWidth(0.12f), 18);
+        matrixDestination2[r]->setBounds(proportionOfWidth(0.86f), proportionOfHeight(.074f + .08f * r), proportionOfWidth(0.12f), 18);
 	}
 	enveloppeFree1->setBounds(proportionOfWidth(0.02f), proportionOfHeight(0.27f), proportionOfWidth(0.55f), proportionOfHeight(0.14f));
 	enveloppeFree2->setBounds(proportionOfWidth(0.02f), proportionOfHeight(0.46f), proportionOfWidth(0.55f), proportionOfHeight(0.14f));
@@ -642,7 +652,8 @@ void PanelModulation::buildParameters() {
 	for (int k = 0; k < NUMBER_OF_MATRIX_ROW; k++) {
 		updateComboFromParameter(matrixSource[k]);
 		updateSliderFromParameter(matrixMultipler[k]);
-		updateComboFromParameter(matrixDestination[k]);
+        updateComboFromParameter(matrixDestination1[k]);
+		updateComboFromParameter(matrixDestination2[k]);
 	}
 	for (int k = 0; k < NUMBER_OF_LFO; k++) {
 		updateComboFromParameter(lfoShape[k]);
