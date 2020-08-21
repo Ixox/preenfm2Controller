@@ -24,7 +24,7 @@
  //==============================================================================
  /*
  */
-class Enveloppe : public  EnveloppeAbstract
+class Enveloppe : public  EnveloppeAbstract, Button::Listener
 {
 public:
 	Enveloppe();
@@ -36,11 +36,15 @@ public:
 	void newYValue(int draggingPointIndex, float newY);
 	const char ** getPointSuffix() const;
 	const char *getPointSuffix(int pointNumber, bool isX) const;
-
+    void resized() override;
+    void buttonClicked(Button* buttonThatWasClicked) override;
 
 private:
+    float releaseTimeBeforeLoop;
+    float releaseLevelBeforeLoop ;
+    ScopedPointer<ToggleButton> loop;
 
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Enveloppe)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Enveloppe)
 
 };
 

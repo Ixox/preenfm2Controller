@@ -19,15 +19,20 @@
 
 
 
-ListProperty::ListProperty(String listName, String suffix, NameAndId* initList) {
+ListProperty::ListProperty(String listName, String suffix) {
+    this->options.commonToAllUsers = false;
+    this->options.applicationName = ProjectInfo::projectName;
+    this->options.osxLibrarySubFolder = "Application Support/preenfm2 Editor";
+    this->options.filenameSuffix = suffix;
+    this->options.storageFormat = PropertiesFile::StorageFormat::storeAsXML;
+    this->options.doNotSave = true;
 
-    PropertiesFile::Options options;
-    options.commonToAllUsers = false;
-    options.applicationName = ProjectInfo::projectName;
-    options.osxLibrarySubFolder = "Application Support/preenfm2 Editor";
-    options.filenameSuffix = suffix;
-    options.storageFormat = PropertiesFile::StorageFormat::storeAsXML;
-    options.doNotSave = true;
+    this->listName = listName;
+}
+
+
+void ListProperty::init(NameAndId* initList) {
+
     PropertiesFile pfm2FilterListTest(options);
     if (!pfm2FilterListTest.getFile().exists()) {
         // we must create it !
@@ -77,6 +82,21 @@ ListProperty::ListProperty(String listName, String suffix, NameAndId* initList) 
 
 }
 
+void ListProperty::reset() {
+    PropertiesFile pfm2FilterListTest(options);
+    if (pfm2FilterListTest.getFile().exists()) {
+        pfm2FilterListTest.getFile().deleteFile();
+    }
+}
+
 NameAndId* ListProperty::getList() {
     return myItems;
 }
+
+String ListProperty::getFullPathName() {
+    PropertiesFile pfm2FilterListTest(options);
+    if (pfm2FilterListTest.getFile().exists()) {
+        return pfm2FilterListTest.getFile().getFullPathName();
+    }
+}
+   

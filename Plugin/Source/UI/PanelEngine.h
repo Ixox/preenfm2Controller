@@ -94,7 +94,6 @@ public:
     void resized() override;
 
 
-
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 	ScopedPointer<Enveloppe> enveloppe[NUMBER_OF_OPERATORS];

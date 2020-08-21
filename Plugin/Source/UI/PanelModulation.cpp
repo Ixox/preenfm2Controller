@@ -69,6 +69,7 @@ struct NameAndId sourceNameInit[] = { { "None",	0 },
 	{ "Performance 3",	15 },
 	{ "Performance 4",	16 },
 	{ "MPE CC74",	19 },
+	{ "Random",	20 },
 	{ "", 0}
 };
 
@@ -119,7 +120,9 @@ struct NameAndId destNameInit[] = {
 	{ "lfo 3 Frequency",38 },
 	{ "Free Env2 Silence",39 },
 	{ "Step Seq 1 gate",40 },
+	{ "Step Seq 1 start",48 },
 	{ "Step Seq 2 gate",41 },
+	{ "Step Seq 2 start",49 },
 	{ "Filter frequency",42 },
 	{ "", 0 }
 };
@@ -132,10 +135,12 @@ struct NameAndId destNameInit[] = {
 PanelModulation::PanelModulation ()
 {
     //[Constructor_pre] You can add your own custom stuff here..
-	ListProperty sourceList("sources", ".sources.xml", sourceNameInit);
+	ListProperty sourceList("sources", ".sources.xml");
+	sourceList.init(sourceNameInit);
 	NameAndId* sourcesNameAndId = sourceList.getList();
 
-	ListProperty destList("dest", ".dest.xml", destNameInit);
+	ListProperty destList("dest", ".dest.xml");
+	destList.init(destNameInit);
 	NameAndId* destNameAndId = destList.getList();
 
     //[/Constructor_pre]
@@ -198,7 +203,7 @@ PanelModulation::PanelModulation ()
 		addAndMakeVisible(lfoPhase[k] = new SliderPfm2("LFO" + String(k + 1) + " Phase"));
 		lfoPhase[k]->setRange(0, 1.0f, .01f);
 		lfoPhase[k]->setSliderStyle(Slider::RotaryVerticalDrag);
-		lfoPhase[k]->setTextBoxStyle(Slider::TextBoxBelow, false, 35, 16);
+		lfoPhase[k]->setTextBoxStyle(Slider::TextBoxBelow, false, 40, 16);
 		lfoPhase[k]->setDoubleClickReturnValue(true, 0.0f);
 		lfoPhase[k]->setValue(0, dontSendNotification);
 		lfoPhase[k]->addListener(this);
@@ -223,9 +228,9 @@ PanelModulation::PanelModulation ()
 		lfoExtMidiSync[k]->addListener(this);
 
 		addAndMakeVisible(lfoFrequency[k] = new SliderPfm2("LFO" + String(k + 1) + " Frequency"));
-		lfoFrequency[k]->setRange(0, 99.9f, .1f);
+		lfoFrequency[k]->setRange(0, 99.9f, .01f);
 		lfoFrequency[k]->setSliderStyle(Slider::RotaryVerticalDrag);
-		lfoFrequency[k]->setTextBoxStyle(Slider::TextBoxBelow, false, 35, 16);
+		lfoFrequency[k]->setTextBoxStyle(Slider::TextBoxBelow, false, 40, 16);
 		lfoFrequency[k]->setDoubleClickReturnValue(true, 3.0f);
 		lfoFrequency[k]->setValue(3.0f, dontSendNotification);
 		lfoFrequency[k]->addListener(this);
@@ -233,7 +238,7 @@ PanelModulation::PanelModulation ()
 		addAndMakeVisible(lfoBias[k] = new SliderPfm2("LFO" + String(k + 1) + " Bias"));
 		lfoBias[k]->setRange(-1.0f, 1.0f, .01f);
 		lfoBias[k]->setSliderStyle(Slider::LinearVertical);
-		lfoBias[k]->setTextBoxStyle(Slider::TextBoxBelow, false, 35, 16);
+		lfoBias[k]->setTextBoxStyle(Slider::TextBoxBelow, false, 40, 16);
 		lfoBias[k]->setDoubleClickReturnValue(true, 0.0f);
 		lfoBias[k]->setValue(0.0f, dontSendNotification);
 		lfoBias[k]->addListener(this);
@@ -241,7 +246,7 @@ PanelModulation::PanelModulation ()
 		addAndMakeVisible(lfoKSync[k] = new SliderPfm2("LFO" + String(k + 1) + " KeySync time"));
 		lfoKSync[k]->setRange(0.0f, 16.0f, .01f);
 		lfoKSync[k]->setSliderStyle(Slider::RotaryVerticalDrag);
-		lfoKSync[k]->setTextBoxStyle(Slider::TextBoxBelow, false, 35, 16);
+		lfoKSync[k]->setTextBoxStyle(Slider::TextBoxBelow, false, 40, 16);
 		lfoKSync[k]->setDoubleClickReturnValue(true, 0.0f);
 		lfoKSync[k]->setValue(0.0f, dontSendNotification);
 		lfoKSync[k]->addListener(this);

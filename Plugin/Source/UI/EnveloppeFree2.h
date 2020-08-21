@@ -34,8 +34,6 @@ public:
 	void resized();
 	void paint(Graphics&);
 	void comboBoxChanged(ComboBox* comboBoxThatHasChanged);
-	// Must be implemented to deal with point value modification
-	void newXValue(int draggingPointIndex, float newX);
 	const char ** getPointSuffix() const;
 	const char *getPointSuffix(int pointNumber, bool isX) const;
 

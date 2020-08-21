@@ -43,6 +43,11 @@ Enveloppe::Enveloppe()
 	pointList.append(point2);
 	pointList.append(point3);
 	pointList.append(point4);
+
+	loop = new ToggleButton("Loop");
+	loop->setTooltip("Sets release values to make the enveloppe loops");
+	addAndMakeVisible(loop);
+	loop->addListener(this);
 }
 
 Enveloppe::~Enveloppe()
@@ -56,10 +61,9 @@ void Enveloppe::paint(Graphics& g)
 
 	static const String adsr[] = { "A", "D", "S", "R" };
 	for (int v = 0; v < 4; v++) {
-
+		int moveReleaseY = (v == 3 ? 20 : 0);
 		g.setColour(Colours::whitesmoke);
-		g.drawText(adsr[v], getWidth() - RIGHT_TEXT_SIZE, 20 + v * 20, 50, 10, Justification::centred, true);
-
+		g.drawText(adsr[v], getWidth() - RIGHT_TEXT_SIZE, 20 + v * 20 + moveReleaseY, 50, 10, Justification::centred, true);
 
         if (overPointIndex == v + 1 && isMouseOverX()) {
 			g.setColour(Colours::yellow);
@@ -68,7 +72,7 @@ void Enveloppe::paint(Graphics& g)
 			g.setColour(Colours::whitesmoke);
 		}
 		String posisionX = String(pointList[v + 1].get()->getX(), 2);
-		g.drawText(posisionX, getWidth() - RIGHT_TEXT_SIZE / 3 * 2 - 10, 20 + v * 20, 50, 10, Justification::centred, true);
+		g.drawText(posisionX, getWidth() - RIGHT_TEXT_SIZE / 3 * 2 - 10, 20 + v * 20 + moveReleaseY, 50, 10, Justification::centred, true);
         if (overPointIndex == v + 1 && !isMouseOverX()) {
             g.setColour(Colours::yellow);
         }
@@ -76,15 +80,25 @@ void Enveloppe::paint(Graphics& g)
             g.setColour(Colours::whitesmoke);
         }
         posisionX = String(pointList[v + 1].get()->getY(), 2);
-		g.drawText(posisionX, getWidth() - RIGHT_TEXT_SIZE / 3 - 10, 20 + v * 20, 50, 10, Justification::centred, true);
+		g.drawText(posisionX, getWidth() - RIGHT_TEXT_SIZE / 3 - 10, 20 + v * 20 + moveReleaseY, 50, 10, Justification::centred, true);
 	}
+
 }
 
 void Enveloppe::newXValue(int draggingPointIndex, float newX) {
+	if (draggingPointIndex == 4) {
+		loop->setToggleState(getX(4) == 0.0f && getY(4) == 1.0f, false);
+	}
 }
 
 void Enveloppe::newYValue(int draggingPointIndex, float newY) {
+	if (draggingPointIndex == 4) {
+		loop->setToggleState(getX(4) == 0.0f && getY(4) == 1.0f, false);
+	}
 }
+
+
+
 
 static const char* __enveloppePointSuffix[] = { " Attk", " Attk lvl", " Deca", " Deca lvl", " Sust", " Sust lvl", " Rele", " Rele lvl" };
 const char ** Enveloppe::getPointSuffix() const {
@@ -93,5 +107,26 @@ const char ** Enveloppe::getPointSuffix() const {
 
 const char* Enveloppe::getPointSuffix(int pointNumber, bool isX) const {
 	return __enveloppePointSuffix[(pointNumber - 1) * 2 + (isX ? 0 : 1)];
+}
+
+void Enveloppe::resized() {
+	loop->setBounds(getWidth() - RIGHT_TEXT_SIZE + 15, 20 + 57, 60, 18);
+}
+
+
+void Enveloppe::buttonClicked(Button* buttonThatWasClicked) {
+	if (buttonThatWasClicked == loop) {
+		if (loop->getToggleState()) {
+			releaseTimeBeforeLoop = getX(4);
+			releaseLevelBeforeLoop = getY(4);
+			setX(4, 0.0f);
+			setY(4, 1.0f);
+		} else {
+			setX(4, releaseTimeBeforeLoop);
+			setY(4, releaseLevelBeforeLoop);
+		}
+		notifyObservers(3, true);
+		this->repaint();
+	}
 }
 

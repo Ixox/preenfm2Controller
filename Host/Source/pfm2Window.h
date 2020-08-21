@@ -29,6 +29,8 @@
 
 #define JUCE_NO_DEPRECATION_WARNINGS 1
 
+// Hack to be able to call the reset
+#include "../../Plugin/Source/ListProperty.h"
 
 #if JUCE_MODULE_AVAILABLE_juce_audio_plugin_client
 extern juce::AudioProcessor* JUCE_API JUCE_CALLTYPE createPluginFilterOfType(juce::AudioProcessor::WrapperType type);
@@ -377,6 +379,43 @@ public:
 		helpWindow.runModalLoop();
 	}
 
+	void deleteFiles()
+	{
+		// Properties must be the same as in the Panels
+		ListProperty filterList("filters", ".filters.xml");
+		ListProperty sourceList("sources", ".sources.xml");
+		ListProperty destList("dest", ".dest.xml");
+
+		AlertWindow resetWindow("Files reset",
+			"Save your xml files if you modified them manually\r\n\r\n"
+			" . " + sourceList.getFullPathName() + "\r\n"
+			" . " + destList.getFullPathName() + "\r\n"
+			" . " + filterList.getFullPathName() + "\r\n\r\n\r\n"
+			"Click Reset to proceed\r\n\r\n\r\n",
+			AlertWindow::WarningIcon);
+
+		resetWindow.setSize(1024, 600);
+		resetWindow.addButton("Cancel", 1);
+		resetWindow.addButton("Reset", 2);
+		
+		if (resetWindow.runModalLoop() == 2) {
+			filterList.reset();
+			sourceList.reset();
+			destList.reset();
+
+
+			AlertWindow restartWindow("Restart",
+				"Restart the editor\r\n",
+				AlertWindow::InfoIcon);
+
+			restartWindow.addButton("OK", 1);
+			restartWindow.runModalLoop();
+
+		}
+
+
+	}
+
 	//==============================================================================
 	void switchToHostApplication()
 	{
@@ -688,6 +727,8 @@ public:
 		m.addItem(3, TRANS("Load a saved preset"));
 		m.addSeparator();
 		m.addItem(4, TRANS("Reset to default preset"));
+		m.addSeparator();
+		m.addItem(6, TRANS("Reset default settings"));
 
 		switch (m.showAt(&optionsButton))
 		{
@@ -696,6 +737,7 @@ public:
 		case 3:  pluginHolder->askUserToLoadState(); break;
 		case 4:  resetToDefaultState(); break;
 		case 5:  pluginHolder->quickHelp(); break;
+		case 6:  pluginHolder->deleteFiles(); break;
 		default: break;
 		}
 	}

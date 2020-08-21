@@ -91,9 +91,6 @@ void EnveloppeFree2::comboBoxChanged(ComboBox* comboBoxThatHasChanged) {
 void EnveloppeFree2::resized() {
 }
 
-void EnveloppeFree2::newXValue(int draggingPointIndex, float newX) {
-}
-
 static const char* __enveloppeFree2PointSuffix[] = { " Sile", " Attk", " Deca" };
 const char ** EnveloppeFree2::getPointSuffix() const {
 	return __enveloppeFree2PointSuffix;

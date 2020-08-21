@@ -31,10 +31,15 @@ struct NameAndId {
 class ListProperty
 {
 public:
-    ListProperty(String listName, String suffix, NameAndId* initList);
+    ListProperty(String listName, String suffix);
+    void init(NameAndId* initList);
+    void reset();
+    String getFullPathName();
     NameAndId* getList();
 
 private:
+    PropertiesFile::Options options;
+    String listName;
     NameAndId myItems[NUMBER_MAX_OF_FILTER];
 };
 

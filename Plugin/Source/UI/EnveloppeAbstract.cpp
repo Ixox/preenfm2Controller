@@ -270,7 +270,13 @@ void EnveloppeAbstract::resized()
 int EnveloppeAbstract::getNumberOfPoints() const { return pointList.size(); }
 float EnveloppeAbstract::getX(int index) const { return pointList[index].get()->getX(); }
 float EnveloppeAbstract::getY(int index) const { return pointList[index].get()->getY(); }
-void EnveloppeAbstract::setX(int index, float x) { pointList[index].get()->setX(x); }
-void EnveloppeAbstract::setY(int index, float y) { pointList[index].get()->setY(y); }
+
+void EnveloppeAbstract::setX(int index, float x) { 
+    pointList[index].get()->setX(x); 
+}
+
+void EnveloppeAbstract::setY(int index, float y) { 
+    pointList[index].get()->setY(y); 
+}
 
 

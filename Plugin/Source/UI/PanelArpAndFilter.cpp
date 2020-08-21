@@ -76,7 +76,7 @@ struct NameAndId effectNameInit[] = { { "Off",	1 },
     { "Sigm tanh waveshaper saturation",	25 },
     { "Fold amplifier and folder",	26 },
     { "Wrap amplifier and wrapper",	27 },
-    { "Xor xored ober threshold",	28 },
+    { "Rot rotation in the stereo field",	28 },
     { "Txr1 bitmangling texture 1",	29 },
     { "Txr2 bitmangling texture 2",	30 },
     { "LPx1 xor low pass + fold",	31 },
@@ -109,7 +109,8 @@ PanelArpAndFilter::PanelArpAndFilter ()
 {
     //[Constructor_pre] You can add your own custom stuff here..
 
-    ListProperty filterList("filters", ".filters.xml", effectNameInit);
+    ListProperty filterList("filters", ".filters.xml");
+    filterList.init(effectNameInit);
     NameAndId* fxNames = filterList.getList();
 
     //[/Constructor_pre]
