@@ -48,6 +48,9 @@ Enveloppe::Enveloppe()
 	loop->setTooltip("Sets release values to make the enveloppe loops");
 	addAndMakeVisible(loop);
 	loop->addListener(this);
+
+	// Not define
+	operatorType = 0;
 }
 
 Enveloppe::~Enveloppe()
@@ -61,7 +64,7 @@ void Enveloppe::paint(Graphics& g)
 
 	static const String adsr[] = { "A", "D", "S", "R" };
 	for (int v = 0; v < 4; v++) {
-		int moveReleaseY = (v == 3 ? 20 : 0);
+		int moveReleaseY = ((v == 3 && operatorType == 2) ? 20 : 0);
 		g.setColour(Colours::whitesmoke);
 		g.drawText(adsr[v], getWidth() - RIGHT_TEXT_SIZE, 20 + v * 20 + moveReleaseY, 50, 10, Justification::centred, true);
 
@@ -125,8 +128,16 @@ void Enveloppe::buttonClicked(Button* buttonThatWasClicked) {
 			setX(4, releaseTimeBeforeLoop);
 			setY(4, releaseLevelBeforeLoop);
 		}
-		notifyObservers(3, true);
+		notifyObservers(4, true);
+		notifyObservers(4, false);
 		this->repaint();
 	}
 }
 
+void Enveloppe::setOperatorType(int operatorType) {
+	if (this->operatorType != operatorType) {
+		this->operatorType = operatorType;
+		loop->setVisible(this->operatorType == 2);
+		repaint();
+	}
+}

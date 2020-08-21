@@ -77,6 +77,37 @@ struct AlgoInformation  algoInformation[] = {
 		{ 6, 1, 5},   // ALG28
 };
 
+int algoOpInformation[][NUMBER_OF_OPERATORS] = {
+		{1,2,2,0,0,0}, // ALGO1
+		{1,1,2,0,0,0}, // ALGO2
+		{1,2,2,2,0,0}, // ALGO3
+		{1,1,2,2,0,0}, // ALGO4
+		{1,2,2,2,0,0}, // ALGO5
+		{1,1,1,2,0,0}, // ALGO6
+		{1,2,1,2,1,2}, // ALGO7
+		{1,2,2,2,1,2}, // ALGO8
+		{1,2,2,1,2,2}, // ALGO9
+		{1,2,1,2,2,2}, // ALGO10
+		{1,2,2,1,2,2}, // ALGO11
+		{1,2,1,2,1,2}, // ALGO12
+		{1,2,1,2,2,2}, // ALGO13
+		{1,2,2,1,2,2}, // ALGO14
+		{1,2,1,2,2,2}, // ALGO15
+		{1,2,1,2,2,2}, // ALGO16
+		{1,2,2,2,2,2}, // ALGO17
+		{1,2,2,2,2,2}, // ALGO18
+		{1,2,2,1,1,2}, // ALGO19
+		{1,1,2,1,2,2}, // ALGO20
+		{1,1,2,1,1,2}, // ALGO21
+		{1,2,1,1,1,2}, // ALGO22
+		{1,1,1,1,1,2}, // ALGO23
+		{1,2,1,2,2,1}, // ALGO24
+		{1,1,1,2,1,2}, // ALGO25
+		{1,1,1,2,2,1}, // ALGO26
+		{1,1,1,1,1,1}, // ALGO27
+		{1,1,1,1,1,2}, // ALGO28
+};
+
 const char* algo4_pngs[] = {
 		 AlgoPNG::algo1_png, AlgoPNG::algo2_png, AlgoPNG::algo3_png, AlgoPNG::algo4_png, AlgoPNG::algo5_png, AlgoPNG::algo6_png,
 		 AlgoPNG::algo7_png, AlgoPNG::algo8_png, AlgoPNG::algo9_png, AlgoPNG::algo10_png, AlgoPNG::algo11_png, AlgoPNG::algo12_png,
@@ -527,6 +558,8 @@ void PanelEngine::newAlgo(int algoNumber) {
 				enveloppeButton[0]->setToggleState(true, sendNotification);
 			}
 		}
+		// Only carrier operators have loop
+		enveloppe[o]->setOperatorType(algoOpInformation[algoNumber][o]);
 	}
 	algoDrawableImage->setImage(algoImages[algoNumber]);
 	resizeAlgoDrawableImage();

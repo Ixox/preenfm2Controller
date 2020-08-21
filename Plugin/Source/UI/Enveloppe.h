@@ -38,11 +38,13 @@ public:
 	const char *getPointSuffix(int pointNumber, bool isX) const;
     void resized() override;
     void buttonClicked(Button* buttonThatWasClicked) override;
+    void setOperatorType(int operatorType);
 
 private:
     float releaseTimeBeforeLoop;
     float releaseLevelBeforeLoop ;
     ScopedPointer<ToggleButton> loop;
+    int operatorType;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Enveloppe)
 
