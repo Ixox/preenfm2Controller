@@ -25,6 +25,10 @@
 			isa = PBXBuildFile;
 			fileRef = 089C70079AF1630D1D55BD1B;
 		};
+		E1EF9088D8154CB114CAA847 = {
+			isa = PBXBuildFile;
+			fileRef = 94C8B41AF1337AC0A01FF97B;
+		};
 		07A5C806D99C3102E079F0B7 = {
 			isa = PBXBuildFile;
 			fileRef = 5B3E854725B532BF27F161D1;
@@ -32,10 +36,6 @@
 		43B5FF7043B39447FE9D9514 = {
 			isa = PBXBuildFile;
 			fileRef = B8D8871652C8938335613B68;
-		};
-		E1EF9088D8154CB114CAA847 = {
-			isa = PBXBuildFile;
-			fileRef = 94C8B41AF1337AC0A01FF97B;
 		};
 		C34C76D5FDD739E668AC3A54 = {
 			isa = PBXBuildFile;
@@ -359,13 +359,6 @@
 			path = ../../Source/UI/PanelArpAndFilter.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
-		2CAEFE906A5E2E01D2207277 = {
-			isa = PBXFileReference;
-			lastKnownFileType = text.plist.xml;
-			name = pfm2Editor.entitlements;
-			path = pfm2Editor.entitlements;
-			sourceTree = "SOURCE_ROOT";
-		};
 		2F90DBA9D81F2373D72368EC = {
 			isa = PBXFileReference;
 			explicitFileType = wrapper.cfbundle;
@@ -604,18 +597,18 @@
 			path = "../../JuceLibraryCode/include_juce_gui_extra.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
-		9B9F98BB3D109B4A4E465D62 = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.cpp;
-			name = "include_juce_audio_plugin_client_Standalone.cpp";
-			path = "../../JuceLibraryCode/include_juce_audio_plugin_client_Standalone.cpp";
-			sourceTree = "SOURCE_ROOT";
-		};
 		9D0093F952F1A5DE68822F01 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
 			name = "include_juce_opengl.mm";
 			path = "../../JuceLibraryCode/include_juce_opengl.mm";
+			sourceTree = "SOURCE_ROOT";
+		};
+		9FA266E3BBE09C86E4948777 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
+			name = "include_juce_events.mm";
+			path = "../../JuceLibraryCode/include_juce_events.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
 		9FFF9D2FC0AFF0C8640EF7F0 = {
@@ -667,11 +660,11 @@
 			path = "../../../../JUCE_5.4.5/modules/juce_events";
 			sourceTree = "SOURCE_ROOT";
 		};
-		9FA266E3BBE09C86E4948777 = {
+		9B9F98BB3D109B4A4E465D62 = {
 			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.objcpp;
-			name = "include_juce_events.mm";
-			path = "../../JuceLibraryCode/include_juce_events.mm";
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = "include_juce_audio_plugin_client_Standalone.cpp";
+			path = "../../JuceLibraryCode/include_juce_audio_plugin_client_Standalone.cpp";
 			sourceTree = "SOURCE_ROOT";
 		};
 		A0DCC871E5E4EA6E073B3BD3 = {
@@ -1061,9 +1054,9 @@
 		EC27D71AACCA5CFD1E71A2F0 = {
 			isa = PBXGroup;
 			children = (
+				94C8B41AF1337AC0A01FF97B,
 				5B3E854725B532BF27F161D1,
 				B8D8871652C8938335613B68,
-				94C8B41AF1337AC0A01FF97B,
 				B16050CAF4AD9CA0F2F0E047,
 				031AFC92D443974A9FE22488,
 				81E2CDAD49F51877643C3042,
@@ -1107,6 +1100,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -1114,6 +1108,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -1136,8 +1131,8 @@
 					"_DEBUG=1",
 					"DEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=2.12.0",
-					"JUCE_APP_VERSION_HEX=0x20c00",
+					"JUCE_APP_VERSION=3.0.0",
+					"JUCE_APP_VERSION_HEX=0x30000",
 					"JucePlugin_Build_VST=1",
 					"JucePlugin_Build_VST3=0",
 					"JucePlugin_Build_AU=0",
@@ -1150,7 +1145,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GENERATE_PKGINFO_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"../../../../../dev/VST_SDK/VST3_SDK",
+					"../../../../VST_SDK/VST3_SDK",
 					"../../JuceLibraryCode",
 					"../../../../JUCE_5.4.5/modules",
 					"../../../dev/VST_SDK/VST3_SDK",
@@ -1190,8 +1185,8 @@
 					"_NDEBUG=1",
 					"NDEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=2.12.0",
-					"JUCE_APP_VERSION_HEX=0x20c00",
+					"JUCE_APP_VERSION=3.0.0",
+					"JUCE_APP_VERSION_HEX=0x30000",
 					"JucePlugin_Build_VST=1",
 					"JucePlugin_Build_VST3=0",
 					"JucePlugin_Build_AU=0",
@@ -1205,7 +1200,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GENERATE_PKGINFO_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"../../../../../dev/VST_SDK/VST3_SDK",
+					"../../../../VST_SDK/VST3_SDK",
 					"../../JuceLibraryCode",
 					"../../../../JUCE_5.4.5/modules",
 					"../../../dev/VST_SDK/VST3_SDK",
@@ -1246,8 +1241,8 @@
 					"_DEBUG=1",
 					"DEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=2.12.0",
-					"JUCE_APP_VERSION_HEX=0x20c00",
+					"JUCE_APP_VERSION=3.0.0",
+					"JUCE_APP_VERSION_HEX=0x30000",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=1",
 					"JucePlugin_Build_AU=0",
@@ -1260,7 +1255,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GENERATE_PKGINFO_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"../../../../../dev/VST_SDK/VST3_SDK",
+					"../../../../VST_SDK/VST3_SDK",
 					"../../JuceLibraryCode",
 					"../../../../JUCE_5.4.5/modules",
 					"../../../dev/VST_SDK/VST3_SDK",
@@ -1300,8 +1295,8 @@
 					"_NDEBUG=1",
 					"NDEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=2.12.0",
-					"JUCE_APP_VERSION_HEX=0x20c00",
+					"JUCE_APP_VERSION=3.0.0",
+					"JUCE_APP_VERSION_HEX=0x30000",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=1",
 					"JucePlugin_Build_AU=0",
@@ -1315,7 +1310,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GENERATE_PKGINFO_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"../../../../../dev/VST_SDK/VST3_SDK",
+					"../../../../VST_SDK/VST3_SDK",
 					"../../JuceLibraryCode",
 					"../../../../JUCE_5.4.5/modules",
 					"../../../dev/VST_SDK/VST3_SDK",
@@ -1356,8 +1351,8 @@
 					"_DEBUG=1",
 					"DEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=2.12.0",
-					"JUCE_APP_VERSION_HEX=0x20c00",
+					"JUCE_APP_VERSION=3.0.0",
+					"JUCE_APP_VERSION_HEX=0x30000",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=0",
 					"JucePlugin_Build_AU=1",
@@ -1370,7 +1365,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GENERATE_PKGINFO_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"../../../../../dev/VST_SDK/VST3_SDK",
+					"../../../../VST_SDK/VST3_SDK",
 					"../../JuceLibraryCode",
 					"../../../../JUCE_5.4.5/modules",
 					"../../../dev/VST_SDK/VST3_SDK",
@@ -1411,8 +1406,8 @@
 					"_NDEBUG=1",
 					"NDEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=2.12.0",
-					"JUCE_APP_VERSION_HEX=0x20c00",
+					"JUCE_APP_VERSION=3.0.0",
+					"JUCE_APP_VERSION_HEX=0x30000",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=0",
 					"JucePlugin_Build_AU=1",
@@ -1426,7 +1421,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GENERATE_PKGINFO_FILE = YES;
 				HEADER_SEARCH_PATHS = (
-					"../../../../../dev/VST_SDK/VST3_SDK",
+					"../../../../VST_SDK/VST3_SDK",
 					"../../JuceLibraryCode",
 					"../../../../JUCE_5.4.5/modules",
 					"../../../dev/VST_SDK/VST3_SDK",
@@ -1466,8 +1461,8 @@
 					"_DEBUG=1",
 					"DEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=2.12.0",
-					"JUCE_APP_VERSION_HEX=0x20c00",
+					"JUCE_APP_VERSION=3.0.0",
+					"JUCE_APP_VERSION_HEX=0x30000",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=0",
 					"JucePlugin_Build_AU=0",
@@ -1479,7 +1474,7 @@
 				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
-					"../../../../../dev/VST_SDK/VST3_SDK",
+					"../../../../VST_SDK/VST3_SDK",
 					"../../JuceLibraryCode",
 					"../../../../JUCE_5.4.5/modules",
 					"../../../dev/VST_SDK/VST3_SDK",
@@ -1514,8 +1509,8 @@
 					"_NDEBUG=1",
 					"NDEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=2.12.0",
-					"JUCE_APP_VERSION_HEX=0x20c00",
+					"JUCE_APP_VERSION=3.0.0",
+					"JUCE_APP_VERSION_HEX=0x30000",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=0",
 					"JucePlugin_Build_AU=0",
@@ -1528,7 +1523,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
-					"../../../../../dev/VST_SDK/VST3_SDK",
+					"../../../../VST_SDK/VST3_SDK",
 					"../../JuceLibraryCode",
 					"../../../../JUCE_5.4.5/modules",
 					"../../../dev/VST_SDK/VST3_SDK",
@@ -1564,8 +1559,8 @@
 					"_DEBUG=1",
 					"DEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=2.12.0",
-					"JUCE_APP_VERSION_HEX=0x20c00",
+					"JUCE_APP_VERSION=3.0.0",
+					"JUCE_APP_VERSION_HEX=0x30000",
 					"JucePlugin_Build_VST=1",
 					"JucePlugin_Build_VST3=1",
 					"JucePlugin_Build_AU=1",
@@ -1578,7 +1573,7 @@
 				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
-					"../../../../../dev/VST_SDK/VST3_SDK",
+					"../../../../VST_SDK/VST3_SDK",
 					"../../JuceLibraryCode",
 					"../../../../JUCE_5.4.5/modules",
 					"../../../dev/VST_SDK/VST3_SDK",
@@ -1613,8 +1608,8 @@
 					"_NDEBUG=1",
 					"NDEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=2.12.0",
-					"JUCE_APP_VERSION_HEX=0x20c00",
+					"JUCE_APP_VERSION=3.0.0",
+					"JUCE_APP_VERSION_HEX=0x30000",
 					"JucePlugin_Build_VST=1",
 					"JucePlugin_Build_VST3=1",
 					"JucePlugin_Build_AU=1",
@@ -1628,7 +1623,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
-					"../../../../../dev/VST_SDK/VST3_SDK",
+					"../../../../VST_SDK/VST3_SDK",
 					"../../JuceLibraryCode",
 					"../../../../JUCE_5.4.5/modules",
 					"../../../dev/VST_SDK/VST3_SDK",
@@ -1688,6 +1683,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PRODUCT_NAME = "Preenfm2Editor";
+				SDKROOT = macosx;
 				WARNING_CFLAGS = "-Wreorder";
 				ZERO_LINK = NO;
 			};
@@ -1733,6 +1729,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PRODUCT_NAME = "Preenfm2Editor";
+				SDKROOT = macosx;
 				WARNING_CFLAGS = "-Wreorder";
 				ZERO_LINK = NO;
 			};
@@ -1951,9 +1948,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E1EF9088D8154CB114CAA847,
 				07A5C806D99C3102E079F0B7,
 				43B5FF7043B39447FE9D9514,
-				E1EF9088D8154CB114CAA847,
 				C34C76D5FDD739E668AC3A54,
 				C6EBFAB81CA44431CDA5508D,
 				0291FCBF3279B2CE4188B891,

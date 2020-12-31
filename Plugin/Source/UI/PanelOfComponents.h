@@ -34,6 +34,8 @@
 #define TYPE_STEP_SEQ  3
 #define TYPE_ENVELOPPE 4
 
+#define TYPE_PREENFM2 1
+#define TYPE_PREENFM3 2
 
 class PanelOfComponents : public EnveloppeListener,
 	public StepSequencerListener
@@ -243,13 +245,16 @@ public:
 	virtual void updateUIStepSequencer(String paramName) {
 	}
 
-
+	virtual void setPfmType(int type) {
+		pfmType = type;
+	}
 
 protected:
 	HashMap<const String, MidifiedFloatParameter *> parameterMap;
 	HashMap<const String, Component*> componentMap;
 	HashMap<const String, int> componentType;
 	AudioProcessor* audioProcessor;
+	int pfmType;
 };
 
 

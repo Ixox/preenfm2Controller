@@ -7,7 +7,7 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.4.5
+  Created with Projucer version: 5.4.7
 
   ------------------------------------------------------------------------------
 
@@ -129,6 +129,7 @@ PanelEngine::PanelEngine ()
     //[Constructor_pre] You can add your own custom stuff here..
 	envToCopy = -1;
 	envSelected = 0;
+	pfmType = TYPE_PREENFM2;
     //[/Constructor_pre]
 
     operatorGroup.reset (new GroupComponent ("operator group",
@@ -176,11 +177,13 @@ PanelEngine::PanelEngine ()
 	}
 
 	for (int k = 0; k < NUMBER_OF_IM; k++) {
-		addAndMakeVisible(IMNumber[k] = new Label("IM Label" + String(k + 1), String("IM") + String(k + 1)));
-
-
+		if (k < (NUMBER_OF_IM - 1)) {
+			addAndMakeVisible(IMNumber[k] = new Label("IM Label" + String(k + 1), String("IM") + String(k + 1)));
+		} else {
+			addAndMakeVisible(IMNumber[k] = new Label("IM Label" + String(k + 1), String("Feedback")));
+		}
 		addAndMakeVisible(IMKnob[k] = new SliderPfm2("IM " + String(k + 1)));
-		IMKnob[k]->setRange(0, 16, .01f);
+		IMKnob[k]->setRange(0, k < (NUMBER_OF_IM - 1) ? 16 : 1, .01f);
 		IMKnob[k]->setSliderStyle(Slider::RotaryVerticalDrag);
 		IMKnob[k]->setTextBoxStyle(Slider::TextBoxLeft, false, 40, 16);
 		IMKnob[k]->setDoubleClickReturnValue(true, 1.0f);
@@ -188,13 +191,15 @@ PanelEngine::PanelEngine ()
 		IMKnob[k]->addListener(this);
 
 		addAndMakeVisible(IMVelocityKnob[k] = new SliderPfm2("IM Velocity " + String(k + 1)));
-		IMVelocityKnob[k]->setRange(0, 16, .01f);
+		IMVelocityKnob[k]->setRange(0, k < (NUMBER_OF_IM - 1) ? 16 : 1, .01f);
 		IMVelocityKnob[k]->setSliderStyle(Slider::RotaryVerticalDrag);
 		IMVelocityKnob[k]->setTextBoxStyle(Slider::TextBoxLeft, false, 40, 16);
 		IMVelocityKnob[k]->setDoubleClickReturnValue(true, 0.0f);
 		IMVelocityKnob[k]->setValue(0.0f, dontSendNotification);
 		IMVelocityKnob[k]->addListener(this);
 	}
+
+
 	addAndMakeVisible(IMLabel = new Label("IM Label", "Main"));
 	IMLabel->setJustificationType(Justification::centredTop);
 	addAndMakeVisible(IMVelocityLabel = new Label("IM Velocity Label", "Velocity"));
@@ -347,16 +352,64 @@ PanelEngine::PanelEngine ()
 	voices->setDoubleClickReturnValue(true, 3.0f);
 	voices->addListener(this);
 
+	playMode = new ComboBox("Play Mode");
+	playMode->setJustificationType(Justification::centred);
+	playMode->setColour(ComboBox::buttonColourId, Colours::blue);
+	playMode->addItem("Mono", 1);
+	playMode->addItem("Poly", 2);
+	playMode->addItem("Unison", 3);
+	playMode->setSelectedId(2);
+	playMode->setScrollWheelEnabled(true);
+	playMode->setEditableText(false);
+	playMode->addListener(this);
+	addAndMakeVisible(playMode);
+
 	addAndMakeVisible(glideLabel = new Label("glide label", "Glide"));
 	glideLabel->setJustificationType(Justification::centredTop);
 
 	addAndMakeVisible(glide = new SliderPfm2("Glide"));
-	glide->setRange(0, 10, 1);
+	glide->setRange(0, 12, 1);
 	glide->setSliderStyle(Slider::RotaryVerticalDrag);
 	glide->setTextBoxStyle(Slider::TextBoxAbove, false, 30, 16);
 	glide->setDoubleClickReturnValue(true, 3.0f);
 	glide->addListener(this);
 
+	addAndMakeVisible(glideTypeLabel = new Label("glide type label", "Glide Type"));
+	glideTypeLabel->setJustificationType(Justification::centredTop);
+
+	glideType = new ComboBox("Glide Type");
+	glideType->setJustificationType(Justification::centred);
+	glideType->setColour(ComboBox::buttonColourId, Colours::blue);
+	glideType->addItem("Off", 1);
+	glideType->addItem("Overlap", 2);
+	glideType->addItem("Always", 3);
+	glideType->setSelectedId(1);
+	glideType->setScrollWheelEnabled(true);
+	glideType->setEditableText(false);
+	glideType->addListener(this);
+	addAndMakeVisible(glideType);
+
+
+
+	addAndMakeVisible(unisonSpreadLabel = new Label("unison spread label", "Spread"));
+	unisonSpreadLabel->setJustificationType(Justification::centredTop);
+
+	addAndMakeVisible(unisonSpread = new SliderPfm2("Unison Spread"));
+	unisonSpread->setRange(0.0, 1.0, .01);
+	unisonSpread->setSliderStyle(Slider::RotaryVerticalDrag);
+	unisonSpread->setTextBoxStyle(Slider::TextBoxAbove, false, 50, 16);
+	unisonSpread->setDoubleClickReturnValue(true, 3.0f);
+	unisonSpread->addListener(this);
+
+	addAndMakeVisible(unisonDetuneLabel = new Label("Unison Detune label", "Detune"));
+	unisonDetuneLabel->setJustificationType(Justification::centredTop);
+
+	addAndMakeVisible(unisonDetune = new SliderPfm2("Unison Detune"));
+	unisonDetune->setRange(0.0, 1.0, .01);
+	unisonDetune->setSliderStyle(Slider::RotaryVerticalDrag);
+	unisonDetune->setTextBoxStyle(Slider::TextBoxAbove, false, 50, 16);
+	unisonDetune->setDoubleClickReturnValue(true, 3.0f);
+	unisonDetune->addListener(this);
 
 
     //[/UserPreSize]
@@ -390,39 +443,37 @@ PanelEngine::~PanelEngine()
 void PanelEngine::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
+
     //[/UserPrePaint]
 
     {
-        int x = proportionOfWidth (0.5000f), y = proportionOfHeight (0.0000f), width = proportionOfWidth (0.5000f), height = proportionOfHeight (0.6000f);
+        int x = proportionOfWidth (0.5000f), y = proportionOfHeight (0.0100f), width = proportionOfWidth (0.5000f), height = proportionOfHeight (0.6000f);
         Colour fillColour1 = Colour (0xff125368), fillColour2 = Colour (0xff083543);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
         g.setGradientFill (ColourGradient (fillColour1,
                                        static_cast<float> (proportionOfWidth (0.8000f)) - static_cast<float> (proportionOfWidth (0.5000f)) + x,
-                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0000f)) + y,
+                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0100f)) + y,
                                        fillColour2,
                                        static_cast<float> (proportionOfWidth (0.5100f)) - static_cast<float> (proportionOfWidth (0.5000f)) + x,
-                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0000f)) + y,
+                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0100f)) + y,
                                        true));
         g.fillRect (x, y, width, height);
     }
 
     {
         float x = static_cast<float> (proportionOfWidth (0.1412f)), y = static_cast<float> (proportionOfHeight (0.0065f)), width = static_cast<float> (proportionOfWidth (0.3400f)), height = static_cast<float> (proportionOfHeight (0.3094f));
-        Colour fillColour1 = Colour (0xff1ca5cf), fillColour2 = Colour (0xff0b3d4d);
-        Colour strokeColour = Colours::cadetblue;
+        Colour fillColour = Colour (0xff125468);
+        Colour strokeColour = Colour (0xff749fad);
         //[UserPaintCustomArguments] Customize the painting arguments here..
+    		if (pfmType == TYPE_PREENFM3) {
+    			width *= .8f;
+    		}
         //[/UserPaintCustomArguments]
-        g.setGradientFill (ColourGradient (fillColour1,
-                                       static_cast<float> (proportionOfWidth (0.2961f)) - static_cast<float> (proportionOfWidth (0.1412f)) + x,
-                                       static_cast<float> (proportionOfHeight (0.0610f)) - static_cast<float> (proportionOfHeight (0.0065f)) + y,
-                                       fillColour2,
-                                       static_cast<float> (proportionOfWidth (0.2961f)) - static_cast<float> (proportionOfWidth (0.1412f)) + x,
-                                       static_cast<float> (proportionOfHeight (0.4444f)) - static_cast<float> (proportionOfHeight (0.0065f)) + y,
-                                       true));
+        g.setColour (fillColour);
         g.fillRoundedRectangle (x, y, width, height, 10.000f);
         g.setColour (strokeColour);
-        g.drawRoundedRectangle (x, y, width, height, 10.000f, 2.000f);
+        g.drawRoundedRectangle (x, y, width, height, 10.000f, 1.500f);
     }
 
     //[UserPaint] Add your own custom painting code here..
@@ -434,9 +485,9 @@ void PanelEngine::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    operatorGroup->setBounds (proportionOfWidth (0.0100f), proportionOfHeight (0.5000f), proportionOfWidth (0.9801f), proportionOfHeight (0.4903f));
-    mixerGroup->setBounds (proportionOfWidth (0.0100f), proportionOfHeight (0.3120f), proportionOfWidth (0.5903f), proportionOfHeight (0.1851f));
-    imGroup->setBounds (proportionOfWidth (0.6102f), proportionOfHeight (0.0000f), proportionOfWidth (0.3798f), proportionOfHeight (0.4971f));
+    operatorGroup->setBounds (proportionOfWidth (0.0106f), proportionOfHeight (0.5008f), proportionOfWidth (0.9799f), proportionOfHeight (0.4900f));
+    mixerGroup->setBounds (proportionOfWidth (0.0106f), proportionOfHeight (0.3122f), proportionOfWidth (0.5903f), proportionOfHeight (0.1854f));
+    imGroup->setBounds (proportionOfWidth (0.6103f), proportionOfHeight (0.0000f), proportionOfWidth (0.3791f), proportionOfHeight (0.4960f));
     //[UserResized] Add your own custom resize handling here..
 
 	envCopyButton->setBounds(proportionOfWidth(0.023f), proportionOfHeight(0.645f), proportionOfWidth(0.06f), proportionOfHeight(0.03f));
@@ -466,10 +517,13 @@ void PanelEngine::resized()
 		panKnob[k]->setBounds(proportionOfWidth(0.09f * k + .04f), proportionOfHeight(0.45f), proportionOfWidth(0.08f), proportionOfHeight(.043f));
 	}
 
-	for (int k = 0; k < NUMBER_OF_IM; k++) {
-		IMNumber[k]->setBounds(proportionOfWidth(0.63f), proportionOfHeight(.055f + .088f * k), proportionOfWidth(0.055f), proportionOfHeight(0.08f));
-		IMKnob[k]->setBounds(proportionOfWidth(0.69f), proportionOfHeight(.055f + .088f * k), proportionOfWidth(0.11f), proportionOfHeight(0.08f));
-		IMVelocityKnob[k]->setBounds(proportionOfWidth(0.84f), proportionOfHeight(.055f + .088f * k), proportionOfWidth(0.11f), proportionOfHeight(0.08f));
+	int numberOfIMs = pfmType == TYPE_PREENFM2 ? 5 : 6;
+	float imHeight = .32f / (numberOfIMs - 1);
+	float imYSpace = .352f / (numberOfIMs - 1);
+	for (int k = 0; k < numberOfIMs; k++) {
+		IMNumber[k]->setBounds(proportionOfWidth(0.63f), proportionOfHeight(.055f + imYSpace * k), proportionOfWidth(0.055f), proportionOfHeight(imHeight));
+		IMKnob[k]->setBounds(proportionOfWidth(0.69f), proportionOfHeight(.055f + imYSpace * k), proportionOfWidth(0.11f), proportionOfHeight(imHeight));
+		IMVelocityKnob[k]->setBounds(proportionOfWidth(0.84f), proportionOfHeight(.055f + imYSpace * k), proportionOfWidth(0.11f), proportionOfHeight(imHeight));
 	}
 
 	IMLabel->setBounds(proportionOfWidth(0.69f), proportionOfHeight(.02f), proportionOfWidth(0.11f), proportionOfHeight(0.05f));
@@ -478,15 +532,39 @@ void PanelEngine::resized()
 	algoChooser->setBounds(proportionOfWidth(0.03f), proportionOfHeight(.05f), proportionOfWidth(0.08f), proportionOfHeight(0.08f));
 	algoChooserLabel->setBounds(proportionOfWidth(0.03f), proportionOfHeight(.02f), proportionOfWidth(0.08f), 40);
 
+	if (pfmType == TYPE_PREENFM2) {
+		voicesLabel->setBounds(proportionOfWidth(0.50f), proportionOfHeight(.02f), proportionOfWidth(0.08f), 40);
+		voices->setBounds(proportionOfWidth(0.50f), proportionOfHeight(.05f), proportionOfWidth(0.08f), proportionOfHeight(0.11f));
 
-	voices->setBounds(proportionOfWidth(0.50f), proportionOfHeight(.05f), proportionOfWidth(0.08f), proportionOfHeight(0.11f));
-	voicesLabel->setBounds(proportionOfWidth(0.50f), proportionOfHeight(.02f), proportionOfWidth(0.08f), 40);
+		glide->setBounds(proportionOfWidth(0.50f), proportionOfHeight(.20f), proportionOfWidth(0.08f), proportionOfHeight(0.11f));
+		glideLabel->setText("Glide", NotificationType::dontSendNotification);
+		glideLabel->setBounds(proportionOfWidth(0.50f), proportionOfHeight(.17f), proportionOfWidth(0.08f), 40);
+	}
+	else {
+		voicesLabel->setBounds(proportionOfWidth(0.45f), proportionOfHeight(.01f), proportionOfWidth(0.12f), 22);
+		playMode->setBounds(proportionOfWidth(0.45f), proportionOfHeight(.01f) + 22, proportionOfWidth(0.12f), 22);
+
+		//
+
+		glideTypeLabel->setBounds(proportionOfWidth(0.43f), proportionOfHeight(.08f), proportionOfWidth(0.08f), 22);
+		glideType->setBounds(proportionOfWidth(0.43f), proportionOfHeight(.1f) + 22, proportionOfWidth(0.08f), 22);
+
+		glideLabel->setText("Glide Speed", NotificationType::dontSendNotification);
+		glideLabel->setBounds(proportionOfWidth(0.51f), proportionOfHeight(.08f), proportionOfWidth(0.10f), 40);
+		glide->setBounds(proportionOfWidth(0.51f), proportionOfHeight(.08f) + 22, proportionOfWidth(0.10f), proportionOfHeight(0.09f));
+
+
+		unisonSpreadLabel->setBounds(proportionOfWidth(0.42f), proportionOfHeight(.2f), proportionOfWidth(0.10f), 40);
+		unisonSpread->setBounds(proportionOfWidth(0.42f), proportionOfHeight(.2f) + 22, proportionOfWidth(0.10f), proportionOfHeight(0.09f));
+
+		unisonDetuneLabel->setBounds(proportionOfWidth(0.51f), proportionOfHeight(.2f), proportionOfWidth(0.10f), 40);
+		unisonDetune->setBounds(proportionOfWidth(0.51f), proportionOfHeight(.2f) + 22, proportionOfWidth(0.10f), proportionOfHeight(0.09f));
+
+	}
 
 	velocity->setBounds(proportionOfWidth(0.03f), proportionOfHeight(.20f), proportionOfWidth(0.08f), proportionOfHeight(0.11f));
 	velocityLabel->setBounds(proportionOfWidth(0.03f), proportionOfHeight(.17f), proportionOfWidth(0.08f), 40);
 
-	glide->setBounds(proportionOfWidth(0.50f), proportionOfHeight(.20f), proportionOfWidth(0.08f), proportionOfHeight(0.11f));
-	glideLabel->setBounds(proportionOfWidth(0.50f), proportionOfHeight(.17f), proportionOfWidth(0.08f), 40);
 
 	resizeAlgoDrawableImage();
 
@@ -503,6 +581,11 @@ void PanelEngine::resizeAlgoDrawableImage() {
 	float top = (float)proportionOfHeight(0.007f);
 	float width = (float)proportionOfWidth(0.32f);
 	float height = (float)proportionOfHeight(0.31f);
+
+	if (pfmType == TYPE_PREENFM3) {
+		width *= .8f;
+	}
+
 	juce::Rectangle<float> rect = juce::Rectangle<float>(left, top, width, height);
 	algoDrawableImage->setTransformToFit(rect, RectanglePlacement::centred | RectanglePlacement::onlyReduceInSize);
 
@@ -511,41 +594,17 @@ void PanelEngine::resizeAlgoDrawableImage() {
 void PanelEngine::newAlgo(int algoNumber) {
 	int numberOfMixer = algoInformation[algoNumber].mix;
 	for (int m = 0; m < 6; m++) {
-		if (m < numberOfMixer) {
-			mixKnob[m]->setEnabled(true);
-			panKnob[m]->setEnabled(true);
-			mixLabel[m]->setEnabled(true);
-			mixKnob[m]->setAlpha(1.0f);
-			panKnob[m]->setAlpha(1.0f);
-			mixLabel[m]->setAlpha(1.0f);
-		}
-		else {
-			mixKnob[m]->setEnabled(false);
-			panKnob[m]->setEnabled(false);
-			mixLabel[m]->setEnabled(false);
-			mixKnob[m]->setAlpha(.2f);
-			panKnob[m]->setAlpha(.2f);
-			mixLabel[m]->setAlpha(.2f);
-		}
+		bool enable = m < numberOfMixer;
+		enableComponent(mixKnob[m].get(), enable);
+		enableComponent(panKnob[m].get(), enable);
+		enableComponent(mixLabel[m].get(), enable);
 	}
 	int numberOfIM = algoInformation[algoNumber].im;
 	for (int im = 0; im < 5; im++) {
-		if (im < numberOfIM) {
-			IMKnob[im]->setEnabled(true);
-			IMVelocityKnob[im]->setEnabled(true);
-			IMNumber[im]->setEnabled(true);
-			IMKnob[im]->setAlpha(1.0f);
-			IMVelocityKnob[im]->setAlpha(1.0f);
-			IMNumber[im]->setAlpha(1.0f);
-		}
-		else {
-			IMKnob[im]->setEnabled(false);
-			IMVelocityKnob[im]->setEnabled(false);
-			IMNumber[im]->setEnabled(false);
-			IMKnob[im]->setAlpha(0.2f);
-			IMVelocityKnob[im]->setAlpha(0.2f);
-			IMNumber[im]->setAlpha(0.2f);
-		}
+		bool enable = im < numberOfIM;
+		enableComponent(IMKnob[im].get(), enable);
+		enableComponent(IMVelocityKnob[im].get(), enable);
+		enableComponent(IMNumber[im].get(), enable);
 	}
 	int numberOfOp = algoInformation[algoNumber].osc;
 	for (int o = 0; o < 6; o++) {
@@ -588,7 +647,7 @@ void PanelEngine::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPlugin
 	if (sliderThatWasMoved == algoChooser) {
 		newAlgo((int)(algoChooser->getValue() - 1));
 	}
-	if (sliderThatWasMoved == voices) {
+	if (pfmType == TYPE_PREENFM2 && sliderThatWasMoved == voices) {
 		if (voices->getValue() == 1) {
 			if (!glide->isEnabled()) {
 				glide->setEnabled(true);
@@ -607,6 +666,30 @@ void PanelEngine::comboBoxChanged(ComboBox* comboBoxThatHasChanged) {
 }
 
 void PanelEngine::comboBoxChanged(ComboBox* comboBoxThatHasChanged, bool fromPluginUI) {
+
+	if (comboBoxThatHasChanged == playMode) {
+		bool glideEnable = playMode->getSelectedId() != 2;
+		bool spreadEnable = playMode->getSelectedId() >= 3;
+
+		enableComponent(glideTypeLabel.get(), glideEnable);
+		enableComponent(glideType.get(), glideEnable);
+		enableComponent(glideLabel.get(), glideEnable && glideType->getSelectedId() >= 2);
+		enableComponent(glide.get(), glideEnable && glideType->getSelectedId() >= 2);
+
+		enableComponent(unisonSpreadLabel.get(), spreadEnable);
+		enableComponent(unisonSpread.get(), spreadEnable);
+
+		enableComponent(unisonDetuneLabel.get(), spreadEnable);
+		enableComponent(unisonDetune.get(), spreadEnable);
+
+	}
+	else if (comboBoxThatHasChanged == glideType) {
+		bool glideEnable = glideType->getSelectedId() != 2;
+		enableComponent(glideLabel.get(), glideEnable);
+		enableComponent(glide.get(), glideEnable);
+	}
+
+
 	// Update the value if the change comes from the UI
 	if (fromPluginUI) {
 		AudioProcessorParameter * parameterReady = parameterMap[comboBoxThatHasChanged->getName()];
@@ -703,7 +786,11 @@ void PanelEngine::buildParameters() {
 		enveloppe[k]->addListener((EnveloppeListener*)this);
 	}
 
-
+	// pfm3
+	updateComboFromParameter(playMode);
+	updateComboFromParameter(glideType);
+	updateSliderFromParameter(unisonDetune);
+	updateSliderFromParameter(unisonSpread);
 }
 
 void PanelEngine::updateUIEnveloppe(String paramName) {
@@ -745,6 +832,9 @@ bool PanelEngine::containsThisParameterAsEnveloppe(String name) {
 }
 
 
+void PanelEngine::updateComboFromParameter_hook(ComboBox* combo) {
+	comboBoxChanged(combo, false);
+}
 
 void PanelEngine::updateSliderFromParameter_hook(Slider* slider) {
 	sliderValueChanged(slider, false);
@@ -762,6 +852,46 @@ void PanelEngine::sliderDragEnded(Slider* slider) {
 		param->endChangeGesture();
 	}
 }
+
+
+ void PanelEngine::setPfmType(int type) {
+	pfmType = type;
+
+	bool imShowOrNot = pfmType == TYPE_PREENFM3;
+	hideComponent(IMKnob[5].get(), imShowOrNot);
+	hideComponent(IMNumber[5].get(), imShowOrNot);
+	hideComponent(IMVelocityKnob[5].get(), imShowOrNot);
+
+	hideComponent(glideTypeLabel.get(), imShowOrNot);
+	hideComponent(glideType.get(), imShowOrNot);
+
+	hideComponent(unisonSpreadLabel.get(), imShowOrNot);
+	hideComponent(unisonSpread.get(), imShowOrNot);
+
+	hideComponent(unisonDetuneLabel.get(), imShowOrNot);
+	hideComponent(unisonDetune.get(), imShowOrNot);
+
+	hideComponent(voices.get(), !imShowOrNot);
+	hideComponent(playMode.get(), imShowOrNot);
+
+	if (pfmType == TYPE_PREENFM2) {
+		voicesLabel->setText("Voices", NotificationType::dontSendNotification);
+	} else 	if (pfmType == TYPE_PREENFM3) {
+		voicesLabel->setText("Play mode", NotificationType::dontSendNotification);
+		comboBoxChanged(playMode);
+	}
+ }
+
+
+ void PanelEngine::enableComponent(Component* comp, bool enable) {
+	 comp->setEnabled(enable);
+	 comp->setAlpha(enable ? 1.0f : 0.4f);
+}
+
+ void PanelEngine::hideComponent(Component* comp, bool enable) {
+	 comp->setEnabled(enable);
+	 comp->setAlpha(enable ? 1.0f : 0.0f);
+ }
 
 
 //[/MiscUserCode]
@@ -782,19 +912,19 @@ BEGIN_JUCER_METADATA
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="900"
                  initialHeight="700">
   <BACKGROUND backgroundColour="62934">
-    <RECT pos="50% 0% 50% 60%" fill=" radial: 80% 5%, 51% 5%, 0=ff125368, 1=ff083543"
+    <RECT pos="50% 1% 50% 60%" fill=" radial: 80% 5%, 51% 5%, 0=ff125368, 1=ff083543"
           hasStroke="0"/>
-    <ROUNDRECT pos="14.119% 0.654% 34% 30.937%" cornerSize="10.0" fill=" radial: 29.609% 6.1%, 29.609% 44.444%, 0=ff1ca5cf, 1=ff0b3d4d"
-               hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff5f9ea0"/>
+    <ROUNDRECT pos="14.119% 0.654% 34% 30.937%" cornerSize="10.0" fill="solid: ff125468"
+               hasStroke="1" stroke="1.5, mitered, butt" strokeColour="solid: ff749fad"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="operator group" id="3a99a017e94aaaf5" memberName="operatorGroup"
-                  virtualName="" explicitFocusOrder="0" pos="1.013% 50% 97.974% 49.097%"
+                  virtualName="" explicitFocusOrder="0" pos="1.056% 50.079% 97.994% 48.97%"
                   outlinecol="ff749fad" textcol="ff749fad" title="" textpos="33"/>
   <GROUPCOMPONENT name="mixer group" id="a41fc3891a2af464" memberName="mixerGroup"
-                  virtualName="" explicitFocusOrder="0" pos="1.013% 31.227% 59.045% 18.592%"
+                  virtualName="" explicitFocusOrder="0" pos="1.056% 31.22% 59.029% 18.542%"
                   outlinecol="ff749fad" textcol="ff749fad" title="Mixer" textpos="33"/>
   <GROUPCOMPONENT name="IM group" id="249d6ec6feb3696f" memberName="imGroup" virtualName=""
-                  explicitFocusOrder="0" pos="61.071% 0% 37.916% 49.639%" outlinecol="ff749fad"
+                  explicitFocusOrder="0" pos="61.035% 0% 37.909% 49.604%" outlinecol="ff749fad"
                   textcol="ff749fad" title="Modulation indexes" textpos="33"/>
 </JUCER_COMPONENT>
 

@@ -7,7 +7,7 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.4.5
+  Created with Projucer version: 5.4.7
 
   ------------------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ MainTabs::MainTabs ()
 
     tabbedComponent.reset (new TabbedComponent (TabbedButtonBar::TabsAtTop));
     addAndMakeVisible (tabbedComponent.get());
-    tabbedComponent->setTabBarDepth (40);
+    tabbedComponent->setTabBarDepth (30);
     tabbedComponent->addTab (TRANS("Engine"), Colour (0xff083543), new PanelEngine(), true);
     tabbedComponent->addTab (TRANS("Modulation"), Colour (0xff083543), new PanelModulation(), true);
     tabbedComponent->addTab (TRANS("Arp & Filter"), Colour (0xff083543), new PanelArpAndFilter(), true);
@@ -69,10 +69,10 @@ MainTabs::MainTabs ()
     pullButton->addListener (this);
 
     presetNameLabel.reset (new Label ("preset name label",
-                                      TRANS("preset")));
+                                      TRANS("preset_89ABC")));
     addAndMakeVisible (presetNameLabel.get());
     presetNameLabel->setTooltip (TRANS("Click to edit"));
-    presetNameLabel->setFont (Font (25.90f, Font::plain).withTypefaceStyle ("Bold"));
+    presetNameLabel->setFont (Font (20.00f, Font::plain).withTypefaceStyle ("Bold"));
     presetNameLabel->setJustificationType (Justification::centredLeft);
     presetNameLabel->setEditable (true, true, false);
     presetNameLabel->setColour (Label::textColourId, Colours::aliceblue);
@@ -80,6 +80,8 @@ MainTabs::MainTabs ()
     presetNameLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
     presetNameLabel->setColour (TextEditor::highlightColourId, Colours::coral);
     presetNameLabel->addListener (this);
+
+    presetNameLabel->setBounds (366, 8, 183, 24);
 
     pushButton.reset (new TextButton ("push button"));
     addAndMakeVisible (pushButton.get());
@@ -118,7 +120,7 @@ MainTabs::MainTabs ()
     deviceButton->setButtonText (TRANS("Midi"));
     deviceButton->addListener (this);
     deviceButton->setColour (TextButton::buttonColourId, Colour (0x005c5da4));
-    deviceButton->setColour (TextButton::buttonOnColourId, Colours::aliceblue);
+    deviceButton->setColour (TextButton::buttonOnColourId, Colours::black);
 
     versionButton.reset (new HyperlinkButton (TRANS("v?.?.?"),
                                               URL ("https://github.com/Ixox/preenfm2Controller")));
@@ -127,9 +129,29 @@ MainTabs::MainTabs ()
     versionButton->setButtonText (TRANS("v?.?.?"));
     versionButton->setColour (HyperlinkButton::textColourId, Colours::beige);
 
+    pfmTypeCombo.reset (new ComboBox ("pfm Type"));
+    addAndMakeVisible (pfmTypeCombo.get());
+    pfmTypeCombo->setTooltip (TRANS("preenfm type"));
+    pfmTypeCombo->setEditableText (false);
+    pfmTypeCombo->setJustificationType (Justification::centred);
+    pfmTypeCombo->setTextWhenNothingSelected (TRANS("pfm2"));
+    pfmTypeCombo->setTextWhenNoChoicesAvailable (TRANS("pfm2"));
+    pfmTypeCombo->addItem (TRANS("pfm2"), 1);
+    pfmTypeCombo->addItem (TRANS("pfm3"), 2);
+    pfmTypeCombo->addListener (this);
+
+    pfmTypeCombo->setBounds (276, 8, 80, 24);
+
 
     //[UserPreSize]
+    // Black background
+    pfmTypeCombo->setColour(ComboBox::backgroundColourId, Colours::black);
+    pfmTypeCombo->setColour(ComboBox::textColourId, Colours::aqua);
+    pfmTypeCombo->setSelectedId(2);
+    midiChannelCombo->setColour(ComboBox::backgroundColourId, Colours::black);
+
 	midiChannelCombo->setSelectedId(1);
+    pfmTypeCombo->setSelectedId(1);
     versionButton->setButtonText(String("v") + ProjectInfo::versionString);
     //[/UserPreSize]
 
@@ -160,6 +182,7 @@ MainTabs::~MainTabs()
     midiChannelCombo = nullptr;
     deviceButton = nullptr;
     versionButton = nullptr;
+    pfmTypeCombo = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -183,12 +206,11 @@ void MainTabs::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    tabbedComponent->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
+    tabbedComponent->setBounds (0, 10, getWidth() - 0, getHeight() - 0);
     pullButton->setBounds (getWidth() - 116, 8, 55, 24);
-    presetNameLabel->setBounds (proportionOfWidth (0.4003f), proportionOfHeight (0.0038f), 200, 32);
     pushButton->setBounds (getWidth() - 184, 8, 55, 24);
-    midiChannelCombo->setBounds (getWidth() - 268, 8, 55, 24);
-    deviceButton->setBounds (getWidth() - 340, 8, 60, 24);
+    midiChannelCombo->setBounds (getWidth() - 254, 8, 55, 24);
+    deviceButton->setBounds (getWidth() - 330, 6, 67, 28);
     versionButton->setBounds (getWidth() - 60, 9, 56, 20);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
@@ -272,6 +294,26 @@ void MainTabs::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
         //[/UserComboBoxCode_midiChannelCombo]
     }
+    else if (comboBoxThatHasChanged == pfmTypeCombo.get())
+    {
+        //[UserComboBoxCode_pfmTypeCombo] -- add your combo box handling code here..
+        pfmType = pfmTypeCombo->getSelectedId();
+        MidifiedFloatParameter* param = getParameterFromName("pfm Type");
+        param->setRealValue((float)pfmType);
+
+        panelEngine->setPfmType(pfmTypeCombo->getSelectedId());
+        panelEngine->resized();
+        panelEngine->repaint();
+        panelModulation->setPfmType(pfmTypeCombo->getSelectedId());
+        panelModulation->resized();
+        panelModulation->repaint();
+        panelArpAndFilter->setPfmType(pfmTypeCombo->getSelectedId());
+        panelArpAndFilter->resized();
+        panelArpAndFilter->repaint();
+
+
+        //[/UserComboBoxCode_pfmTypeCombo]
+    }
 
     //[UsercomboBoxChanged_Post]
     //[/UsercomboBoxChanged_Post]
@@ -337,6 +379,9 @@ void MainTabs::setMidiChannel(int newMidiChannel) {
 	midiChannelCombo->setSelectedId(newMidiChannel);
 }
 
+void MainTabs::setPfmType(int pfmType) {
+    pfmTypeCombo->setSelectedId(pfmType);
+}
 
 
 //[/MiscUserCode]
@@ -357,8 +402,8 @@ BEGIN_JUCER_METADATA
                  fixedSize="0" initialWidth="900" initialHeight="710">
   <BACKGROUND backgroundColour="ff0b232a"/>
   <TABBEDCOMPONENT name="new tabbed component" id="f175981f6c34a740" memberName="tabbedComponent"
-                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="0 0 0M 0M"
-                   orientation="top" tabBarDepth="40" initialTab="0">
+                   virtualName="TabbedComponent" explicitFocusOrder="0" pos="0 10 0M 0M"
+                   orientation="top" tabBarDepth="30" initialTab="0">
     <TAB name="Engine" colour="ff083543" useJucerComp="0" contentClassName="PanelEngine"
          constructorParams="" jucerComponentFile=""/>
     <TAB name="Modulation" colour="ff083543" useJucerComp="0" contentClassName="PanelModulation"
@@ -370,27 +415,30 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="116R 8 55 24" tooltip="Pull all parameters from the preenfm2 to this plugin"
               buttonText="Pull" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="preset name label" id="4201f054ae2edbe" memberName="presetNameLabel"
-         virtualName="" explicitFocusOrder="0" pos="40.027% 0.376% 200 32"
-         tooltip="Click to edit" textCol="fff0f8ff" edTextCol="fff0f8ff"
-         edBkgCol="0" hiliteCol="ffff7f50" labelText="preset" editableSingleClick="1"
-         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="25.9" kerning="0.0" bold="1" italic="0" justification="33"
-         typefaceStyle="Bold"/>
+         virtualName="" explicitFocusOrder="0" pos="366 8 183 24" tooltip="Click to edit"
+         textCol="fff0f8ff" edTextCol="fff0f8ff" edBkgCol="0" hiliteCol="ffff7f50"
+         labelText="preset_89ABC" editableSingleClick="1" editableDoubleClick="1"
+         focusDiscardsChanges="0" fontname="Default font" fontsize="20.0"
+         kerning="0.0" bold="1" italic="0" justification="33" typefaceStyle="Bold"/>
   <TEXTBUTTON name="push button" id="52c3034a926a2609" memberName="pushButton"
               virtualName="" explicitFocusOrder="0" pos="184R 8 55 24" tooltip="Push all parameters from plugin to preenfm2"
               buttonText="Push" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="Midi Channel" id="a2c1c2de24e3a5a3" memberName="midiChannelCombo"
-            virtualName="" explicitFocusOrder="0" pos="268R 8 55 24" tooltip="Midi Channel"
+            virtualName="" explicitFocusOrder="0" pos="254R 8 55 24" tooltip="Midi Channel"
             editable="0" layout="36" items="1&#10;2&#10;3&#10;4&#10;5&#10;6&#10;7&#10;8&#10;9&#10;10&#10;11&#10;12&#10;13&#10;14&#10;15&#10;16&#10;"
             textWhenNonSelected="1" textWhenNoItems="1"/>
   <TEXTBUTTON name="Device Button" id="69cb4ea6d744571b" memberName="deviceButton"
-              virtualName="" explicitFocusOrder="0" pos="340R 8 60 24" bgColOff="5c5da4"
-              bgColOn="fff0f8ff" buttonText="Midi" connectedEdges="0" needsCallback="1"
+              virtualName="" explicitFocusOrder="0" pos="330R 6 67 28" bgColOff="5c5da4"
+              bgColOn="ff000000" buttonText="Midi" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <HYPERLINKBUTTON name="Version Button" id="9900f519cfc9db3b" memberName="versionButton"
                    virtualName="" explicitFocusOrder="0" pos="60R 9 56 20" tooltip="https://github.com/Ixox/preenfm2Controller"
                    textCol="fff5f5dc" buttonText="v?.?.?" connectedEdges="0" needsCallback="0"
                    radioGroupId="0" url="https://github.com/Ixox/preenfm2Controller"/>
+  <COMBOBOX name="pfm Type" id="22e9370428be2245" memberName="pfmTypeCombo"
+            virtualName="" explicitFocusOrder="0" pos="276 8 80 24" tooltip="preenfm type"
+            editable="0" layout="36" items="pfm2&#10;pfm3" textWhenNonSelected="pfm2"
+            textWhenNoItems="pfm2"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

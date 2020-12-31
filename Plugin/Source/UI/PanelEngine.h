@@ -7,7 +7,7 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.4.5
+  Created with Projucer version: 5.4.7
 
   ------------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@
 #include "PanelOfComponents.h"
 
 #define NUMBER_OF_OPERATORS 6
-#define NUMBER_OF_IM 5
+#define NUMBER_OF_IM 6
 #define NUMBER_OF_MIX 6
 #define NUMBER_OF_ALGO 28
 
@@ -69,7 +69,7 @@ class PanelEngine  : public Component,
 public:
     //==============================================================================
     PanelEngine ();
-    ~PanelEngine();
+    ~PanelEngine() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -85,13 +85,17 @@ public:
 	// Panel of parameters
 	void buildParameters() override;
 	void updateSliderFromParameter_hook(Slider* slider) override;
+	void updateComboFromParameter_hook(ComboBox* combo) override;
 	void updateUIEnveloppe(String paramName) override;
 	bool containsThisParameterAsEnveloppe(String name) override;
-
+	void setPfmType(int type);
+	void enableComponent(Component* comp, bool enable);
+	void hideComponent(Component* comp, bool enable);
     //[/UserMethods]
 
     void paint (Graphics& g) override;
     void resized() override;
+
 
 
 private:
@@ -116,8 +120,16 @@ private:
 	ScopedPointer<Slider> velocity;
 	ScopedPointer<Label> voicesLabel;
 	ScopedPointer<Slider> voices;
+	ScopedPointer<ComboBox> playMode;
 	ScopedPointer<Label> glideLabel;
 	ScopedPointer<Slider> glide;
+	ScopedPointer<Label> glideTypeLabel;
+	ScopedPointer<ComboBox> glideType;
+
+	ScopedPointer<Label> unisonSpreadLabel;
+	ScopedPointer<Slider> unisonSpread;
+	ScopedPointer<Label> unisonDetuneLabel;
+	ScopedPointer<Slider> unisonDetune;
 
 	ScopedPointer<Label> opShapeLabel;
 	ScopedPointer<ComboBox> opShape[NUMBER_OF_OPERATORS];

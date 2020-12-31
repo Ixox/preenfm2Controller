@@ -45,6 +45,7 @@ public:
 	void removeParamToUpdateUI(String paramName);
 	void setMidiOutBuffer(MidiBuffer *midiOutBuffer);
 	void setMidiChannel(int newMidiChannel);
+	void setPfmType(int pfmType);
 	void setPresetName(String presetName);
 
 private:
