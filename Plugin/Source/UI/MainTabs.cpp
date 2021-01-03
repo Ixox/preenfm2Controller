@@ -350,6 +350,13 @@ void MainTabs::buildParameters(AudioProcessor *audioProcessor) {
 
 void MainTabs::updateUI(std::unordered_set<String> &paramSet) {
 
+    std::unordered_set<String>::const_iterator pfmType = paramSet.find("pfm Type");
+    if (pfmType != paramSet.end()) {
+        MidifiedFloatParameter* param = getParameterFromName("pfm Type");
+        pfmTypeCombo->setSelectedId((int)param->getRealValue());
+    }
+
+
 	std::unordered_set<String>::const_iterator midiChannel = paramSet.find("Midi Channel");
 	if (midiChannel != paramSet.end()) {
 		MidifiedFloatParameter* param = getParameterFromName("Midi Channel");
