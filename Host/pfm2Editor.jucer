@@ -2,9 +2,9 @@
 
 <JUCERPROJECT id="I4cnWy" name="pfm2Editor" projectType="guiapp" version="3.0.0"
               bundleIdentifier="com.ixox.pfm2Editor" includeBinaryInAppConfig="1"
-              jucerVersion="5.4.7" defines="" companyName="Xavier Hosxe" companyWebsite="http://github.com/Ixox"
+              defines="" companyName="Xavier Hosxe" companyWebsite="http://github.com/Ixox"
               companyEmail="preenfm1@gmail.com" displaySplashScreen="1" reportAppUsage="1"
-              splashScreenColour="Dark" cppLanguageStandard="11">
+              splashScreenColour="Dark" cppLanguageStandard="11" jucerFormatVersion="1">
   <MAINGROUP id="c6LJM5" name="pfm2Editor">
     <GROUP id="{4109EA71-F7BE-3C72-D039-241F993FAEB9}" name="Source">
       <GROUP id="{1D684675-DA20-07E6-EFC5-ECF1687EF7D5}" name="Plugin">
@@ -82,19 +82,19 @@
                        targetName="Preenfm2Editor"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_audio_basics" path="../../JUCE.5.4.5/modules"/>
-        <MODULEPATH id="juce_core" path="../../JUCE.5.4.5/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../JUCE.5.4.5/modules"/>
-        <MODULEPATH id="juce_events" path="../../JUCE.5.4.5/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../JUCE.5.4.5/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../JUCE.5.4.5/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../JUCE.5.4.5/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../JUCE.5.4.5/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../JUCE.5.4.5/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../JUCE.5.4.5/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../../JUCE.5.4.5/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../../JUCE.5.4.5/modules"/>
-        <MODULEPATH id="juce_opengl" path="../../JUCE.5.4.5/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_core" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_events" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../JUCE_6.0/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <XCODE_MAC targetFolder="Builds/MacOSX" extraLinkerFlags="-std=c++11&#10;-stdlib=libc++"
@@ -106,40 +106,41 @@
                        isDebug="0" optimisation="2" targetName="Preenfm2Editor"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_audio_basics" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_core" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_events" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_opengl" path="../../JUCE_5.4.5/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_core" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_events" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../JUCE_6.0/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <XCODE_IPHONE targetFolder="Builds/iOS" iosScreenOrientation="landscape" bigIcon="OvK51g">
+    <XCODE_IPHONE targetFolder="Builds/iOS" iosScreenOrientation="UIInterfaceOrientationLandscapeLeft,UIInterfaceOrientationLandscapeRight"
+                  bigIcon="OvK51g">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="Preenfm2Editor"/>
         <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="Preenfm2Editor"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_audio_basics" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_core" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../JUCE.5.4.5/modules"/>
-        <MODULEPATH id="juce_events" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../../JUCE_5.4.5/modules"/>
-        <MODULEPATH id="juce_opengl" path="../../JUCE_5.4.5/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_core" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_events" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../JUCE_6.0/modules"/>
       </MODULEPATHS>
     </XCODE_IPHONE>
     <VS2019 targetFolder="Builds/VisualStudio2019" bigIcon="OvK51g">
@@ -149,19 +150,19 @@
                        winArchitecture="Win32"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_opengl" path="..\..\JUCE_5.4\modules"/>
-        <MODULEPATH id="juce_gui_extra" path="..\..\JUCE_5.4\modules"/>
-        <MODULEPATH id="juce_gui_basics" path="..\..\JUCE_5.4\modules"/>
-        <MODULEPATH id="juce_graphics" path="..\..\JUCE_5.4\modules"/>
-        <MODULEPATH id="juce_events" path="..\..\JUCE_5.4\modules"/>
-        <MODULEPATH id="juce_data_structures" path="..\..\JUCE_5.4\modules"/>
-        <MODULEPATH id="juce_cryptography" path="..\..\JUCE_5.4\modules"/>
-        <MODULEPATH id="juce_core" path="..\..\JUCE_5.4\modules"/>
-        <MODULEPATH id="juce_audio_utils" path="..\..\JUCE_5.4\modules"/>
-        <MODULEPATH id="juce_audio_processors" path="..\..\JUCE_5.4\modules"/>
-        <MODULEPATH id="juce_audio_formats" path="..\..\JUCE_5.4\modules"/>
-        <MODULEPATH id="juce_audio_devices" path="..\..\JUCE_5.4\modules"/>
-        <MODULEPATH id="juce_audio_basics" path="..\..\JUCE_5.4\modules"/>
+        <MODULEPATH id="juce_opengl" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_events" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_core" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../JUCE_6.0/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../JUCE_6.0/modules"/>
       </MODULEPATHS>
     </VS2019>
   </EXPORTFORMATS>

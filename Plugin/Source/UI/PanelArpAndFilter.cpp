@@ -868,118 +868,118 @@ BEGIN_JUCER_METADATA
                hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ff5f9ea0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="Arp group" id="13e5d1a66afb37f8" memberName="arpGroupComponent"
-                  virtualName="GroupComponent" explicitFocusOrder="0" pos="1.69% 2.536% 96.304% 30.428%"
+                  virtualName="GroupComponent" explicitFocusOrder="0" pos="1.681% 2.519% 96.326% 30.426%"
                   outlinecol="ff5f9ea0" textcol="ff5f9ea0" title="Arpeggiator"
                   textpos="33"/>
   <SLIDER name="Arp bpm" id="834b58daf5daacae" memberName="arpBPM" virtualName="Slider"
-          explicitFocusOrder="0" pos="15.206% 11.41% 13.728% 17.591%" min="10.0"
-          max="240.0" int="1.0" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
+          explicitFocusOrder="0" pos="15.193% 11.434% 13.699% 17.636%"
+          min="10.0" max="240.0" int="1.0" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="40" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="arp bpm label" id="ae9087ef378fcc73" memberName="arpBPMLabel"
-         virtualName="" explicitFocusOrder="0" pos="17.74% 7.607% 9.081% 20"
+         virtualName="" explicitFocusOrder="0" pos="17.746% 7.655% 9.091% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="BPM" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <LABEL name="arp direction label" id="dd08708728c535e1" memberName="arpDirectionLabel"
-         virtualName="" explicitFocusOrder="0" pos="43.928% 8.875% 9.081% 20"
+         virtualName="" explicitFocusOrder="0" pos="43.898% 8.915% 9.091% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Direction" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <LABEL name="arp octave label" id="a1efff324e6fc45a" memberName="arpOctaveLabel"
-         virtualName="" explicitFocusOrder="0" pos="29.778% 10.143% 9.081% 20"
+         virtualName="" explicitFocusOrder="0" pos="29.763% 10.174% 9.091% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Octave" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <LABEL name="arp pattern label" id="81abe99d3c3b9cb" memberName="arpPatternLabel"
-         virtualName="" explicitFocusOrder="0" pos="59.134% 8.875% 9.081% 20"
+         virtualName="" explicitFocusOrder="0" pos="59.153% 8.915% 9.091% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Pattern" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <LABEL name="arp division label" id="bc6d9b8d07143332" memberName="arpDivisionLabel"
-         virtualName="" explicitFocusOrder="0" pos="43.928% 20.285% 9.081% 20"
+         virtualName="" explicitFocusOrder="0" pos="43.898% 20.252% 9.091% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Division" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <LABEL name="arp Duration label" id="6e39565df396e160" memberName="arpDurationLabel"
-         virtualName="" explicitFocusOrder="0" pos="59.134% 20.285% 9.081% 20"
+         virtualName="" explicitFocusOrder="0" pos="59.153% 20.252% 9.091% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Duration" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <LABEL name="arp Latch label" id="4bba356716a40a00" memberName="arpLatchLabel"
-         virtualName="" explicitFocusOrder="0" pos="81.098% 15.214% 9.081% 20"
+         virtualName="" explicitFocusOrder="0" pos="81.071% 15.213% 9.091% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Latch" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <COMBOBOX name="Arp direction" id="5403f05ff830eb2e" memberName="arpDirectionCombo"
-            virtualName="ComboBox" explicitFocusOrder="0" pos="43.928% 12.678% 9.081% 20"
+            virtualName="ComboBox" explicitFocusOrder="0" pos="43.898% 12.694% 9.091% 20"
             editable="0" layout="33" items="Up&#10;Down&#10;Up &amp; Down&#10;As played&#10;Random&#10;Chord&#10;Rotate Up&#10;Rotate Down&#10;Rotate U&amp;D&#10;Shift Up&#10;Shift Down&#10;Shift U&amp;D&#10;"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <SLIDER name="Arp octave" id="1cb995267258f0bb" memberName="arpOctavleSlider"
-          virtualName="Slider" explicitFocusOrder="0" pos="29.778% 14.105% 9.081% 12.203%"
+          virtualName="Slider" explicitFocusOrder="0" pos="29.763% 14.147% 9.091% 12.209%"
           min="1.0" max="3.0" int="1.0" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="40" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <COMBOBOX name="Arp pattern" id="4ab8dec3ec103766" memberName="arpPatternCombo"
-            virtualName="ComboBox" explicitFocusOrder="0" pos="59.134% 12.678% 9.081% 20"
+            virtualName="ComboBox" explicitFocusOrder="0" pos="59.153% 12.694% 9.091% 20"
             editable="0" layout="33" items="1&#10;2&#10;3&#10;4&#10;5&#10;6&#10;7&#10;8&#10;9&#10;10&#10;11&#10;12&#10;13&#10;14&#10;15&#10;16&#10;17&#10;18&#10;19&#10;20&#10;21&#10;22&#10;User 1&#10;User 2&#10;User 3&#10;User 4&#10;"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="Arp division" id="40d9cbf865d21a6d" memberName="arpDivisionCombo"
-            virtualName="ComboBox" explicitFocusOrder="0" pos="43.928% 24.089% 9.081% 20"
+            virtualName="ComboBox" explicitFocusOrder="0" pos="43.898% 24.128% 9.091% 20"
             editable="0" layout="33" items="2/1&#10;3/2&#10;1/1&#10;3/4&#10;2/3&#10;1/2&#10;3/8&#10;1/3&#10;1/4&#10;1/6&#10;1/8&#10;1/12&#10;1/16&#10;1/24&#10;1/32&#10;1/48&#10;1/96"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="Arp duration" id="40f06b2b6126c25d" memberName="arpDurationCombo"
-            virtualName="ComboBox" explicitFocusOrder="0" pos="59.134% 24.089% 9.081% 20"
+            virtualName="ComboBox" explicitFocusOrder="0" pos="59.153% 24.128% 9.091% 20"
             editable="0" layout="33" items="2/1&#10;3/2&#10;1/1&#10;3/4&#10;2/3&#10;1/2&#10;3/8&#10;1/3&#10;1/4&#10;1/6&#10;1/8&#10;1/12&#10;1/16&#10;1/24&#10;1/32&#10;1/48&#10;1/96"
             textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="Arp latch" id="3072fb2928d8c8f4" memberName="arpLatchCombo"
-            virtualName="ComboBox" explicitFocusOrder="0" pos="81.098% 19.017% 9.081% 20"
+            virtualName="ComboBox" explicitFocusOrder="0" pos="81.071% 18.992% 9.091% 20"
             editable="0" layout="33" items="Off&#10;On" textWhenNonSelected=""
             textWhenNoItems="(no choices)"/>
   <GROUPCOMPONENT name="Filter group" id="ef53faceed268e04" memberName="filterGroupComponent"
-                  virtualName="" explicitFocusOrder="0" pos="9.081% 36.292% 81.837% 20.761%"
+                  virtualName="" explicitFocusOrder="0" pos="9.091% 36.337% 81.818% 20.736%"
                   outlinecol="749fad" textcol="fff5f5dc" title="Filter" textpos="33"/>
   <LABEL name="filter param1 label" id="ad964c1a500045d4" memberName="filterParam1Label"
-         virtualName="" explicitFocusOrder="0" pos="45.512% 38.035% 9.081% 20"
+         virtualName="" explicitFocusOrder="0" pos="45.517% 38.081% 9.091% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Param1" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <SLIDER name="Filter param1" id="c05a5ec6435b8dba" memberName="filterParam1Slider"
-          virtualName="Slider" explicitFocusOrder="0" pos="45.512% 41.521% 9.081% 12.203%"
+          virtualName="Slider" explicitFocusOrder="0" pos="45.517% 41.473% 9.091% 12.209%"
           min="0.0" max="1.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="40" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="filter param2 label" id="8e05a7e79e0d078c" memberName="filterParam2Label"
-         virtualName="" explicitFocusOrder="0" pos="54.488% 37.718% 9.081% 20"
+         virtualName="" explicitFocusOrder="0" pos="54.483% 37.694% 9.091% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Param2" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <SLIDER name="Filter param2" id="d542ada05f27098e" memberName="filterParam2Slider"
-          virtualName="Slider" explicitFocusOrder="0" pos="54.488% 41.68% 9.081% 12.203%"
+          virtualName="Slider" explicitFocusOrder="0" pos="54.483% 41.667% 9.091% 12.209%"
           min="0.0" max="1.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="40" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="filter gain label" id="1739e718e2bf97c" memberName="filterGainLabel"
-         virtualName="" explicitFocusOrder="0" pos="72.756% 37.718% 9.081% 20"
+         virtualName="" explicitFocusOrder="0" pos="72.727% 37.694% 9.091% 20"
          edTextCol="ff000000" edBkgCol="0" labelText="Gain" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="12"/>
   <SLIDER name="Filter gain" id="4d28a9c9b11da6ce" memberName="filterGainSlider"
-          virtualName="Slider" explicitFocusOrder="0" pos="72.756% 41.521% 9.081% 12.203%"
+          virtualName="Slider" explicitFocusOrder="0" pos="72.727% 41.473% 9.091% 12.209%"
           min="0.0" max="2.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="40" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <COMBOBOX name="Arp clock" id="1b23d19ebc4cb655" memberName="arpClockComboBox"
-            virtualName="" explicitFocusOrder="0" pos="3.379% 12.678% 9.081% 20"
+            virtualName="" explicitFocusOrder="0" pos="3.362% 12.694% 9.091% 20"
             editable="0" layout="33" items="Off&#10;Internal&#10;External&#10;"
             textWhenNonSelected="Off" textWhenNoItems="Off"/>
   <LABEL name="clock label" id="6a7e1148cc077687" memberName="clockLabel"
-         virtualName="" explicitFocusOrder="0" pos="5.069% 6.339% 64 24"
+         virtualName="" explicitFocusOrder="0" pos="5.044% 6.298% 64 24"
          edTextCol="ff000000" edBkgCol="0" labelText="Clock:&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="Filter type" id="599ad67e6f27bfd7" memberName="filterComboBox"
-            virtualName="" explicitFocusOrder="0" pos="18.163% 45.166% 18.163% 20"
+            virtualName="" explicitFocusOrder="0" pos="18.182% 45.155% 18.182% 20"
             editable="0" layout="33" items="" textWhenNonSelected="Off" textWhenNoItems="Off"/>
 </JUCER_COMPONENT>
 

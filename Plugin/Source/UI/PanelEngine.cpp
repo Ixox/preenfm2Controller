@@ -684,7 +684,7 @@ void PanelEngine::comboBoxChanged(ComboBox* comboBoxThatHasChanged, bool fromPlu
 
 	}
 	else if (comboBoxThatHasChanged == glideType) {
-		bool glideEnable = glideType->getSelectedId() != 2;
+		bool glideEnable = glideType->getSelectedId() != 1;
 		enableComponent(glideLabel.get(), glideEnable);
 		enableComponent(glide.get(), glideEnable);
 	}

@@ -1,6 +1,6 @@
 # preenfm2 software editor
 
-Here is the source code of the software editor for the preenfm2. <br />
+Here is the source code of the software editor for the preenfm2 and preenfm3. <br />
 It's using the very nice [JUCE library](https://www.juce.com/discover).
 
 <br />
@@ -15,5 +15,5 @@ To start, follow these steps :
 <img src="docs/toStart.PNG" width="600" />
 <br />
 
-If you have any questions or suggestions, please use the preenfm2 forum. 
+If you have any questions or suggestions, please use the preenfm forum. 
 This thread should be the one : http://ixox.fr/forum/index.php?topic=69349.0
