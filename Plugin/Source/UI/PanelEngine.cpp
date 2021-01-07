@@ -595,10 +595,18 @@ void PanelEngine::newAlgo(int algoNumber) {
 	int numberOfMixer = algoInformation[algoNumber].mix;
 	for (int m = 0; m < 6; m++) {
 		bool enable = m < numberOfMixer;
+		// Pfm2 and pfm3 have a Mix difference
+		if (pfmType == TYPE_PREENFM2) {
+			enable = m < numberOfMixer;
+		}
+		else {
+			enable = (algoOpInformation[algoNumber][m] == 1);
+		}
 		enableComponent(mixKnob[m].get(), enable);
 		enableComponent(panKnob[m].get(), enable);
 		enableComponent(mixLabel[m].get(), enable);
 	}
+
 	int numberOfIM = algoInformation[algoNumber].im;
 	for (int im = 0; im < 5; im++) {
 		bool enable = im < numberOfIM;
@@ -880,6 +888,8 @@ void PanelEngine::sliderDragEnded(Slider* slider) {
 		voicesLabel->setText("Play mode", NotificationType::dontSendNotification);
 		comboBoxChanged(playMode);
 	}
+
+	newAlgo((int)(algoChooser->getValue() - 1));
  }
 
 

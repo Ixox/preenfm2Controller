@@ -85,10 +85,10 @@ public:
 
     float getValueFromNrpn(int nrpnValue) const {
         if (!sendRealValue) {
-            return ((float)nrpnValue) / this->valueMultiplier + this->pfm2MinValue - bias;
+            return range.snapToLegalValue(((float)nrpnValue) / this->valueMultiplier + this->pfm2MinValue - bias);
         }
         else {
-            return (float)nrpnValue - bias;
+            return range.snapToLegalValue((float)nrpnValue - bias);
         }
     }
 

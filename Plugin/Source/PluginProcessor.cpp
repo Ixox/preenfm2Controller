@@ -854,13 +854,14 @@ void Pfm2AudioProcessor::sendMidiForParameter(int paramIndex, int nrpnValue, int
             return;
         }
         // Set the value
-        DBG("New Value  '" << nrpnValue);
-
+        // DBG("New Value  '" << nrpnValue);
+        
         midifiedFP->setValueFromNrpn(nrpnValue);
         // Notify host we're not in the message thread so :
+        float paramValue = midifiedFP->getValue();
         MessageManager::callAsync(
             [=]() {
-            sendParamChangeMessageToListeners(paramIndex, midifiedFP->getValue());
+            sendParamChangeMessageToListeners(paramIndex, paramValue);
         }
         );
 
@@ -943,7 +944,7 @@ void Pfm2AudioProcessor::sendNrpnPresetName() {
         byte3.setTimeStamp(timeNow);
         midiOutBuffer.addEvent(byte3, 512);
 
-        MidiMessage byte4 = MidiMessage::controllerEvent(currentMidiChannel, 38, letter & 0xff);
+        MidiMessage byte4 = MidiMessage::controllerEvent(currentMidiChannel, 38, letter & 0x7f);
         byte4.setTimeStamp(timeNow);
         midiOutBuffer.addEvent(byte4, 512);
         flushMidiOut();
@@ -960,7 +961,7 @@ void Pfm2AudioProcessor::addMidifiedParameter(MidifiedFloatParameter *param) {
 void Pfm2AudioProcessor::handleIncomingMidiMessage(MidiInput* source, const MidiMessage &midiMessage) {
 
     if (midiMessage.isController() && midiMessage.getChannel() == currentMidiChannel) {
-        //		DBG("Midi message " << midiMessage.getControllerNumber() << " , " << midiMessage.getControllerValue() << "\n");
+        // DBG("Midi message " << midiMessage.getControllerNumber() << " , " << midiMessage.getControllerValue() << "\n");
         switch (midiMessage.getControllerNumber()) {
         case 99:
             currentNrpn.paramMSB = midiMessage.getControllerValue();
