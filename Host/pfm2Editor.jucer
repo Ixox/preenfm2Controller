@@ -101,9 +101,9 @@
                extraCompilerFlags="-std=c++11&#10;-stdlib=libc++" bigIcon="OvK51g">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" osxCompatibility="10.7 SDK" osxArchitecture="64BitIntel"
-                       isDebug="1" optimisation="1" targetName="Preenfm2Editor"/>
+                       isDebug="1" optimisation="1" targetName="PreenfmEditor"/>
         <CONFIGURATION name="Release" osxCompatibility="10.7 SDK" osxArchitecture="64BitIntel"
-                       isDebug="0" optimisation="2" targetName="Preenfm2Editor"/>
+                       isDebug="0" optimisation="2" targetName="PreenfmEditor"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="../../JUCE_6.0/modules"/>
