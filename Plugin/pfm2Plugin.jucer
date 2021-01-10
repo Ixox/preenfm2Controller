@@ -86,9 +86,9 @@
                 bigIcon="ehPiCf">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
-                       targetName="preenfm2Editor"/>
+                       targetName="preenfmEditor"/>
         <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="2"
-                       targetName="preenfm2Editor"/>
+                       targetName="preenfmEditor"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="../../JUCE_6.0/modules"/>
@@ -112,9 +112,9 @@
                extraLinkerFlags="-std=c++11&#10;-stdlib=libc++">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" osxCompatibility="10.7 SDK" osxArchitecture="64BitIntel"
-                       isDebug="1" optimisation="1" targetName="Preenfm2Editor" headerPath="../../../dev/VST_SDK/VST3_SDK"/>
+                       isDebug="1" optimisation="1" targetName="PreenfmEditor" headerPath="../../../dev/VST_SDK/VST3_SDK"/>
         <CONFIGURATION name="Release" osxCompatibility="10.7 SDK" osxArchitecture="64BitIntel"
-                       isDebug="0" optimisation="2" targetName="Preenfm2Editor" headerPath="../../../dev/VST_SDK/VST3_SDK&#10;"/>
+                       isDebug="0" optimisation="2" targetName="PreenfmEditor" headerPath="../../../dev/VST_SDK/VST3_SDK&#10;"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="../../JUCE_6.0/modules"/>
@@ -135,14 +135,14 @@
     </XCODE_MAC>
     <VS2019 targetFolder="Builds/VisualStudio2019" bigIcon="ehPiCf" vstLegacyFolder="..\..\vstsdk2.4">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" headerPath="F:\dev\JUCE.5.4.5\modules"
-                       targetName="preenfm2Editor_debug_x64"/>
-        <CONFIGURATION isDebug="0" name="Release" headerPath="F:\dev\JUCE.5.4.5\modules"
-                       targetName="preenfm2Editor_x64"/>
-        <CONFIGURATION isDebug="1" name="Debug 32" headerPath="F:\dev\JUCE.5.4.5\modules"
-                       targetName="preenfm2Editor_debug_win32" winArchitecture="Win32"/>
-        <CONFIGURATION isDebug="0" name="Release 32" headerPath="F:\dev\JUCE.5.4.5\modules"
-                       targetName="preenfm2Editor_win32" winArchitecture="Win32"/>
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="../../JUCE_6.0/modules"
+                       targetName="preenfmEditor_debug_x64"/>
+        <CONFIGURATION isDebug="0" name="Release" headerPath="../../JUCE_6.0/modules"
+                       targetName="preenfmEditor_x64"/>
+        <CONFIGURATION isDebug="1" name="Debug 32" headerPath="../../JUCE_6.0/modules"
+                       targetName="preenfmEditor_debug_win32" winArchitecture="Win32"/>
+        <CONFIGURATION isDebug="0" name="Release 32" headerPath="../../JUCE_6.0/modules"
+                       targetName="preenfmEditor_win32" winArchitecture="Win32"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="../../JUCE_6.0/modules"/>
