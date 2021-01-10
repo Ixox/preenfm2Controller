@@ -7,7 +7,7 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.4.5
+  Created with Projucer version: 5.4.7
 
   ------------------------------------------------------------------------------
 
@@ -70,8 +70,18 @@ struct NameAndId sourceNameInit[] = { { "None",	0 },
 	{ "Performance 4",	16 },
 	{ "MPE CC74",	19 },
 	{ "Random",	20 },
+	{ "Polyphonic Aftertouch", 21 },
+	{ "User CC1", 22 },
+	{ "User CC2", 23 },
+	{ "User CC3", 24 },
+	{ "User CC4", 25 },
 	{ "", 0}
 };
+
+int sourcePfm3SpecificIds[] = {
+	21, 22, 23, 24, 25, 0
+};
+
 
 struct NameAndId destNameInit[] = {
 	{ "None", 0},
@@ -451,11 +461,11 @@ void PanelModulation::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    matrixGroup->setBounds (proportionOfWidth (0.5977f), proportionOfHeight (0.0087f), proportionOfWidth (0.3948f), proportionOfHeight (0.9869f));
-    lfoGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.0098f), proportionOfWidth (0.5901f), proportionOfHeight (0.2298f));
-    env1Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.2440f), proportionOfWidth (0.5901f), proportionOfHeight (0.1852f));
-    env2Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.4292f), proportionOfWidth (0.5901f), proportionOfHeight (0.1852f));
-    stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6100f), proportionOfWidth (0.5901f), proportionOfHeight (0.3834f));
+    matrixGroup->setBounds (proportionOfWidth (0.5977f), proportionOfHeight (0.0100f), proportionOfWidth (0.3949f), proportionOfHeight (0.9800f));
+    lfoGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.0095f), proportionOfWidth (0.5903f), proportionOfHeight (0.2298f));
+    env1Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.2441f), proportionOfWidth (0.5903f), proportionOfHeight (0.1854f));
+    env2Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.4295f), proportionOfWidth (0.5903f), proportionOfHeight (0.1854f));
+    stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6101f), proportionOfWidth (0.5903f), proportionOfHeight (0.3800f));
     //[UserResized] Add your own custom resize handling here..
 
 	lfoPhaseLabel->setBounds(proportionOfWidth(0.48f), proportionOfHeight(0.04f), proportionOfWidth(0.080f), 20);
@@ -782,6 +792,17 @@ void PanelModulation::sliderDragEnded(Slider* slider) {
 }
 
 
+void PanelModulation::setPfmType(int type) {
+	pfmType = type;
+
+	for (int r = 0; r < NUMBER_OF_MATRIX_ROW; r++) {
+		for (int i = 0; sourcePfm3SpecificIds[i] != 0; i++) {
+			matrixSource[r]->setItemEnabled(sourcePfm3SpecificIds[i] + 1, pfmType == TYPE_PREENFM3);
+		}
+	}
+}
+
+
 //[/MiscUserCode]
 
 
@@ -804,19 +825,19 @@ BEGIN_JUCER_METADATA
           hasStroke="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="matrix group" id="f5fd2d041b369fc" memberName="matrixGroup"
-                  virtualName="" explicitFocusOrder="0" pos="59.768% 0.903% 39.508% 98.736%"
+                  virtualName="" explicitFocusOrder="0" pos="59.768% 0.951% 39.493% 97.94%"
                   outlinecol="ff749fad" textcol="ff749fad" title="Matrix"/>
   <GROUPCOMPONENT name="lfo group" id="25551a3d7e81232d" memberName="lfoGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0% 0.903% 59.045% 22.924%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 0.951% 59.029% 22.979%"
                   outlinecol="ff749fad" textcol="ff749fad" title=""/>
   <GROUPCOMPONENT name="env 1 group" id="dc02178fe3e4a3e1" memberName="env1Group"
-                  virtualName="" explicitFocusOrder="0" pos="0% 24.368% 59.045% 18.592%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 24.406% 59.029% 18.542%"
                   outlinecol="ff749fad" textcol="ff749fad" title="Free Enveloppe 1"/>
   <GROUPCOMPONENT name="env 2 group" id="c35474bb62378ab6" memberName="env2Group"
-                  virtualName="" explicitFocusOrder="0" pos="0% 42.96% 59.045% 18.592%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 42.948% 59.029% 18.542%"
                   outlinecol="ff749fad" textcol="ff749fad" title="Free Enveloppe 2"/>
   <GROUPCOMPONENT name="step sequencer group" id="edf809d50c7eeefc" memberName="stepSeqGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0% 61.011% 59.045% 38.267%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 61.014% 59.029% 38.035%"
                   outlinecol="ff749fad" textcol="ff749fad" title=""/>
 </JUCER_COMPONENT>
 

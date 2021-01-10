@@ -124,7 +124,7 @@ void Pfm2MidiDevice::choseNewDevices() {
 	if (showErrorMEssage) {
 		showErrorMEssage = false;
 
-		AlertWindow midiWindow("Where is your preenfm2 ?",
+		AlertWindow midiWindow("Where is your preenfm ?",
 			"",
 			AlertWindow::QuestionIcon);
 
@@ -135,7 +135,7 @@ void Pfm2MidiDevice::choseNewDevices() {
 
 		StringArray devicesFrom = MidiInput::getDevices();
 		devicesFrom.insert(0, "<Select>");
-		midiWindow.addComboBox("From", devicesFrom, "Input from preenfm2");
+		midiWindow.addComboBox("From", devicesFrom, "Input from preenfm");
 		int currentInput = devicesFrom.indexOf(currentMidiInputDevice);
 		if (currentInput > -1) {
 			midiWindow.getComboBoxComponent("From")->setSelectedId(currentInput + 1);
@@ -143,7 +143,7 @@ void Pfm2MidiDevice::choseNewDevices() {
 
 		StringArray devicesTo = MidiOutput::getDevices();
 		devicesTo.insert(0, "<Select>");
-		midiWindow.addComboBox("To", devicesTo, "Output to preenfm2");
+		midiWindow.addComboBox("To", devicesTo, "Output to preenfm");
 		int currentOutput = devicesTo.indexOf(currentMidiOutputDevice);
 		if (currentOutput > -1) {
 			midiWindow.getComboBoxComponent("To")->setSelectedId(currentOutput + 1);

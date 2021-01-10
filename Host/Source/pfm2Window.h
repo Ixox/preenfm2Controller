@@ -363,15 +363,14 @@ public:
 	void quickHelp()
 	{
 		AlertWindow helpWindow("Quick Configuration Help",
-			"Check your preenfm2 settings : \r\n"
-			"(Menu->Tools->Set)\r\n"
+			"Check your preenfm settings : \r\n"
 			". Midi channels 1, 2, 3 & 4\r\n"
 			". Midi thru : No\r\n"
 			". Receives : NRPN\r\n"
 			". Send : NRPN\r\n\r\n"
 			"In the main editor window :\r\n"
 			". Click on 'Midi' button to select your midi device\r\n"
-			". Select the midi channel (1-16) of the preenfm2 instrument               \r\n"
+			". Select the midi channel (1-16) of the instrument               \r\n"
 			"   you want to talk to. \r\n\r\n",
 			AlertWindow::InfoIcon);
 

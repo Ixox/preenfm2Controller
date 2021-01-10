@@ -7,7 +7,7 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.4.5
+  Created with Projucer version: 5.4.7
 
   ------------------------------------------------------------------------------
 
@@ -63,7 +63,7 @@ class MainTabs  : public Component,
 public:
     //==============================================================================
     MainTabs ();
-    ~MainTabs();
+    ~MainTabs() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -73,6 +73,7 @@ public:
 	void setPresetNamePtr(char* presetNamePtr);
 	void setMidiOutBuffer(MidiBuffer *midiOutBuffer);
 	void setMidiChannel(int newMidiChannel);
+    void setPfmType(int pfmType);
 	MidifiedFloatParameter* getParameterFromName(String componentName);
     //[/UserMethods]
 
@@ -96,6 +97,7 @@ private:
 	int currentMidiChannel;
 	MidiBuffer *midiOutBuffer;
 	char *presetNamePtr;
+    int pfmType;
     //[/UserVariables]
 
     //==============================================================================
@@ -106,6 +108,7 @@ private:
     std::unique_ptr<ComboBox> midiChannelCombo;
     std::unique_ptr<TextButton> deviceButton;
     std::unique_ptr<HyperlinkButton> versionButton;
+    std::unique_ptr<ComboBox> pfmTypeCombo;
 
 
     //==============================================================================

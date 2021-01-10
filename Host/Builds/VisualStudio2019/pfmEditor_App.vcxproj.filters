@@ -2,14 +2,14 @@
 
 <Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="pfm2Editor\Source\Plugin">
-      <UniqueIdentifier>{AF456A06-A4B7-512C-9F5D-2D44B68DF7DD}</UniqueIdentifier>
+    <Filter Include="pfmEditor\Source\Plugin">
+      <UniqueIdentifier>{AAFB3B85-A838-F0AA-7F5B-9464E9784FE4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="pfm2Editor\Source">
-      <UniqueIdentifier>{5A3368DF-BA2E-515E-2D4C-3E9DB664ECE2}</UniqueIdentifier>
+    <Filter Include="pfmEditor\Source">
+      <UniqueIdentifier>{2FA837CC-7051-BA32-7B66-35D5B9011885}</UniqueIdentifier>
     </Filter>
-    <Filter Include="pfm2Editor">
-      <UniqueIdentifier>{7C7B1193-A353-A8F9-7323-8FF69EF40EBD}</UniqueIdentifier>
+    <Filter Include="pfmEditor">
+      <UniqueIdentifier>{B7C76AD8-D9F8-65BE-D5CC-77638B55EDA1}</UniqueIdentifier>
     </Filter>
     <Filter Include="JUCE Modules\juce_audio_basics\audio_play_head">
       <UniqueIdentifier>{EB58F05A-A968-CEBE-40C4-107CDD8F240F}</UniqueIdentifier>
@@ -449,55 +449,55 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Plugin\Source\UI\png\AlgoPNG.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\UI\Enveloppe.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\UI\EnveloppeAbstract.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\UI\EnveloppeFree1.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\UI\EnveloppeFree2.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\ListProperty.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\UI\MainTabs.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\MidifiedFloatParameter.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\UI\PanelArpAndFilter.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\UI\PanelEngine.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\UI\PanelModulation.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\Pfm2MidiDevice.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\PluginEditor.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\PluginProcessor.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\UI\PreenLookAndFeel.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Plugin\Source\UI\StepSequencer.cpp">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Main.cpp">
-      <Filter>pfm2Editor\Source</Filter>
+      <Filter>pfmEditor\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\JUCE_6.0\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <Filter>JUCE Modules\juce_audio_basics\buffers</Filter>
@@ -2581,67 +2581,67 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Plugin\Source\UI\png\AlgoPNG.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\Enveloppe.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\EnveloppeAbstract.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\EnveloppeFree1.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\EnveloppeFree2.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\EnveloppeListener.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\ListProperty.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\MainTabs.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\MidifiedFloatParameter.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\PanelArpAndFilter.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\PanelEngine.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\PanelModulation.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\PanelOfComponents.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\Pfm2MidiDevice.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\PluginEditor.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\PluginProcessor.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\PreenLookAndFeel.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\PreenNrpn.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\SliderPfm2.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Plugin\Source\UI\StepSequencer.h">
-      <Filter>pfm2Editor\Source\Plugin</Filter>
+      <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\pfm2Window.h">
-      <Filter>pfm2Editor\Source</Filter>
+      <Filter>pfmEditor\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h">
       <Filter>JUCE Modules\juce_audio_basics\audio_play_head</Filter>
@@ -4911,7 +4911,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\iconpfm2Ed.PNG">
-      <Filter>pfm2Editor</Filter>
+      <Filter>pfmEditor</Filter>
     </None>
     <None Include="..\..\..\..\JUCE_6.0\modules\juce_audio_devices\native\oboe\CMakeLists.txt">
       <Filter>JUCE Modules\juce_audio_devices\native\oboe</Filter>

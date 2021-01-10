@@ -1,3 +1,5 @@
+#pragma code_page(65001)
+
 #ifdef JUCE_USER_DEFINED_RC_FILE
  #include JUCE_USER_DEFINED_RC_FILE
 #else
@@ -7,17 +9,17 @@
 #include <windows.h>
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION  2,12,0,0
+FILEVERSION  3,0,0,0
 BEGIN
   BLOCK "StringFileInfo"
   BEGIN
     BLOCK "040904E4"
     BEGIN
       VALUE "CompanyName",  "Xavier Hosxe\0"
-      VALUE "FileDescription",  "pfm2Editor\0"
-      VALUE "FileVersion",  "2.12.0\0"
-      VALUE "ProductName",  "pfm2Editor\0"
-      VALUE "ProductVersion",  "2.12.0\0"
+      VALUE "FileDescription",  "pfmEditor\0"
+      VALUE "FileVersion",  "3.0.0\0"
+      VALUE "ProductName",  "pfmEditor\0"
+      VALUE "ProductVersion",  "3.0.0\0"
     END
   END
 

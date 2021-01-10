@@ -101,10 +101,13 @@ public:
 	void choseNewMidiDevice();
 
 private:
+	void sendMidiForParameter(int paramIndex, int nrpnValue, int forceIndex);
 	int nrpmIndex[2048];
+	int nrpmIndexPfm3[2048];
 	int parameterIndex;
 	String presetName;
 	int currentMidiChannel;
+	int pfmType;
 	MidiBuffer midiOutBuffer;
 	MidiBuffer newMidiNotes;
 	// Shared by all plugin instances

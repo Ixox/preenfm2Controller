@@ -91,6 +91,9 @@ void Pfm2AudioProcessorEditor::setMidiChannel(int newMidiChannel) {
 	mainTabs->setMidiChannel(newMidiChannel);
 }
 
+void Pfm2AudioProcessorEditor::setPfmType(int pfmType) {
+	mainTabs->setPfmType(pfmType);
+}
 
 void Pfm2AudioProcessorEditor::setPresetName(String presetName) {
 	mainTabs->setPresetName(presetName);

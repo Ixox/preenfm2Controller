@@ -20,13 +20,25 @@
 
 
 preenfmLookAndFeel::preenfmLookAndFeel() : LookAndFeel_V4() {
-
+	//windowBackground = 0,
+	//	widgetBackground,
+	//	menuBackground,
+	//	outline,
+	//	defaultText,
+	//	defaultFill,
+	//	highlightedText,
+	//	highlightedFill,
+	//	menuText,
 	setUsingNativeAlertWindows(false);
 	setColourScheme(
-	{ 0xff505050, 0xff424242, 0xff606060,
+	{ 0xff505050, 0xff303030, 0xff202020,
 		0xffa6a6a6, 0xffffffff,
-		0xff21ba90, 0xff000000,
+		0xff000000, 0xff000000,
 		0xffffffff, 0xffffffff }
+	//{ 0xff505050, 0xff424242, 0xff606060,
+	//	0xffa6a6a6, 0xffffffff,
+	//	0xff21ba90, 0xff000000,
+	//	0xffffffff, 0xffffffff }
 	);
 }
 

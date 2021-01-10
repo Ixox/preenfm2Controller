@@ -31,7 +31,7 @@ public:
 	{
 		// Add your application's initialisation code here...
 
-		mainWindow = new StandalonePFM2Window("PreenFM2 Editor", Colour(0xff183B46), nullptr);
+		mainWindow = new StandalonePFM2Window("preenfm editor", Colour(0xff183B46), nullptr);
 		mainWindow->setVisible(true);
 		mainWindow->setResizable(true, true);
 	}

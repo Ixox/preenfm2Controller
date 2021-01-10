@@ -8,26 +8,50 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
+    <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug 32|Win32">
+      <Configuration>Debug 32</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release 32|Win32">
+      <Configuration>Release 32</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{BFCB09EF-67A3-1885-9A43-E20DE37629B1}</ProjectGuid>
+    <ProjectGuid>{1483467C-47A1-B7CE-3BC1-1DF2A13F686D}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"
                  Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <PlatformToolset>v142</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'"
                  Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v142</PlatformToolset>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug 32|Win32'"
+                 Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <PlatformToolset>v142</PlatformToolset>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release 32|Win32'"
+                 Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>v142</PlatformToolset>
@@ -42,15 +66,23 @@
   </ImportGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <TargetExt>.exe</TargetExt>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(Platform)\$(Configuration)\App\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\App\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pfm2Editor</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(Platform)\$(Configuration)\Shared Code\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\Shared Code\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">preenfmEditor_debug_x64</TargetName>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Platform)\$(Configuration)\App\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\App\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">pfm2Editor</TargetName>
-    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)$(Platform)\$(Configuration)\Shared Code\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\Shared Code\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">preenfmEditor_x64</TargetName>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug 32|Win32'">$(SolutionDir)$(Platform)\$(Configuration)\Shared Code\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug 32|Win32'">$(Platform)\$(Configuration)\Shared Code\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug 32|Win32'">preenfmEditor_debug_win32</TargetName>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug 32|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release 32|Win32'">$(SolutionDir)$(Platform)\$(Configuration)\Shared Code\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release 32|Win32'">$(Platform)\$(Configuration)\Shared Code\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release 32|Win32'">preenfmEditor_win32</TargetName>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release 32|Win32'">true</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -63,8 +95,8 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\..\JUCE_6.0\modules;F:\dev\JUCE.5.4.5\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2019_78A5026=1;JUCE_APP_VERSION=3.0.0;JUCE_APP_VERSION_HEX=0x30000;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\JUCE_6.0\modules\juce_audio_processors\format_types\VST3_SDK;..\..\..\..\vstsdk2.4;..\..\JuceLibraryCode;..\..\..\..\JUCE_6.0\modules;../../JUCE_6.0/modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2019_78A5026=1;JUCE_APP_VERSION=3.0.0;JUCE_APP_VERSION_HEX=0x30000;JucePlugin_Build_VST=1;JucePlugin_Build_VST3=1;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=1;JucePlugin_Build_Unity=0;JUCE_SHARED_CODE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -80,21 +112,20 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <OutputFile>$(OutDir)\pfm2Editor.exe</OutputFile>
+      <OutputFile>$(OutDir)\preenfmEditor_debug_x64.lib</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>libcmt.lib; msvcrt.lib;;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(IntDir)\pfm2Editor.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(IntDir)\preenfmEditor_debug_x64.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>$(IntDir)\pfm2Editor.bsc</OutputFile>
+      <OutputFile>$(IntDir)\preenfmEditor_debug_x64.bsc</OutputFile>
     </Bscmake>
-    <Lib/>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MkTypLibCompatible>true</MkTypLibCompatible>
@@ -104,8 +135,8 @@
     </Midl>
     <ClCompile>
       <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\..\JUCE_6.0\modules;F:\dev\JUCE.5.4.5\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCER_VS2019_78A5026=1;JUCE_APP_VERSION=3.0.0;JUCE_APP_VERSION_HEX=0x30000;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\JUCE_6.0\modules\juce_audio_processors\format_types\VST3_SDK;..\..\..\..\vstsdk2.4;..\..\JuceLibraryCode;..\..\..\..\JUCE_6.0\modules;../../JUCE_6.0/modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCER_VS2019_78A5026=1;JUCE_APP_VERSION=3.0.0;JUCE_APP_VERSION_HEX=0x30000;JucePlugin_Build_VST=1;JucePlugin_Build_VST3=1;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=1;JucePlugin_Build_Unity=0;JUCE_SHARED_CODE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -121,11 +152,99 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <OutputFile>$(OutDir)\pfm2Editor.exe</OutputFile>
+      <OutputFile>$(OutDir)\preenfmEditor_x64.lib</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(IntDir)\pfm2Editor.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(IntDir)\preenfmEditor_x64.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LargeAddressAware>true</LargeAddressAware>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(IntDir)\preenfmEditor_x64.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug 32|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <HeaderFileName/>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\..\..\..\JUCE_6.0\modules\juce_audio_processors\format_types\VST3_SDK;..\..\..\..\vstsdk2.4;..\..\JuceLibraryCode;..\..\..\..\JUCE_6.0\modules;../../JUCE_6.0/modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2019_78A5026=1;JUCE_APP_VERSION=3.0.0;JUCE_APP_VERSION_HEX=0x30000;JucePlugin_Build_VST=1;JucePlugin_Build_VST3=1;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=1;JucePlugin_Build_Unity=0;JUCE_SHARED_CODE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AssemblerListingLocation>$(IntDir)\</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)\</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)\</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <OutputFile>$(OutDir)\preenfmEditor_debug_win32.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib; msvcrt.lib;;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)\preenfmEditor_debug_win32.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(IntDir)\preenfmEditor_debug_win32.bsc</OutputFile>
+    </Bscmake>
+    <Lib>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release 32|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <HeaderFileName/>
+    </Midl>
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\..\JUCE_6.0\modules\juce_audio_processors\format_types\VST3_SDK;..\..\..\..\vstsdk2.4;..\..\JuceLibraryCode;..\..\..\..\JUCE_6.0\modules;../../JUCE_6.0/modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCER_VS2019_78A5026=1;JUCE_APP_VERSION=3.0.0;JUCE_APP_VERSION_HEX=0x30000;JucePlugin_Build_VST=1;JucePlugin_Build_VST3=1;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=1;JucePlugin_Build_Unity=0;JUCE_SHARED_CODE=1;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AssemblerListingLocation>$(IntDir)\</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)\</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)\</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <OutputFile>$(OutDir)\preenfmEditor_win32.lib</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)\preenfmEditor_win32.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <OptimizeReferences>true</OptimizeReferences>
@@ -135,28 +254,29 @@
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>$(IntDir)\pfm2Editor.bsc</OutputFile>
+      <OutputFile>$(IntDir)\preenfmEditor_win32.bsc</OutputFile>
     </Bscmake>
-    <Lib/>
+    <Lib>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Plugin\Source\UI\png\AlgoPNG.cpp"/>
-    <ClCompile Include="..\..\..\Plugin\Source\UI\Enveloppe.cpp"/>
-    <ClCompile Include="..\..\..\Plugin\Source\UI\EnveloppeAbstract.cpp"/>
-    <ClCompile Include="..\..\..\Plugin\Source\UI\EnveloppeFree1.cpp"/>
-    <ClCompile Include="..\..\..\Plugin\Source\UI\EnveloppeFree2.cpp"/>
-    <ClCompile Include="..\..\..\Plugin\Source\ListProperty.cpp"/>
-    <ClCompile Include="..\..\..\Plugin\Source\UI\MainTabs.cpp"/>
-    <ClCompile Include="..\..\..\Plugin\Source\MidifiedFloatParameter.cpp"/>
-    <ClCompile Include="..\..\..\Plugin\Source\UI\PanelArpAndFilter.cpp"/>
-    <ClCompile Include="..\..\..\Plugin\Source\UI\PanelEngine.cpp"/>
-    <ClCompile Include="..\..\..\Plugin\Source\UI\PanelModulation.cpp"/>
-    <ClCompile Include="..\..\..\Plugin\Source\Pfm2MidiDevice.cpp"/>
-    <ClCompile Include="..\..\..\Plugin\Source\PluginEditor.cpp"/>
-    <ClCompile Include="..\..\..\Plugin\Source\PluginProcessor.cpp"/>
-    <ClCompile Include="..\..\..\Plugin\Source\UI\PreenLookAndFeel.cpp"/>
-    <ClCompile Include="..\..\..\Plugin\Source\UI\StepSequencer.cpp"/>
-    <ClCompile Include="..\..\Source\Main.cpp"/>
+    <ClCompile Include="..\..\Source\UI\Enveloppe.cpp"/>
+    <ClCompile Include="..\..\Source\UI\EnveloppeAbstract.cpp"/>
+    <ClCompile Include="..\..\Source\UI\EnveloppeFree1.cpp"/>
+    <ClCompile Include="..\..\Source\UI\EnveloppeFree2.cpp"/>
+    <ClCompile Include="..\..\Source\UI\MainTabs.cpp"/>
+    <ClCompile Include="..\..\Source\UI\PanelArpAndFilter.cpp"/>
+    <ClCompile Include="..\..\Source\UI\PanelEngine.cpp"/>
+    <ClCompile Include="..\..\Source\UI\PanelModulation.cpp"/>
+    <ClCompile Include="..\..\Source\UI\png\AlgoPNG.cpp"/>
+    <ClCompile Include="..\..\Source\UI\PreenLookAndFeel.cpp"/>
+    <ClCompile Include="..\..\Source\UI\StepSequencer.cpp"/>
+    <ClCompile Include="..\..\Source\ListProperty.cpp"/>
+    <ClCompile Include="..\..\Source\MidifiedFloatParameter.cpp"/>
+    <ClCompile Include="..\..\Source\Pfm2MidiDevice.cpp"/>
+    <ClCompile Include="..\..\Source\PluginEditor.cpp"/>
+    <ClCompile Include="..\..\Source\PluginProcessor.cpp"/>
     <ClCompile Include="..\..\..\..\JUCE_6.0\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -644,6 +764,12 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\JUCE_6.0\modules\juce_audio_formats\juce_audio_formats.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\JUCE_6.0\modules\juce_audio_plugin_client\utility\juce_PluginUtilities.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\JUCE_6.0\modules\juce_audio_plugin_client\juce_audio_plugin_client_utils.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\JUCE_6.0\modules\juce_audio_processors\format\juce_AudioPluginFormat.cpp">
@@ -2081,6 +2207,7 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_basics.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_devices.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_formats.cpp"/>
+    <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_plugin_client_utils.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_processors.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_utils.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_core.cpp"/>
@@ -2093,27 +2220,25 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_opengl.cpp"/>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\png\AlgoPNG.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\Enveloppe.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\EnveloppeAbstract.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\EnveloppeFree1.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\EnveloppeFree2.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\EnveloppeListener.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\ListProperty.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\MainTabs.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\MidifiedFloatParameter.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\PanelArpAndFilter.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\PanelEngine.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\PanelModulation.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\PanelOfComponents.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\Pfm2MidiDevice.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\PluginEditor.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\PluginProcessor.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\PreenLookAndFeel.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\PreenNrpn.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\SliderPfm2.h"/>
-    <ClInclude Include="..\..\..\Plugin\Source\UI\StepSequencer.h"/>
-    <ClInclude Include="..\..\Source\pfm2Window.h"/>
+    <ClInclude Include="..\..\Source\UI\Enveloppe.h"/>
+    <ClInclude Include="..\..\Source\UI\EnveloppeAbstract.h"/>
+    <ClInclude Include="..\..\Source\UI\EnveloppeFree1.h"/>
+    <ClInclude Include="..\..\Source\UI\EnveloppeFree2.h"/>
+    <ClInclude Include="..\..\Source\UI\MainTabs.h"/>
+    <ClInclude Include="..\..\Source\UI\PanelArpAndFilter.h"/>
+    <ClInclude Include="..\..\Source\UI\PanelEngine.h"/>
+    <ClInclude Include="..\..\Source\UI\PanelModulation.h"/>
+    <ClInclude Include="..\..\Source\UI\PanelOfComponents.h"/>
+    <ClInclude Include="..\..\Source\UI\png\AlgoPNG.h"/>
+    <ClInclude Include="..\..\Source\UI\PreenLookAndFeel.h"/>
+    <ClInclude Include="..\..\Source\UI\SliderPfm2.h"/>
+    <ClInclude Include="..\..\Source\UI\StepSequencer.h"/>
+    <ClInclude Include="..\..\Source\ListProperty.h"/>
+    <ClInclude Include="..\..\Source\MidifiedFloatParameter.h"/>
+    <ClInclude Include="..\..\Source\Pfm2MidiDevice.h"/>
+    <ClInclude Include="..\..\Source\PluginEditor.h"/>
+    <ClInclude Include="..\..\Source\PluginProcessor.h"/>
+    <ClInclude Include="..\..\Source\PreenNrpn.h"/>
     <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h"/>
     <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_basics\buffers\juce_AudioChannelSet.h"/>
     <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_basics\buffers\juce_AudioDataConverters.h"/>
@@ -2325,6 +2450,15 @@
     <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_formats\format\juce_MemoryMappedAudioFormatReader.h"/>
     <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_formats\sampler\juce_Sampler.h"/>
     <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_formats\juce_audio_formats.h"/>
+    <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_plugin_client\utility\juce_CarbonVisibility.h"/>
+    <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_plugin_client\utility\juce_CheckSettingMacros.h"/>
+    <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_plugin_client\utility\juce_CreatePluginFilter.h"/>
+    <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_plugin_client\utility\juce_FakeMouseMoveGenerator.h"/>
+    <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_plugin_client\utility\juce_IncludeModuleHeaders.h"/>
+    <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_plugin_client\utility\juce_IncludeSystemHeaders.h"/>
+    <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_plugin_client\utility\juce_PluginHostType.h"/>
+    <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_plugin_client\utility\juce_WindowsHooks.h"/>
+    <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_plugin_client\juce_audio_plugin_client.h"/>
     <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_processors\format\juce_AudioPluginFormat.h"/>
     <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_processors\format\juce_AudioPluginFormatManager.h"/>
     <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_processors\format_types\VST3_SDK\base\source\classfactoryhelpers.h"/>
@@ -2869,6 +3003,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\BinaryData.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h"/>
+    <ClInclude Include="..\..\JuceLibraryCode\JucePluginDefines.h"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\iconpfm2Ed.PNG"/>
@@ -2889,9 +3024,6 @@
     <None Include="..\..\..\..\JUCE_6.0\modules\juce_graphics\image_formats\jpglib\changes to libjpeg for JUCE.txt"/>
     <None Include="..\..\..\..\JUCE_6.0\modules\juce_graphics\image_formats\pnglib\libpng_readme.txt"/>
     <None Include=".\icon.ico"/>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include=".\resources.rc"/>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
   <ImportGroup Label="ExtensionTargets"/>

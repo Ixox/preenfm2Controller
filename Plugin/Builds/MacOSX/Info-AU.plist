@@ -8,19 +8,19 @@
     <key>CFBundleIconFile</key>
     <string></string>
     <key>CFBundleIdentifier</key>
-    <string>com.ixox.Preenfm2Editor</string>
+    <string>com.ixox.preenfmEditor</string>
     <key>CFBundleName</key>
-    <string>pfm2Editor</string>
+    <string>pfmEditor</string>
     <key>CFBundleDisplayName</key>
-    <string>pfm2Editor</string>
+    <string>pfmEditor</string>
     <key>CFBundlePackageType</key>
     <string>BNDL</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleShortVersionString</key>
-    <string>2.12.0</string>
+    <string>3.0.0</string>
     <key>CFBundleVersion</key>
-    <string>2.12.0</string>
+    <string>3.0.0</string>
     <key>NSHumanReadableCopyright</key>
     <string></string>
     <key>NSHighResolutionCapable</key>
@@ -29,19 +29,19 @@
     <array>
       <dict>
         <key>name</key>
-        <string>Ixox: Preenfm2 Editor</string>
+        <string>Ixox: preenfm Editor</string>
         <key>description</key>
-        <string>PreenFM2 patch editor</string>
+        <string>preenfm preset editor</string>
         <key>factoryFunction</key>
-        <string>pfm2Factory</string>
+        <string>pfmEditorFactory</string>
         <key>manufacturer</key>
         <string>Ixox</string>
         <key>type</key>
         <string>aumu</string>
         <key>subtype</key>
-        <string>IxP2</string>
+        <string>IxPF</string>
         <key>version</key>
-        <integer>134144</integer>
+        <integer>196608</integer>
         <key>resourceUsage</key>
         <dict>
           <key>network.client</key>
