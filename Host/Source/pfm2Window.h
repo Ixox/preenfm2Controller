@@ -371,7 +371,7 @@ public:
 			". Send : NRPN\r\n\r\n"
 			"In the main editor window :\r\n"
 			". Click on 'Midi' button to select your midi device\r\n"
-			". Select the midi channel (1-16) of the preenfm2 instrument               \r\n"
+			". Select the Midi channel (1-16) of the preenfm2 instrument               \r\n"
 			"   you want to talk to. \r\n\r\n",
 			AlertWindow::InfoIcon);
 
