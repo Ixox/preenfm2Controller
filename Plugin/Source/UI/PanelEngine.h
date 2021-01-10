@@ -88,7 +88,7 @@ public:
 	void updateComboFromParameter_hook(ComboBox* combo) override;
 	void updateUIEnveloppe(String paramName) override;
 	bool containsThisParameterAsEnveloppe(String name) override;
-	void setPfmType(int type);
+	void setPfmType(int type) override;
 	void enableComponent(Component* comp, bool enable);
 	void hideComponent(Component* comp, bool enable);
     //[/UserMethods]

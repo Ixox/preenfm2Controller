@@ -89,6 +89,7 @@ public:
 	bool containsThisParameterAsEnveloppe(String name) override;
 	void sliderDragStarted(Slider* slider)	override;
 	void sliderDragEnded(Slider* slider) override;
+	void setPfmType(int type) override;
 
     //[/UserMethods]
 

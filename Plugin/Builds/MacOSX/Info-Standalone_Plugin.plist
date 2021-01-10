@@ -8,11 +8,11 @@
     <key>CFBundleIconFile</key>
     <string></string>
     <key>CFBundleIdentifier</key>
-    <string>com.ixox.Preenfm2Editor</string>
+    <string>com.ixox.preenfmEditor</string>
     <key>CFBundleName</key>
-    <string>pfm2Editor</string>
+    <string>pfmEditor</string>
     <key>CFBundleDisplayName</key>
-    <string>pfm2Editor</string>
+    <string>pfmEditor</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleSignature</key>

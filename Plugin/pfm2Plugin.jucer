@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="nWJaEw" name="pfm2Editor" projectType="audioplug" version="3.0.0"
-              bundleIdentifier="com.ixox.Preenfm2Editor" includeBinaryInAppConfig="1"
+<JUCERPROJECT id="nWJaEw" name="pfmEditor" projectType="audioplug" version="3.0.0"
+              bundleIdentifier="com.ixox.preenfmEditor" includeBinaryInAppConfig="1"
               buildVST="1" buildVST3="1" buildAU="1" buildRTAS="0" buildAAX="0"
-              pluginName="Preenfm2 Editor" pluginDesc="PreenFM2 patch editor"
-              pluginManufacturer="Ixox" pluginManufacturerCode="Ixox" pluginCode="IxP2"
+              pluginName="preenfm Editor" pluginDesc="preenfm preset editor"
+              pluginManufacturer="Ixox" pluginManufacturerCode="Ixox" pluginCode="IxPF"
               pluginChannelConfigs="{1, 1}, {2, 2}" pluginIsSynth="1" pluginWantsMidiIn="1"
               pluginProducesMidiOut="1" pluginSilenceInIsSilenceOut="1" pluginEditorRequiresKeys="0"
-              pluginAUExportPrefix="pfm2" pluginRTASCategory="" aaxIdentifier="com.yourcompany.pfm2"
+              pluginAUExportPrefix="pfmEditor" pluginRTASCategory="" aaxIdentifier="com.ixox.preenfmEditor"
               pluginAAXCategory="2" companyName="Xavier Hosxe" companyWebsite="https://github.com/Ixox/"
               companyEmail="xavier.hosxe@gmail.com" displaySplashScreen="1"
               reportAppUsage="1" splashScreenColour="Dark" buildAUv3="0" buildStandalone="1"
@@ -15,7 +15,7 @@
               pluginFormats="buildAU,buildStandalone,buildVST,buildVST3" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn,pluginProducesMidiOut"
               pluginRTASDisableBypass="0" pluginRTASDisableMultiMono="0" pluginAAXDisableBypass="0"
               pluginAAXDisableMultiMono="0" jucerFormatVersion="1">
-  <MAINGROUP id="vhKV8J" name="pfm2Editor">
+  <MAINGROUP id="vhKV8J" name="pfmEditor">
     <GROUP id="{C1BB27D8-689D-95C2-2F2A-98449E82469F}" name="Source">
       <GROUP id="{98E9ADF3-34F5-56D9-9C70-85258E9238C7}" name="UI">
         <FILE id="aBEIAf" name="Enveloppe.cpp" compile="1" resource="0" file="Source/UI/Enveloppe.cpp"/>

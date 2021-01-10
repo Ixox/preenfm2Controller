@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="I4cnWy" name="pfm2Editor" projectType="guiapp" version="3.0.0"
-              bundleIdentifier="com.ixox.pfm2Editor" includeBinaryInAppConfig="1"
+<JUCERPROJECT id="I4cnWy" name="pfmEditor" projectType="guiapp" version="3.0.0"
+              bundleIdentifier="com.ixox.preenfmEditor" includeBinaryInAppConfig="1"
               defines="" companyName="Xavier Hosxe" companyWebsite="http://github.com/Ixox"
               companyEmail="preenfm1@gmail.com" displaySplashScreen="1" reportAppUsage="1"
               splashScreenColour="Dark" cppLanguageStandard="11" jucerFormatVersion="1">
-  <MAINGROUP id="c6LJM5" name="pfm2Editor">
+  <MAINGROUP id="c6LJM5" name="pfmEditor">
     <GROUP id="{4109EA71-F7BE-3C72-D039-241F993FAEB9}" name="Source">
       <GROUP id="{1D684675-DA20-07E6-EFC5-ECF1687EF7D5}" name="Plugin">
         <FILE id="psmrC7" name="AlgoPNG.cpp" compile="1" resource="0" file="../Plugin/Source/UI/png/AlgoPNG.cpp"/>

@@ -70,8 +70,18 @@ struct NameAndId sourceNameInit[] = { { "None",	0 },
 	{ "Performance 4",	16 },
 	{ "MPE CC74",	19 },
 	{ "Random",	20 },
+	{ "Polyphonic Aftertouch", 21 },
+	{ "User CC1", 22 },
+	{ "User CC2", 23 },
+	{ "User CC3", 24 },
+	{ "User CC4", 25 },
 	{ "", 0}
 };
+
+int sourcePfm3SpecificIds[] = {
+	21, 22, 23, 24, 25, 0
+};
+
 
 struct NameAndId destNameInit[] = {
 	{ "None", 0},
@@ -778,6 +788,17 @@ void PanelModulation::sliderDragEnded(Slider* slider) {
 	AudioProcessorParameter * param = parameterMap[slider->getName()];
 	if (param != nullptr) {
 		param->endChangeGesture();
+	}
+}
+
+
+void PanelModulation::setPfmType(int type) {
+	pfmType = type;
+
+	for (int r = 0; r < NUMBER_OF_MATRIX_ROW; r++) {
+		for (int i = 0; sourcePfm3SpecificIds[i] != 0; i++) {
+			matrixSource[r]->setItemEnabled(sourcePfm3SpecificIds[i] + 1, pfmType == TYPE_PREENFM3);
+		}
 	}
 }
 

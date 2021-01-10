@@ -996,7 +996,7 @@
 				);
 				OTHER_CPLUSPLUSFLAGS = "-std=c++11 -stdlib=libc++";
 				OTHER_LDFLAGS = "-std=c++11 -stdlib=libc++";
-				PRODUCT_BUNDLE_IDENTIFIER = com.ixox.pfm2Editor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ixox.preenfmEditor;
 				PRODUCT_NAME = "Preenfm2Editor";
 				USE_HEADERMAP = NO;
 				VALID_ARCHS = "i386 x86_64 arm64 arm64e";
@@ -1048,7 +1048,7 @@
 				);
 				OTHER_CPLUSPLUSFLAGS = "-std=c++11 -stdlib=libc++";
 				OTHER_LDFLAGS = "-std=c++11 -stdlib=libc++";
-				PRODUCT_BUNDLE_IDENTIFIER = com.ixox.pfm2Editor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ixox.preenfmEditor;
 				PRODUCT_NAME = "Preenfm2Editor";
 				USE_HEADERMAP = NO;
 				VALID_ARCHS = "i386 x86_64 arm64 arm64e";

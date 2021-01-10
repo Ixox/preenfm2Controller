@@ -16,9 +16,9 @@ BEGIN
     BLOCK "040904E4"
     BEGIN
       VALUE "CompanyName",  "Xavier Hosxe\0"
-      VALUE "FileDescription",  "pfm2Editor\0"
+      VALUE "FileDescription",  "pfmEditor\0"
       VALUE "FileVersion",  "3.0.0\0"
-      VALUE "ProductName",  "pfm2Editor\0"
+      VALUE "ProductName",  "pfmEditor\0"
       VALUE "ProductVersion",  "3.0.0\0"
     END
   END
