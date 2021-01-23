@@ -30,12 +30,14 @@
 #define JUCE_NO_DEPRECATION_WARNINGS 1
 
 // Hack to be able to call the reset
+#include "../../Plugin/Source/PluginProcessor.h"
 #include "../../Plugin/Source/ListProperty.h"
+#include "pfmPreset.h"
 
 #if JUCE_MODULE_AVAILABLE_juce_audio_plugin_client
 extern juce::AudioProcessor* JUCE_API JUCE_CALLTYPE createPluginFilterOfType(juce::AudioProcessor::WrapperType type);
 #else
-extern juce::AudioProcessor* JUCE_API JUCE_CALLTYPE createPluginFilter();
+extern Pfm2AudioProcessor* JUCE_API JUCE_CALLTYPE createPluginFilter();
 
 #endif
 
@@ -106,6 +108,8 @@ public:
 				[this, preferredDefaultDeviceName](bool granted) { init(granted, preferredDefaultDeviceName); });
 		else
 			init(audioInputRequired, preferredDefaultDeviceName);
+
+		presets = new PfmPreset();
 	}
 
 	void init(bool enableAudioInput, const String& preferredDefaultDeviceName)
@@ -186,7 +190,7 @@ public:
 	void askUserToSaveState()
 	{
 #if JUCE_MODAL_LOOPS_PERMITTED
-		FileChooser fc(TRANS("Save current preset"), getLastFile(), "*.pfm2;*");
+		FileChooser fc(TRANS("Save current preset"), getLastFile(), "*.pfm2;*.pfm3;*");
 
 		if (fc.browseForFileToSave(true))
 		{
@@ -209,7 +213,7 @@ public:
 	void askUserToLoadState()
 	{
 #if JUCE_MODAL_LOOPS_PERMITTED
-		FileChooser fc(TRANS("Load a saved preset"), getLastFile(), "*.pfm2;*");
+		FileChooser fc(TRANS("Load a saved preset"), getLastFile(), "*.pfm2;*.pfm3;*");
 
 		if (fc.browseForFileToOpen())
 		{
@@ -415,6 +419,9 @@ public:
 
 	}
 
+	void createPresetFolders();	
+	void createPfmBank();
+
 	//==============================================================================
 	void switchToHostApplication()
 	{
@@ -452,7 +459,7 @@ public:
 
 	//==============================================================================
 	OptionalScopedPointer<PropertySet> settings;
-	std::unique_ptr<AudioProcessor> processor;
+	std::unique_ptr<Pfm2AudioProcessor> processor;
 	AudioDeviceManager deviceManager;
 	AudioProcessorPlayer player;
 	Array<PluginInOuts> channelConfiguration;
@@ -610,6 +617,9 @@ private:
 	}
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(StandalonePluginHolder)
+
+	ScopedPointer<PfmPreset> presets;
+
 };
 
 
@@ -724,6 +734,12 @@ public:
 		m.addSeparator();
 		m.addItem(2, TRANS("Save current preset"));
 		m.addItem(3, TRANS("Load a saved preset"));
+		// Make sure float = 4
+		if (sizeof(float) == 4) {
+			m.addSeparator();
+			m.addItem(7, TRANS("Create pfm bank from presets"));
+			m.addItem(8, TRANS("Create preset folder from pfm bank"));
+		}
 		m.addSeparator();
 		m.addItem(4, TRANS("Reset to default preset"));
 		m.addSeparator();
@@ -737,6 +753,8 @@ public:
 		case 4:  resetToDefaultState(); break;
 		case 5:  pluginHolder->quickHelp(); break;
 		case 6:  pluginHolder->deleteFiles(); break;
+		case 7:  pluginHolder->createPfmBank(); break;
+		case 8:  pluginHolder->createPresetFolders(); break;
 		default: break;
 		}
 	}

@@ -44,6 +44,31 @@ void MidifiedFloatParameter::setRealValue(float newValue) {
 	}
 }
 
+
+void MidifiedFloatParameter::setPfmBankValue(float pfmValue) {
+	// We update value but as we're in a fake processor
+	// we dont need to update any other value 
+	
+	// For float we don't change anything (float is when multiplier > 1)
+	// For int we add min value
+	if (valueMultiplier == 1.0f) {
+		value = pfmValue + pfm2MinValue - bias;
+	}
+	else {
+		value = pfmValue;
+	}
+}
+
+
+float MidifiedFloatParameter::getPfmBankValue() {
+	if (valueMultiplier == 1.0f) {
+		return value - pfm2MinValue + bias;
+	}
+	else {
+		return value;
+	}
+}
+
 void MidifiedFloatParameter::addNrpn(MidiBuffer& midiBuffer, const int midiChannel) {
 	double time = Time::getMillisecondCounterHiRes() * .001;
 	MidiMessage byte1 = MidiMessage::controllerEvent(midiChannel, 99, getNrpnParamMSB());
