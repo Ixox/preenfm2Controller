@@ -165,9 +165,15 @@ void ReorderingComponent::buttonClicked(Button* buttonThatWasClicked) {
 		delete getParentComponent();
 	}
 	else if (buttonThatWasClicked == okButton) {
+		MemoryBlock newOrder;
+		for (int p = 0; p < 128; p++) {
+			newOrder.append(((char*)bankMem_->getData() + 1024 * order_[p]), 1024);
+		}
+
 		File bankFile(bankFileName_);
 		bankFile.create();
-		bankFile.replaceWithData(bankMem_->getData(), bankMem_->getSize());
+		bankFile.replaceWithData(newOrder.getData(), newOrder.getSize());
+
 
 		AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
 			TRANS("Bank file Created"),
@@ -175,9 +181,6 @@ void ReorderingComponent::buttonClicked(Button* buttonThatWasClicked) {
 			bankFileName_);
 
 		delete getParentComponent();
-
-
-
 	}
 }
 
