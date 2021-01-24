@@ -20,23 +20,56 @@
 
 
 void StandalonePluginHolder::createPresetFolders() {
-	FileChooser myChooser("Select a preenfm bank",
-		File::getSpecialLocation(File::userHomeDirectory),
+	FileChooser myChooser("Create presets folder  from a preenfm bank",
+		getLastSelectedPresetFolder(),
 		"*.BNK");
 
 	if (myChooser.browseForFileToOpen())
 	{
-		presets->savePresets(myChooser.getResult());
-	}
+		setLastSelectedPresetFolder(myChooser);
 
+		String folderName = presets->savePresets(myChooser.getResult());
+
+		if (folderName.length() > 0) {
+			AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
+				TRANS("Folder Created"),
+				TRANS("A folder with all the bank presets has been created here \r\n" +
+					folderName));
+		}
+		else {
+			AlertWindow::showMessageBox(AlertWindow::WarningIcon,
+				TRANS("Error"),
+				TRANS("Could not create you bank folder"));
+		}
+	}
 }
 
 void StandalonePluginHolder::createPfmBank() {
-	FileChooser myChooser("Select the folder with your presets",
-		File::getSpecialLocation(File::userHomeDirectory));
+	FileChooser myChooser("Create bank from a presets folder",
+		getLastSelectedPresetBank());
 
 	if (myChooser.browseForDirectory())
 	{
-		presets->saveBank(myChooser.getResult());
+		setLastSelectedPresetBank(myChooser);
+
+		String bankName = presets->saveBank(myChooser.getResult());
+
+		if (bankName.length() > 0) {
+			AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
+				TRANS("Bank file Created"),
+				TRANS("A bank file has been created here \r\n") +
+				bankName);
+		}
+		else {
+			AlertWindow::showMessageBox(AlertWindow::WarningIcon,
+				TRANS("Error"),
+				TRANS("Could not create you bank file"));
+		}
 	}
+}
+
+
+
+void StandalonePluginHolder::reorderBank() {
+	presets->reorderBank();
 }

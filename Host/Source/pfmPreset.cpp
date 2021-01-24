@@ -17,6 +17,7 @@
 */
 
 #include "pfmPreset.h"
+#include "ReorderingComponent.h"
 
 extern Pfm2AudioProcessor* JUCE_API JUCE_CALLTYPE createPluginFilter();
 extern const uint32 magicXmlNumber = 0x21324356;
@@ -27,7 +28,7 @@ PfmPreset::PfmPreset() {
     //for (int p = 0; p < 128; p++) {
     //    swapAllFloats(p);
     //}
-
+    reorderingWindow = nullptr;
     processor_ = createPluginFilter();
 }
 
@@ -51,7 +52,7 @@ void PfmPreset::swapAllFloats(int presetNumber) {
     }
 }
 
-void PfmPreset::savePresets(File& bankFile) {
+String PfmPreset::savePresets(File& bankFile) {
     bankFile_ = new File(bankFile);
     bankFile_->loadFileAsData(bankMemory_);
 
@@ -67,7 +68,7 @@ void PfmPreset::savePresets(File& bankFile) {
         AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon,
             TRANS("Error"),
             TRANS("Folder cannot be created for this bank"));
-        return;
+        return "";
     }
 
     for (int p = 0; p < 128; p++) {
@@ -90,6 +91,8 @@ void PfmPreset::savePresets(File& bankFile) {
 
         preset.replaceWithData(presetMemBlock.getData(), presetMemBlock.getSize());
     }
+
+    return parentFolder.getFullPathName();
 }
 
 
@@ -167,13 +170,10 @@ void PfmPreset::updateDefaultValuesForOldPreset(FlashSynthParams* params) {
 }
 
 
-void PfmPreset::saveBank(File& presetFolder) {
+String PfmPreset::saveBank(File& presetFolder) {
     
     if (!presetFolder.isDirectory() ) {
-        AlertWindow::showMessageBox(AlertWindow::WarningIcon,
-            TRANS("Wrong folder"),
-            TRANS("Not a folder !!!"));
-        return;
+        return "";
     }
 
 
@@ -186,17 +186,14 @@ void PfmPreset::saveBank(File& presetFolder) {
     presetFiles.sort();
 
     if (presetFiles.size() == 0) {
-        AlertWindow::showMessageBox(AlertWindow::WarningIcon,
-            TRANS("Wrong folder"),
-            TRANS("No preset file (*.pfm) in this folder"));
-        return;
+        return "";
     }
 
     int cpt = 0;
     String bankName;
     bool nameExists = false;
     do {
-        bankName = parentFolder.getFullPathName() + File::getSeparatorString() + fileName + ".bnk" + (cpt == 0 ? "" : String(cpt));
+        bankName = parentFolder.getFullPathName() + File::getSeparatorString() + fileName + (cpt == 0 ? "" : ("_" + String(cpt))) + ".bnk";
         File bankTest(bankName);
         nameExists = bankTest.exists();
         cpt++;
@@ -222,7 +219,7 @@ void PfmPreset::saveBank(File& presetFolder) {
         }
 
 
-        processor_->setStateInformation(fileMemory.getData(), fileMemory.getSize());
+        processor_->setStateInformation(fileMemory.getData(), fileMemory.getSize(), false);
 
         char* presetName = processor_->getPresetName().getCharPointer().getAddress();
         for (int c = 0; c < 12; c++) {
@@ -250,6 +247,12 @@ void PfmPreset::saveBank(File& presetFolder) {
         bankMemory.append(presetMemory.getData(), presetMemory.getSize());
     }
     bankFile.replaceWithData(bankMemory.getData(), bankMemory.getSize());
+
+
+    // Bank is ready we can ask for reprdering
+    // reorderBank();
+
+    return bankFile.getFullPathName();
 }
 
 
@@ -319,3 +322,22 @@ void PfmPreset::convert(FlashSynthParams* paramSource, bool fillParam) {
     }
 
 }
+
+
+
+
+void PfmPreset::reorderBank() {
+
+    //if (reorderingWindow == nullptr) {
+        reorderingWindow = new DocumentWindow("Reorder your presets", Colour::fromRGB(10, 10, 10), 0);
+        reorderingWindow->setContentOwned(new ReorderingComponent(), true);
+        reorderingWindow->setVisible(true);
+    //}
+    //else {
+    //    AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon,
+    //        TRANS("Error"),
+    //        TRANS("Reordering window already opened !"));
+    //}
+
+}
+

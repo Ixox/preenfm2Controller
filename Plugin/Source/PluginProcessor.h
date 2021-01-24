@@ -78,6 +78,7 @@ public:
 
 	//==============================================================================
 	void getStateInformation(MemoryBlock& destData);
+	void setStateInformation(const void* data, int sizeInBytes, bool flushNewStateToPreenfm);
 	void setStateInformation(const void* data, int sizeInBytes);
 
 

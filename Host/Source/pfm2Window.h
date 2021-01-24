@@ -186,6 +186,48 @@ public:
 			settings->setValue("lastStateFile", fc.getResult().getFullPathName());
 	}
 
+
+	File getLastSelectedPresetBank() const
+	{
+		File f;
+
+		if (settings != nullptr)
+			f = File(settings->getValue("lastSelectedPresetBank"));
+
+		if (f == File())
+			f = File::getSpecialLocation(File::userDocumentsDirectory);
+
+		return f;
+	}
+
+
+	void setLastSelectedPresetBank(const FileChooser& fc)
+	{
+		if (settings != nullptr)
+			settings->setValue("lastSelectedPresetBank", fc.getResult().getFullPathName());
+	}
+
+
+	File getLastSelectedPresetFolder() const
+	{
+		File f;
+
+		if (settings != nullptr)
+			f = File(settings->getValue("lastSelectedPresetFolder"));
+
+		if (f == File())
+			f = File::getSpecialLocation(File::userDocumentsDirectory);
+
+		return f;
+	}
+
+	void setLastSelectedPresetFolder(const FileChooser& fc)
+	{
+		if (settings != nullptr)
+			settings->setValue("lastSelectedPresetFolder", fc.getResult().getFullPathName());
+	}
+
+
 	/** Pops up a dialog letting the user save the processor's state to a file. */
 	void askUserToSaveState()
 	{
@@ -421,6 +463,7 @@ public:
 
 	void createPresetFolders();	
 	void createPfmBank();
+	void reorderBank();
 
 	//==============================================================================
 	void switchToHostApplication()
@@ -739,6 +782,7 @@ public:
 			m.addSeparator();
 			m.addItem(7, TRANS("Create pfm bank from presets"));
 			m.addItem(8, TRANS("Create preset folder from pfm bank"));
+			m.addItem(9, TRANS("Reorder Bank"));
 		}
 		m.addSeparator();
 		m.addItem(4, TRANS("Reset to default preset"));
@@ -755,6 +799,7 @@ public:
 		case 6:  pluginHolder->deleteFiles(); break;
 		case 7:  pluginHolder->createPfmBank(); break;
 		case 8:  pluginHolder->createPresetFolders(); break;
+		case 9:  pluginHolder->reorderBank(); break;
 		default: break;
 		}
 	}

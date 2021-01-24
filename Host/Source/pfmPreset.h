@@ -16,6 +16,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
 
 #include <stdint.h>
 #include "JuceHeader.h"
@@ -349,10 +350,10 @@ public:
     PfmPreset();
     virtual ~PfmPreset() {};
 
-    void savePresets(File& bankFile);
-    void saveBank(File& presetFolder);
+    String savePresets(File& bankFile);
+    String saveBank(File& presetFolder);
+    void reorderBank();
 
-    void fillParams(FlashSynthParams& params, MemoryBlock& memBlock);
 
 private:
     void getEditorPatchMemoryBlock(int presetNumber, MemoryBlock& presetMemBlock);
@@ -363,4 +364,8 @@ private:
     void swapAllFloats(int presetNumber);
     MemoryBlock bankMemory_;
     ScopedPointer<Pfm2AudioProcessor> processor_;
+    DocumentWindow* reorderingWindow;
 };
+
+
+

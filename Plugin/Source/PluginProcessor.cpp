@@ -686,8 +686,14 @@ void Pfm2AudioProcessor::getStateInformation(MemoryBlock& destData)
     copyXmlToBinary(xml, destData);
 }
 
+
 void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
+    setStateInformation(data, sizeInBytes, true);
+}
+
+void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes, bool flushNewStateToPreenfm) {
+   
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
 
@@ -715,7 +721,7 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes)
                 if (xmlState->hasAttribute(midifiedFP->getNameForXML())) {
                     value = (float)xmlState->getDoubleAttribute(midifiedFP->getNameForXML());
                     midifiedFP->setRealValueNoNotification(value);
-                    DBG(String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()));
+                    // DBG(String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()));
                 }
             }
 
@@ -742,7 +748,9 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes)
             }
 
             // Start Flushing NRPN
-            flushAllParametrsToNrpn();
+            if (flushNewStateToPreenfm) {
+                flushAllParametrsToNrpn();
+            }
         }
     }
 }
@@ -767,7 +775,7 @@ void Pfm2AudioProcessor::flushAllParametrsToNrpn() {
         MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)parameterSet[p];
         if (midifiedFP != nullptr) {
             if (midifiedFP->getNameForXML().startsWith("arp")) {
-                DBG("ARP VALUE '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()));
+                 DBG("ARP VALUE '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()));
             }
             if (pfmType == 1 && nrpmIndex[midifiedFP->getParamIndex()] == -1) {
                 continue;
