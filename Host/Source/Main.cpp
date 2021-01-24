@@ -13,7 +13,6 @@
 #include "pfm2Window.h"
 
 
-
 //==============================================================================
 class pfm2EditorApplication : public JUCEApplication
 {

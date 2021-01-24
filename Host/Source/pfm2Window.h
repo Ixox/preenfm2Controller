@@ -463,7 +463,6 @@ public:
 
 	void createPresetFolders();	
 	void createPfmBank();
-	void reorderBank();
 
 	//==============================================================================
 	void switchToHostApplication()
@@ -782,7 +781,6 @@ public:
 			m.addSeparator();
 			m.addItem(7, TRANS("Create pfm bank from presets"));
 			m.addItem(8, TRANS("Create preset folder from pfm bank"));
-			m.addItem(9, TRANS("Reorder Bank"));
 		}
 		m.addSeparator();
 		m.addItem(4, TRANS("Reset to default preset"));
@@ -799,7 +797,6 @@ public:
 		case 6:  pluginHolder->deleteFiles(); break;
 		case 7:  pluginHolder->createPfmBank(); break;
 		case 8:  pluginHolder->createPresetFolders(); break;
-		case 9:  pluginHolder->reorderBank(); break;
 		default: break;
 		}
 	}

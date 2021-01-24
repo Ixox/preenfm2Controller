@@ -2466,6 +2466,9 @@
     <ClCompile Include="..\..\Source\pfmPreset.cpp">
       <Filter>pfmEditor\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\ReorderingComponent.cpp">
+      <Filter>pfmEditor\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Plugin\Source\UI\png\AlgoPNG.h">
@@ -4797,6 +4800,9 @@
       <Filter>JUCE Library Code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\pfmPreset.h">
+      <Filter>pfmEditor\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ReorderingComponent.h">
       <Filter>pfmEditor\Source</Filter>
     </ClInclude>
   </ItemGroup>

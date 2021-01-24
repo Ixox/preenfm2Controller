@@ -21,7 +21,7 @@
 
 extern Pfm2AudioProcessor* JUCE_API JUCE_CALLTYPE createPluginFilter();
 extern const uint32 magicXmlNumber = 0x21324356;
-
+extern JUCEApplication* staticMainWindow;
 
 PfmPreset::PfmPreset() {
     
@@ -189,22 +189,11 @@ String PfmPreset::saveBank(File& presetFolder) {
         return "";
     }
 
-    int cpt = 0;
-    String bankName;
-    bool nameExists = false;
-    do {
-        bankName = parentFolder.getFullPathName() + File::getSeparatorString() + fileName + (cpt == 0 ? "" : ("_" + String(cpt))) + ".bnk";
-        File bankTest(bankName);
-        nameExists = bankTest.exists();
-        cpt++;
-    } while (nameExists);
 
-    File bankFile(bankName);
-    bankFile.create();
 
     MemoryBlock bankMemory;
     MemoryBlock presetMemory(1024, 0);
-    cpt = 0;
+    int cpt = 0;
     FlashSynthParams params;
     MemoryBlock fileMemory;
 
@@ -246,13 +235,23 @@ String PfmPreset::saveBank(File& presetFolder) {
     for (int p = cpt; p < 128; p++) {
         bankMemory.append(presetMemory.getData(), presetMemory.getSize());
     }
-    bankFile.replaceWithData(bankMemory.getData(), bankMemory.getSize());
+
+
+    cpt = 0;
+    String bankName;
+    bool nameExists = false;
+    do {
+        bankName = parentFolder.getFullPathName() + File::getSeparatorString() + fileName + (cpt == 0 ? "" : ("_" + String(cpt))) + ".bnk";
+        File bankTest(bankName);
+        nameExists = bankTest.exists();
+        cpt++;
+    } while (nameExists);
 
 
     // Bank is ready we can ask for reprdering
-    // reorderBank();
+    reorderBank(bankName, bankMemory);
 
-    return bankFile.getFullPathName();
+    return "";
 }
 
 
@@ -326,12 +325,14 @@ void PfmPreset::convert(FlashSynthParams* paramSource, bool fillParam) {
 
 
 
-void PfmPreset::reorderBank() {
+void PfmPreset::reorderBank(String bankFileName, MemoryBlock& bankMem) {
 
     //if (reorderingWindow == nullptr) {
-        reorderingWindow = new DocumentWindow("Reorder your presets", Colour::fromRGB(10, 10, 10), 0);
-        reorderingWindow->setContentOwned(new ReorderingComponent(), true);
-        reorderingWindow->setVisible(true);
+    reorderingWindow = new DocumentWindow("Reorder your presets", Colour::fromRGB(0, 0, 0), 0);
+    reorderingWindow->setContentOwned(new ReorderingComponent(bankFileName, bankMem), true);
+    Rectangle<int> screen = Desktop::getInstance().getDisplays().displays[0].totalArea;
+    reorderingWindow->centreWithSize(reorderingWindow->getWidth(), reorderingWindow->getHeight());
+    reorderingWindow->setVisible(true);
     //}
     //else {
     //    AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon,

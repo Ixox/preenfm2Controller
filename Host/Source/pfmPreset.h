@@ -352,7 +352,7 @@ public:
 
     String savePresets(File& bankFile);
     String saveBank(File& presetFolder);
-    void reorderBank();
+    void reorderBank(String bankFileName, MemoryBlock& bankMem);
 
 
 private:
@@ -362,10 +362,8 @@ private:
     void convert(FlashSynthParams* paramSource, bool fillParam);
     File* bankFile_;
     void swapAllFloats(int presetNumber);
+
     MemoryBlock bankMemory_;
     ScopedPointer<Pfm2AudioProcessor> processor_;
     DocumentWindow* reorderingWindow;
 };
-
-
-

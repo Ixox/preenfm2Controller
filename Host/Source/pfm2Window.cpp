@@ -52,24 +52,7 @@ void StandalonePluginHolder::createPfmBank() {
 	{
 		setLastSelectedPresetBank(myChooser);
 
-		String bankName = presets->saveBank(myChooser.getResult());
-
-		if (bankName.length() > 0) {
-			AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
-				TRANS("Bank file Created"),
-				TRANS("A bank file has been created here \r\n") +
-				bankName);
-		}
-		else {
-			AlertWindow::showMessageBox(AlertWindow::WarningIcon,
-				TRANS("Error"),
-				TRANS("Could not create you bank file"));
-		}
+		presets->saveBank(myChooser.getResult());
 	}
 }
 
-
-
-void StandalonePluginHolder::reorderBank() {
-	presets->reorderBank();
-}
