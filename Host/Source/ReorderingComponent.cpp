@@ -38,16 +38,17 @@ PresetComponent::PresetComponent(ReorderingComponent* parent, int n, String name
 PresetComponent::~PresetComponent() {
 };
 
-
 void PresetComponent::paint(Graphics& g) {
-	int x = 2, y = 2, width = proportionOfWidth(1.0f) - 4, height = proportionOfHeight(1.0f) - 1;
+	int x = 3, y = 2, width = proportionOfWidth(1.0f) - 6, height = proportionOfHeight(1.0f) - 4;
 	if (swapName_.length() > 0) {
 		g.setColour(Colours::lightgreen.brighter());
-		g.fillRect(x, y, width, height);
+		g.fillRoundedRectangle(Rectangle<float>(x, y, width, height), 5.0f);
 
 		g.setColour(Colours::black);
+		g.drawText(String(newPosition_), x, y, width, height / 2 - 2, Justification::centredBottom);
 
-		g.drawText(swapName_, x, y, width, height, Justification::centred);
+		g.setColour(Colours::black);
+		g.drawText(swapName_, x, y + height / 2 - 2, width, height / 2 + 2, Justification::centredTop);
 	}
 	else {
 		g.setColour(Colour(0xff125368));
@@ -214,7 +215,7 @@ void ReorderingComponent::buttonClicked(Button* buttonThatWasClicked) {
 
 		do {
 			bankName = bankFileName_ + (cpt == 0 ? "" : ("_" + String(cpt)));
-			String bankFullName = folderPath_ + File::getSeparatorString() + bankName + ".bnk";
+			bankFullName = folderPath_ + File::getSeparatorString() + bankName + ".bnk";
 			File bankTest(bankFullName);
 			nameExists = bankTest.exists();
 			cpt++;
@@ -272,8 +273,9 @@ String ReorderingComponent::confirmName(String title, String text, String previo
 	resetWindow.setSize(600, 400);
 	resetWindow.addTextEditor("NewName", previousName);
 	resetWindow.getTextEditor("NewName")->setColour(TextEditor::highlightColourId, Colours::orange);
+	resetWindow.getTextEditor("NewName")->setColour(TextEditor::backgroundColourId, Colours::darkgrey);
 	resetWindow.addButton("Cancel", 1);
-	resetWindow.addButton("OK", 2);
+	resetWindow.addButton("OK", 2, KeyPress(KeyPress::returnKey, 0, 0));
 
 	if (resetWindow.runModalLoop() == 2) {
 		String newName = resetWindow.getTextEditor("NewName")->getText().trim();

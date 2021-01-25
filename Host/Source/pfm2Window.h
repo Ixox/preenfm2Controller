@@ -780,9 +780,9 @@ public:
 		// Make sure float = 4
 		if (sizeof(float) == 4) {
 			m.addSeparator();
-			m.addItem(9, TRANS("Organize a pfm bank file"));
-			m.addItem(7, TRANS("Create pfm bank file from presets folder"));
-			m.addItem(8, TRANS("Create presets folder from pfm bank file"));
+			m.addItem(9, TRANS("Reorganize a pfm bank file"));
+			m.addItem(7, TRANS("Create a pfm bank file from a presets folder"));
+			m.addItem(8, TRANS("Create a presets folder from a pfm bank file"));
 		}
 		m.addSeparator();
 		m.addItem(4, TRANS("Reset to default preset"));

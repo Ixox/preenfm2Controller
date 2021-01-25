@@ -22,7 +22,7 @@
 void StandalonePluginHolder::createPresetFolders() {
 	FileChooser myChooser("Create presets folder from a preenfm bank",
 		getLastSelectedPresetFolder(),
-		"*.BNK");
+		"*.bnk");
 
 	if (myChooser.browseForFileToOpen())
 	{
@@ -45,9 +45,9 @@ void StandalonePluginHolder::createPfmBank() {
 }
 
 void StandalonePluginHolder::organizePfmBankFile() {
-	FileChooser myChooser("Choose bank to orgnize",
+	FileChooser myChooser("Choose the bank to reorgnize",
 		getLastSelectedPresetFolder(),
-		"*.BNK");
+		"*.bnk");
 
 	if (myChooser.browseForFileToOpen())
 	{
