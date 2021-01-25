@@ -463,6 +463,7 @@ public:
 
 	void createPresetFolders();	
 	void createPfmBank();
+	void organizePfmBankFile();
 
 	//==============================================================================
 	void switchToHostApplication()
@@ -779,8 +780,9 @@ public:
 		// Make sure float = 4
 		if (sizeof(float) == 4) {
 			m.addSeparator();
-			m.addItem(7, TRANS("Create pfm bank from presets"));
-			m.addItem(8, TRANS("Create preset folder from pfm bank"));
+			m.addItem(9, TRANS("Organize a pfm bank file"));
+			m.addItem(7, TRANS("Create pfm bank file from presets folder"));
+			m.addItem(8, TRANS("Create presets folder from pfm bank file"));
 		}
 		m.addSeparator();
 		m.addItem(4, TRANS("Reset to default preset"));
@@ -797,6 +799,7 @@ public:
 		case 6:  pluginHolder->deleteFiles(); break;
 		case 7:  pluginHolder->createPfmBank(); break;
 		case 8:  pluginHolder->createPresetFolders(); break;
+		case 9:  pluginHolder->organizePfmBankFile(); break;
 		default: break;
 		}
 	}

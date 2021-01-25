@@ -52,7 +52,7 @@ void PfmPreset::swapAllFloats(int presetNumber) {
     }
 }
 
-String PfmPreset::savePresets(File& bankFile) {
+void PfmPreset::savePresets(File& bankFile) {
     bankFile_ = new File(bankFile);
     bankFile_->loadFileAsData(bankMemory_);
 
@@ -68,7 +68,7 @@ String PfmPreset::savePresets(File& bankFile) {
         AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon,
             TRANS("Error"),
             TRANS("Folder cannot be created for this bank"));
-        return "";
+        return ;
     }
 
     for (int p = 0; p < 128; p++) {
@@ -92,7 +92,10 @@ String PfmPreset::savePresets(File& bankFile) {
         preset.replaceWithData(presetMemBlock.getData(), presetMemBlock.getSize());
     }
 
-    return parentFolder.getFullPathName();
+    AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
+        TRANS("Folder Created"),
+        TRANS("A folder with all the bank presets has been created here \r\n" +
+            parentFolder.getFullPathName()));
 }
 
 
@@ -170,26 +173,22 @@ void PfmPreset::updateDefaultValuesForOldPreset(FlashSynthParams* params) {
 }
 
 
-String PfmPreset::saveBank(File& presetFolder) {
+void PfmPreset::saveBank(File& presetFolder) {
     
     if (!presetFolder.isDirectory() ) {
-        return "";
+        return ;
     }
 
 
     String fullPathName = presetFolder.getFullPathName();
-    String fileName = presetFolder.getFileName();
-
     File parentFolder = presetFolder.getParentDirectory();
 
     Array<File> presetFiles = presetFolder.findChildFiles(File::findFiles, false);
     presetFiles.sort();
 
     if (presetFiles.size() == 0) {
-        return "";
+        return;
     }
-
-
 
     MemoryBlock bankMemory;
     MemoryBlock presetMemory(1024, 0);
@@ -236,22 +235,10 @@ String PfmPreset::saveBank(File& presetFolder) {
         bankMemory.append(presetMemory.getData(), presetMemory.getSize());
     }
 
-
-    cpt = 0;
-    String bankName;
-    bool nameExists = false;
-    do {
-        bankName = parentFolder.getFullPathName() + File::getSeparatorString() + fileName + (cpt == 0 ? "" : ("_" + String(cpt))) + ".bnk";
-        File bankTest(bankName);
-        nameExists = bankTest.exists();
-        cpt++;
-    } while (nameExists);
-
-
     // Bank is ready we can ask for reprdering
-    reorderBank(bankName, bankMemory);
+    reorderBank(parentFolder.getFullPathName(), presetFolder.getFileName(), bankMemory);
 
-    return "";
+    return ;
 }
 
 
@@ -323,22 +310,17 @@ void PfmPreset::convert(FlashSynthParams* paramSource, bool fillParam) {
 }
 
 
+void PfmPreset::organizeBank(File& bankFile) {
+    MemoryBlock bankMemory;
+    bankFile.loadFileAsData(bankMemory);
+    reorderBank(bankFile.getParentDirectory().getFullPathName(), bankFile.getFileNameWithoutExtension(), bankMemory);
+}
 
 
-void PfmPreset::reorderBank(String bankFileName, MemoryBlock& bankMem) {
-
-    //if (reorderingWindow == nullptr) {
-    reorderingWindow = new DocumentWindow("Reorder your presets", Colour::fromRGB(0, 0, 0), 0);
-    reorderingWindow->setContentOwned(new ReorderingComponent(bankFileName, bankMem), true);
+void PfmPreset::reorderBank(String folderPath, String bankFileName, MemoryBlock& bankMem) {
+    reorderingWindow = new DocumentWindow("Organize your presets", Colour::fromRGB(0, 0, 0), 0);
+    reorderingWindow->setContentOwned(new ReorderingComponent(folderPath, bankFileName, bankMem), true);
     Rectangle<int> screen = Desktop::getInstance().getDisplays().displays[0].totalArea;
     reorderingWindow->centreWithSize(reorderingWindow->getWidth(), reorderingWindow->getHeight());
     reorderingWindow->setVisible(true);
-    //}
-    //else {
-    //    AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon,
-    //        TRANS("Error"),
-    //        TRANS("Reordering window already opened !"));
-    //}
-
 }
-

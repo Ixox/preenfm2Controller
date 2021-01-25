@@ -350,12 +350,13 @@ public:
     PfmPreset();
     virtual ~PfmPreset() {};
 
-    String savePresets(File& bankFile);
-    String saveBank(File& presetFolder);
-    void reorderBank(String bankFileName, MemoryBlock& bankMem);
+    void savePresets(File& bankFile);
+    void saveBank(File& presetFolder);
+    void organizeBank(File& bankFile);
 
 
 private:
+    void reorderBank(String folderPath, String bankFileName, MemoryBlock& bankMem);
     void getEditorPatchMemoryBlock(int presetNumber, MemoryBlock& presetMemBlock);
     void updateDefaultValuesForOldPreset(FlashSynthParams* params);
     void convertParameters(float* values, int nrpnStartParam, int numberOfFloats, bool fillParams);

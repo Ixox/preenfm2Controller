@@ -26,10 +26,13 @@
 PresetComponent::PresetComponent(ReorderingComponent* parent, int n, String name) : Component(name) {
 	dragging_ = false;
 	dragTarget_ = false;
-	name_ = name;
-	number_ = n;
+	presetName_ = name;
+	newPosition_ = n;
+	oldPosition_ = n;
 	swapName_ = "";
 	parent_ = parent;
+	selected_ = false;
+	presetNameModified_ = false;
 }
 
 PresetComponent::~PresetComponent() {
@@ -37,10 +40,9 @@ PresetComponent::~PresetComponent() {
 
 
 void PresetComponent::paint(Graphics& g) {
-	int x = 2, y = 2, width = proportionOfWidth(1.0f) - 2, height = proportionOfHeight(1.0f) - 2;
-	Colour fillColour1 = Colour(0xff125368), fillColour2 = Colour(0xff083543);
+	int x = 2, y = 2, width = proportionOfWidth(1.0f) - 4, height = proportionOfHeight(1.0f) - 1;
 	if (swapName_.length() > 0) {
-		g.setColour(Colours::white);
+		g.setColour(Colours::lightgreen.brighter());
 		g.fillRect(x, y, width, height);
 
 		g.setColour(Colours::black);
@@ -48,11 +50,14 @@ void PresetComponent::paint(Graphics& g) {
 		g.drawText(swapName_, x, y, width, height, Justification::centred);
 	}
 	else {
-		g.setColour(fillColour1);
+		g.setColour(Colour(0xff125368));
 		g.fillRect(x, y, width, height);
 
+		g.setColour(Colours::lightgrey);	
+		g.drawText(String(newPosition_), x, y, width, height / 2 - 2, Justification::centredBottom);
+		//		
 		g.setColour(Colours::white);
-		g.drawText(getName(), x, y, width, height, Justification::centred);
+		g.drawText(presetName_, x, y + height / 2 - 2, width, height / 2 + 2, Justification::centredTop);
 	}
 }
 
@@ -63,7 +68,7 @@ void PresetComponent::itemDragEnter(const SourceDetails& dragSourceDetails) {
 	PresetComponent* sourceComponent = dynamic_cast<PresetComponent*>(dragSourceDetails.sourceComponent.get());
 	if (sourceComponent != NULL) {
 		swapName_ = dragSourceDetails.sourceComponent->getName();
-		sourceComponent->setSwapName(name_);
+		sourceComponent->setSwapName(presetName_);
 		sourceComponent->repaint();
 		repaint();
 	}
@@ -84,16 +89,16 @@ void PresetComponent::itemDropped(const SourceDetails& dragSourceDetails) {
 	dragTarget_ = false;
 	PresetComponent* sourceComponent = dynamic_cast<PresetComponent*>(dragSourceDetails.sourceComponent.get());
 	if (sourceComponent != NULL) {
+		// Swap order and repaint
+		parent_->setNewPosition(getNewPosition(), sourceComponent->getOldPosition());
+		parent_->setNewPosition(sourceComponent->getNewPosition(), getOldPosition());
 		// Swap PresetComponent number
-		int myNumber = number_;
-		setNumber(sourceComponent->getNumber());
-		sourceComponent->setNumber(myNumber);
+		int myNumber = newPosition_;
+		setNewPosition(sourceComponent->getNewPosition());
+		sourceComponent->setNewPosition(myNumber);
 		// Clear swap name to display real name
 		setClearSwapName();
 		sourceComponent->setClearSwapName();
-
-		// Swap order and repaint
-		parent_->swap(number_, sourceComponent->getNumber());
 	}
 }
 
@@ -101,19 +106,30 @@ void PresetComponent::itemDropped(const SourceDetails& dragSourceDetails) {
 bool PresetComponent::isInterestedInDragSource(const SourceDetails& dragSourceDetails) {
 	PresetComponent* sourceComponent = dynamic_cast<PresetComponent*>(dragSourceDetails.sourceComponent.get());
 	if (sourceComponent != NULL) {
-		return sourceComponent->getNumber() != number_;
+		return sourceComponent->getNewPosition() != newPosition_;
 	}
 	return false;
 }
 
 
+void PresetComponent::mouseDoubleClick(const MouseEvent& e)  {
 
+	String newName = ReorderingComponent::confirmName("Rename preset",
+		"New name for '" + presetName_ + "'", presetName_);
+
+	if (!newName.isEmpty()) {
+		presetName_ = newName;
+		presetNameModified_ = true;
+		repaint();
+	}
+}
 
 // ReorderingComponent
 
 
-ReorderingComponent::ReorderingComponent(String bankFileName, MemoryBlock& bankMem) {
+ReorderingComponent::ReorderingComponent(String folderPath, String bankFileName, MemoryBlock& bankMem) {
 	bankFileName_ = bankFileName;
+	folderPath_ = folderPath;
 	bankMem_ = new MemoryBlock(bankMem);
 
 	okButton = new TextButton("Save Bank");
@@ -130,7 +146,7 @@ ReorderingComponent::ReorderingComponent(String bankFileName, MemoryBlock& bankM
 		preset[p] = new PresetComponent(this, p, paramSource->presetName);
 		addAndMakeVisible(preset[p]);
 	}
-	setSize(800, 600);
+	setSize(900, 700);
 	dragging_ = false;
 }
 
@@ -139,9 +155,14 @@ ReorderingComponent::~ReorderingComponent() {
 }
 
 void ReorderingComponent::paint(Graphics& g) {
+	int width = proportionOfWidth(1.0f);
 	if (dragging_) {
-		g.setColour(Colours::darkgrey);
-		g.fillRect(0, 0, proportionOfWidth(1.0f), proportionOfHeight(1.0));
+		g.setColour(Colours::lightgreen.brighter());
+		g.drawText("Drop this preset at its new position", 0, 0, width, 25, Justification::centred);
+	}
+	else {
+		g.setColour(Colours::lightgrey.brighter());
+		g.drawText("Drag and drop to change positions / Double click to rename", 0, 0, width, 25, Justification::centred);
 	}
 }
 
@@ -149,13 +170,13 @@ void ReorderingComponent::resized() {
 	cancelButton->setBounds(proportionOfWidth(0.5) - 110, proportionOfHeight(1.0) - 35, 100, 30);
 	okButton->setBounds(proportionOfWidth(0.5) + 10, proportionOfHeight(1.0) - 35, 100, 30);
 
-	float height = (proportionOfHeight(1.0) - 40.0f) / 16.0f;
+	float height = (proportionOfHeight(1.0) - 40.0f - 25.0f) / 16.0f;
 	float width = proportionOfWidth(1.0) / 8.0f;
 
 	for (int col = 0; col < 8; col++) {
 		for (int row = 0; row < 16; row++) {
 			int p = order_[col * 16 + row];
-			preset[p]->setBounds(width * col, height * row, width, height);
+			preset[p]->setBounds(width * col, 25.0f + height * row, width, height);
 		}
 	}
 }
@@ -167,10 +188,58 @@ void ReorderingComponent::buttonClicked(Button* buttonThatWasClicked) {
 	else if (buttonThatWasClicked == okButton) {
 		MemoryBlock newOrder;
 		for (int p = 0; p < 128; p++) {
+			if (preset[p]->isPresetNameModified()) {
+				FlashSynthParams* paramSource = (FlashSynthParams*)((char*)bankMem_->getData() + 1024 * p);
+				char* newName = preset[p]->getPresetName();
+				int length;
+				for (length = length; length < 12 && newName[length] != '\0'; length++) {
+					paramSource->presetName[length] = newName[length];
+				}
+				for (int c = length; c < 13; c++) {
+					paramSource->presetName[c] = '\0';
+				}
+			}
+
 			newOrder.append(((char*)bankMem_->getData() + 1024 * order_[p]), 1024);
 		}
 
-		File bankFile(bankFileName_);
+		// 
+		// Confirm Name : 
+		// First find an non existing name
+		// Ask user to confirm
+		int cpt = 0;
+		String bankName;
+		bool nameExists = false;
+		String bankFullName;
+
+		do {
+			bankName = bankFileName_ + (cpt == 0 ? "" : ("_" + String(cpt)));
+			String bankFullName = folderPath_ + File::getSeparatorString() + bankName + ".bnk";
+			File bankTest(bankFullName);
+			nameExists = bankTest.exists();
+			cpt++;
+		} while (nameExists);
+
+		nameExists = false;
+		do {
+			String newBankName = confirmName("Create new bank", "Enter bank name", bankName);
+			if (newBankName.isEmpty()) {
+				return;
+			}
+			bankFullName = folderPath_ + File::getSeparatorString() + newBankName + ".bnk";
+			File bankTest(bankFullName);
+			nameExists = bankTest.exists();
+			if (nameExists) {
+				AlertWindow badNameAlert("Bad name : " + newBankName,
+					"A bank with same name already exists.",
+					AlertWindow::WarningIcon);
+				badNameAlert.addButton("OK", 1);
+				badNameAlert.runModalLoop();
+			}
+		} while (nameExists);
+
+		
+		File bankFile(bankFullName);
 		bankFile.create();
 		bankFile.replaceWithData(newOrder.getData(), newOrder.getSize());
 
@@ -178,7 +247,7 @@ void ReorderingComponent::buttonClicked(Button* buttonThatWasClicked) {
 		AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
 			TRANS("Bank file Created"),
 			TRANS("A bank file has been created here \r\n") +
-			bankFileName_);
+			bankFullName);
 
 		delete getParentComponent();
 	}
@@ -195,3 +264,32 @@ void ReorderingComponent::dragOperationEnded(const DragAndDropTarget::SourceDeta
 }
 
 
+String ReorderingComponent::confirmName(String title, String text, String previousName) {
+	AlertWindow resetWindow(title,
+		text,
+		AlertWindow::QuestionIcon);
+
+	resetWindow.setSize(600, 400);
+	resetWindow.addTextEditor("NewName", previousName);
+	resetWindow.getTextEditor("NewName")->setColour(TextEditor::highlightColourId, Colours::orange);
+	resetWindow.addButton("Cancel", 1);
+	resetWindow.addButton("OK", 2);
+
+	if (resetWindow.runModalLoop() == 2) {
+		String newName = resetWindow.getTextEditor("NewName")->getText().trim();
+
+		if (newName.isEmpty()) {
+			AlertWindow badNameAlert("Bad name",
+				"Name cannot be empty",
+				AlertWindow::WarningIcon);
+
+			badNameAlert.addButton("OK", 1);
+			badNameAlert.runModalLoop();
+			return "";
+		}
+		else {
+			return newName;
+		}
+	}
+	return "";
+}

@@ -20,7 +20,7 @@
 
 
 void StandalonePluginHolder::createPresetFolders() {
-	FileChooser myChooser("Create presets folder  from a preenfm bank",
+	FileChooser myChooser("Create presets folder from a preenfm bank",
 		getLastSelectedPresetFolder(),
 		"*.BNK");
 
@@ -28,19 +28,7 @@ void StandalonePluginHolder::createPresetFolders() {
 	{
 		setLastSelectedPresetFolder(myChooser);
 
-		String folderName = presets->savePresets(myChooser.getResult());
-
-		if (folderName.length() > 0) {
-			AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
-				TRANS("Folder Created"),
-				TRANS("A folder with all the bank presets has been created here \r\n" +
-					folderName));
-		}
-		else {
-			AlertWindow::showMessageBox(AlertWindow::WarningIcon,
-				TRANS("Error"),
-				TRANS("Could not create you bank folder"));
-		}
+		presets->savePresets(myChooser.getResult());
 	}
 }
 
@@ -56,3 +44,16 @@ void StandalonePluginHolder::createPfmBank() {
 	}
 }
 
+void StandalonePluginHolder::organizePfmBankFile() {
+	FileChooser myChooser("Choose bank to orgnize",
+		getLastSelectedPresetFolder(),
+		"*.BNK");
+
+	if (myChooser.browseForFileToOpen())
+	{
+		setLastSelectedPresetFolder(myChooser);
+
+		presets->organizeBank(myChooser.getResult());
+	}
+		
+}

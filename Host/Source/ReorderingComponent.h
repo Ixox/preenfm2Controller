@@ -31,7 +31,7 @@ class ReorderingComponent : public Component,
     public DragAndDropContainer,
     public Button::Listener {
 public:
-    ReorderingComponent(String bankFileName, MemoryBlock& bankMem);
+    ReorderingComponent(String folderPath, String bankFileName, MemoryBlock& bankMem);
     ~ReorderingComponent() override;
 
 
@@ -43,18 +43,20 @@ public:
     void dragOperationStarted(const DragAndDropTarget::SourceDetails&) override;
     void dragOperationEnded(const DragAndDropTarget::SourceDetails&) override;
 
-    void swap(int p1, int p2) {
-        int oldP1 = order_[p1];
-        order_[p1] = order_[p2];
-        order_[p2] = oldP1;
+    void setNewPosition(int position, int presetNumber) {
+        order_[position] = presetNumber;
         resized();
         repaint();
     }
 
+    static String confirmName(String title, String text, String previousName);
+
 private:
+
     int order_[128];
     bool dragging_;
     String bankFileName_;
+    String folderPath_;
     MemoryBlock* bankMem_;
     ScopedPointer<TextButton> okButton;
     ScopedPointer<TextButton> cancelButton;
@@ -82,8 +84,10 @@ public:
 
     void mouseDrag(const MouseEvent& e) override
     {
-        DragAndDropContainer::findParentDragContainerFor(this)->startDragging(number_, this);
+        DragAndDropContainer::findParentDragContainerFor(this)->startDragging(newPosition_, this);
     }
+
+    void mouseDoubleClick(const MouseEvent& e) override;
 
     void setSwapName(String swapName) {
         swapName_ = swapName;
@@ -93,18 +97,21 @@ public:
         swapName_.clear();
     }
     
-    int getNumber() { return number_; }
-    void setNumber(int n) { number_ = n;  }
-
+    int getNewPosition() { return newPosition_; }
+    void setNewPosition(int n) { newPosition_ = n;  }
+    int getOldPosition() { return oldPosition_; }
+    
+    char* getPresetName() { return presetName_.getCharPointer().getAddress(); }
+    bool isPresetNameModified() { return presetNameModified_;  }
 
 private:
     bool dragging_;
     bool dragTarget_;
-    String name_;
+    bool selected_;
+    String presetName_;
     String swapName_;
-    int number_;
+    bool presetNameModified_;
+    int newPosition_;
+    int oldPosition_;
     ReorderingComponent* parent_;
 };
-
-
-
