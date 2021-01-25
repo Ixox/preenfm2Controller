@@ -144,6 +144,9 @@ ReorderingComponent::ReorderingComponent(String folderPath, String bankFileName,
 	for (int p = 0; p < 128; p++) {
 		FlashSynthParams* paramSource = (FlashSynthParams*)((char*)bankMem.getData() + 1024 * p);
 		order_[p] = p;
+
+		paramSource->presetName[12] = '\0';
+
 		preset[p] = new PresetComponent(this, p, paramSource->presetName);
 		addAndMakeVisible(preset[p]);
 	}
