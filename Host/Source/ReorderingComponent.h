@@ -49,7 +49,7 @@ public:
         repaint();
     }
 
-    static String confirmName(String title, String text, String previousName);
+    static String confirmName(String title, String text, String previousName, int maxLength);
 
 private:
 

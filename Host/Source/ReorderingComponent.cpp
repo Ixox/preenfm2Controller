@@ -39,7 +39,7 @@ PresetComponent::~PresetComponent() {
 };
 
 void PresetComponent::paint(Graphics& g) {
-	int x = 3, y = 2, width = proportionOfWidth(1.0f) - 6, height = proportionOfHeight(1.0f) - 4;
+	int x = 3, y = 3, width = proportionOfWidth(1.0f) - 6, height = proportionOfHeight(1.0f) - 6;
 	if (swapName_.length() > 0) {
 		g.setColour(Colours::lightgreen.brighter());
 		g.fillRoundedRectangle(Rectangle<float>(x, y, width, height), 5.0f);
@@ -54,7 +54,7 @@ void PresetComponent::paint(Graphics& g) {
 		g.setColour(Colour(0xff125368));
 		g.fillRect(x, y, width, height);
 
-		g.setColour(Colours::lightgrey);	
+		g.setColour(Colours::grey);	
 		g.drawText(String(newPosition_), x, y, width, height / 2 - 2, Justification::centredBottom);
 		//		
 		g.setColour(Colours::white);
@@ -116,7 +116,7 @@ bool PresetComponent::isInterestedInDragSource(const SourceDetails& dragSourceDe
 void PresetComponent::mouseDoubleClick(const MouseEvent& e)  {
 
 	String newName = ReorderingComponent::confirmName("Rename preset",
-		"New name for '" + presetName_ + "'", presetName_);
+		"New name for '" + presetName_ + "'", presetName_, 12);
 
 	if (!newName.isEmpty()) {
 		presetName_ = newName;
@@ -223,7 +223,7 @@ void ReorderingComponent::buttonClicked(Button* buttonThatWasClicked) {
 
 		nameExists = false;
 		do {
-			String newBankName = confirmName("Create new bank", "Enter bank name", bankName);
+			String newBankName = confirmName("Create new bank", "Enter bank name", bankName, 20);
 			if (newBankName.isEmpty()) {
 				return;
 			}
@@ -265,13 +265,15 @@ void ReorderingComponent::dragOperationEnded(const DragAndDropTarget::SourceDeta
 }
 
 
-String ReorderingComponent::confirmName(String title, String text, String previousName) {
+String ReorderingComponent::confirmName(String title, String text, String previousName, int maxLength) {
 	AlertWindow resetWindow(title,
 		text,
 		AlertWindow::QuestionIcon);
 
 	resetWindow.setSize(600, 400);
 	resetWindow.addTextEditor("NewName", previousName);
+	TextEditor::LengthAndCharacterRestriction inputFilter(maxLength, String(""));
+	resetWindow.getTextEditor("NewName")->setInputFilter(&inputFilter, false);
 	resetWindow.getTextEditor("NewName")->setColour(TextEditor::highlightColourId, Colours::orange);
 	resetWindow.getTextEditor("NewName")->setColour(TextEditor::backgroundColourId, Colours::darkgrey);
 	resetWindow.addButton("Cancel", 1);
