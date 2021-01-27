@@ -22,18 +22,23 @@
 #include "JuceHeader.h"
 #include "../../Plugin/Source/PluginProcessor.h"
 
+enum {
+    GLIDE_TYPE_OFF = 0,
+    GLIDE_TYPE_OVERLAP,
+    GLIDE_TYPE_ALWAYS
+};
+
+enum {
+    PLAY_MODE_MONO = 0,
+    PLAY_MODE_POLY,
+    PLAY_MODE_UNISON
+};
+
 struct Engine1Params {
     float algo;
     float velocity;
     float playMode;
     float glideSpeed;
-};
-
-
-enum {
-    GLIDE_TYPE_OFF = 0,
-    GLIDE_TYPE_OVERLAP,
-    GLIDE_TYPE_ALWAYS
 };
 
 struct Engine2Params {

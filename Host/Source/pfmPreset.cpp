@@ -112,10 +112,7 @@ void PfmPreset::getEditorPatchMemoryBlock(int presetNumber, MemoryBlock& presetM
     // Send params to processor
     convert(paramSource, false);
 
-
-
-    // USER PATTER? 
-    // ???
+    // USER PATTER?
 
     processor_->getStateInformation(presetMemBlock);
 }
@@ -297,6 +294,10 @@ void PfmPreset::convert(FlashSynthParams* paramSource, bool fillParam) {
         for (int n = 0; n < 16; n++) {
             processor_->setParameterWithNrpmParamAndRealValue(PREENFM2_NRPN_STEPSEQ2_STEP1 + n, paramSource->lfoSteps2.steps[n]);
         }
+
+        // Let's fill the pfmType for the UI !!
+        processor_->setParameterWithNrpmParamAndRealValue(PREENFM_NRPN_PFMTYPE, paramSource->engine2.pfm3Version > 0.0f ? 1.0f : 0.0f);
+
     }
     else {
         for (int n = 0; n < 16; n++) {
@@ -306,9 +307,7 @@ void PfmPreset::convert(FlashSynthParams* paramSource, bool fillParam) {
             paramSource->lfoSteps2.steps[n] = processor_->getRealValueForPfmBank(PREENFM2_NRPN_STEPSEQ2_STEP1 + n);
         }
     }
-
 }
-
 
 void PfmPreset::organizeBank(File& bankFile) {
     MemoryBlock bankMemory;

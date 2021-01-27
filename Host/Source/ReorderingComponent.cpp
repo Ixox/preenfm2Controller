@@ -21,6 +21,11 @@
 #include "pfmPreset.h"
 
 
+enum {
+	PREEN_TYPE_PFM2 = 1,
+	PREEN_TYPE_PFM3 = 2
+};
+
 // Preset component
 
 PresetComponent::PresetComponent(ReorderingComponent* parent, int n, String name) : Component(name) {
@@ -129,17 +134,20 @@ void PresetComponent::mouseDoubleClick(const MouseEvent& e)  {
 
 
 ReorderingComponent::ReorderingComponent(String folderPath, String bankFileName, MemoryBlock& bankMem) {
+	setWantsKeyboardFocus(true);
+	addKeyListener(this);
+
 	bankFileName_ = bankFileName;
 	folderPath_ = folderPath;
 	bankMem_ = new MemoryBlock(bankMem);
 
-	okButton = new TextButton("Save Bank");
-	okButton->addListener(this);
-	addAndMakeVisible(okButton);
+	okButton_ = new TextButton("Save Bank");	
+	okButton_->addListener(this);
+	addAndMakeVisible(okButton_);
 
-	cancelButton = new TextButton("Cancel");
-	cancelButton->addListener(this);
-	addAndMakeVisible(cancelButton);
+	cancelButton_ = new TextButton("Cancel");
+	cancelButton_->addListener(this);
+	addAndMakeVisible(cancelButton_);
 
 	for (int p = 0; p < 128; p++) {
 		FlashSynthParams* paramSource = (FlashSynthParams*)((char*)bankMem.getData() + 1024 * p);
@@ -147,8 +155,8 @@ ReorderingComponent::ReorderingComponent(String folderPath, String bankFileName,
 
 		paramSource->presetName[12] = '\0';
 
-		preset[p] = new PresetComponent(this, p, paramSource->presetName);
-		addAndMakeVisible(preset[p]);
+		preset_[p] = new PresetComponent(this, p, paramSource->presetName);
+		addAndMakeVisible(preset_[p]);
 	}
 	setSize(900, 700);
 	dragging_ = false;
@@ -171,8 +179,8 @@ void ReorderingComponent::paint(Graphics& g) {
 }
 
 void ReorderingComponent::resized() {
-	cancelButton->setBounds(proportionOfWidth(0.5) - 110, proportionOfHeight(1.0) - 35, 100, 30);
-	okButton->setBounds(proportionOfWidth(0.5) + 10, proportionOfHeight(1.0) - 35, 100, 30);
+	cancelButton_->setBounds(proportionOfWidth(0.5) - 110, proportionOfHeight(1.0) - 35, 100, 30);
+	okButton_->setBounds(proportionOfWidth(0.5) + 10, proportionOfHeight(1.0) - 35, 100, 30);
 
 	float height = (proportionOfHeight(1.0) - 40.0f - 25.0f) / 16.0f;
 	float width = proportionOfWidth(1.0) / 8.0f;
@@ -180,32 +188,16 @@ void ReorderingComponent::resized() {
 	for (int col = 0; col < 8; col++) {
 		for (int row = 0; row < 16; row++) {
 			int p = order_[col * 16 + row];
-			preset[p]->setBounds(width * col, 25.0f + height * row, width, height);
+			preset_[p]->setBounds(width * col, 25.0f + height * row, width, height);
 		}
 	}
 }
 
 void ReorderingComponent::buttonClicked(Button* buttonThatWasClicked) {
-	if (buttonThatWasClicked == cancelButton) {
+	if (buttonThatWasClicked == cancelButton_) {
 		delete getParentComponent();
 	}
-	else if (buttonThatWasClicked == okButton) {
-		MemoryBlock newOrder;
-		for (int p = 0; p < 128; p++) {
-			if (preset[p]->isPresetNameModified()) {
-				FlashSynthParams* paramSource = (FlashSynthParams*)((char*)bankMem_->getData() + 1024 * p);
-				char* newName = preset[p]->getPresetName();
-				int length;
-				for (length = length; length < 12 && newName[length] != '\0'; length++) {
-					paramSource->presetName[length] = newName[length];
-				}
-				for (int c = length; c < 13; c++) {
-					paramSource->presetName[c] = '\0';
-				}
-			}
-
-			newOrder.append(((char*)bankMem_->getData() + 1024 * order_[p]), 1024);
-		}
+	else if (buttonThatWasClicked == okButton_) {
 
 		// 
 		// Confirm Name : 
@@ -225,8 +217,10 @@ void ReorderingComponent::buttonClicked(Button* buttonThatWasClicked) {
 		} while (nameExists);
 
 		nameExists = false;
+		int pfmType = PREEN_TYPE_PFM2;
 		do {
-			String newBankName = confirmName("Create new bank", "Enter bank name", bankName, 20);
+
+			String newBankName = confirmName("Create new bank", "Enter bank name", bankName, 20, true, &pfmType);
 			if (newBankName.isEmpty()) {
 				return;
 			}
@@ -243,6 +237,18 @@ void ReorderingComponent::buttonClicked(Button* buttonThatWasClicked) {
 		} while (nameExists);
 
 		
+		// Reorder + modify some parameters depending on pfm2/pfm3 selected
+		MemoryBlock newOrder;
+
+		for (int p = 0; p < 128; p++) {
+				
+			polishPreset(p, pfmType);
+
+			newOrder.append(((char*)bankMem_->getData() + 1024 * order_[p]), 1024);
+		}
+
+
+
 		File bankFile(bankFullName);
 		bankFile.create();
 		bankFile.replaceWithData(newOrder.getData(), newOrder.getSize());
@@ -257,6 +263,16 @@ void ReorderingComponent::buttonClicked(Button* buttonThatWasClicked) {
 	}
 }
 
+bool ReorderingComponent::keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent) {
+	if (key == KeyPress::returnKey) {
+		// simulate OK button
+		buttonClicked(okButton_);
+		return true;
+	}
+	return false;
+}
+
+
 void ReorderingComponent::dragOperationStarted(const DragAndDropTarget::SourceDetails&) {
 	dragging_ = true;
 	repaint();
@@ -268,22 +284,34 @@ void ReorderingComponent::dragOperationEnded(const DragAndDropTarget::SourceDeta
 }
 
 
-String ReorderingComponent::confirmName(String title, String text, String previousName, int maxLength) {
+String ReorderingComponent::confirmName(String title, String text, String previousName, int maxLength, bool askPfmType, int* pfmTypeP) {
 	AlertWindow resetWindow(title,
 		text,
 		AlertWindow::QuestionIcon);
 
 	resetWindow.setSize(600, 400);
+
+
+
 	resetWindow.addTextEditor("NewName", previousName);
 	TextEditor::LengthAndCharacterRestriction inputFilter(maxLength, String(""));
 	resetWindow.getTextEditor("NewName")->setInputFilter(&inputFilter, false);
 	resetWindow.getTextEditor("NewName")->setColour(TextEditor::highlightColourId, Colours::orange);
 	resetWindow.getTextEditor("NewName")->setColour(TextEditor::backgroundColourId, Colours::darkgrey);
+
+	if (askPfmType) {
+		resetWindow.addComboBox("pfmType", StringArray({ "pfm 2", "pfm 3" }), "Preenfm type");
+		resetWindow.getComboBoxComponent("pfmType")->setSelectedId(*pfmTypeP);
+	}
+
 	resetWindow.addButton("Cancel", 1);
 	resetWindow.addButton("OK", 2, KeyPress(KeyPress::returnKey, 0, 0));
 
 	if (resetWindow.runModalLoop() == 2) {
 		String newName = resetWindow.getTextEditor("NewName")->getText().trim();
+		if (askPfmType && pfmTypeP != nullptr) {
+			*pfmTypeP = resetWindow.getComboBoxComponent("pfmType")->getSelectedId();
+		}
 
 		if (newName.isEmpty()) {
 			AlertWindow badNameAlert("Bad name",
@@ -299,4 +327,84 @@ String ReorderingComponent::confirmName(String title, String text, String previo
 		}
 	}
 	return "";
+}
+
+
+
+void ReorderingComponent::polishPreset(int p, int pfmType) {
+	FlashSynthParams* paramSource = (FlashSynthParams*)((char*)bankMem_->getData() + 1024 * p);
+	if (preset_[p]->isPresetNameModified()) {
+
+		char* newName = preset_[p]->getPresetName();
+		int length;
+		for (length = 0; length < 12 && newName[length] != '\0'; length++) {
+			paramSource->presetName[length] = newName[length];
+		}
+		for (int c = length; c < 13; c++) {
+			paramSource->presetName[c] = '\0';
+		}
+	}
+
+	// if pfm3 selected and preset is a pfm2 one
+	uint32_t version = (uint32_t)(paramSource->engine2.pfm3Version + .1f);
+
+	// Planned version : not yet implemented
+	// But let's make the editor compatible right now
+	// pfm2 version : 0,2,4,6 etc...
+	//    0 = legacy one
+	//    2 = with unisons ! (not yet implemented)
+	// pfm3 version : 1,3,5
+	//    1 = current one
+
+	if (pfmType == PREEN_TYPE_PFM3 && (version & 0x1) == 0) {
+		// Set pfm3 version
+		paramSource->engine2.pfm3Version = 1.0f;
+
+		// in pfm2 bank playMode was the number of voice
+		// More than one voice => poly
+		if (paramSource->engine1.playMode > 1.0f) {
+			paramSource->engine1.playMode = PLAY_MODE_POLY;
+		}
+		else {
+			paramSource->engine1.playMode = PLAY_MODE_MONO;
+		}
+
+		// Old preset, we set unisonSpread and unisonDetune different from 0
+		if (paramSource->engine2.unisonSpread == 0.0f && paramSource->engine2.unisonDetune == 0.0f) {
+			paramSource->engine2.unisonSpread = 0.5f;
+			paramSource->engine2.unisonDetune = 0.12f;
+		}
+		// Map glide speed to new glideSpeed and glideType
+		if (paramSource->engine1.glideSpeed > 0.0f) {
+			paramSource->engine2.glideType = GLIDE_TYPE_OVERLAP;
+		}
+		else {
+			paramSource->engine2.glideType = GLIDE_TYPE_OFF;
+		}
+	}
+
+	// Selected pfm2 for a pfm3 preset
+	// pfm2 : playMode is number of voice
+	if (pfmType == PREEN_TYPE_PFM2 && (version & 0x1) == 1) {
+		// Set pfm2 version
+		paramSource->engine2.pfm3Version = 0.0f;
+
+		// Fixe poly Mono depending on pfm3Version :
+		// map to new parameters
+		// in pfm2 bank playMode was the number of voice
+		// poly => 3 voices
+		// Mono and unison => 1 voice
+		if (paramSource->engine1.playMode == 1.0f) {
+			paramSource->engine1.playMode = 3.0f;
+		}
+		else {
+			paramSource->engine1.playMode = 1.0f;
+		}
+		// Set the rest to 0
+		paramSource->engine2.unisonSpread = 0.0f;
+		paramSource->engine2.unisonDetune = 0.0f;
+		paramSource->engine2.glideType = 0.0f;
+		// Tells it's a pfm2 preset
+		paramSource->engine2.pfm3Version = 0.0f;
+	}
 }

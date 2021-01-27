@@ -29,7 +29,9 @@ class PresetComponent;
 
 class ReorderingComponent : public Component,
     public DragAndDropContainer,
-    public Button::Listener {
+    public Button::Listener,
+    public KeyListener
+{
 public:
     ReorderingComponent(String folderPath, String bankFileName, MemoryBlock& bankMem);
     ~ReorderingComponent() override;
@@ -38,7 +40,7 @@ public:
     void resized() override;
     void paint(Graphics& g) override;
     void buttonClicked(Button* buttonThatWasClicked) override;
-
+    bool keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent) override; 
     // source
     void dragOperationStarted(const DragAndDropTarget::SourceDetails&) override;
     void dragOperationEnded(const DragAndDropTarget::SourceDetails&) override;
@@ -49,18 +51,19 @@ public:
         repaint();
     }
 
-    static String confirmName(String title, String text, String previousName, int maxLength);
+    static String confirmName(String title, String text, String previousName, int maxLength, bool pfmType = false, int* type = nullptr);
+
+    void polishPreset(int p, int pfmType);
 
 private:
-
     int order_[128];
     bool dragging_;
     String bankFileName_;
     String folderPath_;
     MemoryBlock* bankMem_;
-    ScopedPointer<TextButton> okButton;
-    ScopedPointer<TextButton> cancelButton;
-    ScopedPointer<PresetComponent> preset[128];
+    ScopedPointer<TextButton> okButton_;
+    ScopedPointer<TextButton> cancelButton_;
+    ScopedPointer<PresetComponent> preset_[128];
 };
 
 
