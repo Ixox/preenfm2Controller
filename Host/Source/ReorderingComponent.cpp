@@ -300,7 +300,7 @@ String ReorderingComponent::confirmName(String title, String text, String previo
 	resetWindow.getTextEditor("NewName")->setColour(TextEditor::backgroundColourId, Colours::darkgrey);
 
 	if (askPfmType) {
-		resetWindow.addComboBox("pfmType", StringArray({ "pfm 2", "pfm 3" }), "Preenfm type");
+		resetWindow.addComboBox("pfmType", StringArray({ "preenfm 2", "preenfm 3" }), "Preenfm target");
 		resetWindow.getComboBoxComponent("pfmType")->setSelectedId(*pfmTypeP);
 	}
 
@@ -370,11 +370,10 @@ void ReorderingComponent::polishPreset(int p, int pfmType) {
 		}
 
 		// Old preset, we set unisonSpread and unisonDetune different from 0
-		if (paramSource->engine2.unisonSpread == 0.0f && paramSource->engine2.unisonDetune == 0.0f) {
-			paramSource->engine2.unisonSpread = 0.5f;
-			paramSource->engine2.unisonDetune = 0.12f;
-		}
+		paramSource->engine2.unisonSpread = 0.5f;
+		paramSource->engine2.unisonDetune = 0.12f;
 		// Map glide speed to new glideSpeed and glideType
+
 		if (paramSource->engine1.glideSpeed > 0.0f) {
 			paramSource->engine2.glideType = GLIDE_TYPE_OVERLAP;
 		}

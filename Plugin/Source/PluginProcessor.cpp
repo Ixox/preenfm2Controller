@@ -656,7 +656,7 @@ void Pfm2AudioProcessor::getStateInformation(MemoryBlock& destData)
     // Create an outer XML element..
     XmlElement xml("PreenFM2AppStatus");
 
-    xml.setAttribute("presetName", presetName);
+    xml.setAttribute("presetName", presetName.trim());
 
     // add some attributes to it..
     const Array<AudioProcessorParameter* >parameterSet = getParameters();
@@ -702,7 +702,7 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes, 
 
     if (xmlState != nullptr)
     {
-        presetName = xmlState->getStringAttribute("presetName");
+        presetName = xmlState->getStringAttribute("presetName").trim();
 
         if (pfm2Editor) {
             pfm2Editor->setPresetName(presetName);

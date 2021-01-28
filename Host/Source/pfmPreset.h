@@ -22,6 +22,13 @@
 #include "JuceHeader.h"
 #include "../../Plugin/Source/PluginProcessor.h"
 
+
+enum ConvertDirectionEnum {
+    PARAM_TO_EDITOR = 1,
+    EDITOR_TO_PARAM
+};
+
+
 enum {
     GLIDE_TYPE_OFF = 0,
     GLIDE_TYPE_OVERLAP,
@@ -355,8 +362,8 @@ public:
     PfmPreset();
     virtual ~PfmPreset() {};
 
-    void savePresets(File& bankFile);
-    void saveBank(File& presetFolder);
+    void savePresetsFolder(File& bankFile);
+    void savePfmBankFile(File& presetFolder);
     void organizeBank(File& bankFile);
 
 
@@ -364,8 +371,8 @@ private:
     void reorderBank(String folderPath, String bankFileName, MemoryBlock& bankMem);
     void getEditorPatchMemoryBlock(int presetNumber, MemoryBlock& presetMemBlock);
     void updateDefaultValuesForOldPreset(FlashSynthParams* params);
-    void convertParameters(float* values, int nrpnStartParam, int numberOfFloats, bool fillParams);
-    void convert(FlashSynthParams* paramSource, bool fillParam);
+    void convertParameters(float* values, int nrpnStartParam, int numberOfFloats, ConvertDirectionEnum direction);
+    void convert(FlashSynthParams* paramSource, ConvertDirectionEnum direction);
     File* bankFile_;
     void swapAllFloats(int presetNumber);
 

@@ -28,7 +28,7 @@ void StandalonePluginHolder::createPresetFolders() {
 	{
 		setLastSelectedPresetFolder(myChooser);
 
-		presets->savePresets(myChooser.getResult());
+		presets->savePresetsFolder(myChooser.getResult());
 	}
 }
 
@@ -40,7 +40,7 @@ void StandalonePluginHolder::createPfmBank() {
 	{
 		setLastSelectedPresetBank(myChooser);
 
-		presets->saveBank(myChooser.getResult());
+		presets->savePfmBankFile(myChooser.getResult());
 	}
 }
 
