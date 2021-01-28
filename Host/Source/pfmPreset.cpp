@@ -35,32 +35,14 @@ PfmPreset::PfmPreset() {
 }
 
 
-void PfmPreset::swapAllFloats(int presetNumber) {
-    FlashSynthParams* paramSource = (FlashSynthParams*)((char*)bankMemory_.getData() + 1024 * presetNumber);
-
-    float* floatToSwap = (float*)& paramSource->engine1;
-
-    // We stop at presetName to swape names
-    while (floatToSwap < (float*)paramSource->presetName) {
-        *floatToSwap = ByteOrder::swap(*floatToSwap);
-        floatToSwap++;
-    }
-
-    float* fFrom = (float*)&paramSource->engineArp1;
-
-    while (floatToSwap < ((float*)&paramSource->engine2) + 4) {
-        *floatToSwap = ByteOrder::swap(*floatToSwap);
-        floatToSwap++;
-    }
-}
 
 void PfmPreset::savePresetsFolder(File& bankFile) {
     bankFile_ = new File(bankFile);
+    bankMemory_.reset();
     bankFile_->loadFileAsData(bankMemory_);
 
     String folderPath = bankFile_->getParentDirectory().getFullPathName();
     String folderName = bankFile_->getFileNameWithoutExtension();
-
 
     File parentFolder(folderPath + File::getSeparatorString() + folderName);
     if (!parentFolder.exists()) {
@@ -309,10 +291,6 @@ void PfmPreset::convert(FlashSynthParams* paramSource, ConvertDirectionEnum dire
         for (int n = 0; n < 16; n++) {
             processor_->setParameterWithNrpmParamAndRealValue(PREENFM2_NRPN_STEPSEQ2_STEP1 + n, paramSource->lfoSteps2.steps[n]);
         }
-
-        // Let's fill the pfmType for the UI !!
-        int version = (int)paramSource->engine2.pfm3Version + .01f;
-        processor_->setParameterWithNrpmParamAndRealValue(PREENFM_NRPN_PFMTYPE, (version & 0x1 == 0) ? 0.0f : 1.0f);
     }
     else {
         // EDITOR_TO_PARAM

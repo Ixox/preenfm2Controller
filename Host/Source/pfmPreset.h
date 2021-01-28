@@ -374,7 +374,6 @@ private:
     void convertParameters(float* values, int nrpnStartParam, int numberOfFloats, ConvertDirectionEnum direction);
     void convert(FlashSynthParams* paramSource, ConvertDirectionEnum direction);
     File* bankFile_;
-    void swapAllFloats(int presetNumber);
 
     MemoryBlock bankMemory_;
     ScopedPointer<Pfm2AudioProcessor> processor_;

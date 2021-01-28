@@ -241,18 +241,13 @@ void ReorderingComponent::buttonClicked(Button* buttonThatWasClicked) {
 		MemoryBlock newOrder;
 
 		for (int p = 0; p < 128; p++) {
-				
 			polishPreset(p, pfmType);
-
 			newOrder.append(((char*)bankMem_->getData() + 1024 * order_[p]), 1024);
 		}
-
-
 
 		File bankFile(bankFullName);
 		bankFile.create();
 		bankFile.replaceWithData(newOrder.getData(), newOrder.getSize());
-
 
 		AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
 			TRANS("Bank file Created"),

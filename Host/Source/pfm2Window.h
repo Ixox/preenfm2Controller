@@ -778,15 +778,17 @@ public:
 		m.addItem(1, TRANS("Midi input"));
 		m.addSeparator();
 		m.addItem(3, TRANS("Load preset"));
-		m.addItem(4, TRANS("Reset to default preset"));
-		m.addItem(2, TRANS("Save current preset to file"));
+		m.addItem(2, TRANS("Save preset"));
+
 		// Make sure float = 4
 		if (sizeof(float) == 4) {
 			m.addSeparator();
 			m.addItem(9, TRANS("Reorganize a pfm bank file"));
-			m.addItem(7, TRANS("Create a pfm bank file from a presets folder)"));
+			m.addItem(7, TRANS("Create a pfm bank file from a presets folder"));
 			m.addItem(8, TRANS("Create a presets folder from a pfm bank file"));
 		}
+		m.addSeparator();
+		m.addItem(4, TRANS("Reset to default preset"));
 		m.addSeparator();
 		m.addItem(6, TRANS("Reset settings (list xml files)"));
 
