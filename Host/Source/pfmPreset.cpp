@@ -26,15 +26,9 @@ extern JUCEApplication* staticMainWindow;
 
 
 PfmPreset::PfmPreset() {
-    
-    //for (int p = 0; p < 128; p++) {
-    //    swapAllFloats(p);
-    //}
     reorderingWindow = nullptr;
     processor_ = createPluginFilter();
 }
-
-
 
 void PfmPreset::savePresetsFolder(File& bankFile) {
     bankFile_ = new File(bankFile);

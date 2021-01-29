@@ -31,13 +31,21 @@ enum {
 PresetComponent::PresetComponent(ReorderingComponent* parent, int n, String name) : Component(name) {
 	dragging_ = false;
 	dragTarget_ = false;
+
 	presetName_ = name;
+	// Usefull to clean up so old patch
+	//if (presetName_.endsWith("MB")) {
+	//	presetName_ = presetName_.substring(0, presetName_.length() - 2);
+	//}
+	//presetName_ = presetName_.replace("_", " ").trim();
+	//presetNameModified_ = true;
+	presetNameModified_ = false;
+
 	newPosition_ = n;
 	oldPosition_ = n;
 	swapName_ = "";
 	parent_ = parent;
 	selected_ = false;
-	presetNameModified_ = false;
 }
 
 PresetComponent::~PresetComponent() {
