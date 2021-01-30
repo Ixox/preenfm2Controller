@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="I4cnWy" name="pfmEditor" projectType="guiapp" version="3.0.0"
+<JUCERPROJECT id="I4cnWy" name="pfmEditor" projectType="guiapp" version="3.1.0"
               bundleIdentifier="com.ixox.preenfmEditor" includeBinaryInAppConfig="1"
               defines="" companyName="Xavier Hosxe" companyWebsite="http://github.com/Ixox"
               companyEmail="preenfm1@gmail.com" displaySplashScreen="1" reportAppUsage="1"
@@ -69,7 +69,14 @@
         <FILE id="s9fzsf" name="StepSequencer.h" compile="0" resource="0" file="../Plugin/Source/UI/StepSequencer.h"/>
       </GROUP>
       <FILE id="jG72uk" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <FILE id="FDCPed" name="pfm2Window.cpp" compile="1" resource="0" file="Source/pfm2Window.cpp"/>
       <FILE id="f6aqq8" name="pfm2Window.h" compile="0" resource="0" file="Source/pfm2Window.h"/>
+      <FILE id="FNBzaJ" name="pfmPreset.cpp" compile="1" resource="0" file="Source/pfmPreset.cpp"/>
+      <FILE id="GrLqQX" name="pfmPreset.h" compile="0" resource="0" file="Source/pfmPreset.h"/>
+      <FILE id="fb8Znd" name="ReorderingComponent.cpp" compile="1" resource="0"
+            file="Source/ReorderingComponent.cpp"/>
+      <FILE id="uWMZ1W" name="ReorderingComponent.h" compile="0" resource="0"
+            file="Source/ReorderingComponent.h"/>
     </GROUP>
     <FILE id="OvK51g" name="iconpfm2Ed.PNG" compile="0" resource="1" file="../iconpfm2Ed.PNG"/>
   </MAINGROUP>

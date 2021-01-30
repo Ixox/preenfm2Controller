@@ -78,7 +78,9 @@ public:
 
 	//==============================================================================
 	void getStateInformation(MemoryBlock& destData);
+	void setStateInformation(const void* data, int sizeInBytes, bool flushNewStateToPreenfm);
 	void setStateInformation(const void* data, int sizeInBytes);
+
 
 	void handleIncomingNrpn(int param, int value, int forceIndex = -1);
 	// Parameter observer
@@ -90,6 +92,7 @@ public:
 	void flushAllParametrsToNrpn();
 	void sendNrpnPresetName();
 	void setPresetName(String newName);
+	String getPresetName() { return presetName;  }
     void editorClosed();
 
 	void addMidifiedParameter(MidifiedFloatParameter *param);
@@ -99,6 +102,11 @@ public:
 	void handleIncomingMidiMessage(MidiInput* source, const MidiMessage &message);
 	void handlePartialSysexMessage(MidiInput* source, const uint8 *messageData, int numBytesSoFar, double timestamp);
 	void choseNewMidiDevice();
+
+	// Called from PfmPreset in standalone version only
+	void setParameterWithNrpmParamAndRealValue(int param, float pfmValue);
+	float getRealValueForPfmBank(int param);
+	void setPfmType(int pt) { pfmType = pt; }
 
 private:
 	void sendMidiForParameter(int paramIndex, int nrpnValue, int forceIndex);

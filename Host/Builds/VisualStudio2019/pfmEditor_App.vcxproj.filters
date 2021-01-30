@@ -499,6 +499,15 @@
     <ClCompile Include="..\..\Source\Main.cpp">
       <Filter>pfmEditor\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\pfm2Window.cpp">
+      <Filter>pfmEditor\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\pfmPreset.cpp">
+      <Filter>pfmEditor\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\ReorderingComponent.cpp">
+      <Filter>pfmEditor\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\JUCE_6.0\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <Filter>JUCE Modules\juce_audio_basics\buffers</Filter>
     </ClCompile>
@@ -2641,6 +2650,12 @@
       <Filter>pfmEditor\Source\Plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\pfm2Window.h">
+      <Filter>pfmEditor\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\pfmPreset.h">
+      <Filter>pfmEditor\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ReorderingComponent.h">
       <Filter>pfmEditor\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\JUCE_6.0\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h">

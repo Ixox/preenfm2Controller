@@ -182,6 +182,7 @@ PanelEngine::PanelEngine ()
 		} else {
 			addAndMakeVisible(IMNumber[k] = new Label("IM Label" + String(k + 1), String("Feedback")));
 		}
+
 		addAndMakeVisible(IMKnob[k] = new SliderPfm2("IM " + String(k + 1)));
 		IMKnob[k]->setRange(0, k < (NUMBER_OF_IM - 1) ? 16 : 1, .01f);
 		IMKnob[k]->setSliderStyle(Slider::RotaryVerticalDrag);
@@ -595,13 +596,6 @@ void PanelEngine::newAlgo(int algoNumber) {
 	int numberOfMixer = algoInformation[algoNumber].mix;
 	for (int m = 0; m < 6; m++) {
 		bool enable = m < numberOfMixer;
-		// Pfm2 and pfm3 have a Mix difference
-		if (pfmType == TYPE_PREENFM2) {
-			enable = m < numberOfMixer;
-		}
-		else {
-			enable = (algoOpInformation[algoNumber][m] == 1);
-		}
 		enableComponent(mixKnob[m].get(), enable);
 		enableComponent(panKnob[m].get(), enable);
 		enableComponent(mixLabel[m].get(), enable);
@@ -692,7 +686,7 @@ void PanelEngine::comboBoxChanged(ComboBox* comboBoxThatHasChanged, bool fromPlu
 
 	}
 	else if (comboBoxThatHasChanged == glideType) {
-		bool glideEnable = glideType->getSelectedId() != 1;
+		bool glideEnable = (glideType->getSelectedId() != 1) && (playMode->getSelectedId() != 2);
 		enableComponent(glideLabel.get(), glideEnable);
 		enableComponent(glide.get(), glideEnable);
 	}

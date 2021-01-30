@@ -131,7 +131,9 @@ public:
 
     void setRealValue(float newValue);
     void setRealValueNoNotification(float newValue) { value = newValue; }
-
+    void setPfmBankValue(float pfmValue);
+    float getPfmBankValue();
+    
     float getValue() const { return range.convertTo0to1(value); }
     float getRealValue() const { return value; }
     float getDefaultValue() const { return range.convertTo0to1(defaultValue); }

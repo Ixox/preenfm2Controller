@@ -50,7 +50,7 @@ namespace ProjectInfo
 {
     const char* const  projectName    = "pfmEditor";
     const char* const  companyName    = "Xavier Hosxe";
-    const char* const  versionString  = "3.0.0";
-    const int          versionNumber  = 0x30000;
+    const char* const  versionString  = "3.1.0";
+    const int          versionNumber  = 0x30100;
 }
 #endif

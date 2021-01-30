@@ -30,12 +30,14 @@
 #define JUCE_NO_DEPRECATION_WARNINGS 1
 
 // Hack to be able to call the reset
+#include "../../Plugin/Source/PluginProcessor.h"
 #include "../../Plugin/Source/ListProperty.h"
+#include "pfmPreset.h"
 
 #if JUCE_MODULE_AVAILABLE_juce_audio_plugin_client
 extern juce::AudioProcessor* JUCE_API JUCE_CALLTYPE createPluginFilterOfType(juce::AudioProcessor::WrapperType type);
 #else
-extern juce::AudioProcessor* JUCE_API JUCE_CALLTYPE createPluginFilter();
+extern Pfm2AudioProcessor* JUCE_API JUCE_CALLTYPE createPluginFilter();
 
 #endif
 
@@ -106,6 +108,8 @@ public:
 				[this, preferredDefaultDeviceName](bool granted) { init(granted, preferredDefaultDeviceName); });
 		else
 			init(audioInputRequired, preferredDefaultDeviceName);
+
+		presets = new PfmPreset();
 	}
 
 	void init(bool enableAudioInput, const String& preferredDefaultDeviceName)
@@ -182,11 +186,53 @@ public:
 			settings->setValue("lastStateFile", fc.getResult().getFullPathName());
 	}
 
+
+	File getLastSelectedPresetBank() const
+	{
+		File f;
+
+		if (settings != nullptr)
+			f = File(settings->getValue("lastSelectedPresetBank"));
+
+		if (f == File())
+			f = File::getSpecialLocation(File::userDocumentsDirectory);
+
+		return f;
+	}
+
+
+	void setLastSelectedPresetBank(const FileChooser& fc)
+	{
+		if (settings != nullptr)
+			settings->setValue("lastSelectedPresetBank", fc.getResult().getFullPathName());
+	}
+
+
+	File getLastSelectedPresetFolder() const
+	{
+		File f;
+
+		if (settings != nullptr)
+			f = File(settings->getValue("lastSelectedPresetFolder"));
+
+		if (f == File())
+			f = File::getSpecialLocation(File::userDocumentsDirectory);
+
+		return f;
+	}
+
+	void setLastSelectedPresetFolder(const FileChooser& fc)
+	{
+		if (settings != nullptr)
+			settings->setValue("lastSelectedPresetFolder", fc.getResult().getFullPathName());
+	}
+
+
 	/** Pops up a dialog letting the user save the processor's state to a file. */
 	void askUserToSaveState()
 	{
 #if JUCE_MODAL_LOOPS_PERMITTED
-		FileChooser fc(TRANS("Save current preset"), getLastFile(), "*.pfm2;*");
+		FileChooser fc(TRANS("Save current preset"), getLastFile(), "*.pfm2;*.pfm3;*");
 
 		if (fc.browseForFileToSave(true))
 		{
@@ -209,7 +255,7 @@ public:
 	void askUserToLoadState()
 	{
 #if JUCE_MODAL_LOOPS_PERMITTED
-		FileChooser fc(TRANS("Load a saved preset"), getLastFile(), "*.pfm2;*");
+		FileChooser fc(TRANS("Load a saved preset"), getLastFile(), "*.pfm2;*.pfm3;*");
 
 		if (fc.browseForFileToOpen())
 		{
@@ -363,6 +409,8 @@ public:
 	void quickHelp()
 	{
 		AlertWindow helpWindow("Quick Configuration Help",
+			"To use with pfm2 2.12 or newer\r\n"
+			"         or pfm3 0.105 or newer\r\n\r\n"
 			"Check your preenfm settings : \r\n"
 			". Midi channels 1, 2, 3 & 4\r\n"
 			". Midi thru : No\r\n"
@@ -415,6 +463,10 @@ public:
 
 	}
 
+	void createPresetFolders();	
+	void createPfmBank();
+	void organizePfmBankFile();
+
 	//==============================================================================
 	void switchToHostApplication()
 	{
@@ -452,7 +504,7 @@ public:
 
 	//==============================================================================
 	OptionalScopedPointer<PropertySet> settings;
-	std::unique_ptr<AudioProcessor> processor;
+	std::unique_ptr<Pfm2AudioProcessor> processor;
 	AudioDeviceManager deviceManager;
 	AudioProcessorPlayer player;
 	Array<PluginInOuts> channelConfiguration;
@@ -610,6 +662,9 @@ private:
 	}
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(StandalonePluginHolder)
+
+	ScopedPointer<PfmPreset> presets;
+
 };
 
 
@@ -722,12 +777,20 @@ public:
 		m.addSeparator();
 		m.addItem(1, TRANS("Midi input"));
 		m.addSeparator();
-		m.addItem(2, TRANS("Save current preset"));
-		m.addItem(3, TRANS("Load a saved preset"));
+		m.addItem(3, TRANS("Load preset"));
+		m.addItem(2, TRANS("Save preset"));
+
+		// Make sure float = 4
+		if (sizeof(float) == 4) {
+			m.addSeparator();
+			m.addItem(9, TRANS("Reorganize a pfm bank file"));
+			m.addItem(7, TRANS("Create a pfm bank file from a presets folder"));
+			m.addItem(8, TRANS("Create a presets folder from a pfm bank file"));
+		}
 		m.addSeparator();
 		m.addItem(4, TRANS("Reset to default preset"));
 		m.addSeparator();
-		m.addItem(6, TRANS("Reset default settings"));
+		m.addItem(6, TRANS("Reset settings (list xml files)"));
 
 		switch (m.showAt(&optionsButton))
 		{
@@ -737,6 +800,9 @@ public:
 		case 4:  resetToDefaultState(); break;
 		case 5:  pluginHolder->quickHelp(); break;
 		case 6:  pluginHolder->deleteFiles(); break;
+		case 7:  pluginHolder->createPfmBank(); break;
+		case 8:  pluginHolder->createPresetFolders(); break;
+		case 9:  pluginHolder->organizePfmBankFile(); break;
 		default: break;
 		}
 	}
