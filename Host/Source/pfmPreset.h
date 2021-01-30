@@ -362,9 +362,9 @@ public:
     PfmPreset();
     virtual ~PfmPreset() {};
 
-    void savePresetsFolder(File& bankFile);
-    void savePfmBankFile(File& presetFolder);
-    void organizeBank(File& bankFile);
+    void savePresetsFolder(const File& bankFile);
+    void savePfmBankFile(const File& presetFolder);
+    void organizeBank(const File& bankFile);
 
 
 private:

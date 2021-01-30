@@ -30,7 +30,7 @@ PfmPreset::PfmPreset() {
     processor_ = createPluginFilter();
 }
 
-void PfmPreset::savePresetsFolder(File& bankFile) {
+void PfmPreset::savePresetsFolder(const File& bankFile) {
     bankFile_ = new File(bankFile);
     bankMemory_.reset();
     bankFile_->loadFileAsData(bankMemory_);
@@ -149,7 +149,7 @@ void PfmPreset::updateDefaultValuesForOldPreset(FlashSynthParams* params) {
 }
 
 
-void PfmPreset::savePfmBankFile(File& presetFolder) {
+void PfmPreset::savePfmBankFile(const File& presetFolder) {
     
     if (!presetFolder.isDirectory() ) {
         return ;
@@ -178,7 +178,7 @@ void PfmPreset::savePfmBankFile(File& presetFolder) {
         presetFile.loadFileAsData(fileMemory);
 
         // If not Patch continue !!
-        if (!((int)fileMemory.getData()) == magicXmlNumber) {
+        if (!((long)fileMemory.getData()) == magicXmlNumber) {
             continue;
         }
 
@@ -297,7 +297,7 @@ void PfmPreset::convert(FlashSynthParams* paramSource, ConvertDirectionEnum dire
     }
 }
 
-void PfmPreset::organizeBank(File& bankFile) {
+void PfmPreset::organizeBank(const File& bankFile) {
     MemoryBlock bankMemory;
     bankFile.loadFileAsData(bankMemory);
     reorderBank(bankFile.getParentDirectory().getFullPathName(), bankFile.getFileNameWithoutExtension(), bankMemory);
