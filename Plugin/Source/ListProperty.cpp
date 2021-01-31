@@ -45,6 +45,9 @@ void ListProperty::init(NameAndId* initList) {
             filterElem[f] = new XmlElement("item");
             filterElem[f]->setAttribute("id", initList[f].id);
             filterElem[f]->setAttribute("name", initList[f].name);
+            if (initList[f].preenfmTarget != 0) {
+                filterElem[f]->setAttribute("preenfm", initList[f].preenfmTarget);
+            }
             allFiltersElem.addChildElement(filterElem[f]);
             f++;
         }
@@ -65,6 +68,8 @@ void ListProperty::init(NameAndId* initList) {
     for (int i = 0; i < NUMBER_MAX_OF_FILTER; i++) {
         myItems[i].name = "";
         myItems[i].id = 0;
+        // Default is all
+        myItems[i].preenfmTarget = 0;
     }
     if (pfm2FilterList.getFile().exists()) {
         std::unique_ptr<XmlElement > filtersValue = pfm2FilterList.getXmlValue(listName);
@@ -73,6 +78,7 @@ void ListProperty::init(NameAndId* initList) {
         while ((filter = filtersValue->getChildElement(e)) != nullptr) {
             myItems[e].name = String(filter->getStringAttribute("name"));
             myItems[e].id = filter->getIntAttribute("id");
+            myItems[e].preenfmTarget = filter->getIntAttribute("preenfm", 0);
             e++;
         }
     }

@@ -40,7 +40,6 @@
 #include "JuceHeader.h"
 #include "SliderPfm2.h"
 #include "../MidifiedFloatParameter.h"
-#include "../ListProperty.h"
 //[/Headers]
 
 #include "PanelModulation.h"
@@ -49,91 +48,90 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 
 
-struct NameAndId sourceNameInit[] = { { "None",	0 },
-	{ "lfo 1",	1 },
-	{ "lfo 2",	2 },
-	{ "lfo 3",	3 },
-	{ "Free Env 1",	4 },
-	{ "Free Env 2",	5 },
-	{ "Step Seq 1",	6 },
-	{ "Step Seq 2",	7 },
-	{ "Mod Wheel",	8 },
-	{ "Pitch Bend",	9 },
-	{ "After touch",	10 },
-	{ "Velocity",	11 },
-	{ "Note1",	12 },
-	{ "Note2",	17 },
-	{ "Breath CC2",	18 },
-	{ "Performance 1",	13 },
-	{ "Performance 2",	14 },
-	{ "Performance 3",	15 },
-	{ "Performance 4",	16 },
-	{ "MPE CC74",	19 },
-	{ "Random",	20 },
-	{ "Polyphonic Aftertouch", 21 },
-	{ "User CC1", 22 },
-	{ "User CC2", 23 },
-	{ "User CC3", 24 },
-	{ "User CC4", 25 },
-	{ "", 0}
-};
 
-int sourcePfm3SpecificIds[] = {
-	21, 22, 23, 24, 25, 0
+
+struct NameAndId sourceNameInit[] = { { "None",	0, 0},
+	{ "lfo 1",	1, 0 },
+	{ "lfo 2",	2, 0 },
+	{ "lfo 3",	3, 0 },
+	{ "Free Env 1",	4, 0 },
+	{ "Free Env 2",	5, 0 },
+	{ "Step Seq 1",	6, 0 },
+	{ "Step Seq 2",	7, 0 },
+	{ "Mod Wheel",	8, 0 },
+	{ "Pitch Bend",	9, 0 },
+	{ "After touch",	10, 0 },
+	{ "Velocity",	11, 0 },
+	{ "Note1",	12, 0 },
+	{ "Note2",	17, 0 },
+	{ "Breath CC2",	18, 0 },
+	{ "Performance 1",	13, 0 },
+	{ "Performance 2",	14, 0 },
+	{ "Performance 3",	15, 0 },
+	{ "Performance 4",	16, 0 },
+	{ "MPE CC74",	19, 0 },
+	{ "Random",	20, 0 },
+	{ "Polyphonic Aftertouch", 21, PROPERTY_PREENFM3 },
+	{ "User CC1", 22, PROPERTY_PREENFM3 },
+	{ "User CC2", 23, PROPERTY_PREENFM3 },
+	{ "User CC3", 24, PROPERTY_PREENFM3 },
+	{ "User CC4", 25, PROPERTY_PREENFM3 },
+	{ "", 0}
 };
 
 
 struct NameAndId destNameInit[] = {
-	{ "None", 0},
-	{ "Gate",1 },
-	{ "Modulation Index 1",2 },
-	{ "Modulation Index 2",3 },
-	{ "Modulation Index 3",4 },
-	{ "Modulation index 4",5 },
-	{ "All Mod. Indexes",6 },
-	{ "Mix 1",7 },
-	{ "Pan 1",8 },
-	{ "Mix 2",9 },
-	{ "Pan 2",10 },
-	{ "Mix 3",11 },
-	{ "Pan 3",12 },
-	{ "Mix 4",13 },
-	{ "Pan 4",14 },
-	{ "All Mixes",15 },
-	{ "All Pans",16 },
-	{ "Op1 Frequency",17 },
-	{ "Op2 Frequency",18 },
-	{ "Op3 Frequency",19 },
-	{ "Op4 Frequency",20 },
-	{ "Op5 Frequency",21 },
-	{ "Op6 Frequency",22 },
-	{ "All Op Frequencies",23 },
-	{ "All Op Freq Harmonic",43 },
-	{ "Op1 Attack",24 },
-	{ "Op2 Attack",25 },
-	{ "Op3 Attack",26 },
-	{ "Op4 Attack",27 },
-	{ "Op5 Attack",28 },
-	{ "Op6 Attack",29 },
-	{ "Carrier Attacks",30 },
-	{ "Carrier Decays",44 },
-	{ "Carrier Releases",31 },
-	{ "Modulator Attacks",45 },
-	{ "Modulator Decays",46 },
-	{ "Modulator Releases",47 },
-	{ "Mtx Multiplier 1",32 },
-	{ "Mtx Multiplier 2",33 },
-	{ "Mtx Multiplier 3",34 },
-	{ "Mtx Multiplier 4",35 },
-	{ "lfo 1 Frequency",36 },
-	{ "lfo 2 Frequency",37 },
-	{ "lfo 3 Frequency",38 },
-	{ "Free Env2 Silence",39 },
-	{ "Step Seq 1 gate",40 },
-	{ "Step Seq 1 start",48 },
-	{ "Step Seq 2 gate",41 },
-	{ "Step Seq 2 start",49 },
-	{ "Filter frequency",42 },
+	{ "None", 0, 0},
+	{ "Gate",1, 0 },
+	{ "Index Modulation ",2, 0 },
+	{ "Index Modulation 2",3, 0 },
+	{ "Index Modulation 3",4, 0 },
+	{ "Index Modulation 4",5, 0 },
+	{ "Feedback Modulation",48, PROPERTY_PREENFM3 },
+	{ "All Mod. Indexes",6, 0 },
+	{ "Mix 1",7 , 0 },
+	{ "Pan 1",8 , 0 },
+	{ "Mix 2",9, 0 },
+	{ "Pan 2",10, 0 },
+	{ "Mix 3",11, 0 },
+	{ "Pan 3",12, 0 },
+	{ "Mix 4",13, 0 },
+	{ "Pan 4",14, 0 },
+	{ "All Mixes",15, 0 },
+	{ "All Pans",16, 0 },
+	{ "Op1 Frequency",17, 0 },
+	{ "Op2 Frequency",18, 0 },
+	{ "Op3 Frequency",19, 0 },
+	{ "Op4 Frequency",20, 0 },
+	{ "Op5 Frequency",21, 0 },
+	{ "Op6 Frequency",22, 0 },
+	{ "All Op Frequencies",23, 0 },
+	{ "All Op Freq Harmonic",43, 0 },
+	{ "Op1 Attack",24, 0 },
+	{ "Op2 Attack",25, 0 },
+	{ "Op3 Attack",26, 0 },
+	{ "Op4 Attack",27, 0 },
+	{ "Op5 Attack",28, 0 },
+	{ "Op6 Attack",29, 0 },
+	{ "Carrier Attacks",30, 0 },
+	{ "Carrier Decays",44, 0 },
+	{ "Carrier Releases",31, 0 },
+	{ "Modulator Attacks",45, 0 },
+	{ "Modulator Decays",46, 0 },
+	{ "Modulator Releases",47, 0 },
+	{ "Mtx Multiplier 1",32, 0 },
+	{ "Mtx Multiplier 2",33, 0 },
+	{ "Mtx Multiplier 3",34, 0 },
+	{ "Mtx Multiplier 4",35, 0 },
+	{ "lfo 1 Frequency",36, 0 },
+	{ "lfo 2 Frequency",37, 0 },
+	{ "lfo 3 Frequency",38, 0 },
+	{ "Free Env2 Silence",39, 0 },
+	{ "Step Seq 1 gate",40, 0 },
+	{ "Step Seq 1 start",48, PROPERTY_PREENFM2 },
+	{ "Step Seq 2 gate",41, 0 },
+	{ "Step Seq 2 start",49, PROPERTY_PREENFM2 },
+	{ "Filter frequency",42, 0 },
 	{ "", 0 }
 };
 
@@ -145,13 +143,13 @@ struct NameAndId destNameInit[] = {
 PanelModulation::PanelModulation ()
 {
     //[Constructor_pre] You can add your own custom stuff here..
-	ListProperty sourceList("sources", ".sources.xml");
-	sourceList.init(sourceNameInit);
-	NameAndId* sourcesNameAndId = sourceList.getList();
+	sourceList = new ListProperty("sources", ".sources.xml");
+	sourceList->init(sourceNameInit);
+	NameAndId* sourcesNameAndId = sourceList->getList();
 
-	ListProperty destList("dest", ".dest.xml");
-	destList.init(destNameInit);
-	NameAndId* destNameAndId = destList.getList();
+	destList = new ListProperty("dest", ".dest.xml");
+	destList->init(destNameInit);
+	NameAndId* destNameAndId = destList->getList();
 
     //[/Constructor_pre]
 
@@ -359,7 +357,9 @@ PanelModulation::PanelModulation ()
 		matrixSource[r]->setJustificationType(Justification::centred);
 		matrixSource[r]->setColour(ComboBox::buttonColourId, Colours::blue);
 		for (int i = 0; sourcesNameAndId[i].name != ""; i++) {
-			matrixSource[r]->addItem(sourcesNameAndId[i].name, (sourcesNameAndId[i].id + 1));
+			if (sourcesNameAndId[i].preenfmTarget == 0 || sourcesNameAndId[i].preenfmTarget == PROPERTY_PREENFM2) {
+				matrixSource[r]->addItem(sourcesNameAndId[i].name, (sourcesNameAndId[i].id + 1));
+			}
 		}
 		matrixSource[r]->setSelectedId(1);
 		matrixSource[r]->setScrollWheelEnabled(true);
@@ -370,7 +370,9 @@ PanelModulation::PanelModulation ()
 		matrixDestination1[r]->setJustificationType(Justification::centred);
 		matrixDestination1[r]->setColour(ComboBox::buttonColourId, Colours::blue);
 		for (int i = 0; destNameAndId[i].name != ""; i++) {
-			matrixDestination1[r]->addItem(destNameAndId[i].name, (destNameAndId[i].id + 1));
+			if (destNameAndId[i].preenfmTarget == 0 || destNameAndId[i].preenfmTarget == PROPERTY_PREENFM2) {
+				matrixDestination1[r]->addItem(destNameAndId[i].name, (destNameAndId[i].id + 1));
+			}
 		}
 		matrixDestination1[r]->setSelectedId(1);
 		matrixDestination1[r]->setScrollWheelEnabled(true);
@@ -381,7 +383,9 @@ PanelModulation::PanelModulation ()
         matrixDestination2[r]->setJustificationType(Justification::centred);
         matrixDestination2[r]->setColour(ComboBox::buttonColourId, Colours::blue);
         for (int i = 0; destNameAndId[i].name != ""; i++) {
-            matrixDestination2[r]->addItem(destNameAndId[i].name, (destNameAndId[i].id + 1));
+			if (destNameAndId[i].preenfmTarget == 0 || destNameAndId[i].preenfmTarget == PROPERTY_PREENFM2) {
+				matrixDestination2[r]->addItem(destNameAndId[i].name, (destNameAndId[i].id + 1));
+			}
         }
         matrixDestination2[r]->setSelectedId(1);
         matrixDestination2[r]->setScrollWheelEnabled(true);
@@ -792,13 +796,54 @@ void PanelModulation::sliderDragEnded(Slider* slider) {
 }
 
 
-void PanelModulation::setPfmType(int type) {
-	pfmType = type;
+void PanelModulation::setPfmType(int typeComboId) {
+
+	pfmType = typeComboId;
+	// Combo = 1 => preenfm2
+	// Combo = 2 => preenfm3
+	int preenfmPropertyVersion = (pfmType == TYPE_PREENFM3) ? PROPERTY_PREENFM3 : PROPERTY_PREENFM2;
+
+	NameAndId* sourcesNameAndId = sourceList->getList();
+	NameAndId* destNameAndId = destList->getList();
+
 
 	for (int r = 0; r < NUMBER_OF_MATRIX_ROW; r++) {
-		for (int i = 0; sourcePfm3SpecificIds[i] != 0; i++) {
-			matrixSource[r]->setItemEnabled(sourcePfm3SpecificIds[i] + 1, pfmType == TYPE_PREENFM3);
+		int selected = matrixSource[r]->getSelectedId();
+		matrixSource[r]->clear(NotificationType::dontSendNotification);
+		for (int i = 0; sourcesNameAndId[i].name != ""; i++) {
+			if (sourcesNameAndId[i].preenfmTarget == 0 || sourcesNameAndId[i].preenfmTarget == preenfmPropertyVersion) {
+				matrixSource[r]->addItem(sourcesNameAndId[i].name, (sourcesNameAndId[i].id + 1));
+			}
 		}
+		matrixSource[r]->setSelectedId(selected, NotificationType::dontSendNotification);
+		if (matrixSource[r]->getSelectedId() == 0) {
+			matrixSource[r]->setSelectedId(1, NotificationType::dontSendNotification);
+		}
+
+		selected = matrixDestination1[r]->getSelectedId();
+		matrixDestination1[r]->clear(NotificationType::dontSendNotification);
+		for (int i = 0; destNameAndId[i].name != ""; i++) {
+			if (destNameAndId[i].preenfmTarget == 0 || destNameAndId[i].preenfmTarget == preenfmPropertyVersion) {
+				matrixDestination1[r]->addItem(destNameAndId[i].name, (destNameAndId[i].id + 1));
+			}
+		}
+		matrixDestination1[r]->setSelectedId(selected, NotificationType::dontSendNotification);
+		if (matrixDestination1[r]->getSelectedId() == 0) {
+			matrixDestination1[r]->setSelectedId(1, NotificationType::dontSendNotification);
+		}
+
+		selected = matrixDestination2[r]->getSelectedId();
+		matrixDestination2[r]->clear(NotificationType::dontSendNotification);
+		for (int i = 0; destNameAndId[i].name != ""; i++) {
+			if (destNameAndId[i].preenfmTarget == 0 || destNameAndId[i].preenfmTarget == preenfmPropertyVersion) {
+				matrixDestination2[r]->addItem(destNameAndId[i].name, (destNameAndId[i].id + 1));
+			}
+		}
+		matrixDestination2[r]->setSelectedId(selected, NotificationType::dontSendNotification);
+		if (matrixDestination2[r]->getSelectedId() == 0) {
+			matrixDestination2[r]->setSelectedId(1, NotificationType::dontSendNotification);
+		}
+
 	}
 }
 

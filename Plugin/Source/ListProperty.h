@@ -23,9 +23,13 @@
 
 #define NUMBER_MAX_OF_FILTER 100
 
+#define PROPERTY_PREENFM2 2
+#define PROPERTY_PREENFM3 3
+
 struct NameAndId {
     String name;
     int  id;
+    int preenfmTarget;
 };
 
 class ListProperty

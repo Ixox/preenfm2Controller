@@ -44,6 +44,7 @@
 #include "EnveloppeFree1.h"
 #include "EnveloppeFree2.h"
 #include "PanelOfComponents.h"
+#include "../ListProperty.h"
 
 
 #define NUMBER_OF_STEP_SEQ 2
@@ -141,8 +142,11 @@ private:
 	ScopedPointer<Label> stepSeqGateLabel;
 	ScopedPointer<Slider> stepSeqGate[NUMBER_OF_STEP_SEQ];
 
+	ScopedPointer<ListProperty> sourceList;
+	ScopedPointer<ListProperty> destList;
 	MidiBuffer* eventsToAdd;
 	bool initialized;
+
     //[/UserVariables]
 
     //==============================================================================
