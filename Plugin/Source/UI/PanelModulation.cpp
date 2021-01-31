@@ -76,11 +76,11 @@ struct NameAndId sourceNameInit[] = { { "None",	0, 0},
 	{ "User CC2", 23, PROPERTY_PREENFM3 },
 	{ "User CC3", 24, PROPERTY_PREENFM3 },
 	{ "User CC4", 25, PROPERTY_PREENFM3 },
-	{ "<unavailable>", 21, PROPERTY_PREENFM2 },
-	{ "<unavailable>", 22, PROPERTY_PREENFM2 },
-	{ "<unavailable>", 23, PROPERTY_PREENFM2 },
-	{ "<unavailable>", 24, PROPERTY_PREENFM2 },
-	{ "<unavailable>", 25, PROPERTY_PREENFM2 },
+	{ "-- pfm3 only", 21, PROPERTY_PREENFM2 },
+	{ "-- pfm3 only", 22, PROPERTY_PREENFM2 },
+	{ "-- pfm3 only", 23, PROPERTY_PREENFM2 },
+	{ "-- pfm3 only", 24, PROPERTY_PREENFM2 },
+	{ "-- pfm3 only", 25, PROPERTY_PREENFM2 },
 	{ "", 0}
 };
 
@@ -137,7 +137,7 @@ struct NameAndId destNameInit[] = {
 	{ "Step Seq 2 gate",41, 0 },
 	{ "Step Seq 2 start",49, PROPERTY_PREENFM2 },
 	{ "Filter frequency", 42, 0 },
-	{ "<unavailable>", 49, PROPERTY_PREENFM3 },
+	{ "-- pfm2 only", 49, PROPERTY_PREENFM3 },
 	{ "", 0 }
 };
 
@@ -812,44 +812,37 @@ void PanelModulation::setPfmType(int typeComboId) {
 	NameAndId* sourcesNameAndId = sourceList->getList();
 	NameAndId* destNameAndId = destList->getList();
 
-
 	for (int r = 0; r < NUMBER_OF_MATRIX_ROW; r++) {
-		int selected = matrixSource[r]->getSelectedId();
+		int selectedSource = matrixSource[r]->getSelectedId();
 		matrixSource[r]->clear(NotificationType::dontSendNotification);
 		for (int i = 0; sourcesNameAndId[i].name != ""; i++) {
 			if (sourcesNameAndId[i].preenfmTarget == 0 || sourcesNameAndId[i].preenfmTarget == preenfmPropertyVersion) {
 				matrixSource[r]->addItem(sourcesNameAndId[i].name, (sourcesNameAndId[i].id + 1));
 			}
-		}
-		matrixSource[r]->setSelectedId(selected, NotificationType::dontSendNotification);
-		if (matrixSource[r]->getSelectedId() == 0) {
-			matrixSource[r]->setSelectedId(1, NotificationType::dontSendNotification);
-		}
-
-		selected = matrixDestination1[r]->getSelectedId();
-		matrixDestination1[r]->clear(NotificationType::dontSendNotification);
-		for (int i = 0; destNameAndId[i].name != ""; i++) {
-			if (destNameAndId[i].preenfmTarget == 0 || destNameAndId[i].preenfmTarget == preenfmPropertyVersion) {
-				matrixDestination1[r]->addItem(destNameAndId[i].name, (destNameAndId[i].id + 1));
+			if (sourcesNameAndId[i].preenfmTarget == preenfmPropertyVersion && sourcesNameAndId[i].name.startsWith("--")) {
+				matrixSource[r]->setItemEnabled((sourcesNameAndId[i].id + 1), false);
 			}
-		}
-		matrixDestination1[r]->setSelectedId(selected, NotificationType::dontSendNotification);
-		if (matrixDestination1[r]->getSelectedId() == 0) {
-			matrixDestination1[r]->setSelectedId(1, NotificationType::dontSendNotification);
-		}
+			matrixSource[r]->setSelectedId(selectedSource, NotificationType::dontSendNotification);
 
-		selected = matrixDestination2[r]->getSelectedId();
-		matrixDestination2[r]->clear(NotificationType::dontSendNotification);
-		for (int i = 0; destNameAndId[i].name != ""; i++) {
-			if (destNameAndId[i].preenfmTarget == 0 || destNameAndId[i].preenfmTarget == preenfmPropertyVersion) {
-				matrixDestination2[r]->addItem(destNameAndId[i].name, (destNameAndId[i].id + 1));
+			int selectedDest1 = matrixDestination1[r]->getSelectedId();
+			int selectedDest2 = matrixDestination2[r]->getSelectedId();
+
+			matrixDestination1[r]->clear(NotificationType::dontSendNotification);
+			matrixDestination2[r]->clear(NotificationType::dontSendNotification);
+
+			for (int i = 0; destNameAndId[i].name != ""; i++) {
+				if (destNameAndId[i].preenfmTarget == 0 || destNameAndId[i].preenfmTarget == preenfmPropertyVersion) {
+					matrixDestination1[r]->addItem(destNameAndId[i].name, (destNameAndId[i].id + 1));
+					matrixDestination2[r]->addItem(destNameAndId[i].name, (destNameAndId[i].id + 1));
+				}
+				if (destNameAndId[i].preenfmTarget == preenfmPropertyVersion && destNameAndId[i].name.startsWith("--")) {
+					matrixDestination1[r]->setItemEnabled((destNameAndId[i].id + 1), false);
+					matrixDestination2[r]->setItemEnabled((destNameAndId[i].id + 1), false);
+				}
 			}
+			matrixDestination1[r]->setSelectedId(selectedDest1, NotificationType::dontSendNotification);
+			matrixDestination2[r]->setSelectedId(selectedDest2, NotificationType::dontSendNotification);
 		}
-		matrixDestination2[r]->setSelectedId(selected, NotificationType::dontSendNotification);
-		if (matrixDestination2[r]->getSelectedId() == 0) {
-			matrixDestination2[r]->setSelectedId(1, NotificationType::dontSendNotification);
-		}
-
 	}
 }
 
