@@ -76,6 +76,11 @@ struct NameAndId sourceNameInit[] = { { "None",	0, 0},
 	{ "User CC2", 23, PROPERTY_PREENFM3 },
 	{ "User CC3", 24, PROPERTY_PREENFM3 },
 	{ "User CC4", 25, PROPERTY_PREENFM3 },
+	{ "<unavailable>", 21, PROPERTY_PREENFM2 },
+	{ "<unavailable>", 22, PROPERTY_PREENFM2 },
+	{ "<unavailable>", 23, PROPERTY_PREENFM2 },
+	{ "<unavailable>", 24, PROPERTY_PREENFM2 },
+	{ "<unavailable>", 25, PROPERTY_PREENFM2 },
 	{ "", 0}
 };
 
@@ -131,7 +136,8 @@ struct NameAndId destNameInit[] = {
 	{ "Step Seq 1 start",48, PROPERTY_PREENFM2 },
 	{ "Step Seq 2 gate",41, 0 },
 	{ "Step Seq 2 start",49, PROPERTY_PREENFM2 },
-	{ "Filter frequency",42, 0 },
+	{ "Filter frequency", 42, 0 },
+	{ "<unavailable>", 49, PROPERTY_PREENFM3 },
 	{ "", 0 }
 };
 
