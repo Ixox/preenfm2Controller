@@ -388,8 +388,10 @@ void MainTabs::setMidiChannel(int newMidiChannel) {
 
 void MainTabs::setPfmType(int pfmType) {
     pfmTypeCombo->setSelectedId(pfmType);
+    panelEngine->setPfmType(pfmType);
+    panelModulation->setPfmType(pfmType);
+    panelArpAndFilter->setPfmType(pfmType);
 }
-
 
 //[/MiscUserCode]
 

@@ -19,7 +19,7 @@
 #include "pfmPreset.h"
 #include "ReorderingComponent.h"
 
-extern Pfm2AudioProcessor* JUCE_API JUCE_CALLTYPE createPluginFilter();
+extern AudioProcessor* JUCE_API JUCE_CALLTYPE createPluginFilter();
 extern const uint32 magicXmlNumber = 0x21324356;
 extern JUCEApplication* staticMainWindow;
 
@@ -27,7 +27,7 @@ extern JUCEApplication* staticMainWindow;
 
 PfmPreset::PfmPreset() {
     reorderingWindow = nullptr;
-    processor_ = createPluginFilter();
+    processor_ = dynamic_cast<Pfm2AudioProcessor*>(createPluginFilter());
 }
 
 void PfmPreset::savePresetsFolder(const File& bankFile) {

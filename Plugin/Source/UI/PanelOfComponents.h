@@ -102,6 +102,8 @@ public:
 
 		MidifiedFloatParameter * parameter = checkParamExistence(componentName);
 
+		// DBG("UI UPDATE > '" << parameter->getNameForXML() << "'  value " << parameter->getRealValue() << " param adress : " << (int)parameter);
+
 		// Will remove that later but dont' BUG for the moment if that doesn't fit
 		if (parameter == nullptr) {
 			return;

@@ -285,7 +285,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
         //        stepSeqBPM[k]->addListener (this);
 
         nrpmParam = PREENFM2_NRPN_STEPSEQ1_BPM + seq * 4;
-        newParam = new MidifiedFloatParameter(String("Step Seq " + String(seq + 1) + " BPM"), nrpmParam, 1, 10, 240, 1);
+        newParam = new MidifiedFloatParameter(String("Step Seq " + String(seq + 1) + " BPM"), nrpmParam, 1, 10, 240, 60);
         ((MidifiedFloatParameter*)newParam)->setBias(10);
         addMidifiedParameter(newParam);
         nrpmIndex[nrpmParam] = newParam->getParamIndex();
@@ -661,13 +661,27 @@ void Pfm2AudioProcessor::getStateInformation(MemoryBlock& destData)
     // add some attributes to it..
     const Array<AudioProcessorParameter* >parameterSet = getParameters();
     for (int p = 0; p < parameterSet.size(); p++) {
+
         MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)parameterSet[p];
+
+        // if pfm2 and no param, don't send value
+        if (pfmType == 1 && nrpmIndex[midifiedFP->getNrpnParam()] == -1) {
+            continue;
+        }
+        // if pfm3 and this is the pfm2 equivalent  although we have a specific pfm3 value (voices for example!)
+        if (pfmType == 2 && nrpmIndexPfm3[midifiedFP->getNrpnParam()] != -1 && nrpmIndex[midifiedFP->getNrpnParam()] == midifiedFP->getParamIndex()) {
+            continue;
+        }
+
+
         float realValue = midifiedFP->getRealValue();
         // Let's keep only 2 digit after comma
         int iRealValue = realValue * 100.0f + (realValue < 0 ? -.001f : .001f);
         realValue = (float)iRealValue / 100.0f;
             
         xml.setAttribute(midifiedFP->getNameForXML(), realValue);
+        DBG("GET > " << String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << realValue << " param adress : " << (int)midifiedFP);
+
         // DBG(String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()));
     }
     // Update editorWidth and editorHeight
@@ -699,6 +713,7 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes, 
 
     // This getXmlFromBinary() helper function retrieves our XML from the binary blob..
     std::unique_ptr<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+    MidifiedFloatParameter* midifiedFP;
 
     if (xmlState != nullptr)
     {
@@ -712,16 +727,17 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes, 
         if (xmlState->hasTagName("PreenFM2AppStatus")) {
             const Array< AudioProcessorParameter* >parameterSet = getParameters();
 
+
             float value;
             for (int p = 0; p < parameterSet.size(); p++) {
                 // End ?
                 if (p == nrpmIndex[2046]) break;
 
-                MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)parameterSet[p];
+                midifiedFP = (MidifiedFloatParameter*)parameterSet[p];
                 if (xmlState->hasAttribute(midifiedFP->getNameForXML())) {
                     value = (float)xmlState->getDoubleAttribute(midifiedFP->getNameForXML());
                     midifiedFP->setRealValueNoNotification(value);
-                    // DBG(String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()));
+                    DBG("SET > " << String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()) << " param adress : " <<(int)midifiedFP);
                 }
             }
 
@@ -731,13 +747,21 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes, 
             if (xmlState->hasAttribute("EditorHeight")) {
                 editorHeight = xmlState->getIntAttribute("EditorHeight");
             }
-            if (pfm2Editor != nullptr && editorWidth > 0 && editorHeight > 0) {
-                pfm2Editor->setSize(editorWidth, editorHeight);
+
+
+
+            if (xmlState->hasAttribute("pfmType")) {
+                midifiedFP = (MidifiedFloatParameter*)parameterSet[nrpmIndex[2044]];
+                pfmType = midifiedFP->getRealValue();
             }
 
-            // If no UI we must set current
-            MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)parameterSet[nrpmIndex[2044]];
-            pfmType = (int)midifiedFP->getRealValue();
+            if (pfm2Editor != nullptr) {
+                if (editorWidth > 0 && editorHeight > 0) {
+                    pfm2Editor->setSize(editorWidth, editorHeight);
+                }
+                pfm2Editor->setPfmType(pfmType);
+            }
+
 
             midifiedFP = (MidifiedFloatParameter*)parameterSet[nrpmIndex[2045]];
             currentMidiChannel = (int)midifiedFP->getRealValue();
@@ -758,6 +782,9 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes, 
 void Pfm2AudioProcessor::parameterUpdatedForUI(int p) {
     if (pfm2Editor) {
         MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)getParameters()[p];
+
+        DBG("TO UI > " << String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()) << " param adress : " << (int)midifiedFP);
+
         pfm2Editor->parametersToUpdate.insert(midifiedFP->getName());
     }
 }
@@ -773,11 +800,17 @@ void Pfm2AudioProcessor::flushAllParametrsToNrpn() {
             continue;
         }
         MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)parameterSet[p];
+
         if (midifiedFP != nullptr) {
-            if (midifiedFP->getNameForXML().startsWith("arp")) {
-                 DBG("ARP VALUE '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()));
+            //if (midifiedFP->getNameForXML().startsWith("arp")) {
+            //     DBG("ARP VALUE '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()));
+            //}
+            // if pfm2 and no param, don't send value
+            if (pfmType == 1 && nrpmIndex[midifiedFP->getNrpnParam()] == -1) {
+                continue;
             }
-            if (pfmType == 1 && nrpmIndex[midifiedFP->getParamIndex()] == -1) {
+            // if pfm3 and this is the pfm2 equivalent  although we have a specific pfm3 value (voices for example!)
+            if (pfmType == 2 && nrpmIndexPfm3[midifiedFP->getNrpnParam()] != -1 && nrpmIndex[midifiedFP->getNrpnParam()] == midifiedFP->getParamIndex()) {
                 continue;
             }
             midifiedFP->addNrpn(midiOutBuffer, currentMidiChannel);
@@ -1075,7 +1108,7 @@ void Pfm2AudioProcessor::choseNewMidiDevice() {
 
 //==============================================================================
 // This creates new instances of the plugin..
-Pfm2AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new Pfm2AudioProcessor();
 }

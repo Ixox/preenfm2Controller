@@ -18,9 +18,9 @@
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleShortVersionString</key>
-    <string>3.0.0</string>
+    <string>3.1.1</string>
     <key>CFBundleVersion</key>
-    <string>3.0.0</string>
+    <string>3.1.1</string>
     <key>NSHumanReadableCopyright</key>
     <string></string>
     <key>NSHighResolutionCapable</key>
@@ -41,7 +41,7 @@
         <key>subtype</key>
         <string>IxPF</string>
         <key>version</key>
-        <integer>196608</integer>
+        <integer>196865</integer>
         <key>resourceUsage</key>
         <dict>
           <key>network.client</key>

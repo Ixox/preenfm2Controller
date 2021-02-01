@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="nWJaEw" name="pfmEditor" projectType="audioplug" version="3.0.0"
+<JUCERPROJECT id="nWJaEw" name="pfmEditor" projectType="audioplug" version="3.1.1"
               bundleIdentifier="com.ixox.preenfmEditor" includeBinaryInAppConfig="1"
               buildVST="1" buildVST3="1" buildAU="1" buildRTAS="0" buildAAX="0"
               pluginName="preenfm Editor" pluginDesc="preenfm preset editor"

@@ -34,12 +34,7 @@
 #include "../../Plugin/Source/ListProperty.h"
 #include "pfmPreset.h"
 
-#if JUCE_MODULE_AVAILABLE_juce_audio_plugin_client
-extern juce::AudioProcessor* JUCE_API JUCE_CALLTYPE createPluginFilterOfType(juce::AudioProcessor::WrapperType type);
-#else
-extern Pfm2AudioProcessor* JUCE_API JUCE_CALLTYPE createPluginFilter();
-
-#endif
+extern AudioProcessor* JUCE_API JUCE_CALLTYPE createPluginFilter();
 
 namespace juce
 {
@@ -133,13 +128,9 @@ public:
 	//==============================================================================
 	virtual void createPlugin()
 	{
-#if JUCE_MODULE_AVAILABLE_juce_audio_plugin_client
-		processor.reset(::createPluginFilterOfType(AudioProcessor::wrapperType_Standalone));
-#else
 		AudioProcessor::setTypeOfNextNewPlugin(AudioProcessor::wrapperType_Standalone);
 		processor.reset(createPluginFilter());
 		AudioProcessor::setTypeOfNextNewPlugin(AudioProcessor::wrapperType_Undefined);
-#endif
 		jassert(processor != nullptr); // Your createPluginFilter() function must return a valid object!
 
 		processor->disableNonMainBuses();
@@ -504,7 +495,7 @@ public:
 
 	//==============================================================================
 	OptionalScopedPointer<PropertySet> settings;
-	std::unique_ptr<Pfm2AudioProcessor> processor;
+	std::unique_ptr<AudioProcessor> processor;
 	AudioDeviceManager deviceManager;
 	AudioProcessorPlayer player;
 	Array<PluginInOuts> channelConfiguration;

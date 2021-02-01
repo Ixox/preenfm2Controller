@@ -373,6 +373,7 @@ PanelEngine::PanelEngine ()
 	glide->setSliderStyle(Slider::RotaryVerticalDrag);
 	glide->setTextBoxStyle(Slider::TextBoxAbove, false, 30, 16);
 	glide->setDoubleClickReturnValue(true, 3.0f);
+	glide->setAlwaysOnTop(true);
 	glide->addListener(this);
 
 	addAndMakeVisible(glideTypeLabel = new Label("glide type label", "Glide Type"));
@@ -649,17 +650,9 @@ void PanelEngine::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPlugin
 	if (sliderThatWasMoved == algoChooser) {
 		newAlgo((int)(algoChooser->getValue() - 1));
 	}
-	if (pfmType == TYPE_PREENFM2 && sliderThatWasMoved == voices) {
-		if (voices->getValue() == 1) {
-			if (!glide->isEnabled()) {
-				glide->setEnabled(true);
-			}
-		}
-		else {
-			if (glide->isEnabled()) {
-				glide->setEnabled(false);
-			}
-		}
+	if (sliderThatWasMoved == voices) {
+		enableComponent(glideLabel.get(), voices->getValue() == 1);
+		enableComponent(glide.get(), voices->getValue() == 1);
 	}
 }
 
@@ -671,12 +664,18 @@ void PanelEngine::comboBoxChanged(ComboBox* comboBoxThatHasChanged, bool fromPlu
 
 	if (comboBoxThatHasChanged == playMode) {
 		bool glideEnable = playMode->getSelectedId() != 2;
-		bool spreadEnable = playMode->getSelectedId() >= 3;
 
 		enableComponent(glideTypeLabel.get(), glideEnable);
 		enableComponent(glideType.get(), glideEnable);
-		enableComponent(glideLabel.get(), glideEnable && glideType->getSelectedId() >= 2);
-		enableComponent(glide.get(), glideEnable && glideType->getSelectedId() >= 2);
+
+		if (pfmType == TYPE_PREENFM3) {
+			comboBoxChanged(glideType, false);
+		}
+		else {
+			sliderValueChanged(voices, false);
+		}
+
+		bool spreadEnable = playMode->getSelectedId() >= 3;
 
 		enableComponent(unisonSpreadLabel.get(), spreadEnable);
 		enableComponent(unisonSpread.get(), spreadEnable);
@@ -765,6 +764,12 @@ void PanelEngine::buildParameters() {
 	updateSliderFromParameter(voices);
 	updateSliderFromParameter(glide);
 
+	// pfm3
+	updateComboFromParameter(playMode);
+	updateComboFromParameter(glideType);
+	updateSliderFromParameter(unisonDetune);
+	updateSliderFromParameter(unisonSpread);
+
 	for (int k = 0; k < NUMBER_OF_MIX; k++) {
 		updateSliderFromParameter(mixKnob[k]);
 		updateSliderFromParameter(panKnob[k]);
@@ -788,11 +793,6 @@ void PanelEngine::buildParameters() {
 		enveloppe[k]->addListener((EnveloppeListener*)this);
 	}
 
-	// pfm3
-	updateComboFromParameter(playMode);
-	updateComboFromParameter(glideType);
-	updateSliderFromParameter(unisonDetune);
-	updateSliderFromParameter(unisonSpread);
 }
 
 void PanelEngine::updateUIEnveloppe(String paramName) {
@@ -878,9 +878,10 @@ void PanelEngine::sliderDragEnded(Slider* slider) {
 
 	if (pfmType == TYPE_PREENFM2) {
 		voicesLabel->setText("Voices", NotificationType::dontSendNotification);
+		sliderValueChanged(voices, false);
 	} else 	if (pfmType == TYPE_PREENFM3) {
 		voicesLabel->setText("Play mode", NotificationType::dontSendNotification);
-		comboBoxChanged(playMode);
+		comboBoxChanged(playMode, false);
 	}
 
 	newAlgo((int)(algoChooser->getValue() - 1));

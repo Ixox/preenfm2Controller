@@ -75,6 +75,10 @@ public:
             return iv >> 7;
         }
     }
+    int getNrpnParam() const {
+        return nrpnParam;
+    }
+
     int getNrpnParamMSB() const {
         return nrpnParam >> 7;
     }
