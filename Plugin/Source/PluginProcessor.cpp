@@ -60,11 +60,16 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 
     // Voices pfm2 - same NRPN as playMode for pfm3
     nrpmParam = PREENFM2_NRPN_VOICE;
+    // Save voices Param
     newParam = new MidifiedFloatParameter(String("Voices"), nrpmParam, 1, 0, 16, 1);
+    voicesParam = newParam;
     addMidifiedParameter(newParam);
     nrpmIndex[nrpmParam] = newParam->getParamIndex();
+
     // For play mode we use nrpmIndexPfm3
+    // Save voices Param
     newParam = new MidifiedFloatParameter(String("Play Mode"), nrpmParam, 1, 1, 3, 1);
+    playModeParam = newParam;
     addMidifiedParameter(newParam);
     nrpmIndexPfm3[nrpmParam] = newParam->getParamIndex();
 
@@ -680,7 +685,7 @@ void Pfm2AudioProcessor::getStateInformation(MemoryBlock& destData)
         realValue = (float)iRealValue / 100.0f;
             
         xml.setAttribute(midifiedFP->getNameForXML(), realValue);
-        DBG("GET > " << String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << realValue << " param adress : " << (int)midifiedFP);
+        // DBG("GET > " << String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << realValue << " param adress : " << (int)midifiedFP);
 
         // DBG(String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()));
     }
@@ -737,7 +742,7 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes, 
                 if (xmlState->hasAttribute(midifiedFP->getNameForXML())) {
                     value = (float)xmlState->getDoubleAttribute(midifiedFP->getNameForXML());
                     midifiedFP->setRealValueNoNotification(value);
-                    DBG("SET > " << String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()) << " param adress : " <<(int)midifiedFP);
+                    // DBG("SET > " << String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()) << " param adress : " <<(int)midifiedFP);
                 }
             }
 
@@ -782,8 +787,7 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes, 
 void Pfm2AudioProcessor::parameterUpdatedForUI(int p) {
     if (pfm2Editor) {
         MidifiedFloatParameter* midifiedFP = (MidifiedFloatParameter*)getParameters()[p];
-
-        DBG("TO UI > " << String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()) << " param adress : " << (int)midifiedFP);
+        // DBG("TO UI > " << String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()) << " param adress : " << (int)midifiedFP);
 
         pfm2Editor->parametersToUpdate.insert(midifiedFP->getName());
     }
@@ -868,9 +872,23 @@ void Pfm2AudioProcessor::handleIncomingNrpn(int param, int nrpnValue, int forceI
         }
     }
 
+    // Detect if we were in PFM2 mode and we received a PFM3 preset
+    // Changes is late in the NRPN stream so there is some work to do
+    if (param == PREENFM2_NRPN_VERSION) {
+        // version have been multiplied by 100
+        // 100 means version 1 means pfm3
+        if (nrpnValue == 100 && pfmType == 1) {
+            pfmType = 2;
+            playModeParam->setValue(voicesParam->getValue());
+            if (pfm2Editor != NULL) {
+                // Copy Voice to PlayMode
+                pfm2Editor->setPfmType(pfmType);
+            }
+        }
+    }
 
     int index = (forceIndex == -1 ? nrpmIndex[param] : forceIndex);
-    if (pfmType == 2 && nrpmIndexPfm3[param] != -1) {
+    if ((index == -1 || pfmType == 2) && nrpmIndexPfm3[param] != -1) {
         index = nrpmIndexPfm3[param];
     }
 

@@ -123,6 +123,8 @@ private:
     int editorWidth;
     int editorHeight;
 
+	// Those ones are important
+	MidifiedFloatParameter *playModeParam, *voicesParam;
 
 	Pfm2AudioProcessorEditor* pfm2Editor;
 	LookAndFeel* myLookAndFeel;
