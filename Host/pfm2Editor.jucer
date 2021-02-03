@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="I4cnWy" name="pfmEditor" projectType="guiapp" version="3.1.1"
+<JUCERPROJECT id="I4cnWy" name="pfmEditor" projectType="guiapp" version="3.1.2"
               bundleIdentifier="com.ixox.preenfmEditor" includeBinaryInAppConfig="1"
               defines="" companyName="Xavier Hosxe" companyWebsite="http://github.com/Ixox"
               companyEmail="preenfm1@gmail.com" displaySplashScreen="1" reportAppUsage="1"

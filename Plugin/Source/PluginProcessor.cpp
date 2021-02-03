@@ -739,10 +739,22 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes, 
                 if (p == nrpmIndex[2046]) break;
 
                 midifiedFP = (MidifiedFloatParameter*)parameterSet[p];
-                if (xmlState->hasAttribute(midifiedFP->getNameForXML())) {
-                    value = (float)xmlState->getDoubleAttribute(midifiedFP->getNameForXML());
+
+                // Special case to fix compatilibty that was broken between 2.11.4 and 2.12
+                // If "Mtx*Destination1" not found, seach for "Mtx*Destination" 
+                String nameForXML = midifiedFP->getNameForXML();
+
+                if (!xmlState->hasAttribute(nameForXML)) {
+                    if (nameForXML.startsWith("Mtx") && nameForXML.endsWith("Destination1")) {
+                        nameForXML = nameForXML.substring(0, nameForXML.length() - 1);
+                    }
+                }
+
+                if (xmlState->hasAttribute(nameForXML)) {
+
+                    value = (float)xmlState->getDoubleAttribute(nameForXML);
                     midifiedFP->setRealValueNoNotification(value);
-                    // DBG("SET > " << String(p) << " '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()) << " param adress : " <<(int)midifiedFP);
+                    DBG("SET > " << String(p) << " '" << nameForXML << "'  value " << (midifiedFP->getRealValue()) << " param adress : " <<(int)midifiedFP);
                 }
             }
 
