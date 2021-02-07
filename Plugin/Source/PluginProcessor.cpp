@@ -652,6 +652,15 @@ AudioProcessorEditor* Pfm2AudioProcessor::createEditor()
     return pfm2Editor;
 }
 
+
+void Pfm2AudioProcessor::setPfmType(int pt) {
+    pfmType = pt; 
+    if (pfm2Editor != nullptr) {
+        pfm2Editor->setPfmType(pfmType);
+    }
+}
+
+
 //==============================================================================
 void Pfm2AudioProcessor::getStateInformation(MemoryBlock& destData)
 {
@@ -821,14 +830,27 @@ void Pfm2AudioProcessor::flushAllParametrsToNrpn() {
             //if (midifiedFP->getNameForXML().startsWith("arp")) {
             //     DBG("ARP VALUE '" << midifiedFP->getNameForXML() << "'  value " << (midifiedFP->getRealValue()));
             //}
+
             // if pfm2 and no param, don't send value
             if (pfmType == 1 && nrpmIndex[midifiedFP->getNrpnParam()] == -1) {
                 continue;
             }
-            // if pfm3 and this is the pfm2 equivalent  although we have a specific pfm3 value (voices for example!)
-            if (pfmType == 2 && nrpmIndexPfm3[midifiedFP->getNrpnParam()] != -1 && nrpmIndex[midifiedFP->getNrpnParam()] == midifiedFP->getParamIndex()) {
+
+            // if pfm2 and this is the pfm3 equivalent (playMode for example!)
+            // if (pfmType == 1 && nrpmIndexPfm3[midifiedFP->getNrpnParam()] == midifiedFP->getParamIndex()) {
+            // Make it simple
+            // If pfm2 and this is playMode don't send it
+            if (pfmType == 1 && midifiedFP == playModeParam) {
                 continue;
             }
+
+            // if pfm3 and this is the pfm2 equivalent  although we have a specific pfm3 value (voices for example!)
+            // Make it simple
+            // If pfm3 and this is Voice : don't send it
+            if (pfmType == 2 && midifiedFP == voicesParam) {
+                continue;
+            }
+
             midifiedFP->addNrpn(midiOutBuffer, currentMidiChannel);
         }
         flushMidiOut();
