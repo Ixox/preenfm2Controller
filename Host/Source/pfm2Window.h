@@ -689,12 +689,18 @@ public:
 		optionsButton.addListener(this);
 		optionsButton.setTriggeredOnMouseDown(true);
 
+
+
 		pluginHolder = new StandalonePluginHolder(settingsToUse);
 
 		createEditorComp();
 
 		if (PropertySet* props = pluginHolder->settings)
 		{
+			const int pfmType = props->getIntValue("pfmType", 1);
+
+			dynamic_cast<Pfm2AudioProcessor*>(pluginHolder->processor.get())->setPfmType(pfmType);
+
 			const int x = props->getIntValue("windowX", -100);
 			const int y = props->getIntValue("windowY", -100);
 
@@ -715,6 +721,9 @@ public:
 		{
 			props->setValue("windowX", getX());
 			props->setValue("windowY", getY());
+
+			int pfmType = dynamic_cast<Pfm2AudioProcessor*>(pluginHolder->processor.get())->getPfmType();
+			props->setValue("pfmType", pfmType);
 		}
 
 		pluginHolder->stopPlaying();

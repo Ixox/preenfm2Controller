@@ -29,8 +29,17 @@ public:
 	void initialise(const String& commandLine) override
 	{
 		// Add your application's initialisation code here...
+		PropertiesFile::Options options;
+		options.commonToAllUsers = false;
+		options.applicationName = ProjectInfo::projectName;
+		options.osxLibrarySubFolder = "Application Support/preenfm2 Editor";
+		options.filenameSuffix = ".settings.xml";
+		options.storageFormat = PropertiesFile::StorageFormat::storeAsXML;
 
-		mainWindow = new StandalonePFM2Window("preenfm editor", Colour(0xff183B46), nullptr);
+		settingsPropertyFile = new PropertiesFile(options);
+
+
+		mainWindow = new StandalonePFM2Window("preenfm editor", Colour(0xff183B46), settingsPropertyFile);
 		mainWindow->setVisible(true);
 		mainWindow->setResizable(true, true);
 	}
@@ -56,7 +65,10 @@ public:
 		// the other instance's command-line arguments were.
 	}
 
+
+private:
 	StandalonePFM2Window* mainWindow;
+	PropertiesFile* settingsPropertyFile;
 };
 
 //==============================================================================

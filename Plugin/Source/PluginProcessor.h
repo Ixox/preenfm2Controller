@@ -106,7 +106,8 @@ public:
 	// Called from PfmPreset in standalone version only
 	void setParameterWithNrpmParamAndRealValue(int param, float pfmValue);
 	float getRealValueForPfmBank(int param);
-	void setPfmType(int pt) { pfmType = pt; }
+	void setPfmType(int pt);
+	int getPfmType() { return pfmType;  }
 
 private:
 	void sendMidiForParameter(int paramIndex, int nrpnValue, int forceIndex);
