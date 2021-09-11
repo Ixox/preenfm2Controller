@@ -68,7 +68,7 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
 
     // For play mode we use nrpmIndexPfm3
     // Save voices Param
-    newParam = new MidifiedFloatParameter(String("Play Mode"), nrpmParam, 1, 1, 3, 1);
+    newParam = new MidifiedFloatParameter(String("Play Mode pfm3"), nrpmParam, 1, 1, 3, 1);
     playModeParam = newParam;
     addMidifiedParameter(newParam);
     nrpmIndexPfm3[nrpmParam] = newParam->getParamIndex();
@@ -468,15 +468,21 @@ Pfm2AudioProcessor::Pfm2AudioProcessor()
     addMidifiedParameter(newParam);
     nrpmIndexPfm3[nrpmParam] = newParam->getParamIndex();
 
-    nrpmParam = PREENFM2_NRPN_UNISON_SPREAD;
-    newParam = new MidifiedFloatParameter(String("Unison Spread"), nrpmParam, 100, 0, 1, 1);
+    // PFM2 playmode has same NRPN as preenfm3 Glide Type
+    newParam = new MidifiedFloatParameter(String("Play Mode pfm2"), nrpmParam, 1, 1, 2, 1);
+    newParam->setBias(1);
     addMidifiedParameter(newParam);
-    nrpmIndexPfm3[nrpmParam] = newParam->getParamIndex();
+    nrpmIndex[nrpmParam] = newParam->getParamIndex();
+    
+    nrpmParam = PREENFM2_NRPN_UNISON_SPREAD;
+    newParam = new MidifiedFloatParameter(String("Unison Spread"), nrpmParam, 100, 0, 1, .12f);
+    addMidifiedParameter(newParam);
+    nrpmIndex[nrpmParam] = newParam->getParamIndex();
 
     nrpmParam = PREENFM2_NRPN_UNISON_DETUNE;
-    newParam = new MidifiedFloatParameter(String("Unison Detune"), nrpmParam, 100, 0, 1, 1);
+    newParam = new MidifiedFloatParameter(String("Unison Detune"), nrpmParam, 100, -1, 1, .5f);
     addMidifiedParameter(newParam);
-    nrpmIndexPfm3[nrpmParam] = newParam->getParamIndex();
+    nrpmIndex[nrpmParam] = newParam->getParamIndex();
 
     presetName = "New Preset";
 
@@ -741,7 +747,6 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes, 
         if (xmlState->hasTagName("PreenFM2AppStatus")) {
             const Array< AudioProcessorParameter* >parameterSet = getParameters();
 
-
             float value;
             for (int p = 0; p < parameterSet.size(); p++) {
                 // End ?
@@ -774,11 +779,16 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes, 
                 editorHeight = xmlState->getIntAttribute("EditorHeight");
             }
 
-
-
             if (xmlState->hasAttribute("pfmType")) {
                 midifiedFP = (MidifiedFloatParameter*)parameterSet[nrpmIndex[2044]];
                 pfmType = midifiedFP->getRealValue();
+            }
+
+            // (If pfmType (old preset) or preenfm2) AND NO PlayModepfm2
+            // => we force playmode to poly
+            if ((!xmlState->hasAttribute("pfmType") || pfmType == 1) && !xmlState->hasAttribute("PlayModepfm2")) {
+                midifiedFP = (MidifiedFloatParameter*)parameterSet[nrpmIndex[PREENFM2_NRPN_GLIDE_TYPE]];
+                midifiedFP->setRealValueNoNotification(1.0f);
             }
 
             if (pfm2Editor != nullptr) {
@@ -787,7 +797,6 @@ void Pfm2AudioProcessor::setStateInformation(const void* data, int sizeInBytes, 
                 }
                 pfm2Editor->setPfmType(pfmType);
             }
-
 
             midifiedFP = (MidifiedFloatParameter*)parameterSet[nrpmIndex[2045]];
             currentMidiChannel = (int)midifiedFP->getRealValue();

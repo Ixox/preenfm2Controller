@@ -224,7 +224,7 @@ void PfmPreset::convert(FlashSynthParams* paramSource, ConvertDirectionEnum dire
 
     // Init pfmType
     if (direction == PARAM_TO_EDITOR) {
-        int version = (int)paramSource->engine2.pfm3Version + .01f;
+        int version = (int)paramSource->engine2.patchVersion + .01f;
         processor_->setPfmType(((version & 0x1) == 0) ? 1 : 2);
         processor_->setParameterWithNrpmParamAndRealValue(PREENFM_NRPN_PFMTYPE, ((version & 0x1) == 0) ? 0.0f : 1.0f);
     }

@@ -44,15 +44,21 @@ enum {
 struct Engine1Params {
     float algo;
     float velocity;
-    float playMode;
+    union {
+        float e1pfm2_voices;
+        float e1pfm3_playMode;
+    };
     float glideSpeed;
 };
 
 struct Engine2Params {
-    float glideType;
+    union {
+        float e2Pfm3_GlideType;
+        float e2Pfm2_playMode;
+    };
     float unisonSpread;
     float unisonDetune;
-    float pfm3Version;
+    float patchVersion;
 };
 
 

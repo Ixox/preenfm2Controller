@@ -348,40 +348,48 @@ void ReorderingComponent::polishPreset(int p, int pfmType) {
 		}
 	}
 
-	// if pfm3 selected and preset is a pfm2 one
-	uint32_t version = (uint32_t)(paramSource->engine2.pfm3Version + .1f);
+	
+	uint32_t version = (uint32_t)(paramSource->engine2.patchVersion + .1f);
 
-	// Planned version : not yet implemented
-	// But let's make the editor compatible right now
+	// engin2.version
 	// pfm2 version : 0,2,4,6 etc...
 	//    0 = legacy one
 	//    2 = with unisons ! (not yet implemented)
 	// pfm3 version : 1,3,5
 	//    1 = current one
 
+	// if pfm3 selected and preset is a pfm2 one
+	// Convert pfm2 TO pfm3
 	if (pfmType == PREEN_TYPE_PFM3 && (version & 0x1) == 0) {
 		// Set pfm3 version
-		paramSource->engine2.pfm3Version = 1.0f;
+		paramSource->engine2.patchVersion = 1.0f;
 
 		// in pfm2 bank playMode was the number of voice
 		// More than one voice => poly
-		if (paramSource->engine1.playMode > 1.0f) {
-			paramSource->engine1.playMode = PLAY_MODE_POLY;
+		if (paramSource->engine1.e1pfm2_voices > 1.0f) {
+			// If old pfm2 preset we use POLY
+			// New version can contain UNISON so we keep it
+			if (version == 0) {
+				paramSource->engine1.e1pfm3_playMode = PLAY_MODE_POLY;
+			}
 		}
 		else {
-			paramSource->engine1.playMode = PLAY_MODE_MONO;
+			paramSource->engine1.e1pfm3_playMode = PLAY_MODE_MONO;
 		}
 
 		// Old preset, we set unisonSpread and unisonDetune different from 0
-		paramSource->engine2.unisonSpread = 0.5f;
-		paramSource->engine2.unisonDetune = 0.12f;
+		if (version == 0) {
+			paramSource->engine2.unisonSpread = 0.5f;
+			paramSource->engine2.unisonDetune = 0.12f;
+		}
+
 		// Map glide speed to new glideSpeed and glideType
 
 		if (paramSource->engine1.glideSpeed > 0.0f) {
-			paramSource->engine2.glideType = GLIDE_TYPE_OVERLAP;
+			paramSource->engine2.e2Pfm3_GlideType = GLIDE_TYPE_OVERLAP;
 		}
 		else {
-			paramSource->engine2.glideType = GLIDE_TYPE_OFF;
+			paramSource->engine2.e2Pfm3_GlideType = GLIDE_TYPE_OFF;
 		}
 	}
 
@@ -389,24 +397,18 @@ void ReorderingComponent::polishPreset(int p, int pfmType) {
 	// pfm2 : playMode is number of voice
 	if (pfmType == PREEN_TYPE_PFM2 && (version & 0x1) == 1) {
 		// Set pfm2 version
-		paramSource->engine2.pfm3Version = 0.0f;
+		paramSource->engine2.patchVersion = 2.0f;
 
 		// Fixe poly Mono depending on pfm3Version :
 		// map to new parameters
 		// in pfm2 bank playMode was the number of voice
 		// poly => 3 voices
 		// Mono and unison => 1 voice
-		if (paramSource->engine1.playMode == 1.0f) {
-			paramSource->engine1.playMode = 3.0f;
+		if (paramSource->engine1.e1pfm2_voices == 1.0f) {
+			paramSource->engine1.e1pfm3_playMode = 3.0f;
 		}
 		else {
-			paramSource->engine1.playMode = 1.0f;
+			paramSource->engine1.e1pfm3_playMode = 1.0f;
 		}
-		// Set the rest to 0
-		paramSource->engine2.unisonSpread = 0.0f;
-		paramSource->engine2.unisonDetune = 0.0f;
-		paramSource->engine2.glideType = 0.0f;
-		// Tells it's a pfm2 preset
-		paramSource->engine2.pfm3Version = 0.0f;
 	}
 }

@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="nWJaEw" name="pfmEditor" projectType="audioplug" version="3.1.3"
+<JUCERPROJECT id="nWJaEw" name="pfmEditor" projectType="audioplug" version="3.1.4"
               bundleIdentifier="com.ixox.preenfmEditor" includeBinaryInAppConfig="1"
               buildVST="1" buildVST3="1" buildAU="1" buildRTAS="0" buildAAX="0"
               pluginName="preenfm Editor" pluginDesc="preenfm preset editor"
               pluginManufacturer="Ixox" pluginManufacturerCode="Ixox" pluginCode="IxPF"
-              pluginChannelConfigs="{1, 1}, {2, 2}" pluginIsSynth="1" pluginWantsMidiIn="1"
+              pluginChannelConfigs="{1, 1}, {2, 2}" pluginIsSynth="0" pluginWantsMidiIn="1"
               pluginProducesMidiOut="1" pluginSilenceInIsSilenceOut="1" pluginEditorRequiresKeys="0"
               pluginAUExportPrefix="pfmEditor" pluginRTASCategory="" aaxIdentifier="com.ixox.preenfmEditor"
               pluginAAXCategory="2" companyName="Xavier Hosxe" companyWebsite="https://github.com/Ixox/"
               companyEmail="xavier.hosxe@gmail.com" displaySplashScreen="1"
               reportAppUsage="1" splashScreenColour="Dark" buildAUv3="0" buildStandalone="1"
-              enableIAA="0" pluginIsMidiEffectPlugin="0" cppLanguageStandard="11"
-              pluginFormats="buildAU,buildStandalone,buildVST,buildVST3" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn,pluginProducesMidiOut"
+              enableIAA="0" pluginIsMidiEffectPlugin="1" cppLanguageStandard="11"
+              pluginFormats="buildAU,buildStandalone,buildVST,buildVST3" pluginCharacteristicsValue="pluginWantsMidiIn,pluginProducesMidiOut,pluginIsMidiEffectPlugin"
               pluginRTASDisableBypass="0" pluginRTASDisableMultiMono="0" pluginAAXDisableBypass="0"
-              pluginAAXDisableMultiMono="0" jucerFormatVersion="1">
+              pluginAAXDisableMultiMono="0" jucerFormatVersion="1" pluginVST3Category="Instrument"
+              pluginVSTCategory="kPlugCategUnknown">
   <MAINGROUP id="vhKV8J" name="pfmEditor">
     <GROUP id="{C1BB27D8-689D-95C2-2F2A-98449E82469F}" name="Source">
       <GROUP id="{98E9ADF3-34F5-56D9-9C70-85258E9238C7}" name="UI">

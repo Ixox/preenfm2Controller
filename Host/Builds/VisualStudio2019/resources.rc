@@ -9,7 +9,7 @@
 #include <windows.h>
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION  3,1,3,0
+FILEVERSION  3,1,4,0
 BEGIN
   BLOCK "StringFileInfo"
   BEGIN
@@ -17,9 +17,9 @@ BEGIN
     BEGIN
       VALUE "CompanyName",  "Xavier Hosxe\0"
       VALUE "FileDescription",  "pfmEditor\0"
-      VALUE "FileVersion",  "3.1.3\0"
+      VALUE "FileVersion",  "3.1.4\0"
       VALUE "ProductName",  "pfmEditor\0"
-      VALUE "ProductVersion",  "3.1.3\0"
+      VALUE "ProductVersion",  "3.1.4\0"
     END
   END
 

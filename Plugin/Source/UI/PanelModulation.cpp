@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.4.7
+  Created with Projucer version: 6.0.7
 
   ------------------------------------------------------------------------------
 
   The Projucer is part of the JUCE library.
-  Copyright (c) 2017 - ROLI Ltd.
+  Copyright (c) 2020 - Raw Material Software Limited.
 
   ==============================================================================
 */
@@ -159,35 +159,35 @@ PanelModulation::PanelModulation ()
 
     //[/Constructor_pre]
 
-    matrixGroup.reset (new GroupComponent ("matrix group",
-                                           TRANS("Matrix")));
+    matrixGroup.reset (new juce::GroupComponent ("matrix group",
+                                                 TRANS("Matrix")));
     addAndMakeVisible (matrixGroup.get());
-    matrixGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
-    matrixGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
+    matrixGroup->setColour (juce::GroupComponent::outlineColourId, juce::Colour (0xff749fad));
+    matrixGroup->setColour (juce::GroupComponent::textColourId, juce::Colour (0xff749fad));
 
-    lfoGroup.reset (new GroupComponent ("lfo group",
-                                        String()));
+    lfoGroup.reset (new juce::GroupComponent ("lfo group",
+                                              juce::String()));
     addAndMakeVisible (lfoGroup.get());
-    lfoGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
-    lfoGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
+    lfoGroup->setColour (juce::GroupComponent::outlineColourId, juce::Colour (0xff749fad));
+    lfoGroup->setColour (juce::GroupComponent::textColourId, juce::Colour (0xff749fad));
 
-    env1Group.reset (new GroupComponent ("env 1 group",
-                                         TRANS("Free Enveloppe 1")));
+    env1Group.reset (new juce::GroupComponent ("env 1 group",
+                                               TRANS("Free Enveloppe 1")));
     addAndMakeVisible (env1Group.get());
-    env1Group->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
-    env1Group->setColour (GroupComponent::textColourId, Colour (0xff749fad));
+    env1Group->setColour (juce::GroupComponent::outlineColourId, juce::Colour (0xff749fad));
+    env1Group->setColour (juce::GroupComponent::textColourId, juce::Colour (0xff749fad));
 
-    env2Group.reset (new GroupComponent ("env 2 group",
-                                         TRANS("Free Enveloppe 2")));
+    env2Group.reset (new juce::GroupComponent ("env 2 group",
+                                               TRANS("Free Enveloppe 2")));
     addAndMakeVisible (env2Group.get());
-    env2Group->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
-    env2Group->setColour (GroupComponent::textColourId, Colour (0xff749fad));
+    env2Group->setColour (juce::GroupComponent::outlineColourId, juce::Colour (0xff749fad));
+    env2Group->setColour (juce::GroupComponent::textColourId, juce::Colour (0xff749fad));
 
-    stepSeqGroup.reset (new GroupComponent ("step sequencer group",
-                                            String()));
+    stepSeqGroup.reset (new juce::GroupComponent ("step sequencer group",
+                                                  juce::String()));
     addAndMakeVisible (stepSeqGroup.get());
-    stepSeqGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
-    stepSeqGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
+    stepSeqGroup->setColour (juce::GroupComponent::outlineColourId, juce::Colour (0xff749fad));
+    stepSeqGroup->setColour (juce::GroupComponent::textColourId, juce::Colour (0xff749fad));
 
 
     //[UserPreSize]
@@ -442,23 +442,23 @@ PanelModulation::~PanelModulation()
 }
 
 //==============================================================================
-void PanelModulation::paint (Graphics& g)
+void PanelModulation::paint (juce::Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
     {
         int x = proportionOfWidth (0.5500f), y = 2, width = proportionOfWidth (0.4407f), height = getHeight() - 182;
-        Colour fillColour1 = Colour (0xff155163), fillColour2 = Colour (0xff083543);
+        juce::Colour fillColour1 = juce::Colour (0xff155163), fillColour2 = juce::Colour (0xff083543);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
-        g.setGradientFill (ColourGradient (fillColour1,
-                                       static_cast<float> (proportionOfWidth (0.9000f)) - static_cast<float> (proportionOfWidth (0.5500f)) + x,
-                                       static_cast<float> (proportionOfHeight (0.2500f)) - 2.0f + y,
-                                       fillColour2,
-                                       static_cast<float> (proportionOfWidth (0.6000f)) - static_cast<float> (proportionOfWidth (0.5500f)) + x,
-                                       static_cast<float> (proportionOfHeight (0.2500f)) - 2.0f + y,
-                                       true));
+        g.setGradientFill (juce::ColourGradient (fillColour1,
+                                             static_cast<float> (proportionOfWidth (0.9000f)) - static_cast<float> (proportionOfWidth (0.5500f)) + x,
+                                             static_cast<float> (proportionOfHeight (0.2500f)) - 2.0f + y,
+                                             fillColour2,
+                                             static_cast<float> (proportionOfWidth (0.6000f)) - static_cast<float> (proportionOfWidth (0.5500f)) + x,
+                                             static_cast<float> (proportionOfHeight (0.2500f)) - 2.0f + y,
+                                             true));
         g.fillRect (x, y, width, height);
     }
 
@@ -471,11 +471,11 @@ void PanelModulation::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    matrixGroup->setBounds (proportionOfWidth (0.5977f), proportionOfHeight (0.0100f), proportionOfWidth (0.3949f), proportionOfHeight (0.9800f));
+    matrixGroup->setBounds (proportionOfWidth (0.5977f), proportionOfHeight (0.0095f), proportionOfWidth (0.3949f), proportionOfHeight (0.9794f));
     lfoGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.0095f), proportionOfWidth (0.5903f), proportionOfHeight (0.2298f));
     env1Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.2441f), proportionOfWidth (0.5903f), proportionOfHeight (0.1854f));
     env2Group->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.4295f), proportionOfWidth (0.5903f), proportionOfHeight (0.1854f));
-    stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6101f), proportionOfWidth (0.5903f), proportionOfHeight (0.3800f));
+    stepSeqGroup->setBounds (proportionOfWidth (0.0000f), proportionOfHeight (0.6101f), proportionOfWidth (0.5903f), proportionOfHeight (0.3803f));
     //[UserResized] Add your own custom resize handling here..
 
 	lfoPhaseLabel->setBounds(proportionOfWidth(0.48f), proportionOfHeight(0.04f), proportionOfWidth(0.080f), 20);
@@ -869,19 +869,19 @@ BEGIN_JUCER_METADATA
           hasStroke="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="matrix group" id="f5fd2d041b369fc" memberName="matrixGroup"
-                  virtualName="" explicitFocusOrder="0" pos="59.768% 0.951% 39.493% 97.94%"
+                  virtualName="" explicitFocusOrder="0" pos="59.742% 0.918% 39.485% 97.913%"
                   outlinecol="ff749fad" textcol="ff749fad" title="Matrix"/>
   <GROUPCOMPONENT name="lfo group" id="25551a3d7e81232d" memberName="lfoGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0% 0.951% 59.029% 22.979%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 0.918% 59.056% 22.955%"
                   outlinecol="ff749fad" textcol="ff749fad" title=""/>
   <GROUPCOMPONENT name="env 1 group" id="dc02178fe3e4a3e1" memberName="env1Group"
-                  virtualName="" explicitFocusOrder="0" pos="0% 24.406% 59.029% 18.542%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 24.374% 59.056% 18.531%"
                   outlinecol="ff749fad" textcol="ff749fad" title="Free Enveloppe 1"/>
   <GROUPCOMPONENT name="env 2 group" id="c35474bb62378ab6" memberName="env2Group"
-                  virtualName="" explicitFocusOrder="0" pos="0% 42.948% 59.029% 18.542%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 42.988% 59.056% 18.531%"
                   outlinecol="ff749fad" textcol="ff749fad" title="Free Enveloppe 2"/>
   <GROUPCOMPONENT name="step sequencer group" id="edf809d50c7eeefc" memberName="stepSeqGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0% 61.014% 59.029% 38.035%"
+                  virtualName="" explicitFocusOrder="0" pos="0% 61.018% 59.056% 38.063%"
                   outlinecol="ff749fad" textcol="ff749fad" title=""/>
 </JUCER_COMPONENT>
 
