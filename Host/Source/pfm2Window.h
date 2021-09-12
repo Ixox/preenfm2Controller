@@ -400,7 +400,7 @@ public:
 	void quickHelp()
 	{
 		AlertWindow helpWindow("Quick Configuration Help",
-			"To use with pfm2 2.12 or newer\r\n"
+			"To use with pfm2 2.21 or newer\r\n"
 			"         or pfm3 0.105 or newer\r\n\r\n"
 			"Check your preenfm settings : \r\n"
 			". Midi channels 1, 2, 3 & 4\r\n"
@@ -412,7 +412,7 @@ public:
 			". Select the midi channel (1-16) of the instrument               \r\n"
 			"   you want to talk to. \r\n\r\n",
 			AlertWindow::InfoIcon);
-
+		
 		helpWindow.addButton("OK", 1);
 		helpWindow.runModalLoop();
 	}

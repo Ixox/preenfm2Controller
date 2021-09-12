@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.4.7
+  Created with Projucer version: 6.0.7
 
   ------------------------------------------------------------------------------
 
   The Projucer is part of the JUCE library.
-  Copyright (c) 2017 - ROLI Ltd.
+  Copyright (c) 2020 - Raw Material Software Limited.
 
   ==============================================================================
 */
@@ -90,10 +90,10 @@ public:
 	bool containsThisParameterAsEnveloppe(String name) override;
 	void setPfmType(int type) override;
 	void enableComponent(Component* comp, bool enable);
-	void hideComponent(Component* comp, bool enable);
+	void hideTotallyComponent(Component* comp, bool enable);
     //[/UserMethods]
 
-    void paint (Graphics& g) override;
+    void paint (juce::Graphics& g) override;
     void resized() override;
 
 
@@ -120,7 +120,8 @@ private:
 	ScopedPointer<Slider> velocity;
 	ScopedPointer<Label> voicesLabel;
 	ScopedPointer<Slider> voices;
-	ScopedPointer<ComboBox> playMode;
+	ScopedPointer<ComboBox> playModePfm3;
+	ScopedPointer<ComboBox> playModePfm2;
 	ScopedPointer<Label> glideLabel;
 	ScopedPointer<Slider> glide;
 	ScopedPointer<Label> glideTypeLabel;
@@ -147,9 +148,9 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<GroupComponent> operatorGroup;
-    std::unique_ptr<GroupComponent> mixerGroup;
-    std::unique_ptr<GroupComponent> imGroup;
+    std::unique_ptr<juce::GroupComponent> operatorGroup;
+    std::unique_ptr<juce::GroupComponent> mixerGroup;
+    std::unique_ptr<juce::GroupComponent> imGroup;
 
 
     //==============================================================================

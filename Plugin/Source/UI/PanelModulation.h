@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.4.7
+  Created with Projucer version: 6.0.7
 
   ------------------------------------------------------------------------------
 
   The Projucer is part of the JUCE library.
-  Copyright (c) 2017 - ROLI Ltd.
+  Copyright (c) 2020 - Raw Material Software Limited.
 
   ==============================================================================
 */
@@ -94,7 +94,7 @@ public:
 
     //[/UserMethods]
 
-    void paint (Graphics& g) override;
+    void paint (juce::Graphics& g) override;
     void resized() override;
 
 
@@ -150,11 +150,11 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<GroupComponent> matrixGroup;
-    std::unique_ptr<GroupComponent> lfoGroup;
-    std::unique_ptr<GroupComponent> env1Group;
-    std::unique_ptr<GroupComponent> env2Group;
-    std::unique_ptr<GroupComponent> stepSeqGroup;
+    std::unique_ptr<juce::GroupComponent> matrixGroup;
+    std::unique_ptr<juce::GroupComponent> lfoGroup;
+    std::unique_ptr<juce::GroupComponent> env1Group;
+    std::unique_ptr<juce::GroupComponent> env2Group;
+    std::unique_ptr<juce::GroupComponent> stepSeqGroup;
 
 
     //==============================================================================

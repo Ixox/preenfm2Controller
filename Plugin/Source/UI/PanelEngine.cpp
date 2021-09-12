@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.4.7
+  Created with Projucer version: 6.0.7
 
   ------------------------------------------------------------------------------
 
   The Projucer is part of the JUCE library.
-  Copyright (c) 2017 - ROLI Ltd.
+  Copyright (c) 2020 - Raw Material Software Limited.
 
   ==============================================================================
 */
@@ -132,26 +132,26 @@ PanelEngine::PanelEngine ()
 	pfmType = TYPE_PREENFM2;
     //[/Constructor_pre]
 
-    operatorGroup.reset (new GroupComponent ("operator group",
-                                             String()));
+    operatorGroup.reset (new juce::GroupComponent ("operator group",
+                                                   juce::String()));
     addAndMakeVisible (operatorGroup.get());
-    operatorGroup->setTextLabelPosition (Justification::centredLeft);
-    operatorGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
-    operatorGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
+    operatorGroup->setTextLabelPosition (juce::Justification::centredLeft);
+    operatorGroup->setColour (juce::GroupComponent::outlineColourId, juce::Colour (0xff749fad));
+    operatorGroup->setColour (juce::GroupComponent::textColourId, juce::Colour (0xff749fad));
 
-    mixerGroup.reset (new GroupComponent ("mixer group",
-                                          TRANS("Mixer")));
+    mixerGroup.reset (new juce::GroupComponent ("mixer group",
+                                                TRANS("Mixer")));
     addAndMakeVisible (mixerGroup.get());
-    mixerGroup->setTextLabelPosition (Justification::centredLeft);
-    mixerGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
-    mixerGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
+    mixerGroup->setTextLabelPosition (juce::Justification::centredLeft);
+    mixerGroup->setColour (juce::GroupComponent::outlineColourId, juce::Colour (0xff749fad));
+    mixerGroup->setColour (juce::GroupComponent::textColourId, juce::Colour (0xff749fad));
 
-    imGroup.reset (new GroupComponent ("IM group",
-                                       TRANS("Modulation indexes")));
+    imGroup.reset (new juce::GroupComponent ("IM group",
+                                             TRANS("Modulation indexes")));
     addAndMakeVisible (imGroup.get());
-    imGroup->setTextLabelPosition (Justification::centredLeft);
-    imGroup->setColour (GroupComponent::outlineColourId, Colour (0xff749fad));
-    imGroup->setColour (GroupComponent::textColourId, Colour (0xff749fad));
+    imGroup->setTextLabelPosition (juce::Justification::centredLeft);
+    imGroup->setColour (juce::GroupComponent::outlineColourId, juce::Colour (0xff749fad));
+    imGroup->setColour (juce::GroupComponent::textColourId, juce::Colour (0xff749fad));
 
 
     //[UserPreSize]
@@ -353,17 +353,29 @@ PanelEngine::PanelEngine ()
 	voices->setDoubleClickReturnValue(true, 3.0f);
 	voices->addListener(this);
 
-	playMode = new ComboBox("Play Mode");
-	playMode->setJustificationType(Justification::centred);
-	playMode->setColour(ComboBox::buttonColourId, Colours::blue);
-	playMode->addItem("Mono", 1);
-	playMode->addItem("Poly", 2);
-	playMode->addItem("Unison", 3);
-	playMode->setSelectedId(2);
-	playMode->setScrollWheelEnabled(true);
-	playMode->setEditableText(false);
-	playMode->addListener(this);
-	addAndMakeVisible(playMode);
+	playModePfm3 = new ComboBox("Play Mode pfm3");
+	playModePfm3->setJustificationType(Justification::centred);
+	playModePfm3->setColour(ComboBox::buttonColourId, Colours::blue);
+	playModePfm3->addItem("Mono", 1);
+	playModePfm3->addItem("Poly", 2);
+	playModePfm3->addItem("Unison", 3);
+	playModePfm3->setSelectedId(2);
+	playModePfm3->setScrollWheelEnabled(true);
+	playModePfm3->setEditableText(false);
+	playModePfm3->addListener(this);
+	addAndMakeVisible(playModePfm3);
+
+	playModePfm2 = new ComboBox("Play Mode pfm2");
+	playModePfm2->setJustificationType(Justification::centred);
+	playModePfm2->setColour(ComboBox::buttonColourId, Colours::blue);
+	playModePfm2->addItem("Poly", 1);
+	playModePfm2->addItem("Unison", 2);
+	playModePfm2->setSelectedId(1);
+	playModePfm2->setScrollWheelEnabled(true);
+	playModePfm2->setEditableText(false);
+	playModePfm2->addListener(this);
+	addAndMakeVisible(playModePfm2);
+
 
 	addAndMakeVisible(glideLabel = new Label("glide label", "Glide"));
 	glideLabel->setJustificationType(Justification::centredTop);
@@ -391,8 +403,6 @@ PanelEngine::PanelEngine ()
 	glideType->addListener(this);
 	addAndMakeVisible(glideType);
 
-
-
 	addAndMakeVisible(unisonSpreadLabel = new Label("unison spread label", "Spread"));
 	unisonSpreadLabel->setJustificationType(Justification::centredTop);
 
@@ -407,7 +417,7 @@ PanelEngine::PanelEngine ()
 	unisonDetuneLabel->setJustificationType(Justification::centredTop);
 
 	addAndMakeVisible(unisonDetune = new SliderPfm2("Unison Detune"));
-	unisonDetune->setRange(0.0, 1.0, .01);
+	unisonDetune->setRange(-1.0, 1.0, .01);
 	unisonDetune->setSliderStyle(Slider::RotaryVerticalDrag);
 	unisonDetune->setTextBoxStyle(Slider::TextBoxAbove, false, 50, 16);
 	unisonDetune->setDoubleClickReturnValue(true, 3.0f);
@@ -442,7 +452,7 @@ PanelEngine::~PanelEngine()
 }
 
 //==============================================================================
-void PanelEngine::paint (Graphics& g)
+void PanelEngine::paint (juce::Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
 
@@ -450,27 +460,24 @@ void PanelEngine::paint (Graphics& g)
 
     {
         int x = proportionOfWidth (0.5000f), y = proportionOfHeight (0.0100f), width = proportionOfWidth (0.5000f), height = proportionOfHeight (0.6000f);
-        Colour fillColour1 = Colour (0xff125368), fillColour2 = Colour (0xff083543);
+        juce::Colour fillColour1 = juce::Colour (0xff125368), fillColour2 = juce::Colour (0xff083543);
         //[UserPaintCustomArguments] Customize the painting arguments here..
         //[/UserPaintCustomArguments]
-        g.setGradientFill (ColourGradient (fillColour1,
-                                       static_cast<float> (proportionOfWidth (0.8000f)) - static_cast<float> (proportionOfWidth (0.5000f)) + x,
-                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0100f)) + y,
-                                       fillColour2,
-                                       static_cast<float> (proportionOfWidth (0.5100f)) - static_cast<float> (proportionOfWidth (0.5000f)) + x,
-                                       static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0100f)) + y,
-                                       true));
+        g.setGradientFill (juce::ColourGradient (fillColour1,
+                                             static_cast<float> (proportionOfWidth (0.8000f)) - static_cast<float> (proportionOfWidth (0.5000f)) + x,
+                                             static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0100f)) + y,
+                                             fillColour2,
+                                             static_cast<float> (proportionOfWidth (0.5100f)) - static_cast<float> (proportionOfWidth (0.5000f)) + x,
+                                             static_cast<float> (proportionOfHeight (0.0500f)) - static_cast<float> (proportionOfHeight (0.0100f)) + y,
+                                             true));
         g.fillRect (x, y, width, height);
     }
 
     {
-        float x = static_cast<float> (proportionOfWidth (0.1412f)), y = static_cast<float> (proportionOfHeight (0.0065f)), width = static_cast<float> (proportionOfWidth (0.3400f)), height = static_cast<float> (proportionOfHeight (0.3094f));
-        Colour fillColour = Colour (0xff125468);
-        Colour strokeColour = Colour (0xff749fad);
+        float x = static_cast<float> (proportionOfWidth (0.1412f)), y = static_cast<float> (proportionOfHeight (0.0065f)), width = static_cast<float> (proportionOfWidth (0.2720f)), height = static_cast<float> (proportionOfHeight (0.3094f));
+        juce::Colour fillColour = juce::Colour (0xff125468);
+        juce::Colour strokeColour = juce::Colour (0xff749fad);
         //[UserPaintCustomArguments] Customize the painting arguments here..
-    		if (pfmType == TYPE_PREENFM3) {
-    			width *= .8f;
-    		}
         //[/UserPaintCustomArguments]
         g.setColour (fillColour);
         g.fillRoundedRectangle (x, y, width, height, 10.000f);
@@ -487,9 +494,9 @@ void PanelEngine::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    operatorGroup->setBounds (proportionOfWidth (0.0106f), proportionOfHeight (0.5008f), proportionOfWidth (0.9799f), proportionOfHeight (0.4900f));
-    mixerGroup->setBounds (proportionOfWidth (0.0106f), proportionOfHeight (0.3122f), proportionOfWidth (0.5903f), proportionOfHeight (0.1854f));
-    imGroup->setBounds (proportionOfWidth (0.6103f), proportionOfHeight (0.0000f), proportionOfWidth (0.3791f), proportionOfHeight (0.4960f));
+    operatorGroup->setBounds (proportionOfWidth (0.0103f), proportionOfHeight (0.5008f), proportionOfWidth (0.9803f), proportionOfHeight (0.4900f));
+    mixerGroup->setBounds (proportionOfWidth (0.0103f), proportionOfHeight (0.3122f), proportionOfWidth (0.5906f), proportionOfHeight (0.1853f));
+    imGroup->setBounds (proportionOfWidth (0.6103f), proportionOfHeight (0.0000f), proportionOfWidth (0.3794f), proportionOfHeight (0.4958f));
     //[UserResized] Add your own custom resize handling here..
 
 	envCopyButton->setBounds(proportionOfWidth(0.023f), proportionOfHeight(0.645f), proportionOfWidth(0.06f), proportionOfHeight(0.03f));
@@ -535,16 +542,26 @@ void PanelEngine::resized()
 	algoChooserLabel->setBounds(proportionOfWidth(0.03f), proportionOfHeight(.02f), proportionOfWidth(0.08f), 40);
 
 	if (pfmType == TYPE_PREENFM2) {
-		voicesLabel->setBounds(proportionOfWidth(0.50f), proportionOfHeight(.02f), proportionOfWidth(0.08f), 40);
-		voices->setBounds(proportionOfWidth(0.50f), proportionOfHeight(.05f), proportionOfWidth(0.08f), proportionOfHeight(0.11f));
 
-		glide->setBounds(proportionOfWidth(0.50f), proportionOfHeight(.20f), proportionOfWidth(0.08f), proportionOfHeight(0.11f));
+		voicesLabel->setBounds(proportionOfWidth(0.42f), proportionOfHeight(.01f), proportionOfWidth(0.08f), proportionOfHeight(0.09f));
+		voices->setBounds(proportionOfWidth(0.42f), proportionOfHeight(.01f) + 22, proportionOfWidth(0.10f), proportionOfHeight(0.09f));
+
 		glideLabel->setText("Glide", NotificationType::dontSendNotification);
-		glideLabel->setBounds(proportionOfWidth(0.50f), proportionOfHeight(.17f), proportionOfWidth(0.08f), 40);
+		glideLabel->setBounds(proportionOfWidth(0.51f), proportionOfHeight(.01f), proportionOfWidth(0.08f), proportionOfHeight(0.09f));
+		glide->setBounds(proportionOfWidth(0.51f), proportionOfHeight(.01f) + 22, proportionOfWidth(0.10f), proportionOfHeight(0.09f));
+
+
+		playModePfm2->setBounds(proportionOfWidth(0.45f), proportionOfHeight(.15f), proportionOfWidth(0.12f), 22);
+
+		unisonSpreadLabel->setBounds(proportionOfWidth(0.42f), proportionOfHeight(.2f), proportionOfWidth(0.10f), 40);
+		unisonSpread->setBounds(proportionOfWidth(0.42f), proportionOfHeight(.2f) + 22, proportionOfWidth(0.10f), proportionOfHeight(0.09f));
+
+		unisonDetuneLabel->setBounds(proportionOfWidth(0.51f), proportionOfHeight(.2f), proportionOfWidth(0.10f), 40);
+		unisonDetune->setBounds(proportionOfWidth(0.51f), proportionOfHeight(.2f) + 22, proportionOfWidth(0.10f), proportionOfHeight(0.09f));
 	}
 	else {
 		voicesLabel->setBounds(proportionOfWidth(0.45f), proportionOfHeight(.01f), proportionOfWidth(0.12f), 22);
-		playMode->setBounds(proportionOfWidth(0.45f), proportionOfHeight(.01f) + 22, proportionOfWidth(0.12f), 22);
+		playModePfm3->setBounds(proportionOfWidth(0.45f), proportionOfHeight(.01f) + 22, proportionOfWidth(0.12f), 22);
 
 		//
 
@@ -579,14 +596,10 @@ void PanelEngine::resized()
 
 
 void PanelEngine::resizeAlgoDrawableImage() {
-	float left = (float)proportionOfWidth(0.15f);
+	float left = (float)proportionOfWidth(0.12f);
 	float top = (float)proportionOfHeight(0.007f);
 	float width = (float)proportionOfWidth(0.32f);
 	float height = (float)proportionOfHeight(0.31f);
-
-	if (pfmType == TYPE_PREENFM3) {
-		width *= .8f;
-	}
 
 	juce::Rectangle<float> rect = juce::Rectangle<float>(left, top, width, height);
 	algoDrawableImage->setTransformToFit(rect, RectanglePlacement::centred | RectanglePlacement::onlyReduceInSize);
@@ -649,10 +662,19 @@ void PanelEngine::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPlugin
 	}
 	if (sliderThatWasMoved == algoChooser) {
 		newAlgo((int)(algoChooser->getValue() - 1));
-	}
-	if (sliderThatWasMoved == voices) {
-		enableComponent(glideLabel.get(), voices->getValue() == 1);
-		enableComponent(glide.get(), voices->getValue() == 1);
+	} else if (sliderThatWasMoved == voices) {
+
+		enableComponent(playModePfm2.get(), voices->getValue() > 1);
+
+		bool unison = playModePfm2->getSelectedId() == 2;
+
+		enableComponent(unisonSpreadLabel.get(), voices->getValue() > 1 && unison);
+		enableComponent(unisonSpread.get(), voices->getValue() > 1 && unison);
+		enableComponent(unisonDetuneLabel.get(), voices->getValue() > 1 && unison);
+		enableComponent(unisonDetune.get(), voices->getValue() > 1 && unison);
+
+		enableComponent(glideLabel.get(), voices->getValue() == 1 || unison);
+		enableComponent(glide.get(), voices->getValue() == 1 || unison);
 	}
 }
 
@@ -662,8 +684,8 @@ void PanelEngine::comboBoxChanged(ComboBox* comboBoxThatHasChanged) {
 
 void PanelEngine::comboBoxChanged(ComboBox* comboBoxThatHasChanged, bool fromPluginUI) {
 
-	if (comboBoxThatHasChanged == playMode) {
-		bool glideEnable = playMode->getSelectedId() != 2;
+	if (comboBoxThatHasChanged == playModePfm3) {
+		bool glideEnable = playModePfm3->getSelectedId() != 2;
 
 		enableComponent(glideTypeLabel.get(), glideEnable);
 		enableComponent(glideType.get(), glideEnable);
@@ -675,7 +697,7 @@ void PanelEngine::comboBoxChanged(ComboBox* comboBoxThatHasChanged, bool fromPlu
 			sliderValueChanged(voices, false);
 		}
 
-		bool spreadEnable = playMode->getSelectedId() >= 3;
+		bool spreadEnable = playModePfm3->getSelectedId() >= 3;
 
 		enableComponent(unisonSpreadLabel.get(), spreadEnable);
 		enableComponent(unisonSpread.get(), spreadEnable);
@@ -684,8 +706,21 @@ void PanelEngine::comboBoxChanged(ComboBox* comboBoxThatHasChanged, bool fromPlu
 		enableComponent(unisonDetune.get(), spreadEnable);
 
 	}
+	else if (comboBoxThatHasChanged == playModePfm2) {
+
+		bool unison = playModePfm2->getSelectedId()== 2;
+
+		enableComponent(unisonSpreadLabel.get(), unison);
+		enableComponent(unisonSpread.get(), unison);
+
+		enableComponent(unisonDetuneLabel.get(), unison);
+		enableComponent(unisonDetune.get(), unison);
+
+		enableComponent(glideLabel.get(), voices->getValue() == 1 || unison);
+		enableComponent(glide.get(), voices->getValue() == 1 || unison);
+	}
 	else if (comboBoxThatHasChanged == glideType) {
-		bool glideEnable = (glideType->getSelectedId() != 1) && (playMode->getSelectedId() != 2);
+		bool glideEnable = (glideType->getSelectedId() != 1) && (playModePfm3->getSelectedId() != 2);
 		enableComponent(glideLabel.get(), glideEnable);
 		enableComponent(glide.get(), glideEnable);
 	}
@@ -765,10 +800,13 @@ void PanelEngine::buildParameters() {
 	updateSliderFromParameter(glide);
 
 	// pfm3
-	updateComboFromParameter(playMode);
+	updateComboFromParameter(playModePfm3);
 	updateComboFromParameter(glideType);
 	updateSliderFromParameter(unisonDetune);
 	updateSliderFromParameter(unisonSpread);
+
+	// pfm2
+	updateComboFromParameter(playModePfm2);
 
 	for (int k = 0; k < NUMBER_OF_MIX; k++) {
 		updateSliderFromParameter(mixKnob[k]);
@@ -859,29 +897,28 @@ void PanelEngine::sliderDragEnded(Slider* slider) {
  void PanelEngine::setPfmType(int type) {
 	pfmType = type;
 
-	bool imShowOrNot = pfmType == TYPE_PREENFM3;
-	hideComponent(IMKnob[5].get(), imShowOrNot);
-	hideComponent(IMNumber[5].get(), imShowOrNot);
-	hideComponent(IMVelocityKnob[5].get(), imShowOrNot);
+	bool isPreenfm2 = pfmType == TYPE_PREENFM2;
+	hideTotallyComponent(IMKnob[5].get(), isPreenfm2);
+	hideTotallyComponent(IMNumber[5].get(), isPreenfm2);
+	hideTotallyComponent(IMVelocityKnob[5].get(), isPreenfm2);
 
-	hideComponent(glideTypeLabel.get(), imShowOrNot);
-	hideComponent(glideType.get(), imShowOrNot);
+	hideTotallyComponent(glideTypeLabel.get(), isPreenfm2);
+	hideTotallyComponent(glideType.get(), isPreenfm2);
 
-	hideComponent(unisonSpreadLabel.get(), imShowOrNot);
-	hideComponent(unisonSpread.get(), imShowOrNot);
+	hideTotallyComponent(voices.get(), !isPreenfm2);
 
-	hideComponent(unisonDetuneLabel.get(), imShowOrNot);
-	hideComponent(unisonDetune.get(), imShowOrNot);
+	hideTotallyComponent(playModePfm2, !isPreenfm2);
+	hideTotallyComponent(playModePfm3, isPreenfm2);
 
-	hideComponent(voices.get(), !imShowOrNot);
-	hideComponent(playMode.get(), imShowOrNot);
 
-	if (pfmType == TYPE_PREENFM2) {
+
+	if (isPreenfm2) {
 		voicesLabel->setText("Voices", NotificationType::dontSendNotification);
 		sliderValueChanged(voices, false);
-	} else 	if (pfmType == TYPE_PREENFM3) {
+
+	} else 	{
 		voicesLabel->setText("Play mode", NotificationType::dontSendNotification);
-		comboBoxChanged(playMode, false);
+		comboBoxChanged(playModePfm3, false);
 	}
 
 	newAlgo((int)(algoChooser->getValue() - 1));
@@ -893,9 +930,8 @@ void PanelEngine::sliderDragEnded(Slider* slider) {
 	 comp->setAlpha(enable ? 1.0f : 0.4f);
 }
 
- void PanelEngine::hideComponent(Component* comp, bool enable) {
-	 comp->setEnabled(enable);
-	 comp->setAlpha(enable ? 1.0f : 0.0f);
+ void PanelEngine::hideTotallyComponent(Component* comp, bool hide) {
+	 comp->setVisible(!hide);
  }
 
 
@@ -919,17 +955,17 @@ BEGIN_JUCER_METADATA
   <BACKGROUND backgroundColour="62934">
     <RECT pos="50% 1% 50% 60%" fill=" radial: 80% 5%, 51% 5%, 0=ff125368, 1=ff083543"
           hasStroke="0"/>
-    <ROUNDRECT pos="14.119% 0.654% 34% 30.937%" cornerSize="10.0" fill="solid: ff125468"
+    <ROUNDRECT pos="14.119% 0.654% 27.2% 30.937%" cornerSize="10.0" fill="solid: ff125468"
                hasStroke="1" stroke="1.5, mitered, butt" strokeColour="solid: ff749fad"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="operator group" id="3a99a017e94aaaf5" memberName="operatorGroup"
-                  virtualName="" explicitFocusOrder="0" pos="1.056% 50.079% 97.994% 48.97%"
+                  virtualName="" explicitFocusOrder="0" pos="1.03% 50.083% 98.026% 48.998%"
                   outlinecol="ff749fad" textcol="ff749fad" title="" textpos="33"/>
   <GROUPCOMPONENT name="mixer group" id="a41fc3891a2af464" memberName="mixerGroup"
-                  virtualName="" explicitFocusOrder="0" pos="1.056% 31.22% 59.029% 18.542%"
+                  virtualName="" explicitFocusOrder="0" pos="1.03% 31.219% 59.056% 18.531%"
                   outlinecol="ff749fad" textcol="ff749fad" title="Mixer" textpos="33"/>
   <GROUPCOMPONENT name="IM group" id="249d6ec6feb3696f" memberName="imGroup" virtualName=""
-                  explicitFocusOrder="0" pos="61.035% 0% 37.909% 49.604%" outlinecol="ff749fad"
+                  explicitFocusOrder="0" pos="61.03% 0% 37.94% 49.583%" outlinecol="ff749fad"
                   textcol="ff749fad" title="Modulation indexes" textpos="33"/>
 </JUCER_COMPONENT>
 
