@@ -90,7 +90,7 @@ public:
 	bool containsThisParameterAsEnveloppe(String name) override;
 	void setPfmType(int type) override;
 	void enableComponent(Component* comp, bool enable);
-	void hideComponent(Component* comp, bool enable);
+	void hideTotallyComponent(Component* comp, bool enable);
     //[/UserMethods]
 
     void paint (juce::Graphics& g) override;

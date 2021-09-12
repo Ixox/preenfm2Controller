@@ -558,8 +558,6 @@ void PanelEngine::resized()
 
 		unisonDetuneLabel->setBounds(proportionOfWidth(0.51f), proportionOfHeight(.2f), proportionOfWidth(0.10f), 40);
 		unisonDetune->setBounds(proportionOfWidth(0.51f), proportionOfHeight(.2f) + 22, proportionOfWidth(0.10f), proportionOfHeight(0.09f));
-
-
 	}
 	else {
 		voicesLabel->setBounds(proportionOfWidth(0.45f), proportionOfHeight(.01f), proportionOfWidth(0.12f), 22);
@@ -669,6 +667,7 @@ void PanelEngine::sliderValueChanged(Slider* sliderThatWasMoved, bool fromPlugin
 		enableComponent(playModePfm2.get(), voices->getValue() > 1);
 
 		bool unison = playModePfm2->getSelectedId() == 2;
+
 		enableComponent(unisonSpreadLabel.get(), voices->getValue() > 1 && unison);
 		enableComponent(unisonSpread.get(), voices->getValue() > 1 && unison);
 		enableComponent(unisonDetuneLabel.get(), voices->getValue() > 1 && unison);
@@ -899,17 +898,17 @@ void PanelEngine::sliderDragEnded(Slider* slider) {
 	pfmType = type;
 
 	bool isPreenfm2 = pfmType == TYPE_PREENFM2;
-	hideComponent(IMKnob[5].get(), isPreenfm2);
-	hideComponent(IMNumber[5].get(), isPreenfm2);
-	hideComponent(IMVelocityKnob[5].get(), isPreenfm2);
+	hideTotallyComponent(IMKnob[5].get(), isPreenfm2);
+	hideTotallyComponent(IMNumber[5].get(), isPreenfm2);
+	hideTotallyComponent(IMVelocityKnob[5].get(), isPreenfm2);
 
-	hideComponent(glideTypeLabel.get(), isPreenfm2);
-	hideComponent(glideType.get(), isPreenfm2);
+	hideTotallyComponent(glideTypeLabel.get(), isPreenfm2);
+	hideTotallyComponent(glideType.get(), isPreenfm2);
 
-	hideComponent(voices.get(), !isPreenfm2);
+	hideTotallyComponent(voices.get(), !isPreenfm2);
 
-	hideComponent(playModePfm2, !isPreenfm2);
-	hideComponent(playModePfm3, isPreenfm2);
+	hideTotallyComponent(playModePfm2, !isPreenfm2);
+	hideTotallyComponent(playModePfm3, isPreenfm2);
 
 
 
@@ -931,9 +930,8 @@ void PanelEngine::sliderDragEnded(Slider* slider) {
 	 comp->setAlpha(enable ? 1.0f : 0.4f);
 }
 
- void PanelEngine::hideComponent(Component* comp, bool enable) {
-	 comp->setEnabled(!enable);
-	 comp->setAlpha(enable ? 0.0f : 1.0f);
+ void PanelEngine::hideTotallyComponent(Component* comp, bool hide) {
+	 comp->setVisible(!hide);
  }
 
 
